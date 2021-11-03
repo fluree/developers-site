@@ -15,7 +15,7 @@ module.exports = {
 	projectName: 'developers-site', 		// Repo name.
 	/** @type {import('@docusaurus/preset-classic').ThemeConfig} */
 	themeConfig: {
-		image: 'img/Dark-Stacked.png',
+		image: 'img/FlureeDevsBanner.png',
 		colorMode: {
 			// light | dark
 			defaultMode: 'light',
