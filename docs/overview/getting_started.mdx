@@ -1,0 +1,150 @@
+import Announcement from "../../src/components/_Announcement.mdx";
+
+# Get Started
+
+## Install Fluree {#install-fluree}
+
+To run Fluree, you need Java 11 or above. To verify your version of Java, you can type `java -version` in the terminal.
+
+You will then need to download a version of Fluree:
+
+### Download Fluree {#download-fluree}
+
+Use one of these links:
+
+- [Latest stable version](https://s3.amazonaws.com/fluree-releases-public/fluree-stable.zip)
+- [Latest version](https://s3.amazonaws.com/fluree-releases-public/fluree-latest.zip)
+
+Or you can download the latest Fluree of a particular version (starting with version 13 and up) using the following formula - `https://fluree-releases-public.s3.amazonaws.com/fluree-[MAJOR VERSION].[MINOR VERSION]-latest.zip`.
+
+> For example:
+[https://fluree-releases-public.s3.amazonaws.com/fluree-0.15-latest.zip](https://fluree-releases-public.s3.amazonaws.com/fluree-0.15-latest.zip)
+
+The contents of the downloaded folder are as follows (might be slightly different based on your version):
+
+```console
+fluree-[version]/
+├── logback.xml
+├── fluree_start.sh
+├── fluree_server.jar
+├── fluree_sample.properties
+├── VERSION
+├── LICENSE
+└── CHANGELOG.md
+```
+
+Key Files:
+
+- `fluree_sample.properties` - File that specifies the customizable Fluree properties.
+- `fluree_start.sh` - Shell script to launch Fluree.
+- `fluree_server.jar` - Fluree packaged into a JAR file.
+
+> You can also download the latest Fluree with [Homebrew](#homebrew) or run Fluree locally in [Docker](#docker).
+
+## Launch Fluree {#launch-fluree}
+
+To run Fluree with all the default options, navigate to the directory where you downloaded Fluree in the terminal then launch Fluree with the following command:
+
+```bash
+./fluree_start.sh
+```
+
+> For Windows systems, you may need to download a Bash emulator, like [Git For Windows](https://gitforwindows.org/) to properly run Fluree. In your Bash emulator, you would still run `./fluree_start.sh` to start Fluree.
+
+When Fluree is done starting up, your terminal will log:
+
+`INFO  fluree.db.peer.http-api - Starting web server on port: [PORT NUMBER]`
+
+> If the above message is not displaying in your terminal, the terminal should print out a relevant error message. Common errors include your chosen port already being in use and not having Java 11 or above installed.
+
+<Announcement text="🎉 Congrats! You're up and running! 🥳" />
+
+After you launch Fluree for the first time, you will not have any ledgers. You will need to create a ledger to begin.
+
+Creating a ledger and any other interaction with Fluree can happen either through the [API](/reference/http/examples.md) or through the [Admin User Interface](#user-interface).
+
+## AdminUI {#admin-ui}
+
+There is a built-in user interface which we call it the **AdminUI**. You can access the AdminUI by navigating to `localhost:[port]`, once you have an instance of Fluree running on your machine. If you did not change the port or IP address, it will be on [`localhost:8090`](http://localhost:8090/).
+
+You can see all the code for the AdminUI in our [AdminUI repo on Github](https://github.com/fluree/fluree-admin-ui).
+
+## Exiting and Restarting Fluree {#exiting-and-restarting-fluree}
+
+To exit Fluree, simply type `ctrl + c` to quit the current process on your terminal. This will not delete any of the information that was successfully added to your ledgers (if you received a 200 response from your transactions, that means it was added to your ledger). This section will assume you are running Fluree with the default configurations. If you would like to see the other options available to launch Fluree, please visit the [Config Options reference](/reference/fluree_config.md).
+
+To restart Fluree, navigate to the folder that contains your Fluree instance and run `./fluree_start.sh`.
+
+After Fluree successfully starts for the first time, there will be additional items in your Fluree instance folder. Your folder will look something like the below:
+
+```all
+fluree-[version]/
+├── data/
+│ ├── group
+│ ├── ledger
+├── fluree_sample.properties
+├── VERSION
+├── fluree_start.sh
+├── fluree-ledger.standalone.jar
+├── default_private_key.txt
+├── CHANGELOG.md
+└── LICENSE
+```
+
+## New Items {#new-items}
+
+There are few things which Fluree will write to the file system when a fresh ledger is started. The [data/ directory](#data) contains all of the raft state as well as the block files for each ledger in the fluree instance and a new file called [default_private_key.txt](#default_private_key) which contains the unique private key used for the root account in your ledgers.
+
+### data/ {#data}
+
+The new `data` directory contains 2 directories; group/ and ledger/. 
+Group/ contains all fo the raft files as well as a directory of raft snapshots. Ledger/ contains all of your ledger indexes. These are organized within sub-directories which are named according to the names you gave your ledgers in Fluree. This data directory can be moved or copied to a different Fluree instance directory and run from the directory if you choose. This is a good option if you want to use a newer Fluree version, but keep all of your previous ledgers.
+
+### default_private_key.txt {#default_private_key}
+
+This file contains the default private key for your ledgers. A new (and unique) private key is generated every time you start up a new network, unless you already have a valid private key in `default_private_key.txt`.
+
+## Fluree in Docker {#docker}
+
+Fluree publishes a Docker image to [Docker Hub](https://hub.docker.com/r/fluree/ledger). We publish the following tags:
+
+`latest` - the latest release 
+`1.0` - the latest 1.0.x release (and other versions similarly)
+`1.0.0-beta16` - specific versions
+`main` - the latest main branch code (unstable!)
+
+You can run these like so:
+
+`docker run -d --restart=always -p 8090:8090 fluree/ledger:latest`
+
+...and then access the admin dashboard at [http://localhost:8090](http://localhost:8090).
+
+## Homebrew {#homebrew}
+
+On a Mac machine, you can download Fluree using Homebrew by running:
+
+```bash
+brew tap fluree/flureedb
+```
+
+```bash
+brew install flureedb
+```
+
+To run Fluree after installing it, run:
+
+```bash
+fluree
+```
+
+To uninstall, run:
+
+```bash
+brew uninstall flureedb
+```
+
+```bash
+brew untap fluree/flureedb
+```
+
+See the code for our Homebrew set up on our [Github repo](https://github.com/fluree/homebrew-flureedb). Using Fluree via Homebrew will slightly modify where your Fluree configuration files are stored on your machine. Please refer to the log in your terminal when you start Fluree up. All relevant information is printed to the console on startup. 

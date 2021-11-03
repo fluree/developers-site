@@ -1,0 +1,48 @@
+article {
+  margin: 2rem 0;
+}
+
+.community {
+  display: flex;
+  align-items: center;
+  padding: 2rem 3rem;
+  width: 100%;
+}
+
+@media screen and (max-width: 996px) {
+  article {
+    margin-top: 0px;
+    margin-bottom: 0px;
+  }
+  
+  .communityCard {
+    min-height: 3rem;
+  }
+}
+
+.communityCard {
+  border-radius: var(--ifm-global-radius);
+  padding-top: .7rem;
+  padding-left: 1rem;
+  min-height: 1rem;
+  text-decoration: none;
+  color: var(--ifm-navbar-link-color);;
+}
+
+html[data-theme='light'] .communityCard:hover {
+  background-color: var(--ifm-color-secondary-light);
+}
+
+html[data-theme='dark'] .communityCard {
+  color: var(--ifm-navbar-link-color);
+}
+
+html[data-theme='dark'] .communityCard:hover {
+  background-color: var(--ifm-background-color-primary-lightest);
+}
+
+.communitySvg {
+  max-height: 6rem;
+  max-width: 6rem;
+}
+

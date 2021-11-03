@@ -1,0 +1,253 @@
+---
+sidebar_position: 5
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# SmartFunctions
+
+SmartFunctions are the engine for setting permissions in Fluree. This section lists
+all built-in predicates that can be added to a function, as well as information
+on how to write the actual function code.
+
+To learn more about how to use smart functions, see the
+[Smart Functions](/concepts/smart-functions/smartfunctions.md) guide.
+
+## _fn {#_fn}
+
+| Predicate  | Type             | Description                                               |
+| ---------- | ---------------- | --------------------------------------------------------- |
+| `name`     | `string`         | Function name                                             |
+| `params`   | `(multi) string` | List of parameters this function supports.                |
+| `code`     | `string`         | Actual ledger code. Can just be `true` or `false`.        |
+| `doc`      | `string`         | A docstring for this function.                            |
+| `language` | `string`         | Programming language used (not yet implemented, currently |
+
+only Clojure supported)
+`spec` | `JSON` | (not yet implemented) Optional spec for parameters. Spec should
+be structured as a map, parameter names are keys and the respective spec is the value.
+
+## Universal Functions For `_fn/code` {#universal-functions}
+
+Clojure is the only language that is currently supported for writing smart functions.
+Only a subset of Clojure functions, as well as several custom functions, are allowed
+to be used in smart functions.
+
+The below functions are available for any smart functions, regardless of where those
+smart functions are referenced. (i.e. `_predicate/spec` versus `_rule/fns`). In
+addition, `true` and `false` are valid keywords in your function code.
+
+Note: Each function accrues a certain amount of fuel. Fuel is used to limit usage
+in the hosted version of Fluree.
+
+<!-- markdownlint-disable MD013-->
+
+| Function        | Arguments                                                                  | Example                                                                                                                                     | Description                                                                                                                                                                                                                                                                                                                                                                                                                       | Cost (in fuel)                          |
+| --------------- | -------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------- |
+| `inc`           | `n` optional                                                               | `(inc)`                                                                                                                                     | Increment existing value by 1. Works on `integer`.                                                                                                                                                                                                                                                                                                                                                                                | 10                                      |
+| `dec`           | `n` optional                                                               | `(dec)`                                                                                                                                     | Decrement existing value by 1. Works on `integer`.                                                                                                                                                                                                                                                                                                                                                                                | 10                                      |
+| `now`           | none                                                                       | `(now)`                                                                                                                                     | Insert current server time. Works on `instant`.                                                                                                                                                                                                                                                                                                                                                                                   | 10                                      |
+| `==`            | `arg1 arg2 ...`                                                            | `(== 1 1 1 1)`                                                                                                                              | Returns true if all items within the vector are equal. Works on `integer`, `string`, and `boolean`.                                                                                                                                                                                                                                                                                                                               | 9 + count of objects in ==              |
+| `+`             | `arg1 arg2 ...`                                                            | `(+ 1 2 3)`                                                                                                                                 | Returns the sum of the provided values. Works on `integer` and `float`.                                                                                                                                                                                                                                                                                                                                                           | 9 + count of objects in +               |
+| `-`             | `arg1 arg2 ...`                                                            | `(- 10 9 3)`                                                                                                                                | Returns the difference of the numbers. The first, as the minuend, the rest as the subtrahends. Works on `integer` and `float`.                                                                                                                                                                                                                                                                                                    | 9 + count of objects in -               |
+| `*`             | `arg1 arg2 ...`                                                            | `(* 90 10 2)`                                                                                                                               | Returns the product of the provided values. Works on `integer` and `float`.                                                                                                                                                                                                                                                                                                                                                       | 9 + count of objects in \*              |
+| `/`             | `arg1 arg2 ...`                                                            | `(/ 36 3 4)`                                                                                                                                | If only one argument supplied, returns 1/first argument, else returns first argument divided by all of the other arguments. Works on `integer` and `float`.                                                                                                                                                                                                                                                                       | 9 + count of objects in /               |
+| `>`             | `arg1 arg2 ...`                                                            | `(> 90 10 2)`                                                                                                                               | Returns true if values are in monotonically decreasing order.                                                                                                                                                                                                                                                                                                                                                                     | 9 + count of objects in >               |
+| `>=`            | `arg1 arg2 ...`                                                            | `(>= 90 90 10 2)`                                                                                                                           | Returns true if values are in monotonically non-increasing order.                                                                                                                                                                                                                                                                                                                                                                 | 9 + count of objects in >=              |
+| `<`             | `arg1 arg2 ...`                                                            | `(< 2 10 90)`                                                                                                                               | Returns true if values are in monotonically increasing order.                                                                                                                                                                                                                                                                                                                                                                     | 9 + count of objects in <               |
+| `<=`            | `arg1 arg2 ...`                                                            | `(<= 2 10 90 90)`                                                                                                                           | Returns true if values are in monotonically non-decreasing order.                                                                                                                                                                                                                                                                                                                                                                 | 9 + count of objects in <=              |
+| `quot`          | `n` `d`                                                                    | `(quot 60 10)`                                                                                                                              | Returns the quotient of dividing the first argument by the second argument. Rounds the answer towards 0 to return the nearest integer. Works on `integer` and `float`.                                                                                                                                                                                                                                                            | 10                                      |
+| `rem`           | `n` `d`                                                                    | `(rem 64 10)`                                                                                                                               | Remainder of dividing the first argument by the second argument. Works on `integer` and `float`.                                                                                                                                                                                                                                                                                                                                  | 10                                      |
+| `mod`           | `n` `d`                                                                    | `(mod 64 10)`                                                                                                                               | Modulus of the first argument divided by the second argument. The mod function takes the rem of the two arguments, and if the either the numerator or denominator are negative, it adds the denominator to the remainder, and returns that value. Works on `integer` and `float`.                                                                                                                                                 | 10                                      |
+| `max`           | `arg1 arg2 ...`                                                            | `(max 1 2 3)`                                                                                                                               | Returns the max of the provided values. Works on `integer`, `float`.                                                                                                                                                                                                                                                                                                                                                              | 9 + count of objects in max             |
+| `min`           | `arg1 arg2 ...`                                                            | `(min 1 2 3)`                                                                                                                               | Returns the min of the provided values. Works on `integer`, `float`.                                                                                                                                                                                                                                                                                                                                                              | 9 + count of objects in min             |
+| `max-pred-val`  | `predicate-name`                                                           | `(max-pred-val \"person/age\")`                                                                                                             | Returns the max of the provided predicate. Works on `integer`, `float`.                                                                                                                                                                                                                                                                                                                                                           | 10 + cost of fuel to query max-pred-val |
+| `str`           | `arg1 arg2 ...`                                                            | `(str \"flur.\" \"ee\")`                                                                                                                    | Concatenates all strings in the vector. Works on `integer`, `string`, `float`, and `boolean`.                                                                                                                                                                                                                                                                                                                                     | 10                                      |
+| `if-else`       | `test` `true` `false`                                                      | `(if-else (== 1 1) \"John\" \"Jane\")`                                                                                                      | Takes a test as a first argument. If the test succeeds, return the second argument, else return the third argument.                                                                                                                                                                                                                                                                                                               | 10                                      |
+| `and`           | `arg1 arg2 ...`                                                            | `(and (== 1 1) (== 2 2) )`                                                                                                                  | Returns true if all objects within the vector are non-nil and non-false, else returns false.                                                                                                                                                                                                                                                                                                                                      | 9 + count of objects in and             |
+| `or`            | `arg1 arg2 ...`                                                            | `(or (== 1 1) (== 2 3))`                                                                                                                    | Returns true if any of the objects within the vector are non-nil and non-false, else returns false.                                                                                                                                                                                                                                                                                                                               | 9 + count of objects in or              |
+| `not`           | `arg1 arg2 ...`                                                            | `(not (== 3 3))`                                                                                                                            | Returns true if value is falsey, returns false if value is truthy. `(not (== 3 3))` would return false.                                                                                                                                                                                                                                                                                                                           | 10                                      |
+| `boolean`       | `x`                                                                        | `(boolean 1)`                                                                                                                               | Coerces any non-nil and non-false value to true, else returns false.                                                                                                                                                                                                                                                                                                                                                              | 10                                      |
+| `nil?`          | `x`                                                                        | `(nil? 2)`                                                                                                                                  | If nil, returns true, else returns false.                                                                                                                                                                                                                                                                                                                                                                                         | 10                                      |
+| `count`         | `[s]` or `string`                                                          | `(count \"Appleseed\")`, `#(count [1 2 3])`                                                                                                 | Returns the count of letters in a string or the number of items in a vector.                                                                                                                                                                                                                                                                                                                                                      | 9 + count of objects in count           |
+| `get`           | `subject` `predicate`                                                      | `(get (?s) \"_id\" )`                                                                                                                       | Returns the value of an predicate within an object. In this example, we extract the \_id of the subject using get.                                                                                                                                                                                                                                                                                                                | 10                                      |
+| `contains?`     | `subject` `value`                                                          | `(contains? (get-all (?s) [\"person/user\"]) ?user)`                                                                                        | Checks whether an object or hash-set contains a specific key (for objects) or value (for hash-sets). Vectors check index and NOT value. To check values of vector, convert values to hash-set first. In this example, `get-all` checks whether the person user contains the current user.                                                                                                                                         | 10                                      |
+| `hash-set`      | `arg1 arg2 ...`                                                            | `(hash-set \"orange\" \"pear\")`                                                                                                            | Returns hash-set containing all the args                                                                                                                                                                                                                                                                                                                                                                                          | 9 + count of values in hash-set         |
+| `upper-case`    | `str.`                                                                     | `(upper-case \"pear\")`                                                                                                                     | Returns upper-case version of string.                                                                                                                                                                                                                                                                                                                                                                                             | 10                                      |
+| `lower-case`    | `str.`                                                                     | `(lower-case \"pear\")`                                                                                                                     | Returns lower-case version of string.                                                                                                                                                                                                                                                                                                                                                                                             | 10                                      |
+| `nth`           | `collection integer`                                                       | `(nth [1 2 3] 0)`                                                                                                                           | Returns the `nth` element in a collection, for example `(nth [1 2 3] 0)` returns `1`.                                                                                                                                                                                                                                                                                                                                             | 9 + count of objects in the collection  |
+| `get-all`       | `subject` `[path]`                                                         | `(contains? (get-all ?s [\"chat/person\" \"person/user\"]) ?user)`                                                                          | Returns nil or a set of all of a certain predicate (or predicate-path) from an subject.                                                                                                                                                                                                                                                                                                                                           | 9 + length of path                      |
+| `valid-email?`  | `x`                                                                        | `(valid-email? (?o))`                                                                                                                       | Checks whether a value is a valid email using the following pattern, `[a-z0-9!#$%&'*+/=?^_{\|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_{\|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?`.                                                                                                                                                                                                                     | 10                                      |
+| `re-find`       | `pattern` `string`                                                         | `(re-find "^[a-zA-Z0-9_][a-zA-Z0-9\.\-_]{0,254}" \"apples1\")`                                                                              | Checks whether a string follows a given regex pattern.                                                                                                                                                                                                                                                                                                                                                                            | 10                                      |
+| `db`            | none                                                                       | `(== (get db \"dbid\") 2)`                                                                                                                  | Returns a ledger object with the following keys: dbid, block, and permissions.                                                                                                                                                                                                                                                                                                                                                    | 10                                      |
+| `query`         | `query-string`                                                             | `(query \"{\\\"select\\\":[\\\"*\\\"],\\\"from\\\":\\\"person\\\"}\")`                                                                      | Allows you to query the current ledger. You need to doubly-escape the quotation marks in the query string `\"{\\\"select\\\":[\\\"*\\\"],\\\"from\\\":\\\"person\\\"}\"`.                                                                                                                                                                                                                                                         | Fuel required for the query.            |
+| `query`         | `select-string` `from-string` `where-string` `block-string` `limit-string` | `(get (query \"[*]\" [\"book/editor\" \"Penguin\"] nil nil nil) \"book/year\")`                                                             | Allows you to query the current ledger. The select-string should be inputted without any commas. The select-string and can be inputted without any quotation marks, for example, `"[* {person/user [*]}]"`, or you can optionally doubly-escape those strings `"[\\\"*\\\" {\\\"person/user\\\" [\\\"*\\\"]}]"`.                                                                                                                  | Fuel required for the query.            |
+| `relationship?` | `startSubject path endSubject`                                             | `(relationship? [\"_user/username\" \"anna\"] [\"_user/auth\" \"_auth/department\" \"company/_department\"] [\"company/name\" \"Fluree\"])` | Returns a true or false, depending on if there is a relationship between two subjects. Start and end subjects should resolve to either subject \_ids or unique two-tuples. For example, `(?sid)` resolves to a subject \_id, `87960930223080` and `["_user/username" "anna"]` are all valid for start or end subjects. The path should be a single predicate or a vector of predicates that potentially connect the two subjects. | 10, plus fuel of query                  |
+| `rand`          | `max seed`                                                                 | `(rand 100)`                                                                                                                                | Returns a random integer from 0 to the `max` number you provided. A seed is optional.                                                                                                                                                                                                                                                                                                                                             | 10                                      |
+| `uuid`          | none                                                                       | `(uuid)`                                                                                                                                    | Returns a UUID. Can be used in predicates of type `string` or `uuid`                                                                                                                                                                                                                                                                                                                                                              | 10                                      |
+| `cas`           | `compare-val new-val`                                                      | `(cas "hi" "hi again")`                                                                                                                     | For use as transaction function, if current db value does not equal `compare-val`, the transaction will fail otherwise it will get updated with `new-val`                                                                                                                                                                                                                                                                         | 20                                      |
+
+ledger function can also be combined, for instance `(inc (max 1.5 2 3))` will return 4.
+
+When you write a smart function and add it to the `_fn` collection, you can use the
+name of that smart function in other smart functions.
+
+For example, you can add a function called, `addThree` that adds 3 to any number,
+`n`.
+
+<Tabs
+  groupId="fluree-lang-options"
+  defaultValue="json"
+  values={[{label: 'FlureeQL', value: 'json'},
+  {label: 'Curl', value: 'bash'},
+  {label: 'GraphQL', value: 'graphql'},
+  {label: 'SPARQL', value: 'sparql'}]}
+>
+<TabItem value="json">
+
+```json
+[
+  {
+    "_id": "_fn",
+    "name": "addThree",
+    "params": ["n"],
+    "code": "(+ 3 n)"
+  }
+]
+```
+
+</TabItem>
+
+<TabItem value="bash">
+
+```bash
+curl \
+   -H "Content-Type: application/json" \
+   -H "Authorization: Bearer $FLUREE_TOKEN" \
+   -d '[{
+    "_id": "_fn",
+    "name": "addThree",
+    "params": ["n"],
+    "code": "(+ 3 n)"
+}]' \
+   [HOST]/api/db/transact
+```
+
+</TabItem>
+
+<TabItem value="graphql">
+
+```graphql
+mutation addTenFunc ($addThreeFunTx: JSON) {
+  transact(tx: $addThreeFunTx)
+}
+
+{
+  "addThreeFunTx": "[{\"_id\":\"_fn\",\"name\":\"addThree\",\"params\":[\"n\"],
+  \"code\":\"(+ 3 n)\"}]"
+}
+```
+
+</TabItem>
+
+<TabItem value="sparql">
+
+```sparql
+Transactions not supported in SPARQL
+```
+
+</TabItem>
+</Tabs>
+
+Once, `addThree` is in the ledger, you can create a new function called `addTen`,
+which uses `addThree`.
+
+<Tabs
+  groupId="fluree-lang-options"
+  defaultValue="json"
+  values={[{label: 'FlureeQL', value: 'json'},
+  {label: 'Curl', value: 'bash'},
+  {label: 'GraphQL', value: 'graphql'},
+  {label: 'SPARQL', value: 'sparql'}]}
+>
+<TabItem value="json">
+
+```json
+[
+  {
+    "_id": "_fn",
+    "name": "addTen",
+    "params": ["n"],
+    "code": "(+ 7 (addThree n))"
+  }
+]
+```
+
+</TabItem>
+
+<TabItem value="bash">
+
+```bash
+curl \
+   -H "Content-Type: application/json" \
+   -H "Authorization: Bearer $FLUREE_TOKEN" \
+   -d '[{
+    "_id": "_fn",
+    "name": "addTen",
+    "params": ["n"],
+    "code": "(+ 7 (addThree n))"}]' \
+   [HOST]/api/db/transact
+```
+
+</TabItem>
+
+<TabItem value="graphql">
+
+```graphql
+mutation addTenFunc ($addTenFunTx: JSON) {
+  transact(tx: $addTenFunTx)
+}
+
+{
+  "addTenFunTx": "[{\"_id\":\"_fn\",\"name\":\"addTen\",\"params\":[\"n\"],\"code\"
+  :\"(+ 7 (addThree n))\"}]"
+}
+```
+
+</TabItem>
+
+<TabItem value="sparql">
+
+```sparql
+Transactions not supported in SPARQL
+```
+
+</TabItem>
+</Tabs>
+
+## Context-Dependent Functions {#context-dependent-functions}
+
+Some available functions are only available in certain contexts. For example, `?o`,
+which gets the object of a triple is relevant for a `_predicate/spec`, but not for
+a `_collection/spec`.
+
+<!-- markdownlint-disable MD013-->
+
+| Fn         | Args         | Example                                                  | Available In                                                     | Usage                                                                                                                                                                                                                                                   | Fuel                          |
+| ---------- | ------------ | -------------------------------------------------------- | ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------- |
+| `?sid`     | None         | `(== (?auth_id) (?sid))`                                 | `_predicate/spec`, `_collection/spec`,`_rule/fns`                | The `_id` of the subject that the spec is being applied to                                                                                                                                                                                              | 10                            |
+| `?pid`     | None         | `(?pid)`                                                 | `_predicate/spec`, `_predicate/txSpec`, transaction              | `_id` of the predicate that the spec is being applied to                                                                                                                                                                                                | 10                            |
+| `?s`       | `string`\*   | `(== (get (?s) \"person/handle\") \"jdoe\")`             | `_predicate/spec`, `_collection/spec`, `_rule/fns`               | Allows you to access all the predicates of the subject that the spec is being applied to.                                                                                                                                                               | 10 plus cost of lookup        |
+| `?p`       | `string`\*\* | `(== (get (?p) \"_predicate/name") \"person/fullName\")` | `_predicate/spec`, `_predicate/txSpec`, transaction              | Allows you to access all the predicates of the predicate that the spec is being applied to.                                                                                                                                                             | 10 plus cost of fuel          |
+| `?o`       | None         | `(< 1000 (?o))`                                          | `_predicate/spec`                                                | The proposed object of the predicate that the user is attempting to add or update.                                                                                                                                                                      | 10                            |
+| `?pO`      | None         | `(< (?pO) (?o))`                                         | `_predicate/spec`                                                | The object of the predicate that the user is attempting to add or update, as of the block before the proposed transaction                                                                                                                               | 10 plus cost of object-lookup |
+| `?auth_id` | None         | `(== (?auth_id) (?sid))`                                 | `_predicate/spec`, `_collection/spec`, `_rule/fns`, transactions | The `_id` of the auth that is querying or transacting                                                                                                                                                                                                   | 10                            |
+| `?user_id` | None         | `(== (?user_id) (?sid))`                                 | `_predicate/spec`, `_collection/spec`, `_rule/fns`, transactions | The `_id` of the user, if any, that is querying or transacting                                                                                                                                                                                          | 10                            |
+| `flakes`   | None         | `(flakes)`                                               | `_predicate/spec`, `_collection/spec`, `_predicate/txSpec`       | Returns an array of all flakes in the current proposed transaction. For `_predicate/spec` and `_collection/spec` this is a single flake. For `_predicate/txSpec` this is all the flakes in a given transaction that pertain to the specified predicate. | 10                            |
+| `objT`     | None         | `(objT)`                                                 | `_predicate/spec`, `_collection/spec`, `_predicate/txSpec`       | Sum of the value of all flakes being added in the current spec.                                                                                                                                                                                         | 10                            |
+| `objF`     | None         | `(objF)`                                                 | `_predicate/spec`, `_collection/spec`, `_predicate/txSpec`       | Sum of the value of all flakes being retracted in the current spec.                                                                                                                                                                                     | 10                            |
+
+\* Optional `string` of additional-select-parameters. By default, this function will query `{"select": ["*"], from: [SUBJECT]}`, however, if you would like to follow the subject's relationships further, you can optionally include an additional select string. You do not need to include the glob character, `*`, in your select string. You can either not include any quotes in the select string, or doubly-escape them, for example: `"[{person/user [*]}]"` or `"[{\\\"person/user\\\" [\\\"*\\\"]}]"`. Your select string needs to be inside of a vector, `[]`.
+
+\*\* Optional `string` of additional-select-parameters. By default, this function will query {"select": ["*"], from: `p`}, however, if you would like to follow the subject's relationships further, you can optionally include an additional select string. You do not need to include the glob character, `*`, in your select string. You can either not include any quotes in the select string, or doubly-escape them, for example: `"[{person/user [*]}]"` or `"[{\\\"person/user\\\" [\\\"*\\\"]}]"`. Your select string needs to be inside of a vector, `[]`.

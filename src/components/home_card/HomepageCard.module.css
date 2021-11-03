@@ -1,0 +1,41 @@
+#homepageH6 {
+    margin-top: 3rem;
+    margin-bottom: .5rem;
+    text-align: center;
+    color: var(--ifm-color-primary);
+}
+#homepageH2 {
+    text-align: center;
+}
+
+#homepageAside {
+    text-align: center;
+    color: var(--ifm-color-gray-600);
+}
+
+.svgContainer {
+    background-color: var(--ifm-color-primary);
+    border-radius: 5px;
+    height: 2rem;
+    width: 2rem;
+    display: flex;
+    justify-content: center;
+}
+
+.avatarSvg {
+    color: white;
+    height: 1.5rem;
+    width: 1.5rem;
+}
+
+.sectionContainer {
+    margin-bottom: 4rem;
+  }
+
+.cardContainer:hover {
+    filter: brightness(85%);
+  }
+
+.card__text {
+    text-decoration: none;
+}
