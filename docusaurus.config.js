@@ -15,7 +15,7 @@ module.exports = {
 	projectName: 'developers-site', 		// Repo name.
 	/** @type {import('@docusaurus/preset-classic').ThemeConfig} */
 	themeConfig: {
-		image: './static/img/Dark Stacked.png',
+		image: 'img/Dark-Stacked.png',
 		colorMode: {
 			// light | dark
 			defaultMode: 'light',
@@ -32,8 +32,8 @@ module.exports = {
 			// Main logo which links to fluree marketing site
 			logo: {
 				alt: 'Fluree Yeti Logo',
-				src: 'img/Dark Horizontal.svg',
-				srcDark: 'img/White Horizontal.svg',
+				src: 'img/Dark-Horizontal.svg',
+				srcDark: 'img/White-Horizontal.svg',
 				href: 'https://flur.ee',
 			},
 
@@ -97,7 +97,7 @@ module.exports = {
 			style: 'dark',
 			logo: {
 				alt: 'Fluree Yeti Logo',
-				src: 'img/White Horizontal.svg',
+				src: 'img/White-Horizontal.svg',
 				href: 'https://flur.ee'
 			},
 			copyright: `
