@@ -197,7 +197,7 @@ module.exports = {
 				docs: {
 					sidebarPath: require.resolve('./sidebars.js'),
 					editUrl:
-						'https://github.com/fluree/developers-site',
+						'https://github.com/fluree/developers-site/edit/main/',
 				},
 				// blog: {
 				//   showReadingTime: true,
