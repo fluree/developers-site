@@ -2,6 +2,9 @@
 sidebar_position: 3
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 # Optional Clauses
 
 Optional clauses are equivalent to left-outer joins. If a variable within an optional
@@ -11,16 +14,33 @@ bound to `nil`.
 Currently, we do not support starting your where clause with an `optional` map.
 This will always return an empty result, as of 0.13.0.
 
+<Tabs
+  groupId="fluree-lang-options"
+  defaultValue="json"
+  values={[{label: 'FlureeQL', value: 'json'},
+  {label: 'Curl', value: 'bash'},
+  {label: 'GraphQL', value: 'graphql'},
+  {label: 'SPARQL', value: 'sparql'}]}
+>
+<TabItem value="json">
+
 ```json
 {
-  "select": [ "?person", "?name", "?age" ],
-  "where": [ [ "?person", "person/age", "?age"],
-    { "optional": [ [ "?person", "person/fullName", "?name"],
-        [ "?person", "person/favNums", "?favNums"]]
+  "select": ["?person", "?name", "?age"],
+  "where": [
+    ["?person", "person/age", "?age"],
+    {
+      "optional": [
+        ["?person", "person/fullName", "?name"],
+        ["?person", "person/favNums", "?favNums"]
+      ]
     }
   ]
 }
 ```
+
+</TabItem>
+<TabItem value="bash">
 
 ```curl
   curl \
@@ -37,52 +57,44 @@ This will always return an empty result, as of 0.13.0.
    [HOST]/api/db/query
 ```
 
+</TabItem>
+<TabItem value="graphql">
+
 ```graphql
 Not supported
 ```
 
+</TabItem>
+<TabItem value="sparql">
+
 ```sparql
 SELECT ?person ?name ?age
 WHERE {
-  ?person fdb:person/fullName ?name. 
-  OPTIONAL {  ?person fdb:person/fullName ?name. 
+  ?person fdb:person/fullName ?name.
+  OPTIONAL {  ?person fdb:person/fullName ?name.
               ?person fdb:person/favNums ?favNums. }
 }
 ```
+
+</TabItem>
+</Tabs>
 
 Here is an example of using an optional clause. Immediately after the optional
 clause, we use a filter that keeps all `?nums` values that are nil or `?nums`
 that = 98.
 
-```all
+```json
 {
-  "select": [
-    {"?person": ["favNums"]},
-    "?name",
-    "?age",
-    "?nums"
-  ],
+  "select": [{ "?person": ["favNums"] }, "?name", "?age", "?nums"],
   "where": [
-    [
-      "?person",
-      "person/fullName",
-      "?name"
-    ],
+    ["?person", "person/fullName", "?name"],
     {
       "optional": [
-        [
-          "?person",
-          "person/age",
-          "?age"
-        ],
-        [
-          "?person",
-          "person/favNums",
-          "?nums"
-        ]
+        ["?person", "person/age", "?age"],
+        ["?person", "person/favNums", "?nums"]
       ]
     },
-     {"filter": ["(if (nil? ?nums) true (= 98 ?nums))"]}
+    { "filter": ["(if (nil? ?nums) true (= 98 ?nums))"] }
   ]
 }
 ```
@@ -92,13 +104,27 @@ that = 98.
 
 Here is a query that does not have any optional clauses:
 
-```flureeql
+<Tabs
+  groupId="fluree-lang-options"
+  defaultValue="json"
+  values={[{label: 'FlureeQL', value: 'json'},
+  {label: 'Curl', value: 'bash'},
+  {label: 'GraphQL', value: 'graphql'},
+  {label: 'SPARQL', value: 'sparql'}]}
+>
+<TabItem value="json">
+
+```json
 {
     "select": ["?handle", "?num"],
     "where": [  ["?person", "person/handle", "?handle"], 
                 ["?person", "person/favNums", "?num"] ]
 }
 ```
+
+</TabItem>
+<TabItem value="bash">
+
 
 ```curl
   curl \
@@ -112,9 +138,16 @@ Here is a query that does not have any optional clauses:
    [HOST]/api/db/query
 ```
 
+</TabItem>
+<TabItem value="graphql">
+
+
 ```graphql
 Not supported
 ```
+
+</TabItem>
+<TabItem value="sparql">
 
 ```sparql
 SELECT ?handle ?num
@@ -123,6 +156,9 @@ WHERE {
   ?person fdb:person/favNums ?num.
 }
 ```
+
+</TabItem>
+</Tabs>
 
 Let's say the results of the where clause are as follows:
 
@@ -136,13 +172,26 @@ Bob | 42
 
 If there were any people in our ledger *without* favorite numbers, they would not appear in this query. However, if we want to preserve all `handle`s, even ones belonging to people without favorite numbers, we could issue this query:
 
-```flureeql
+<Tabs
+  groupId="fluree-lang-options"
+  defaultValue="json"
+  values={[{label: 'FlureeQL', value: 'json'},
+  {label: 'Curl', value: 'bash'},
+  {label: 'GraphQL', value: 'graphql'},
+  {label: 'SPARQL', value: 'sparql'}]}
+>
+<TabItem value="json">
+
+```json
 {
     "select": ["?handle", "?num"],
     "where": [  ["?person", "person/handle", "?handle"] ],
     "optional": [["?person", "person/favNums", "?num"]]
 }
 ```
+
+</TabItem>
+<TabItem value="bash">
 
 ```curl 
   curl \
@@ -156,9 +205,17 @@ If there were any people in our ledger *without* favorite numbers, they would no
    [HOST]/api/db/query
 ```
 
+</TabItem>
+<TabItem value="graphql">
+
+
 ```graphql
 Not supported
 ```
+
+</TabItem>
+<TabItem value="sparql">
+
 
 ```sparql
 SELECT ?handle ?num
@@ -167,6 +224,9 @@ WHERE {
   OPTIONAL { ?person fdb:person/favNums ?num. }
 }
 ```
+
+</TabItem>
+</Tabs>
 
 The results of the above query might look below. Where Jack and Jill are still in our result set, even though they don't have favorite numbers.
 
@@ -184,7 +244,17 @@ You could have as many optional clauses as you like, but note that ORDER matters
 
 Filters can include multiple variables, for example gets all the favorite numbers for every person, and if a person has an age, it also gets their age. Then, it filters by returning only the favorite numbers that are greater than a given person's age or greater than 3 if no age is provided. 
 
-```flureeql
+<Tabs
+  groupId="fluree-lang-options"
+  defaultValue="json"
+  values={[{label: 'FlureeQL', value: 'json'},
+  {label: 'Curl', value: 'bash'},
+  {label: 'GraphQL', value: 'graphql'},
+  {label: 'SPARQL', value: 'sparql'}]}
+>
+<TabItem value="json">
+
+```json
 {
   "select": ["?favNums", "?age" ],
   "where": [["?person", "person/favNums", "?favNums"]],
@@ -192,6 +262,9 @@ Filters can include multiple variables, for example gets all the favorite number
   "filter": ["(> ?favNums (coalesce ?age 3))"]
 }
 ```
+
+</TabItem>
+<TabItem value="bash">
 
 ```curl
   curl \
@@ -206,9 +279,16 @@ Filters can include multiple variables, for example gets all the favorite number
    [HOST]/api/db/query
 ```
 
+</TabItem>
+<TabItem value="graphql">
+
+
 ```graphql
 Not supported
 ```
+
+</TabItem>
+<TabItem value="sparql">
 
 ```sparql
 SELECT ?favNums ?age
@@ -219,4 +299,8 @@ WHERE {
   }
   FILTER( ?favNums > (coalesce ?age 3))
 }
-``` -->
+```
+
+</TabItem>
+</Tabs>
+-->
