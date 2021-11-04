@@ -113,6 +113,14 @@ can also specify a certain path length by adding an integer after the `+`.
 ```
 
 </TabItem>
+<TabItem value="graphql">
+
+```graphql
+Not supported in GraphQL
+```
+
+</TabItem>
+
 <TabItem value="sparql">
 
 ```sparql
@@ -129,6 +137,16 @@ WHERE {
 
 Below is an example specifying a maximum recursion depth.
 
+<Tabs
+  groupId="fluree-lang-options"
+  defaultValue="json"
+  values={[{label: 'FlureeQL', value: 'json'},
+  {label: 'Curl', value: 'bash'},
+  {label: 'GraphQL', value: 'graphql'},
+  {label: 'SPARQL', value: 'sparql'}]}
+>
+<TabItem value="json">
+
 ```json
 {
   "select": ["?followHandle"],
@@ -139,6 +157,9 @@ Below is an example specifying a maximum recursion depth.
   ]
 }
 ```
+
+</TabItem>
+<TabItem value="bash">
 
 ```bash
  curl \
@@ -156,9 +177,15 @@ Below is an example specifying a maximum recursion depth.
    [HOST]/api/db/query
 ```
 
+</TabItem>
+<TabItem value="graphql">
+
 ```graphql
-Not sypported.
+Not supported in GraphQL
 ```
+
+</TabItem>
+<TabItem value="sparql">
 
 ```sparql
 SELECT ?followHandle
@@ -168,3 +195,6 @@ WHERE {
   ?follows fdb:person/handle ?followHandle.
 }
 ```
+
+</TabItem>
+</Tabs>
