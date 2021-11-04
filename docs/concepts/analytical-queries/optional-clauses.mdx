@@ -11,7 +11,7 @@ bound to `nil`.
 Currently, we do not support starting your where clause with an `optional` map.
 This will always return an empty result, as of 0.13.0.
 
-```flureeql
+```json
 {
   "select": [ "?person", "?name", "?age" ],
   "where": [ [ "?person", "person/age", "?age"],
