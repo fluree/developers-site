@@ -2,6 +2,9 @@
 sidebar_position: 2
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 # Full Text Search
 
 You can use analytical queries to search objects of a given predicate or within
@@ -9,20 +12,35 @@ a given collection. In order to do this, you first need to enable full text sear
 on any predicates you want to be able to search. For example, we're going to enable
 full text search on `person/fullName`, `person/handle`, and `chat/message`.
 
+<Tabs
+  groupId="fluree-lang-options"
+  defaultValue="json"
+  values={[{label: 'FlureeQL', value: 'json'},
+  {label: 'Curl', value: 'bash'},
+  {label: 'GraphQL', value: 'graphql'},
+  {label: 'SPARQL', value: 'sparql'}]}
+>
+<TabItem value="json">
+
 ```json
-[{
+[
+  {
     "_id": ["_predicate/name", "person/fullName"],
     "fullText": true
-},
-{
+  },
+  {
     "_id": ["_predicate/name", "person/handle"],
     "fullText": true
-},
-{
+  },
+  {
     "_id": ["_predicate/name", "chat/message"],
     "fullText": true
-}]
+  }
+]
 ```
+
+</TabItem>
+<TabItem value="bash">
 
 ```bash
   curl \
@@ -42,6 +60,9 @@ full text search on `person/fullName`, `person/handle`, and `chat/message`.
 }]' \
    [HOST]/api/db/transact
 ```
+
+</TabItem>
+<TabItem value="graphql">
 
 ```graphql
 mutation makeFullText ($myFullTextTx: JSON) {
@@ -53,19 +74,40 @@ mutation makeFullText ($myFullTextTx: JSON) {
 }
 ```
 
+</TabItem>
+<TabItem value="sparql">
+
 ```sparql
 Transactions not supported in SPARQL.
 ```
 
+</TabItem>
+</Tabs>
+
 A predicate can be removed from the full-text search index (and thus from full-text
 search capability) at any time by simply setting `fullText` to false:
 
+<Tabs
+  groupId="fluree-lang-options"
+  defaultValue="json"
+  values={[{label: 'FlureeQL', value: 'json'},
+  {label: 'Curl', value: 'bash'},
+  {label: 'GraphQL', value: 'graphql'},
+  {label: 'SPARQL', value: 'sparql'}]}
+>
+<TabItem value="json">
+
 ```json
-[{
+[
+  {
     "_id": ["_predicate/name", "person/fullName"],
     "fullText": false
-}]
+  }
+]
 ```
+
+</TabItem>
+<TabItem value="bash">
 
 ```bash
   curl \
@@ -78,6 +120,9 @@ search capability) at any time by simply setting `fullText` to false:
    [HOST]/api/db/transact
 ```
 
+</TabItem>
+<TabItem value="graphql">
+
 ```graphql
 mutation unmakeFullText ($myFullTextRemoveTx: JSON) {
   transact(tx: $myFullTextRemoveTx)
@@ -88,13 +133,29 @@ mutation unmakeFullText ($myFullTextRemoveTx: JSON) {
 }
 ```
 
+</TabItem>
+<TabItem value="sparql">
+
 ```sparql
 Transactions not supported in SPARQL.
 ```
 
+</TabItem>
+</Tabs>
+
 Now, we can issue a full text query against any predicate or collection by using
 a special predicate, `fullText:PREDICATE` or `fullText:COLLECTION`, which acts
 as a service call. For example:
+
+<Tabs
+  groupId="fluree-lang-options"
+  defaultValue="json"
+  values={[{label: 'FlureeQL', value: 'json'},
+  {label: 'Curl', value: 'bash'},
+  {label: 'GraphQL', value: 'graphql'},
+  {label: 'SPARQL', value: 'sparql'}]}
+>
+<TabItem value="json">
 
 ```json
 {
@@ -104,6 +165,9 @@ as a service call. For example:
     ]
 }
 ```
+
+</TabItem>
+<TabItem value="bash">
 
 ```bash
   curl \
@@ -118,9 +182,15 @@ as a service call. For example:
    [HOST]/api/db/query
 ```
 
+</TabItem>
+<TabItem value="graphql">
+
 ```graphql
 Not supported
 ```
+
+</TabItem>
+<TabItem value="sparql">
 
 ```sparql
 SELECT ?person
@@ -129,19 +199,33 @@ WHERE {
 }
 ```
 
-The above query binds the subject _ids for any person whose `person/fullName`
+</TabItem>
+</Tabs>
+
+The above query binds the subject \_ids for any person whose `person/fullName`
 includes the word `doe` (not case-sensitive). We can also issue the same query
 searching any full-text-searchable predicates in the `person` collection. In
 this case, we would be searching the predicates: `person/fullName` and `person/handle`.
 
+<Tabs
+  groupId="fluree-lang-options"
+  defaultValue="json"
+  values={[{label: 'FlureeQL', value: 'json'},
+  {label: 'Curl', value: 'bash'},
+  {label: 'GraphQL', value: 'graphql'},
+  {label: 'SPARQL', value: 'sparql'}]}
+>
+<TabItem value="json">
+
 ```json
 {
-    "select": "?person",
-    "where": [
-        ["?person", "fullText:person", "doe"]
-    ]
+  "select": "?person",
+  "where": [["?person", "fullText:person", "doe"]]
 }
 ```
+
+</TabItem>
+<TabItem value="bash">
 
 ```bash
   curl \
@@ -156,9 +240,15 @@ this case, we would be searching the predicates: `person/fullName` and `person/h
    [HOST]/api/db/query
 ```
 
+</TabItem>
+<TabItem value="graphql">
+
 ```graphql
 Not supported
 ```
+
+</TabItem>
+<TabItem value="sparql">
 
 ```sparql
 SELECT ?person
@@ -167,8 +257,21 @@ WHERE {
 }
 ```
 
+</TabItem>
+</Tabs>
+
 We can combine a full-text search service call clause with any other clause, for
 example:
+
+<Tabs
+  groupId="fluree-lang-options"
+  defaultValue="json"
+  values={[{label: 'FlureeQL', value: 'json'},
+  {label: 'Curl', value: 'bash'},
+  {label: 'GraphQL', value: 'graphql'},
+  {label: 'SPARQL', value: 'sparql'}]}
+>
+<TabItem value="json">
 
 ```json
 {
@@ -180,6 +283,9 @@ example:
     ]
 }
 ```
+
+</TabItem>
+<TabItem value="bash">
 
 ```bash
   curl \
@@ -196,9 +302,15 @@ example:
    [HOST]/api/db/query
 ```
 
+</TabItem>
+<TabItem value="graphql">
+
 ```graphql
 Not supported
 ```
+
+</TabItem>
+<TabItem value="sparql">
 
 ```sparql
 SELECT ?person ?nums ?age
@@ -209,15 +321,33 @@ WHERE {
 }
 ```
 
+</TabItem>
+</Tabs>
+
 A predicate can be removed from the full-text search index (and thus from full-text
 search capability) at any time by simply setting `fullText` to false:
 
+<Tabs
+  groupId="fluree-lang-options"
+  defaultValue="json"
+  values={[{label: 'FlureeQL', value: 'json'},
+  {label: 'Curl', value: 'bash'},
+  {label: 'GraphQL', value: 'graphql'},
+  {label: 'SPARQL', value: 'sparql'}]}
+>
+<TabItem value="json">
+
 ```json
-[{
+[
+  {
     "_id": ["_predicate/name", "person/fullName"],
     "fullText": false
-}]
+  }
+]
 ```
+
+</TabItem>
+<TabItem value="bash">
 
 ```bash
   curl \
@@ -230,6 +360,9 @@ search capability) at any time by simply setting `fullText` to false:
    [HOST]/api/db/transact
 ```
 
+</TabItem>
+<TabItem value="graphql">
+
 ```graphql
 mutation unmakeFullText ($myFullTextRemoveTx: JSON) {
   transact(tx: $myFullTextRemoveTx)
@@ -240,14 +373,20 @@ mutation unmakeFullText ($myFullTextRemoveTx: JSON) {
 }
 ```
 
+</TabItem>
+<TabItem value="sparql">
+
 ```sparql
 Transactions not supported in SPARQL.
 ```
+
+</TabItem>
+</Tabs>
 
 ## Note {#note}
 
 A few things to note with full text searching:
 
 1. The full-text search index is not guaranteed to be fully
-  up-to-date. It may take some time for index to become synchronized.
+   up-to-date. It may take some time for index to become synchronized.
 2. Full-text search is only available for the current Fluree ledger.
