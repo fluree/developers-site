@@ -64,8 +64,8 @@ You should submit a POST request should have the following headers:
 
 - `content-type`: `application/json`
 - `mydate`: An RFC 1123 formatted date, i.e. Mon, 11 Mar 2019 12:23:01 GMT
-- `digest`: The SHA256 hash of the stringified query body, formatted as follows:
-  `SHA256={hashHere}`
+- `digest`: The SHA-256 hash of the stringified query body, formatted as follows:
+  `SHA-256={hashHere}`
 - `signature`: A string containing the algorithm and signature, including other
   information, formatted as follows: `keyId="na",headers="(request-target) host
   mydate digest",algorithm="ecdsa-sha256",signature="{sigHere}"`.
