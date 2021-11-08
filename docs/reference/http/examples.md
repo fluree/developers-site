@@ -567,13 +567,13 @@ Action: GET
 Endpoint: http://localhost:8090/fdb/health
 ```
 
-## /database-stats {#database-stats}
+## /ledger-stats {#ledger-stats}
 
-A POST request to `/fdb/[NETWORK-NAME]/[DBID]/database-stats` provides stats about the requested ledger.
+A POST request to `/fdb/[NETWORK-NAME]/[DBID]/ledger-stats` provides stats about the requested ledger.
 
 ```http
 Action: POST
-Endpoint: http://localhost:8090/fdb/dev/main/database-stats
+Endpoint: http://localhost:8090/fdb/dev/main/ledger-stats
 Headers: None
 Body: None
 ```
