@@ -66,6 +66,10 @@ You should submit a POST request should have the following headers:
 - `mydate`: An RFC 1123 formatted date, i.e. Mon, 11 Mar 2019 12:23:01 GMT
 - `digest`: The SHA-256 hash of the stringified query body, formatted as follows:
   `SHA-256={hashHere}`
+    - A command line example for computing the digest for the request body
+      `{"select": ["*"], "from": "_collection"}`:
+      `echo -n '{"select": ["*"], "from": "_collection"}' | openssl dgst -binary -sha256 | openssl base64 -A`
+      This should output: `CgZvU8wL4nJJ6jJYX4/sI1ISwnUTAfe+G2/vIcTUJWM=`
 - `signature`: A string containing the algorithm and signature, including other
   information, formatted as follows: `keyId="na",headers="(request-target) host
   mydate digest",algorithm="ecdsa-sha256",signature="{sigHere}"`.
