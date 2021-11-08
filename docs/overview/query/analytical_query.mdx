@@ -26,14 +26,14 @@ You can also issue multiple queries at once using the [`/multi-query`](/referenc
 
 FlureeQL Analytical Queries are also structured as a JSON object/map and may contain the following keys:
 
-Key | Required? | Description
--- | -- | --
-[select, selectOne, or selectDistinct](#select-key) | yes | `select` returns all relevant results, `selectOne` returns one result, and `selectDistinct` only returns unique results. [See select key](#select-key)
-[where](#where-key) | yes | A collection of tuples which allow for complex filtering of data.
-`block` | no | Optional block specified by block number, duration, or wall-clock time as a ISO-8601 formatted string. This applies a block to every part of the query that does not have a block specified. It follows the same syntax as the [block key in basic queries](/overview/query/basic_query.mdx#block-key).
-[prefixes](#prefixes-key) | no | Optional map of outside sources.
-[vars](#vars-key) | no | Optional map of variable bindings.
-[opts](#opts-key) | no | Optional map where options like `limit`, `orderBy`, `prettyPrint`, and `wikipediaOpts` can be specified.
+| Key                                                 | Required? | Description                                                                                                                                                                                                                                                                                             |
+| --------------------------------------------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [select, selectOne, or selectDistinct](#select-key) | yes       | `select` returns all relevant results, `selectOne` returns one result, and `selectDistinct` only returns unique results. [See select key](#select-key)                                                                                                                                                  |
+| [where](#where-key)                                 | yes       | A collection of tuples which allow for complex filtering of data.                                                                                                                                                                                                                                       |
+| `block`                                             | no        | Optional block specified by block number, duration, or wall-clock time as a ISO-8601 formatted string. This applies a block to every part of the query that does not have a block specified. It follows the same syntax as the [block key in basic queries](/overview/query/basic_query.mdx#block-key). |
+| [prefixes](#prefixes-key)                           | no        | Optional map of outside sources.                                                                                                                                                                                                                                                                        |
+| [vars](#vars-key)                                   | no        | Optional map of variable bindings.                                                                                                                                                                                                                                                                      |
+| [opts](#opts-key)                                   | no        | Optional map where options like `limit`, `orderBy`, `prettyPrint`, and `wikipediaOpts` can be specified.                                                                                                                                                                                                |
 
 <!-- This page covers every available option for analytical queries, to see [examples](/concepts/analytical-queries/examples.md), visit the relevant guide. -->
 
@@ -41,39 +41,39 @@ Key | Required? | Description
 
 `select` returns all relevant results, `selectOne` returns one result, and `selectDistinct` only returns unique results. Exactly one of the select keys is required.
 
-Item | Example | Description
--- | -- | --
-Variable | `"?apple"` | Variables are declared in the `where` clause
-Variable Select-Array | `{"?var1": ["*"]}` <br/>  <br/> `{"?var1": ["*", {"chat/person": ["*"]}]}` | A map where the key is a valid variable and the value is a valid [select-array](/overview/query/basic_query.mdx#select-key). This only works when the variable is bound to subject ids.
-Aggregate variable | `"(avg ?nums)"` | Any valid variables can be wrapped in an aggregate function. All valid aggregate functions are listed in the table below.
+| Item                  | Example                                                                   | Description                                                                                                                                                                             |
+| --------------------- | ------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Variable              | `"?apple"`                                                                | Variables are declared in the `where` clause                                                                                                                                            |
+| Variable Select-Array | `{"?var1": ["*"]}` <br/> <br/> `{"?var1": ["*", {"chat/person": ["*"]}]}` | A map where the key is a valid variable and the value is a valid [select-array](/overview/query/basic_query.mdx#select-key). This only works when the variable is bound to subject ids. |
+| Aggregate variable    | `"(avg ?nums)"`                                                           | Any valid variables can be wrapped in an aggregate function. All valid aggregate functions are listed in the table below.                                                               |
 
 The value for the select key can be any of the items in the following table. Your select key can be multiple of these select items. In the case that it is multiple items, these items should be wrapped in `[ ]`. For example `[ "?var1", "(sum ?var2)", {"?var3": ["*"] }, "?var4" ]`.
 
-If your select value only has one item, then you can either wrap it in square brackets or not  (i.e.  `{ "select": ["?var"] }` or `{ "select": "?var" }`). If your select key is an array, then your results will also return an array.
+If your select value only has one item, then you can either wrap it in square brackets or not (i.e. `{ "select": ["?var"] }` or `{ "select": "?var" }`). If your select key is an array, then your results will also return an array.
 
 ### Valid Aggregate Functions {#valid-aggregate-functions}
 
 All the following are valid aggregate functions. These below functions can only be applied to variables- you cannot provide your own array. In addition, they cannot be nested within each other- for example `(rand (sample 2 ?age))` is NOT valid.
 
-Function | Arguments | Description
--- | -- | --
-`avg` | variable | Returns the average of the values.
-`count` |  variable | Returns a count of the values.  
-`count-distinct` |  variable | Returns a count of the distinct values. This is equivalent to `(count (distinct ?var))`
-`max` |  variable | Returns the largest value.
-`min` |  variable | Returns the smallest value.
-`median` |  variable | Returns the median of the values.
-`rand` |  variable | Returns a random value from the specified values.
-`sample` |  n, variable | Given a sample size and a set of values, returns an appropriately sized sample, i.e. `(sample 2 ?age)` returns two ages from values bound to the variable, `?age`.
-`stddev` |  variable | Returns the standard deviation of the values.
-`sum` |  variable | Returns the sum of the values.
-`variance` |  variable | Returns the variance of the values.
+| Function         | Arguments   | Description                                                                                                                                                        |
+| ---------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `avg`            | variable    | Returns the average of the values.                                                                                                                                 |
+| `count`          | variable    | Returns a count of the values.                                                                                                                                     |
+| `count-distinct` | variable    | Returns a count of the distinct values. This is equivalent to `(count (distinct ?var))`                                                                            |
+| `max`            | variable    | Returns the largest value.                                                                                                                                         |
+| `min`            | variable    | Returns the smallest value.                                                                                                                                        |
+| `median`         | variable    | Returns the median of the values.                                                                                                                                  |
+| `rand`           | variable    | Returns a random value from the specified values.                                                                                                                  |
+| `sample`         | n, variable | Given a sample size and a set of values, returns an appropriately sized sample, i.e. `(sample 2 ?age)` returns two ages from values bound to the variable, `?age`. |
+| `stddev`         | variable    | Returns the standard deviation of the values.                                                                                                                      |
+| `sum`            | variable    | Returns the sum of the values.                                                                                                                                     |
+| `variance`       | variable    | Returns the variance of the values.                                                                                                                                |
 
 Additional Modifiers
 
 1. `as`: `as` can be wrapped around the ENTIRE aggregate function to rename the result for this aggregate. This renaming only applies to how the results are displayed if pretty printed. For example, `(as (sum ?nums) ?sum)`.
 
-2. `distinct`: If you want an aggregate function to only apply to the set of distinct values, you can wrap `distinct` around the variable. For example, `(variance (distinct ?nums))` or  `(as (sum (distinct ?nums)) ?sum)`.
+2. `distinct`: If you want an aggregate function to only apply to the set of distinct values, you can wrap `distinct` around the variable. For example, `(variance (distinct ?nums))` or `(as (sum (distinct ?nums)) ?sum)`.
 
 If using `groupBy`, aggregates are applied only to the values within that group.
 
@@ -92,17 +92,17 @@ The value for the where key is an array- we'll call it a where-array in this sec
 
 A where-array can be comprised of any of the following items in any order:
 
-Item | Function
--- | --
-[three-tuple](#three-tuple) | Looks for flakes (pieces of data) in the ledger that match a provided pattern, and bind variables to the results.
-[four-tuple](#four-tuple) | Same as a simple three-tuple, except the first item in the tuple specifies a particular data source, such as Wikidata, another ledger, or the current ledger at a specific in time.
-[two-tuple variable binding](#two-tuple-variable-binding)| Bind a variable to a value, including to a calculated aggregate values. These variables can be used subsequent where-array items.
-[binding map](#binding-map)| Serves the same function as a two-tuple variable binding, except the syntax is different.
-[optional map](#optional-map) | Like, three-tuples, looks for flakes (pieces of data) that match a provided pattern. However, when joining the results of this map with the queries existing resultset, will simply bind `null` if there is no match (a left outer join).
-[union map](#union-map) | The two parts of a union map are outer joined.
-[filter map](#filter-map) | Filters the results up that point in the query.
+| Item                                                      | Function                                                                                                                                                                                                                                  |
+| --------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [three-tuple](#three-tuple)                               | Looks for flakes (pieces of data) in the ledger that match a provided pattern, and bind variables to the results.                                                                                                                         |
+| [four-tuple](#four-tuple)                                 | Same as a simple three-tuple, except the first item in the tuple specifies a particular data source, such as Wikidata, another ledger, or the current ledger at a specific in time.                                                       |
+| [two-tuple variable binding](#two-tuple-variable-binding) | Bind a variable to a value, including to a calculated aggregate values. These variables can be used subsequent where-array items.                                                                                                         |
+| [binding map](#binding-map)                               | Serves the same function as a two-tuple variable binding, except the syntax is different.                                                                                                                                                 |
+| [optional map](#optional-map)                             | Like, three-tuples, looks for flakes (pieces of data) that match a provided pattern. However, when joining the results of this map with the queries existing resultset, will simply bind `null` if there is no match (a left outer join). |
+| [union map](#union-map)                                   | The two parts of a union map are outer joined.                                                                                                                                                                                            |
+| [filter map](#filter-map)                                 | Filters the results up that point in the query.                                                                                                                                                                                           |
 
-Each where-array item is resolved and then inner joined with the resultset up until that point. See the [Analytical Query](/concepts/analytical-queries/inner-joins-in-fluree.md) guide for more information.
+Each where-array item is resolved and then inner joined with the resultset up until that point. See the [Analytical Query](/concepts/analytical-queries/inner-joins-in-fluree.mdx) guide for more information.
 
 ### Three Tuple {#three-tuple}
 
@@ -112,31 +112,31 @@ When you include a three-tuple in your where-array, you specify the values for o
 
 The below table lists all the possible values for each part of the three tuple.
 
-Part | Value
--- | --
-`subject` | Can be an subject id, unique two-tuple, a variable (a string that begins with `?`), or null.
-`predicate`, `predicate+[RECUR-DEPTH]`, or `service call` | Can be either predicate name, the Fluree reserved word "_id", or a variable (a string that begins with `?`).  Reverse references are *NOT* supported. <br/> <br/> If using a predicate name, can add `+` after the predicate name to signify recur. Can also specify how many times to recur, i.e. `person/follows+3`.<br/><br/>If using "_id", the object should reference a known id. <br/> <br/> The second item in the clause can also be a service call. All supported service calls are in the subsequent table.
-`object` or `object-function` | Can be a value, subject id, unique two-tuple, a variable (a string that begins with `?`), or null. <br/> <br/> The object can also be a filter function, which contains an existing or a newly declared variable, for example, `(= 20 ?nums)`. The filters follow the same syntax as [filter maps](#filter-maps), and you can read more in that section.  <br/> <br/> If your object begins with a `?`, and it is NOT a variable, for example someone's name is `?Fred`, then you can use escape strings in the object, for example: `"\"?Fred\""`.
+| Part                                                      | Value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| --------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `subject`                                                 | Can be an subject id, unique two-tuple, a variable (a string that begins with `?`), or null.                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| `predicate`, `predicate+[RECUR-DEPTH]`, or `service call` | Can be either predicate name, the Fluree reserved word "\_id", or a variable (a string that begins with `?`). Reverse references are _NOT_ supported. <br/> <br/> If using a predicate name, can add `+` after the predicate name to signify recur. Can also specify how many times to recur, i.e. `person/follows+3`.<br/><br/>If using "\_id", the object should reference a known id. <br/> <br/> The second item in the clause can also be a service call. All supported service calls are in the subsequent table.                            |
+| `object` or `object-function`                             | Can be a value, subject id, unique two-tuple, a variable (a string that begins with `?`), or null. <br/> <br/> The object can also be a filter function, which contains an existing or a newly declared variable, for example, `(= 20 ?nums)`. The filters follow the same syntax as [filter maps](#filter-maps), and you can read more in that section. <br/> <br/> If your object begins with a `?`, and it is NOT a variable, for example someone's name is `?Fred`, then you can use escape strings in the object, for example: `"\"?Fred\""`. |
 
-A three tuple acts as a pattern in a where-array. First it pulls all the data that matches that given pattern, and then it binds the appropriate variables. Subsequent three tuples are inner-joined. For more information and examples, see [inner joins in Fluree](/concepts/analytical-queries/inner-joins-in-fluree.md).
+A three tuple acts as a pattern in a where-array. First it pulls all the data that matches that given pattern, and then it binds the appropriate variables. Subsequent three tuples are inner-joined. For more information and examples, see [inner joins in Fluree](/concepts/analytical-queries/inner-joins-in-fluree.mdx).
 
-Supported Service Call | Example Three-tuple | Description
--- | -- | --
-Full Text Search a Collection | `["?movie", "fullText:movie", "redemption"]` | This service call searches for the word `redemption` in any predicates in the movie collection that are enabled for full text search. See the [Full Text Search](/concepts/analytical-queries/full-text-search.md) guide for more examples and details.
-Full Text Search a Predicate | `["?movie", "fullText:movie/title", "redemption"]` | This service call searches for the word `redemption` in `movie/title`s. This only works if the `movie/title` predicate is enabled for full text search. See the [Full Text Search](/concepts/analytical-queries/full-text-search.md) guide for more examples and details.
-Collection Select | `["?movie", "rdf:type", "movie"]` | This service call binds all subject ids where the subject belongs to the `movie`. collection to the provided variable, `?movie`.
+| Supported Service Call        | Example Three-tuple                                | Description                                                                                                                                                                                                                                                                |
+| ----------------------------- | -------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Full Text Search a Collection | `["?movie", "fullText:movie", "redemption"]`       | This service call searches for the word `redemption` in any predicates in the movie collection that are enabled for full text search. See the [Full Text Search](/concepts/analytical-queries/full-text-search.mdx) guide for more examples and details.                   |
+| Full Text Search a Predicate  | `["?movie", "fullText:movie/title", "redemption"]` | This service call searches for the word `redemption` in `movie/title`s. This only works if the `movie/title` predicate is enabled for full text search. See the [Full Text Search](/concepts/analytical-queries/full-text-search.mdx) guide for more examples and details. |
+| Collection Select             | `["?movie", "rdf:type", "movie"]`                  | This service call binds all subject ids where the subject belongs to the `movie`. collection to the provided variable, `?movie`.                                                                                                                                           |
 
 ### Four Tuple {#four-tuple}
 
 Four tuples are exactly the same as three tuples, except that four tuples specify a data source for the `subject, predicate, object` pattern. Currently, Fluree supports querying across multiple Fluree ledgers and across Wikidata. The following are the sources that can be used.
 
-Source | Example | Description
--- | -- | --
-This ledger | `$fdb` | Default source. The current version of a given Fluree. Can be omitted.
-This ledger at a Previous Point in Time | `$fdb3`, `$fdb2019-03-14T20:59:36.097Z`, `$fdbPT5M`| This ledger at a specified block. The block is specified either by providing the block integer, ISO-8601 formatted wall clock time, or ISO-8601 formatted duration ago
-Other Fluree ledger | `ftest` | Other Fluree ledger must be specifed in the [prefixes key](#prefixes-key).
-Other Fluree ledger | `ftestPT5M` | Other ledger at a specified block. The block is specified either by providing the block integer, ISO-8601 formatted wall clock time, or ISO-8601 formatted duration ago
-Wikidata | `$wd` | Wikidata
+| Source                                  | Example                                             | Description                                                                                                                                                             |
+| --------------------------------------- | --------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| This ledger                             | `$fdb`                                              | Default source. The current version of a given Fluree. Can be omitted.                                                                                                  |
+| This ledger at a Previous Point in Time | `$fdb3`, `$fdb2019-03-14T20:59:36.097Z`, `$fdbPT5M` | This ledger at a specified block. The block is specified either by providing the block integer, ISO-8601 formatted wall clock time, or ISO-8601 formatted duration ago  |
+| Other Fluree ledger                     | `ftest`                                             | Other Fluree ledger must be specifed in the [prefixes key](#prefixes-key).                                                                                              |
+| Other Fluree ledger                     | `ftestPT5M`                                         | Other ledger at a specified block. The block is specified either by providing the block integer, ISO-8601 formatted wall clock time, or ISO-8601 formatted duration ago |
+| Wikidata                                | `$wd`                                               | Wikidata                                                                                                                                                                |
 
 For example, the three tuple `["?person", "person/handle", "?handle"]` is equivalent to `["$fdb", "?person", "person/handle", "?handle"]`, because the specified source is the current ledger. The four tuple, `["$fdbPT2H", "?person", "person/handle", "?handle"]` is matching the given tuple pattern to the subject-predicate-object triples active in the ledger as of two hours ago.
 
@@ -151,12 +151,12 @@ For example, the three tuple `["?person", "person/handle", "?handle"]` is equiva
 
 ### Two Tuple Variable Binding {#two-tuple-variable-binding}
 
-You can bind a variable to an aggregate value. As mentioned above, where-array items are resolved in the order in which they appear. This means that aggregates do NOT take into account the where-array item that come later in the array. To bind an intermediate aggregate value, just specify a two-tuple with the first item as a variable and the second item as the aggregate function. For example `["?maxBlock",  "#(max ?bNum)"]`.
+You can bind a variable to an aggregate value. As mentioned above, where-array items are resolved in the order in which they appear. This means that aggregates do NOT take into account the where-array item that come later in the array. To bind an intermediate aggregate value, just specify a two-tuple with the first item as a variable and the second item as the aggregate function. For example `["?maxBlock", "#(max ?bNum)"]`.
 
 Valid functions are the same as the ones listed in [Valid Aggregate Functions](#valid-aggregate-functions). You can also use the aggregate modifier (`distinct`) explained in the valid aggregate section (you can use the `as` modifier, but this will simply by ignored). A function must be preceded with a `#`.
 
 ```flureeql
-{"select": "?hash", 
+{"select": "?hash",
  "where": [
     ["?s", "_block/number", "?bNum"],
     ["?maxBlock",  "#(max ?bNum)"],
@@ -169,7 +169,7 @@ Valid functions are the same as the ones listed in [Valid Aggregate Functions](#
   curl \
    -H "Content-Type: application/json" \
    -H "Authorization: Bearer $FLUREE_TOKEN" \
-   -d '{"select": "?hash", 
+   -d '{"select": "?hash",
         "where": [
     ["?s", "_block/number", "?bNum"],
     ["?maxBlock",  "#(max ?bNum)"],
@@ -196,7 +196,7 @@ WHERE {
 You can also simply specify values as the second item in the tuple. This binds the given variable to the value provided.
 
 ```all
-{"select": "?person", 
+{"select": "?person",
  "where": [
     ["?handle",  "jdoe"],
      ["?person", "person/handle", "?handle"]
@@ -258,7 +258,7 @@ WHERE {
 Like intermediate aggregate clauses, binds can use aggregate functions. See the [Valid Aggregate Functions](#valid-aggregate-functions) list above.
 
 ```flureeql
-{"select": "?hash", 
+{"select": "?hash",
  "where": [
     ["?s", "_block/number", "?bNum"],
     {"bind": {"?maxBlock":  "#(max ?bNum)"}},
@@ -271,7 +271,7 @@ Like intermediate aggregate clauses, binds can use aggregate functions. See the 
   curl \
    -H "Content-Type: application/json" \
    -H "Authorization: Bearer $FLUREE_TOKEN" \
-   -d '{"select": "?hash", 
+   -d '{"select": "?hash",
  "where": [
     ["?s", "_block/number", "?bNum"],
     {"bind": {"?maxBlock":  "#(max ?bNum)"}},
@@ -302,15 +302,15 @@ An optional map is map where the key is `optional`, and the value is an array of
 For example:
 
 ```all
-{ "optional": [ 
-    [ "?person", "person/fullName", "?name"], 
+{ "optional": [
+    [ "?person", "person/fullName", "?name"],
     ["?favNums", 1223],
     [ "?person", "person/favNums", "?favNums"]
   ]
 }
 ```
 
-Anything within an optional map is resolved and then left outer joined with previous results. In other words, optional maps do not remove any entries from the existing resultset - any rows from the original resultset that do not have a match are bound with `null`. For a more in-depth explanation of optional clauses, see the [optional clauses](/concepts/analytical-queries/optional-clauses.md) guide.
+Anything within an optional map is resolved and then left outer joined with previous results. In other words, optional maps do not remove any entries from the existing resultset - any rows from the original resultset that do not have a match are bound with `null`. For a more in-depth explanation of optional clauses, see the [optional clauses](/concepts/analytical-queries/optional-clauses.mdx) guide.
 
 ### Union Map {#union-map}
 
@@ -320,7 +320,7 @@ A union map takes an two-item array as a value. The two items in this array is i
 {
   "select": [ "?x", "?y", "?b", "?c", "?cname", "?pname"],
   "where": [
-    { "union": [ 
+    { "union": [
 
         [["?x", "_collection/name", "?cname"],
         ["?b", 2]],
@@ -338,40 +338,40 @@ A union map takes an two-item array as a value. The two items in this array is i
 
 A filter map has the key `filter`, and the value is an number of filter functions. Currently, all filter functions should be written using Clojure. The following are all of the accepted filter functions:
 
-Name | Example | Explanation
--- | -- | --
-\> | `(> 10 ?nums)` | <a href="https://clojuredocs.org/clojure.core/%3E" target="_blank">greater than</a>
-\>= | `(>= 10 ?nums)` | <a href="https://clojuredocs.org/clojure.core/%3E=" target="_blank">greater than or equal to</a>
-< | `(< 10 ?nums)` | <a href="https://clojuredocs.org/clojure.core/%3C" target="_blank">less than</a>
-<= | `(<= 10 ?nums)` | <a href="https://clojuredocs.org/clojure.core/%3C=" target="_blank">less than or equal to</a>
-= | `(= 10 ?nums)` | <a href="https://clojuredocs.org/clojure.core/=" target="_blank">equal to</a>
-not= | `(not= 10 ?nums)` | <a href="https://clojuredocs.org/clojure.core/not=" target="_blank">not equal to</a>
-\+ | `(> 11 (+ 10 ?nums))` | <a href="https://clojuredocs.org/clojure.core/+" target="_blank">add</a>
-\- | `(- 11 (+ 10 ?nums))` | <a href="https://clojuredocs.org/clojure.core/-" target="_blank">subtract</a>
-\* | `(> 11 (* 10 ?nums))` | <a href="https://clojuredocs.org/clojure.core/*" target="_blank">multiply</a>
-/ | `(> 11 (/ 10 ?nums))` | <a href="https://clojuredocs.org/clojure.core/_fs" target="_blank">divide</a>
-and | `(and (> 10 ?nums1) (< 100 ?nums2))` | <a href="https://clojuredocs.org/clojure.core/and" target="_blank">and</a>
-&& | `(&& (> 10 ?nums1) (< 100 ?nums2))` | Same as and.
-or | `(or (> 10 ?nums1) (< 100 ?nums2))` | <a href="https://clojuredocs.org/clojure.core/or" target="_blank">or</a>
-\|\| | `(\|\| (> 10 ?nums1) (< 100 ?nums2))` | Same as or.
-nil? | `(nil? ?nums)` | <a href="https://clojuredocs.org/clojure.core/nil_q" target="_blank">nil?</a>
-bound | `(bound ?nums)` | True if non-nil
-coalesce | `(> ?nums (coalesce ?age 30))` | Coalesce takes the first non-nil argument, example below.
-if | `(if (> ?nums 30) (> ?age 100) true)` |  <a href="https://clojuredocs.org/clojure.core/if" target="_blank">if</a>
-not | `(not (> ?nums 30))` |  <a href="https://clojuredocs.org/clojure.core/not" target="_blank">not</a>
-! | `(! (> ?nums 30))` |  Same as not
-now | `(> ?nums (now))` | Returns the current time in epoch milliseconds.
-re-pattern | `(re-pattern "\\d+")` | Returns a regex pattern, for use in re-find. <a href="https://clojuredocs.org/clojure.core/re-pattern" target="_blank">re-pattern</a>
-re-find | `(re-find (re-pattern \"^_collection\") ?name)` | Returns the first regex match. <a href="https://clojuredocs.org/clojure.core/re-find" target="_blank">re-find</a>
-strStarts | `(strStarts ?message \"Hi\")` | Returns true if the string starts with the given substring, case sensitive.
-strEnds | `(strEnds ?message \"Amy.\")` | Returns true if the string ends with the given substring, case sensitive.
+| Name       | Example                                         | Explanation                                                                                                                           |
+| ---------- | ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| \>         | `(> 10 ?nums)`                                  | <a href="https://clojuredocs.org/clojure.core/%3E" target="_blank">greater than</a>                                                   |
+| \>=        | `(>= 10 ?nums)`                                 | <a href="https://clojuredocs.org/clojure.core/%3E=" target="_blank">greater than or equal to</a>                                      |
+| <          | `(< 10 ?nums)`                                  | <a href="https://clojuredocs.org/clojure.core/%3C" target="_blank">less than</a>                                                      |
+| <=         | `(<= 10 ?nums)`                                 | <a href="https://clojuredocs.org/clojure.core/%3C=" target="_blank">less than or equal to</a>                                         |
+| =          | `(= 10 ?nums)`                                  | <a href="https://clojuredocs.org/clojure.core/=" target="_blank">equal to</a>                                                         |
+| not=       | `(not= 10 ?nums)`                               | <a href="https://clojuredocs.org/clojure.core/not=" target="_blank">not equal to</a>                                                  |
+| \+         | `(> 11 (+ 10 ?nums))`                           | <a href="https://clojuredocs.org/clojure.core/+" target="_blank">add</a>                                                              |
+| \-         | `(- 11 (+ 10 ?nums))`                           | <a href="https://clojuredocs.org/clojure.core/-" target="_blank">subtract</a>                                                         |
+| \*         | `(> 11 (* 10 ?nums))`                           | <a href="https://clojuredocs.org/clojure.core/*" target="_blank">multiply</a>                                                         |
+| /          | `(> 11 (/ 10 ?nums))`                           | <a href="https://clojuredocs.org/clojure.core/_fs" target="_blank">divide</a>                                                         |
+| and        | `(and (> 10 ?nums1) (< 100 ?nums2))`            | <a href="https://clojuredocs.org/clojure.core/and" target="_blank">and</a>                                                            |
+| &&         | `(&& (> 10 ?nums1) (< 100 ?nums2))`             | Same as and.                                                                                                                          |
+| or         | `(or (> 10 ?nums1) (< 100 ?nums2))`             | <a href="https://clojuredocs.org/clojure.core/or" target="_blank">or</a>                                                              |
+| \|\|       | `(\|\| (> 10 ?nums1) (< 100 ?nums2))`           | Same as or.                                                                                                                           |
+| nil?       | `(nil? ?nums)`                                  | <a href="https://clojuredocs.org/clojure.core/nil_q" target="_blank">nil?</a>                                                         |
+| bound      | `(bound ?nums)`                                 | True if non-nil                                                                                                                       |
+| coalesce   | `(> ?nums (coalesce ?age 30))`                  | Coalesce takes the first non-nil argument, example below.                                                                             |
+| if         | `(if (> ?nums 30) (> ?age 100) true)`           | <a href="https://clojuredocs.org/clojure.core/if" target="_blank">if</a>                                                              |
+| not        | `(not (> ?nums 30))`                            | <a href="https://clojuredocs.org/clojure.core/not" target="_blank">not</a>                                                            |
+| !          | `(! (> ?nums 30))`                              | Same as not                                                                                                                           |
+| now        | `(> ?nums (now))`                               | Returns the current time in epoch milliseconds.                                                                                       |
+| re-pattern | `(re-pattern "\\d+")`                           | Returns a regex pattern, for use in re-find. <a href="https://clojuredocs.org/clojure.core/re-pattern" target="_blank">re-pattern</a> |
+| re-find    | `(re-find (re-pattern \"^_collection\") ?name)` | Returns the first regex match. <a href="https://clojuredocs.org/clojure.core/re-find" target="_blank">re-find</a>                     |
+| strStarts  | `(strStarts ?message \"Hi\")`                   | Returns true if the string starts with the given substring, case sensitive.                                                           |
+| strEnds    | `(strEnds ?message \"Amy.\")`                   | Returns true if the string ends with the given substring, case sensitive.                                                             |
 
 An example query:
 
 ```flureeql
 {
     "select": ["?handle", "?num"],
-    "where": [  ["?person", "person/handle", "?handle"], 
+    "where": [  ["?person", "person/handle", "?handle"],
                 ["?person", "person/favNums", "?num"],
                 { "filter": [ "(> 10 ?num)", "(= \"jdoe\" ?handle)"] }]
 }
@@ -383,7 +383,7 @@ An example query:
    -H "Authorization: Bearer $FLUREE_TOKEN" \
    -d '{
     "select": ["?handle", "?num"],
-    "where": [  ["?person", "person/handle", "?handle"], 
+    "where": [  ["?person", "person/handle", "?handle"],
                 ["?person", "person/favNums", "?num"],
                 { "filter": [ "(> 10 ?num)", "(= \"jdoe\" ?handle)"] }]
 }' \
@@ -417,7 +417,7 @@ Now we can use `ftest` as a source in any clause.
       "ftest": "fluree/test"
     },
     "select": "?nums",
-    "where": [  ["$fdb4", ["person/handle", "zsmith"], "person/favNums", "?nums"], 
+    "where": [  ["$fdb4", ["person/handle", "zsmith"], "person/favNums", "?nums"],
                 ["ftest", ["person/handle", "zsmith"], "person/favNums", "?nums"] ]
 }
 ```
@@ -431,7 +431,7 @@ Now we can use `ftest` as a source in any clause.
       "ftest": "fluree/test"
     },
     "select": "?nums",
-    "where": [  ["$fdb4", ["person/handle", "zsmith"], "person/favNums", "?nums"], 
+    "where": [  ["$fdb4", ["person/handle", "zsmith"], "person/favNums", "?nums"],
                 ["ftest", ["person/handle", "zsmith"], "person/favNums", "?nums"] ]
 }' \
    [HOST]/api/db/query
@@ -442,7 +442,7 @@ Not supported.
 ```
 
 ```sparql
-// SPARQL Note: When using SPARQL, omit the `$` in front-of built-in sources. In addition, if you want to specify an `ISO-8601` formatted wall clock time, replace all the `:` with `;`. For example, `"SELECT ?s ?o WHERE {  ?s   fdb2019-03-14T20;59;36;097Z:person/handle  ?o.}`. 
+// SPARQL Note: When using SPARQL, omit the `$` in front-of built-in sources. In addition, if you want to specify an `ISO-8601` formatted wall clock time, replace all the `:` with `;`. For example, `"SELECT ?s ?o WHERE {  ?s   fdb2019-03-14T20;59;36;097Z:person/handle  ?o.}`.
 
 
 PREFIX ftest: <fluree/test>
@@ -457,7 +457,7 @@ WHERE {
 
 After declaring the source in the prefix, we can access that ledger at any block by specifying the time in the clause. You can specify a time using a block integer (`ftest3`), a duration (`ftestPT5M`), or an ISO-8601 formatted time-string (`ftest2019-03-14T20:59:36.097Z`). The time SHOULD NOT be declared in the prefix map - only in a particular clause.
 
-*Permissions*
+_Permissions_
 If you want to access information in different ledgers, you need to have permissions to access those ledgers, and those ledgers need to be running on the same transactor.
 
 1. If you are accessing outside ledgers in the **same network** as your current ledger (i.e. `fluree/one` and `fluree/test`) and **fdb-open-api** is `true`, then you can freely query across ledgers.
@@ -472,7 +472,7 @@ For example, in the below query `?handle` will be replaced with `dsanchez` anywh
 ```flureeql
 {
     "select": "?handle",
-    "where": [  
+    "where": [
         ["?person", "person/handle", "?handle"] ],
     "vars": {
         "?handle": "dsanchez"
@@ -486,7 +486,7 @@ For example, in the below query `?handle` will be replaced with `dsanchez` anywh
    -H "Authorization: Bearer $FLUREE_TOKEN" \
    -d '{
     "select": "?handle",
-    "where": [  
+    "where": [
         ["?person", "person/handle", "?handle"] ],
     "vars": {
         "?handle": "dsanchez"
@@ -500,7 +500,7 @@ Not supported
 ```
 
 ```sparql
-// Althought the SPARQL 1.1 spec supports multiple values for any given variable, currently Fluree only support a 1:1 relationship 
+// Althought the SPARQL 1.1 spec supports multiple values for any given variable, currently Fluree only support a 1:1 relationship
 // between variables and their values
 
 SELECT ?handle
@@ -512,18 +512,18 @@ WHERE {
 
 ## Opts Key {#opts-key}
 
-Key | Value | Description
--- | -- | --
-limit | `integer` | Limit (integer) of results to include. Default is 100.
-offset | `integer` | Number of results to exclude (i.e for pagination).
-orderBy | `predicate` or `[ORDER, predicate]` | Predicate name or two-tuple specifying how to order results. If using a two-tuple, the first element must be "ASC" or "DESC" and the second element is the predicate name. For example, `"person/chat"` or `["ASC", "person/handle"]`. Predicate name should match the name in the select clause. Ordering is done before taking the number of results specified in limit. `ASC` is the used if not specified.
-groupBy | `?var1` or `["?var1", "?var2", ... ]` | You can group by any variable or variables that appears in your where clause. Grouping is specified in the top-level `groupBy` key. This can either be a single variable, i.e. `?person` or a vector of variables, i.e. `["?person", "?handle"]`.
-prettyPrint | `boolean`| Default false. Optional boolean. Whether to "pretty print" the results (as a map with keys) or as a vector without labels. This is only available when select is an array of values. Note that depending on the query, pretty print can significantly slow down results.
-wikidataOpts | `{ Wikidata Options Map }` | Optional map of configurations for Wikidata queries. See all options below.
+| Key          | Value                                 | Description                                                                                                                                                                                                                                                                                                                                                                                                    |
+| ------------ | ------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| limit        | `integer`                             | Limit (integer) of results to include. Default is 100.                                                                                                                                                                                                                                                                                                                                                         |
+| offset       | `integer`                             | Number of results to exclude (i.e for pagination).                                                                                                                                                                                                                                                                                                                                                             |
+| orderBy      | `predicate` or `[ORDER, predicate]`   | Predicate name or two-tuple specifying how to order results. If using a two-tuple, the first element must be "ASC" or "DESC" and the second element is the predicate name. For example, `"person/chat"` or `["ASC", "person/handle"]`. Predicate name should match the name in the select clause. Ordering is done before taking the number of results specified in limit. `ASC` is the used if not specified. |
+| groupBy      | `?var1` or `["?var1", "?var2", ... ]` | You can group by any variable or variables that appears in your where clause. Grouping is specified in the top-level `groupBy` key. This can either be a single variable, i.e. `?person` or a vector of variables, i.e. `["?person", "?handle"]`.                                                                                                                                                              |
+| prettyPrint  | `boolean`                             | Default false. Optional boolean. Whether to "pretty print" the results (as a map with keys) or as a vector without labels. This is only available when select is an array of values. Note that depending on the query, pretty print can significantly slow down results.                                                                                                                                       |
+| wikidataOpts | `{ Wikidata Options Map }`            | Optional map of configurations for Wikidata queries. See all options below.                                                                                                                                                                                                                                                                                                                                    |
 
-Key | Description
--- | --
-distinct | Default is true. Boolean, which specifies whether to include only distinct Wikidata results.
-limit | Default is 100. Number of results (integer) to return for each query.
-offset | Default is 0. Number of results to skip before returning the results.  
-language | Default is "en". See [Wikidata language codes](https://www.wikidata.org/wiki/Help:Wikimedia_language_codes/lists/all) for other options.
+| Key      | Description                                                                                                                              |
+| -------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| distinct | Default is true. Boolean, which specifies whether to include only distinct Wikidata results.                                             |
+| limit    | Default is 100. Number of results (integer) to return for each query.                                                                    |
+| offset   | Default is 0. Number of results to skip before returning the results.                                                                    |
+| language | Default is "en". See [Wikidata language codes](https://www.wikidata.org/wiki/Help:Wikimedia_language_codes/lists/all) for other options. |
