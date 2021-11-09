@@ -1,10 +1,12 @@
-import Announcement from "../../src/components/_Announcement.mdx";
+import Announcement from '../../src/components/_Announcement.mdx';
 
 # Get Started
 
 ## Install Fluree {#install-fluree}
 
 To run Fluree, you need Java 11 or above. To verify your version of Java, you can type `java -version` in the terminal.
+
+> Please note that there are multiple ways of installing Fluree e.g. Java, [Docker](https://developers.flur.ee/docs/overview/getting_started/#docker), [Homebrew](https://developers.flur.ee/docs/overview/getting_started/#homebrew)
 
 You will then need to download a version of Fluree:
 
@@ -18,7 +20,7 @@ Use one of these links:
 Or you can download the latest Fluree of a particular version (starting with version 13 and up) using the following formula - `https://fluree-releases-public.s3.amazonaws.com/fluree-[MAJOR VERSION].[MINOR VERSION]-latest.zip`.
 
 > For example:
-[https://fluree-releases-public.s3.amazonaws.com/fluree-0.15-latest.zip](https://fluree-releases-public.s3.amazonaws.com/fluree-0.15-latest.zip)
+> [https://fluree-releases-public.s3.amazonaws.com/fluree-0.15-latest.zip](https://fluree-releases-public.s3.amazonaws.com/fluree-0.15-latest.zip)
 
 The contents of the downloaded folder are as follows (might be slightly different based on your version):
 
@@ -53,7 +55,7 @@ To run Fluree with all the default options, navigate to the directory where you 
 
 When Fluree is done starting up, your terminal will log:
 
-`INFO  fluree.db.peer.http-api - Starting web server on port: [PORT NUMBER]`
+`INFO fluree.db.peer.http-api - Starting web server on port: [PORT NUMBER]`
 
 > If the above message is not displaying in your terminal, the terminal should print out a relevant error message. Common errors include your chosen port already being in use and not having Java 11 or above installed.
 
@@ -97,7 +99,7 @@ There are few things which Fluree will write to the file system when a fresh led
 
 ### data/ {#data}
 
-The new `data` directory contains 2 directories; group/ and ledger/. 
+The new `data` directory contains 2 directories; group/ and ledger/.
 Group/ contains all fo the raft files as well as a directory of raft snapshots. Ledger/ contains all of your ledger indexes. These are organized within sub-directories which are named according to the names you gave your ledgers in Fluree. This data directory can be moved or copied to a different Fluree instance directory and run from the directory if you choose. This is a good option if you want to use a newer Fluree version, but keep all of your previous ledgers.
 
 ### default_private_key.txt {#default_private_key}
@@ -108,7 +110,7 @@ This file contains the default private key for your ledgers. A new (and unique) 
 
 Fluree publishes a Docker image to [Docker Hub](https://hub.docker.com/r/fluree/ledger). We publish the following tags:
 
-`latest` - the latest release 
+`latest` - the latest release
 `1.0` - the latest 1.0.x release (and other versions similarly)
 `1.0.0-beta16` - specific versions
 `main` - the latest main branch code (unstable!)
@@ -147,4 +149,4 @@ brew uninstall flureedb
 brew untap fluree/flureedb
 ```
 
-See the code for our Homebrew set up on our [Github repo](https://github.com/fluree/homebrew-flureedb). Using Fluree via Homebrew will slightly modify where your Fluree configuration files are stored on your machine. Please refer to the log in your terminal when you start Fluree up. All relevant information is printed to the console on startup. 
+See the code for our Homebrew set up on our [Github repo](https://github.com/fluree/homebrew-flureedb). Using Fluree via Homebrew will slightly modify where your Fluree configuration files are stored on your machine. Please refer to the log in your terminal when you start Fluree up. All relevant information is printed to the console on startup.
