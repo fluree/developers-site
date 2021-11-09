@@ -2,6 +2,9 @@
 sidebar_position: 7
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 # Functions in Transactions
 
 Smart functions can also be used directly in transaction to derive a particular value. The role of smart functions directly used in transactions is to derive objects NOT to accept/reject transactions.
@@ -10,12 +13,27 @@ To use smart functions directly in transactions, we need to put our code inside 
 
 For example, to add ", Sr." to the end of a person's full name, we can use two built-in smart functions, `str` and `?pO`. `str` concatenates strings, and `?pO` retrieves the previous object. In this case, we expect the final object of `person/fullName` to be `Jane Doe, Sr.`.
 
+<Tabs
+  groupId="fluree-lang-options"
+  defaultValue="json"
+  values={[{label: 'FlureeQL', value: 'json'},
+  {label: 'Curl', value: 'bash'},
+  {label: 'GraphQL', value: 'graphql'},
+  {label: 'SPARQL', value: 'sparql'}]}
+>
+<TabItem value="json">
+
 ```json
-[{
-  "_id": ["person/handle", "jdoe"],
-  "fullName": "#(str (?pO) \", Sr.\")"
-}]
+[
+  {
+    "_id": ["person/handle", "jdoe"],
+    "fullName": "#(str (?pO) \", Sr.\")"
+  }
+]
 ```
+
+</TabItem>
+<TabItem value="bash">
 
 ```bash
 curl \
@@ -28,6 +46,9 @@ curl \
    [HOST]/api/db/transact
 ```
 
+</TabItem>
+<TabItem value="graphql">
+
 ```graphql
 mutation addSr ($addSrTx: JSON) {
   transact(tx: $addSrTx)
@@ -38,9 +59,15 @@ mutation addSr ($addSrTx: JSON) {
 }
 ```
 
+</TabItem>
+<TabItem value="sparql">
+
 ```sparql
 Transactions not supported in SPARQL
 ```
+
+</TabItem>
+</Tabs>
 
 ## Compare and Set / Swap {#compare-and-set--swap}
 
@@ -49,9 +76,9 @@ An atomic compare and set function can protect the integrity of a transaction wh
 Say you wanted to add a 'Dr.' in front of every medical doctor's name. You issue a query for all people whose title is doctor, and do some logic to filter all names that don't already start with 'Dr.'. It happens that Jane Doe and John Smith are missing the Dr. prefix. A `cas` use might look like:
 
 ```json
-[{"_id": 1234 
+[{"_id": 1234
   "fullName": "#(cas \"Jane Doe\" \"Dr. Jane Doe\")"},
-  "_id": 5678 
+  "_id": 5678
   "fullName": "#(cas \"John Smith\" \"Dr. John Smith\")"}
 ]
 ```
@@ -63,9 +90,9 @@ If between your query and this transaction getting executed another transaction 
 In another example, say you had multiple microservices that required a synthetic lock on a value. `cas` can test that the lock still exists before updating a different value. In this example, each lock can have a unique `lock/id`, and if a lock is active then `isLocked` will be `true`.
 
 ```json
-[{"_id": ["lock/id", 12345] 
+[{"_id": ["lock/id", 12345]
   "isLocked": "#(cas true false)"},
- {"_id": 5678 
+ {"_id": 5678
   "somePredicate": "Some Value"}
 ]
 ```
