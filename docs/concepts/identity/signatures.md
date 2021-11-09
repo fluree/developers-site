@@ -5,25 +5,25 @@ sidebar_position: 2
 # Signatures
 
 In Fluree, you can sign both queries and transactions. The signature proves that
- the issuer of a given query or transaction has access to the private key
-  associated with the signature.
+the issuer of a given query or transaction has access to the private key
+associated with the signature.
 
 ## `fdb-open-api` {#fdb-open-api}
 
 For both queries and transactions, a signature is not required if the option
- `fdb-open-api` is set to true (default
- [config option](/reference/fluree_config.md) for the
-  downloaded version of Fluree)
- In fact, the signature in signed query will be ignored if `fdb-open-api` is set
-  to true.
+`fdb-open-api` is set to true (default
+[config option](/reference/fluree_config.md) for the
+downloaded version of Fluree)
+In fact, the signature in signed query will be ignored if `fdb-open-api` is set
+to true.
 
 In the case of transactions, if you send a transaction to `/transact` or to
- `/graphql`, the transaction will be signed with a default private key.
+`/graphql`, the transaction will be signed with a default private key.
 
 If you do need to specify a signature, such as in the case of testing out user
- permissions, you can submit a [signed transaction](#signed-transactions) to the
-  `/command` endpoint. As of `v0.13.0`, you can also submit an unsigned command
-   to the `/command` endpoint, but only when `fdb-open-api` is true.
+permissions, you can submit a [signed transaction](#signed-transactions) to the
+`/command` endpoint. As of `v0.13.0`, you can also submit an unsigned command
+to the `/command` endpoint, but only when `fdb-open-api` is true.
 
 ## NPM Package {#npm-package}
 
@@ -35,7 +35,7 @@ The documentation (available on [GitHub](https://github.com/fluree/crypto-utils)
 guides you through how to generate keys, sign queries, and sign transactions.
 
 We recommend using the Javascript library or the user interface for ease of use,
- but you can read more about how to sign queries and transactions manually below.
+but you can read more about how to sign queries and transactions manually below.
 
 ## User Interface {#user-interface}
 
@@ -64,23 +64,29 @@ You should submit a POST request should have the following headers:
 
 - `content-type`: `application/json`
 - `mydate`: An RFC 1123 formatted date, i.e. Mon, 11 Mar 2019 12:23:01 GMT
-- `digest`: The SHA-256 hash of the stringified query body, formatted as follows:
-  `SHA-256={hashHere}`
-    - A command line example for computing the digest for the request body
-      `{"select": ["*"], "from": "_collection"}`:
-      `echo -n '{"select": ["*"], "from": "_collection"}' | openssl dgst -binary -sha256 | openssl base64 -A`
-      This should output: `CgZvU8wL4nJJ6jJYX4/sI1ISwnUTAfe+G2/vIcTUJWM=`
+- `digest`: The SHA-256 hash of the stringified query body, formatted as
+  follows:  
+   `SHA-256={hashHere}`
+
+> A command line example for computing the digest for the request body  
+>  `{"select": ["*"], "from": "_collection"}`:
+>
+> ```bash
+> echo -n '{"select": ["*"], "from": "_collection"}' | openssl dgst -binary -sha256 | openssl base64 -A
+> ```
+>
+> This should output: `CgZvU8wL4nJJ6jJYX4/sI1ISwnUTAfe+G2/vIcTUJWM=`
+
 - `signature`: A string containing the algorithm and signature, including other
-  information, formatted as follows: `keyId="na",headers="(request-target) host
-  mydate digest",algorithm="ecdsa-sha256",signature="{sigHere}"`.
+  information, formatted as follows:
+  `keyId="na",headers="(request-target) host mydate digest",algorithm="ecdsa-sha256",signature="{sigHere}"`.
 
 If an authority is signing on behalf of an auth record, then the `_auth/id` of
 the auth record in question needs to be listed as the `keyId` in the `signature`.
 
 In order to get the actual signature (labelled `sig` above) that goes into the
 larger signature value, you need to first create a signing string. Formatted as
-follows: `(request-target): post {uri}\nmydate: {formattedDate}\ndigest:
-SHA-256={digest}`.
+follows: `(request-target): post {uri}\nmydate: {formattedDate}\ndigest: SHA-256={digest}`.
 
 Then, you should get the SHA2-256 hash of that signing string, and sign it using
 Elliptic Curve Digital Signature Algorithm (ECDSA), specifically the
@@ -125,10 +131,11 @@ the auth record that signs the transactions, not the default auth record
 
 The `/command` endpoint takes a map with two keys:
 
-Key | Description
---- | ---
-cmd | Stringified command map
-sig | (optional if `fdb-open-api` is true). ECDSA signature of the value of the
+| Key | Description                                                               |
+| --- | ------------------------------------------------------------------------- |
+| cmd | Stringified command map                                                   |
+| sig | (optional if `fdb-open-api` is true). ECDSA signature of the value of the |
+
 cmd key.
 multiTx | (optional). Array of txids that
 
@@ -138,15 +145,16 @@ type `new-db` and `default-key` is forthcoming.
 
 ### Command Map {#command-map}
 
-Key | Description
---- | ---
-type | `tx`, `new-db`, or `default-key`
-db | `network/dbid`
-tx | The body of the transaction
-auth | `_auth/id` of the auth
-fuel | Max integer for the amount of fuel to use for this transaction
-nonce | Integer nonce, to ensure that the command map is unique.
-expire | Epoch milliseconds after which point this transaction can no longer be
+| Key    | Description                                                            |
+| ------ | ---------------------------------------------------------------------- |
+| type   | `tx`, `new-db`, or `default-key`                                       |
+| db     | `network/dbid`                                                         |
+| tx     | The body of the transaction                                            |
+| auth   | `_auth/id` of the auth                                                 |
+| fuel   | Max integer for the amount of fuel to use for this transaction         |
+| nonce  | Integer nonce, to ensure that the command map is unique.               |
+| expire | Epoch milliseconds after which point this transaction can no longer be |
+
 submitted.
 deps | (optional, if no deps, simply exclude the key). An array of the `_tx/id`s
 of any transactions this `tx` depends on. If any of the `_tx/id`s either do not
