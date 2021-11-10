@@ -2,6 +2,9 @@
 sidebar_position: 6
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 # Rule Example
 
 In this section, we will create two roles, level1User and level2User, and connect each role to a person in our [Basic Schema](/guides/schema/1.md).
@@ -18,15 +21,30 @@ In this section, we will create two roles, level1User and level2User, and connec
 
 First, we need to create a new predicate, which connects a `person` to a `_auth`.
 
+<Tabs
+  groupId="fluree-lang-options"
+  defaultValue="json"
+  values={[{label: 'FlureeQL', value: 'json'},
+  {label: 'Curl', value: 'bash'},
+  {label: 'GraphQL', value: 'graphql'},
+  {label: 'SPARQL', value: 'sparql'}]}
+>
+<TabItem value="json">
+
 ```json
-[{
-  "_id":    "_predicate",
-  "name":   "person/auth",
-  "doc":    "Reference to a ledger auth.",
-  "type":   "ref",
-  "restrictCollection": "_auth"
-}]
+[
+  {
+    "_id": "_predicate",
+    "name": "person/auth",
+    "doc": "Reference to a ledger auth.",
+    "type": "ref",
+    "restrictCollection": "_auth"
+  }
+]
 ```
+
+</TabItem>
+<TabItem value="bash">
 
 ```bash
   curl \
@@ -41,6 +59,9 @@ First, we need to create a new predicate, which connects a `person` to a `_auth`
    https://$FLUREE_ACCOUNT.flur.ee/api/db/transact
 ```
 
+</TabItem>
+<TabItem value="graphql">
+
 ```graphql
 mutation addPersonAuthPredicates ($myPersonAuthPredicateTx: JSON) {
   transact(tx: $myPersonAuthPredicateTx)
@@ -53,9 +74,15 @@ mutation addPersonAuthPredicates ($myPersonAuthPredicateTx: JSON) {
 }
 ```
 
+</TabItem>
+<TabItem value="sparql">
+
 ```sparql
 Transactions not supported in SPARQL.
 ```
+
+</TabItem>
+</Tabs>
 
 ## Add level1User Role, Rules {#add-level1user-role-rules}
 
@@ -67,9 +94,19 @@ For `editOwnChats`, we needed to write a new function, which checks whether the 
 
 The full function is: `(contains? (get-all (?s \"[{chat/person [{person/auth [_id] }] }]\") [\"chat/person\" \"person/auth\" \"_id\"]) (?auth_id))`. We break it down below:
 
-1. First, we get the chat's `chat/person`, and retrieve that person's `person/auth`, and finally get the _auth's_id: `(?s \"[{chat/person [{person/auth [_id] }] }]\")`.
-2. Then, we retrieve all (just one in this case) of the _auth_ids by again crawling the results from step 1. `(get-all [\"chat/person\" \"person/auth\" \"_id\"])`.
-3. Finally, we ask, does the set (of one) _id contain the (?auth_id) who is currently making this update. `(contains? (get-all (?s \"[{chat/person [{person/auth [_id] }] }]\") [\"chat/person\" \"person/auth\" \"_id\"]) (?auth_id))`.
+1. First, we get the chat's `chat/person`, and retrieve that person's `person/auth`, and finally get the \_auth's_id: `(?s \"[{chat/person [{person/auth [_id] }] }]\")`.
+2. Then, we retrieve all (just one in this case) of the \_auth_ids by again crawling the results from step 1. `(get-all [\"chat/person\" \"person/auth\" \"_id\"])`.
+3. Finally, we ask, does the set (of one) \_id contain the (?auth_id) who is currently making this update. `(contains? (get-all (?s \"[{chat/person [{person/auth [_id] }] }]\") [\"chat/person\" \"person/auth\" \"_id\"]) (?auth_id))`.
+
+<Tabs
+  groupId="fluree-lang-options"
+  defaultValue="json"
+  values={[{label: 'FlureeQL', value: 'json'},
+  {label: 'Curl', value: 'bash'},
+  {label: 'GraphQL', value: 'graphql'},
+  {label: 'SPARQL', value: 'sparql'}]}
+>
+<TabItem value="json">
 
 ```json
 [
@@ -77,7 +114,11 @@ The full function is: `(contains? (get-all (?s \"[{chat/person [{person/auth [_i
     "_id": "_role",
     "id": "level1User",
     "doc": "A level 1 user. Can view all chats, edit own chats, and view other people's handles.",
-    "rules": ["_rule$viewAllChats", "_rule$viewAllPeopleHandles", "_rule$editOwnChats"]
+    "rules": [
+      "_rule$viewAllChats",
+      "_rule$viewAllPeopleHandles",
+      "_rule$editOwnChats"
+    ]
   },
   {
     "_id": "_rule$viewAllChats",
@@ -113,6 +154,9 @@ The full function is: `(contains? (get-all (?s \"[{chat/person [{person/auth [_i
   }
 ]
 ```
+
+</TabItem>
+<TabItem value="bash">
 
 ```bash
   curl \
@@ -161,6 +205,9 @@ The full function is: `(contains? (get-all (?s \"[{chat/person [{person/auth [_i
    [HOST]/transact
 ```
 
+</TabItem>
+<TabItem value="graphql">
+
 ```graphql
 mutation addRole ($level1RoleTx: JSON) {
   transact(tx: $level1RoleTx)
@@ -173,9 +220,15 @@ mutation addRole ($level1RoleTx: JSON) {
 
 ```
 
+</TabItem>
+<TabItem value="sparql">
+
 ```sparql
 Transactions not supported in SPARQL.
 ```
+
+</TabItem>
+</Tabs>
 
 ## Add level2User Role, Rule {#add-level2user-role-rule}
 
@@ -185,13 +238,28 @@ We've already created the rules, `viewAllChats` and `editOwnChats`, so we just n
 
 We will need to create two new rules, `viewAllPeople` and `viewAllComments`.
 
+<Tabs
+  groupId="fluree-lang-options"
+  defaultValue="json"
+  values={[{label: 'FlureeQL', value: 'json'},
+  {label: 'Curl', value: 'bash'},
+  {label: 'GraphQL', value: 'graphql'},
+  {label: 'SPARQL', value: 'sparql'}]}
+>
+<TabItem value="json">
+
 ```json
 [
   {
     "_id": "_role",
     "id": "level2User",
     "doc": "A level 2 user. Can view all chats, edit own chats, and view all people.",
-    "rules": [["_rule/id", "viewAllChats"], ["_rule/id", "editOwnChats"], "_rule$viewAllPeople", "_rule$viewAllComments"]
+    "rules": [
+      ["_rule/id", "viewAllChats"],
+      ["_rule/id", "editOwnChats"],
+      "_rule$viewAllPeople",
+      "_rule$viewAllComments"
+    ]
   },
   {
     "_id": "_rule$viewAllPeople",
@@ -202,7 +270,7 @@ We will need to create two new rules, `viewAllPeople` and `viewAllComments`.
     "fns": [["_fn/name", "true"]],
     "ops": ["query"]
   },
-    {
+  {
     "_id": "_rule$viewAllComments",
     "id": "viewAllComments",
     "doc": "Can view all comments.",
@@ -213,6 +281,9 @@ We will need to create two new rules, `viewAllPeople` and `viewAllComments`.
   }
 ]
 ```
+
+</TabItem>
+<TabItem value="bash">
 
 ```bash
   curl \
@@ -246,6 +317,9 @@ We will need to create two new rules, `viewAllPeople` and `viewAllComments`.
    [HOST]/transact
 ```
 
+</TabItem>
+<TabItem value="graphql">
+
 ```graphql
 mutation addRole ($level2RoleTx: JSON) {
   transact(tx: $level2RoleTx)
@@ -258,9 +332,15 @@ mutation addRole ($level2RoleTx: JSON) {
 }
 ```
 
+</TabItem>
+<TabItem value="sparql">
+
 ```sparql
 Transactions not supported in SPARQL.
 ```
+
+</TabItem>
+</Tabs>
 
 ## Create Auth Records {#create-auth-records}
 
@@ -270,7 +350,7 @@ There are several different ways to [generate public-private key/auth id triples
 
 Public/Private Key and Account Id (`_auth/id`) for `_auth$jdoe`.
 
-```all
+```json
 Private: 1787cab58d5b146a049f220c975d5dce7904c63f25d6d834d6980c427b47f412
 Public: 0354298fc55b70e0f3650e746ed29b595e5686191bccafdda8f00367776449b585
 Account id: TfKYG5F5iCsii1JvGGY2Pv6bPVVbZ2ERjmJ
@@ -278,13 +358,23 @@ Account id: TfKYG5F5iCsii1JvGGY2Pv6bPVVbZ2ERjmJ
 
 Public/Private Key and Account Id (`_auth/id`) for `_auth$zsmith`.
 
-```all
+```json
 Private: c0588115314065f7949f87f0f6adda3a252105be89b5080c56bb889cd20d841f
 Public: 035ad063cc993901f5db216d579a69443392ce7b32321be3be7c9deed1d4d4849b
 Account id: TfFzb1tZDkGMBqWr8xMmRVvYmNYFKH9aNpi
 ```
 
 Now, we'll create the auth records and connect them to both the relevant roles and people. `jdoe` will be a level 1 user, and `zsmith` will be level 2.
+
+<Tabs
+  groupId="fluree-lang-options"
+  defaultValue="json"
+  values={[{label: 'FlureeQL', value: 'json'},
+  {label: 'Curl', value: 'bash'},
+  {label: 'GraphQL', value: 'graphql'},
+  {label: 'SPARQL', value: 'sparql'}]}
+>
+<TabItem value="json">
 
 ```json
 [
@@ -310,6 +400,9 @@ Now, we'll create the auth records and connect them to both the relevant roles a
   }
 ]
 ```
+
+</TabItem>
+<TabItem value="bash">
 
 ```bash
 curl \
@@ -339,6 +432,9 @@ curl \
    [HOST]/transact
 ```
 
+</TabItem>
+<TabItem value="graphql">
+
 ```graphql
 mutation addUserAuth($myUserAuthTx: JSON){
   transact(tx: $myUserAuthTx)
@@ -349,9 +445,15 @@ mutation addUserAuth($myUserAuthTx: JSON){
 }
 ```
 
+</TabItem>
+<TabItem value="sparql">
+
 ```sparql
 Transactions not supported in SPARQL.
 ```
+
+</TabItem>
+</Tabs>
 
 ## Testing Our Rules {#testing-our-rules}
 
@@ -367,7 +469,7 @@ Query All Chats
 
 ```json
 {
-  "select": ["*", {"chat/comments": ["*"]}],
+  "select": ["*", { "chat/comments": ["*"] }],
   "from": "chat"
 }
 ```
@@ -382,9 +484,7 @@ Results:
       "_id": 351843720888321
     },
     "chat/instant": 1552654461783,
-    "chat/comments": [
-      null
-    ],
+    "chat/comments": [null],
     "_id": 369435906932737
   }
 ]
@@ -425,30 +525,36 @@ Results:
 `jdoe` can edit an old chat.
 
 ```json
-[{
-  "_id": 369435906932737,
-  "message": "I *can* change this"
-}]
+[
+  {
+    "_id": 369435906932737,
+    "message": "I *can* change this"
+  }
+]
 ```
 
 `jdoe` can also create a new chat, as herself.
 
 ```json
-[{
-  "_id": "chat",
-  "message": "Hey there!",
-  "person": ["person/handle", "jdoe"]
-}]
+[
+  {
+    "_id": "chat",
+    "message": "Hey there!",
+    "person": ["person/handle", "jdoe"]
+  }
+]
 ```
 
 `jdoe` cannot create a new chat as `zsmith`, or anyone else.
 
 ```json
-[{
-  "_id": "chat",
-  "message": "What's up?",
-  "person": ["person/handle", "zsmith"]
-}]
+[
+  {
+    "_id": "chat",
+    "message": "What's up?",
+    "person": ["person/handle", "zsmith"]
+  }
+]
 ```
 
 ### Testing The Level 2 Roles {#testing-the-level-2-roles}
@@ -522,13 +628,7 @@ Results:
     "person/follows": {
       "_id": 351843720888321
     },
-    "person/favNums": [
-      -1,
-      5,
-      28,
-      645,
-      1223
-    ],
+    "person/favNums": [-1, 5, 28, 645, 1223],
     "person/favArtists": [
       {
         "_id": 404620279021569
@@ -545,13 +645,7 @@ Results:
     "person/follows": {
       "_id": 351843720888322
     },
-    "person/favNums": [
-      -2,
-      0,
-      12,
-      98,
-      1223
-    ],
+    "person/favNums": [-2, 0, 12, 98, 1223],
     "person/favArtists": [
       {
         "_id": 404620279021569
@@ -575,21 +669,25 @@ Results:
 `zsmith` can create a new chat, as himself.
 
 ```json
-[{
-  "_id": "chat",
-  "message": "Hi, I'm Zach!",
-  "person": ["person/handle", "zsmith"]
-}]
+[
+  {
+    "_id": "chat",
+    "message": "Hi, I'm Zach!",
+    "person": ["person/handle", "zsmith"]
+  }
+]
 ```
 
 `zsmith` cannot create a new chat as `jdoe`, or anyone else.
 
 ```json
-[{
-  "_id": "chat",
-  "message": "I'm trying to impersonate jdoe",
-  "person": ["person/handle", "jdoe"]
-}]
+[
+  {
+    "_id": "chat",
+    "message": "I'm trying to impersonate jdoe",
+    "person": ["person/handle", "jdoe"]
+  }
+]
 ```
 
 Rules complement `_predicate` and `_collection` specs to allow for complex permissions in a ledger.

@@ -2,6 +2,9 @@
 sidebar_position: 2
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 # Predicate Spec
 
 A `_predicate/spec` is set of smart functions that are attached to a particular predicate. Any time that predicate appears in a transaction, regardless of who issues the transaction, the smart functions attached to the `_predicate/spec` will execute.
@@ -26,14 +29,29 @@ If we want to make sure that `person/favNums` is always non-negative, we need to
 
 Create a Non-Negative Function:
 
+<Tabs
+  groupId="fluree-lang-options"
+  defaultValue="json"
+  values={[{label: 'FlureeQL', value: 'json'},
+  {label: 'Curl', value: 'bash'},
+  {label: 'GraphQL', value: 'graphql'},
+  {label: 'SPARQL', value: 'sparql'}]}
+>
+<TabItem value="json">
+
 ```json
-[{
+[
+  {
     "_id": "_fn",
     "name": "nonNegative?",
     "doc": "Checks that a value is non-negative",
     "code": "(<= 0 (?o))"
-}]
+  }
+]
 ```
+
+</TabItem>
+<TabItem value="bash">
 
 ```bash
 curl \
@@ -47,6 +65,9 @@ curl \
 }]' \
    [HOST]/api/db/transact
 ```
+
+</TabItem>
+<TabItem value="graphql">
 
 ```graphql
 mutation nonNeg ($nonNegTx: JSON) {
@@ -58,18 +79,39 @@ mutation nonNeg ($nonNegTx: JSON) {
 }
 ```
 
+</TabItem>
+<TabItem value="sparql">
+
 ```sparql
 Transactions not supported in SPARQL
 ```
 
+</TabItem>
+</Tabs>
+
 Add function to the `_predicate/spec` for `person/favNums`:
 
+<Tabs
+  groupId="fluree-lang-options"
+  defaultValue="json"
+  values={[{label: 'FlureeQL', value: 'json'},
+  {label: 'Curl', value: 'bash'},
+  {label: 'GraphQL', value: 'graphql'},
+  {label: 'SPARQL', value: 'sparql'}]}
+>
+<TabItem value="json">
+
 ```json
-[{
+[
+  {
     "_id": ["_predicate/name", "person/favNums"],
     "spec": [["_fn/name", "nonNegative?"]]
-}]
+  }
+]
 ```
+
+</TabItem>
+<TabItem value="bash">
 
 ```bash
 curl \
@@ -81,6 +123,9 @@ curl \
 }]' \
    [HOST]/api/db/transact
 ```
+
+</TabItem>
+<TabItem value="graphql">
 
 ```graphql
 mutation addFn ($addFnTx: JSON) {
@@ -92,19 +137,40 @@ mutation addFn ($addFnTx: JSON) {
 }
 ```
 
+</TabItem>
+<TabItem value="sparql">
+
 ```sparql
 Transactions not supported in SPARQL
 ```
 
+</TabItem>
+</Tabs>
+
 If you try to issue the following transaction, it will fail, because -4 is negative.
 
+<Tabs
+  groupId="fluree-lang-options"
+  defaultValue="json"
+  values={[{label: 'FlureeQL', value: 'json'},
+  {label: 'Curl', value: 'bash'},
+  {label: 'GraphQL', value: 'graphql'},
+  {label: 'SPARQL', value: 'sparql'}]}
+>
+<TabItem value="json">
+
 ```json
-[{
+[
+  {
     "_id": "person",
     "handle": "aJay",
     "favNums": [12, -4, 57]
-}]
+  }
+]
 ```
+
+</TabItem>
+<TabItem value="bash">
 
 ```bash
 curl \
@@ -118,6 +184,9 @@ curl \
    [HOST]/api/db/transact
 ```
 
+</TabItem>
+<TabItem value="graphql">
+
 ```graphql
 mutation addPerson ($addPersonTx: JSON) {
   transact(tx: $addPersonTx)
@@ -128,6 +197,12 @@ mutation addPerson ($addPersonTx: JSON) {
 }
 ```
 
+</TabItem>
+<TabItem value="sparql">
+
 ```sparql
 Transactions not supported in SPARQL
 ```
+
+</TabItem>
+</Tabs>

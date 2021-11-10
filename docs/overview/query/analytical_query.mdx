@@ -2,6 +2,9 @@
 sidebar_position: 2
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 # Analytical Query
 
 FlureeQL Analytical Queries are used to answer more sophisticated questions about your data.
@@ -79,7 +82,7 @@ If using `groupBy`, aggregates are applied only to the values within that group.
 
 If select a mixture of aggregate and non-aggregate variables, the results of the aggregate are returned alongside every non-aggregate value. To see what this looks like, try issuing the below query against the basic schema.
 
-```all
+```json
 {
   "select": ["?nums", "(avg ?nums)"],
   "where": [["?person", "person/favNums", "?nums"]]
@@ -140,12 +143,14 @@ Four tuples are exactly the same as three tuples, except that four tuples specif
 
 For example, the three tuple `["?person", "person/handle", "?handle"]` is equivalent to `["$fdb", "?person", "person/handle", "?handle"]`, because the specified source is the current ledger. The four tuple, `["$fdbPT2H", "?person", "person/handle", "?handle"]` is matching the given tuple pattern to the subject-predicate-object triples active in the ledger as of two hours ago.
 
-```all
+```json
 {
   "select": "?nums",
-  "where": [["?person", "rdf:type", "person"],
-            ["?person", "person/handle", "?handle"],
-            ["?person", "person/favNums", "#(> 80 ?nums)"]]
+  "where": [
+    ["?person", "rdf:type", "person"],
+    ["?person", "person/handle", "?handle"],
+    ["?person", "person/favNums", "#(> 80 ?nums)"]
+  ]
 }
 ```
 
@@ -155,17 +160,32 @@ You can bind a variable to an aggregate value. As mentioned above, where-array i
 
 Valid functions are the same as the ones listed in [Valid Aggregate Functions](#valid-aggregate-functions). You can also use the aggregate modifier (`distinct`) explained in the valid aggregate section (you can use the `as` modifier, but this will simply by ignored). A function must be preceded with a `#`.
 
-```flureeql
-{"select": "?hash",
- "where": [
+<Tabs
+  groupId="fluree-lang-options"
+  defaultValue="json"
+  values={[{label: 'FlureeQL', value: 'json'},
+  {label: 'Curl', value: 'bash'},
+  {label: 'GraphQL', value: 'graphql'},
+  {label: 'SPARQL', value: 'sparql'}]}
+>
+<TabItem value="json">
+
+```json
+{
+  "select": "?hash",
+  "where": [
     ["?s", "_block/number", "?bNum"],
-    ["?maxBlock",  "#(max ?bNum)"],
+    ["?maxBlock", "#(max ?bNum)"],
     ["?s", "_block/number", "?maxBlock"],
     ["?s", "_block/hash", "?hash"]
-]}
+  ]
+}
 ```
 
-```curl
+</TabItem>
+<TabItem value="bash">
+
+```bash
   curl \
    -H "Content-Type: application/json" \
    -H "Authorization: Bearer $FLUREE_TOKEN" \
@@ -179,9 +199,15 @@ Valid functions are the same as the ones listed in [Valid Aggregate Functions](#
    [HOST]/api/db/query
 ```
 
+</TabItem>
+<TabItem value="graphql">
+
 ```graphql
 Not supported
 ```
+
+</TabItem>
+<TabItem value="sparql">
 
 ```sparql
 SELECT ?hash
@@ -193,14 +219,19 @@ WHERE {
 }
 ```
 
+</TabItem>
+</Tabs>
+
 You can also simply specify values as the second item in the tuple. This binds the given variable to the value provided.
 
-```all
-{"select": "?person",
- "where": [
-    ["?handle",  "jdoe"],
-     ["?person", "person/handle", "?handle"]
-]}
+```json
+{
+  "select": "?person",
+  "where": [
+    ["?handle", "jdoe"],
+    ["?person", "person/handle", "?handle"]
+  ]
+}
 ```
 
 ### Binding Map {#binding-map}
@@ -211,21 +242,30 @@ A `bind` map (or multiple maps), can be declared anywhere in the where clause. T
 
 The map is comprised of keys that correspond to variables, and values. For example, `{"bind": {"?handle": "dsanchez"}}`. You can bind multiple variables in the same map, as well, for example `{"bind": {"?handle": "dsanchez", "?person": 351843720888324}}`.
 
-```flureeql
+<Tabs
+  groupId="fluree-lang-options"
+  defaultValue="json"
+  values={[{label: 'FlureeQL', value: 'json'},
+  {label: 'Curl', value: 'bash'},
+  {label: 'GraphQL', value: 'graphql'},
+  {label: 'SPARQL', value: 'sparql'}]}
+>
+<TabItem value="json">
+
+```json
 {
-  "select": [ "?person", "?handle"],
+  "select": ["?person", "?handle"],
   "where": [
-      {"bind": {"?handle": "dsanchez"}},
-    [
-      "?person",
-      "person/handle",
-      "?handle"
-    ]
+    { "bind": { "?handle": "dsanchez" } },
+    ["?person", "person/handle", "?handle"]
   ]
 }
 ```
 
-```curl
+</TabItem>
+<TabItem value="bash">
+
+```bash
   curl \
    -H "Content-Type: application/json" \
    -H "Authorization: Bearer $FLUREE_TOKEN" \
@@ -243,9 +283,15 @@ The map is comprised of keys that correspond to variables, and values. For examp
    [HOST]/api/db/query
 ```
 
+</TabItem>
+<TabItem value="graphql">
+
 ```graphql
 Not supported
 ```
+
+</TabItem>
+<TabItem value="sparql">
 
 ```sparql
 SELECT ?person ?handle
@@ -255,17 +301,35 @@ WHERE {
 }
 ```
 
+</TabItem>
+</Tabs>
+
 Like intermediate aggregate clauses, binds can use aggregate functions. See the [Valid Aggregate Functions](#valid-aggregate-functions) list above.
 
-```flureeql
-{"select": "?hash",
- "where": [
+<Tabs
+  groupId="fluree-lang-options"
+  defaultValue="json"
+  values={[{label: 'FlureeQL', value: 'json'},
+  {label: 'Curl', value: 'bash'},
+  {label: 'GraphQL', value: 'graphql'},
+  {label: 'SPARQL', value: 'sparql'}]}
+>
+<TabItem value="json">
+
+```json
+{
+  "select": "?hash",
+  "where": [
     ["?s", "_block/number", "?bNum"],
-    {"bind": {"?maxBlock":  "#(max ?bNum)"}},
+    { "bind": { "?maxBlock": "#(max ?bNum)" } },
     ["?s", "_block/number", "?maxBlock"],
     ["?s", "_block/hash", "?hash"]
-]}
+  ]
+}
 ```
+
+</TabItem>
+<TabItem value="bash">
 
 ```curl
   curl \
@@ -281,9 +345,15 @@ Like intermediate aggregate clauses, binds can use aggregate functions. See the 
    [HOST]/api/db/query
 ```
 
+</TabItem>
+<TabItem value="graphql">
+
 ```graphql
 Not supported
 ```
+
+</TabItem>
+<TabItem value="sparql">
 
 ```sparql
 SELECT ?hash
@@ -295,17 +365,21 @@ WHERE {
 }
 ```
 
+</TabItem>
+</Tabs>
+
 ### Optional Map {#optional-map}
 
 An optional map is map where the key is `optional`, and the value is an array of where-items (you can include any where-items within an optional map, such as three-tuples, four-tuples, two-tuple variable bindings, other optional maps, etc).
 
 For example:
 
-```all
-{ "optional": [
-    [ "?person", "person/fullName", "?name"],
+```json
+{
+  "optional": [
+    ["?person", "person/fullName", "?name"],
     ["?favNums", 1223],
-    [ "?person", "person/favNums", "?favNums"]
+    ["?person", "person/favNums", "?favNums"]
   ]
 }
 ```
@@ -316,19 +390,22 @@ Anything within an optional map is resolved and then left outer joined with prev
 
 A union map takes an two-item array as a value. The two items in this array is itself an array comprised of any number of where-items (for example, three-tuples, two-tuples, optional maps, and filter maps). The results of each array of where-items is then outer joined.
 
-```all
+```json
 {
-  "select": [ "?x", "?y", "?b", "?c", "?cname", "?pname"],
+  "select": ["?x", "?y", "?b", "?c", "?cname", "?pname"],
   "where": [
-    { "union": [
+    {
+      "union": [
+        [
+          ["?x", "_collection/name", "?cname"],
+          ["?b", 2]
+        ],
 
-        [["?x", "_collection/name", "?cname"],
-        ["?b", 2]],
-
-        [["?y", "_predicate/name", "?pname"],
-        ["?c", 8]]
-
+        [
+          ["?y", "_predicate/name", "?pname"],
+          ["?c", 8]
         ]
+      ]
     }
   ]
 }
@@ -368,16 +445,31 @@ A filter map has the key `filter`, and the value is an number of filter function
 
 An example query:
 
-```flureeql
+<Tabs
+  groupId="fluree-lang-options"
+  defaultValue="json"
+  values={[{label: 'FlureeQL', value: 'json'},
+  {label: 'Curl', value: 'bash'},
+  {label: 'GraphQL', value: 'graphql'},
+  {label: 'SPARQL', value: 'sparql'}]}
+>
+<TabItem value="json">
+
+```json
 {
-    "select": ["?handle", "?num"],
-    "where": [  ["?person", "person/handle", "?handle"],
-                ["?person", "person/favNums", "?num"],
-                { "filter": [ "(> 10 ?num)", "(= \"jdoe\" ?handle)"] }]
+  "select": ["?handle", "?num"],
+  "where": [
+    ["?person", "person/handle", "?handle"],
+    ["?person", "person/favNums", "?num"],
+    { "filter": ["(> 10 ?num)", "(= \"jdoe\" ?handle)"] }
+  ]
 }
 ```
 
-```curl
+</TabItem>
+<TabItem value="bash">
+
+```bash
   curl \
    -H "Content-Type: application/json" \
    -H "Authorization: Bearer $FLUREE_TOKEN" \
@@ -390,9 +482,15 @@ An example query:
    [HOST]/api/db/query
 ```
 
+</TabItem>
+<TabItem value="graphql">
+
 ```graphql
 Not supported
 ```
+
+</TabItem>
+<TabItem value="sparql">
 
 ```sparql
 SELECT ?handle ?num
@@ -403,6 +501,9 @@ WHERE {
 }
 ```
 
+</TabItem>
+</Tabs>
+
 ## Prefixes Key {#prefixes-key}
 
 If we want to query across multiple Fluree ledgers we can do so by specifying the ledger in the `prefixes` map.
@@ -411,18 +512,33 @@ In the prefix map, we can specify what ledger we want to query across, in this c
 
 Now we can use `ftest` as a source in any clause.
 
-```flureeql
+<Tabs
+  groupId="fluree-lang-options"
+  defaultValue="json"
+  values={[{label: 'FlureeQL', value: 'json'},
+  {label: 'Curl', value: 'bash'},
+  {label: 'GraphQL', value: 'graphql'},
+  {label: 'SPARQL', value: 'sparql'}]}
+>
+<TabItem value="json">
+
+```json
 {
-    "prefixes": {
-      "ftest": "fluree/test"
-    },
-    "select": "?nums",
-    "where": [  ["$fdb4", ["person/handle", "zsmith"], "person/favNums", "?nums"],
-                ["ftest", ["person/handle", "zsmith"], "person/favNums", "?nums"] ]
+  "prefixes": {
+    "ftest": "fluree/test"
+  },
+  "select": "?nums",
+  "where": [
+    ["$fdb4", ["person/handle", "zsmith"], "person/favNums", "?nums"],
+    ["ftest", ["person/handle", "zsmith"], "person/favNums", "?nums"]
+  ]
 }
 ```
 
-```curl
+</TabItem>
+<TabItem value="bash">
+
+```bash
   curl \
    -H "Content-Type: application/json" \
    -H "Authorization: Bearer $FLUREE_TOKEN" \
@@ -437,9 +553,15 @@ Now we can use `ftest` as a source in any clause.
    [HOST]/api/db/query
 ```
 
+</TabItem>
+<TabItem value="graphql">
+
 ```graphql
 Not supported.
 ```
+
+</TabItem>
+<TabItem value="sparql">
 
 ```sparql
 // SPARQL Note: When using SPARQL, omit the `$` in front-of built-in sources. In addition, if you want to specify an `ISO-8601` formatted wall clock time, replace all the `:` with `;`. For example, `"SELECT ?s ?o WHERE {  ?s   fdb2019-03-14T20;59;36;097Z:person/handle  ?o.}`.
@@ -455,6 +577,9 @@ WHERE {
 }
 ```
 
+</TabItem>
+</Tabs>
+
 After declaring the source in the prefix, we can access that ledger at any block by specifying the time in the clause. You can specify a time using a block integer (`ftest3`), a duration (`ftestPT5M`), or an ISO-8601 formatted time-string (`ftest2019-03-14T20:59:36.097Z`). The time SHOULD NOT be declared in the prefix map - only in a particular clause.
 
 _Permissions_
@@ -469,18 +594,30 @@ The `vars` key takes a map where the keys are variable names and the values are 
 
 For example, in the below query `?handle` will be replaced with `dsanchez` anywhere it appears in the query.
 
-```flureeql
+<Tabs
+  groupId="fluree-lang-options"
+  defaultValue="json"
+  values={[{label: 'FlureeQL', value: 'json'},
+  {label: 'Curl', value: 'bash'},
+  {label: 'GraphQL', value: 'graphql'},
+  {label: 'SPARQL', value: 'sparql'}]}
+>
+<TabItem value="json">
+
+```json
 {
-    "select": "?handle",
-    "where": [
-        ["?person", "person/handle", "?handle"] ],
-    "vars": {
-        "?handle": "dsanchez"
-    }
+  "select": "?handle",
+  "where": [["?person", "person/handle", "?handle"]],
+  "vars": {
+    "?handle": "dsanchez"
+  }
 }
 ```
 
-```curl
+</TabItem>
+<TabItem value="bash">
+
+```bash
   curl \
    -H "Content-Type: application/json" \
    -H "Authorization: Bearer $FLUREE_TOKEN" \
@@ -495,9 +632,15 @@ For example, in the below query `?handle` will be replaced with `dsanchez` anywh
    [HOST]/api/db/query
 ```
 
+</TabItem>
+<TabItem value="graphql">
+
 ```graphql
 Not supported
 ```
+
+</TabItem>
+<TabItem value="sparql">
 
 ```sparql
 // Althought the SPARQL 1.1 spec supports multiple values for any given variable, currently Fluree only support a 1:1 relationship
@@ -509,6 +652,9 @@ WHERE {
   ?person fdb:person/handle ?handle.
 }
 ```
+
+</TabItem>
+</Tabs>
 
 ## Opts Key {#opts-key}
 
