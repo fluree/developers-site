@@ -136,7 +136,7 @@ Rules control the actual permissions and are stored in the special system
 collection `_rule`. Like all Fluree functionality, it is defined as data that
  you can transact as you would any data.
 
-See an example of [using rules](/concepts/smart-functions/rule_example.md) here.
+See an example of [using rules](/concepts/smart-functions/rule_example.mdx) here.
 
 ### Authority {#authority}
 

@@ -14,7 +14,7 @@ Most examples in the documentation use the [Basic Schema](/guides/schema/1.md). 
 
 Fluree validates all updates written against the ledger's schema, ensuring each change meets all of the defined restrictions (i.e. data type, multi-cardinality, uniqueness).
 
-Beyond validating types, Fluree allows custom validation that can further restrict predicate values. This level of validation is done by specifying an optional spec for a [collection](/concepts/smart-functions/collection_spec.md) or [predicate](/concepts/smart-functions/predicate_spec.md).
+Beyond validating types, Fluree allows custom validation that can further restrict predicate values. This level of validation is done by specifying an optional spec for a [collection](/concepts/smart-functions/collection_spec.mdx) or [predicate](/concepts/smart-functions/predicate_spec.mdx).
 
 ## References {#references}
 

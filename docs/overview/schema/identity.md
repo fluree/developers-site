@@ -12,7 +12,7 @@ An auth record can belong to a user. A user can have many auth records.
 
 Auth records handle _identity_. Smart functions handle _permissions_. By default, when you create a new auth record, it has no permissions. In order to give an auth record permissions, you must give your auth record roles, which in turn have rules. Those rules in turn reference smart functions.
 
-See below for all the built-in predicates for users, auths, roles, and rules. See the guides on the [user-auth-role-rule structure](/concepts/identity/auth_records.md) and a [rule example](/concepts/smart-functions/rule_example.md).
+See below for all the built-in predicates for users, auths, roles, and rules. See the guides on the [user-auth-role-rule structure](/concepts/identity/auth_records.md) and a [rule example](/concepts/smart-functions/rule_example.mdx).
 
 ## _user {#_user}
 
