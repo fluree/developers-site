@@ -33,7 +33,7 @@ Smart functions are stored in the `_fn` collection. From the `_fn` collection, s
 Location | When Trigged?
 -- | --
 [_rule/fns](concepts/smart-functions/rules.md) | When an `_auth` record containing a given `_rule` issues a query or transaction containing the `_collection` or `_predicates` specified in the rule.
-[_collection/spec](concepts/smart-functions/collection_spec.md) | When transaction containing the specified `_collection` is issued, regardless of the issuer.
-[_predicate/spec](concepts/smart-functions/predicate_spec.md) | When transaction containing the specified `_predicate` is issued, regardless of issuer (once per specified predicate).
+[_collection/spec](concepts/smart-functions/collection_spec.mdx) | When transaction containing the specified `_collection` is issued, regardless of the issuer.
+[_predicate/spec](concepts/smart-functions/predicate_spec.mdx) | When transaction containing the specified `_predicate` is issued, regardless of issuer (once per specified predicate).
 [_predicate/txSpec](concepts/smart-functions/predicate_tx_spec.md) | When transaction containing the specified `_predicate` is issued, regardless of who issuer (once per transaction).
-[In transactions](concepts/smart-functions/fns_in_txs.md) | You can use smart functions directly in transactions, but their role and behavior is slightly different.
+[In transactions](concepts/smart-functions/fns_in_txs.mdx) | You can use smart functions directly in transactions, but their role and behavior is slightly different.
