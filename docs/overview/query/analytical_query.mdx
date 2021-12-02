@@ -585,8 +585,8 @@ After declaring the source in the prefix, we can access that ledger at any block
 _Permissions_
 If you want to access information in different ledgers, you need to have permissions to access those ledgers, and those ledgers need to be running on the same transactor.
 
-1. If you are accessing outside ledgers in the **same network** as your current ledger (i.e. `fluree/one` and `fluree/test`) and **fdb-open-api** is `true`, then you can freely query across ledgers.
-2. In any other situation, `fdb-open-api` must be `false`, and your query must be signed. The `_auth` record with which you signed your query will be the one that determines your permissions for each given ledger.
+1. If you are accessing outside ledgers in the **same network** as your current ledger (i.e. `fluree/one` and `fluree/test`) and **fdb-api-open** is `true`, then you can freely query across ledgers.
+2. In any other situation, `fdb-api-open` must be `false`, and your query must be signed. The `_auth` record with which you signed your query will be the one that determines your permissions for each given ledger.
 
 ## Vars Key {#vars-key}
 

@@ -61,6 +61,6 @@ Ledger Stats | POST | `/fdb/[NETWORK-NAME]/[DBID]/ledger-stats` | General ledger
 Sub | POST | `/fdb/sub` | Handles subscriptions
 Network Status | ANY | `/fdb/nw-state` | Returns status of Fluree network, raft state, etc.
 
-For both queries and transactions, a signature is not required if the option `fdb-open-api` is set to true (default for the downloaded version of Fluree).
+For both queries and transactions, a signature is not required if the option `fdb-api-open` is set to true (default for the downloaded version of Fluree).
 
 More information on [signing queries](/concepts/identity/signatures.md#signed-queries) and [signing transactions](/concepts/identity/signatures.md#signed-transactions) can be found in the linked sections.
