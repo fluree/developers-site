@@ -109,7 +109,7 @@ Body: { "format": "xml" , "block": 10 }
 
 This deletes a ledger. Deleting a ledger means that a user will no longer be able to query or transact against that ledger, but currently the actual ledger files will not be deleted on disk. You can choose to delete those files yourself - or keep them. You will not be able to create a new ledger with the same name as the deleted ledger.
 
-Use the following request when Fluree server is running in open-api mode (i.e., fdb-open-api=true)
+Use the following request when Fluree server is running in open-api mode (i.e., fdb-api-open=true)
 
 ```http
 Action: POST
@@ -118,7 +118,7 @@ Headers: None
 Body: {"db/id": "NETWORK/DBID"}
 ```
 
-When the Fluree server is running in closed-api mode (i.e., fdb-open-api=false), the request must be signed. The process to sign the delete-db request is the similar to signing queries and transactions; only the end-point is different. .
+When the Fluree server is running in closed-api mode (i.e., fdb-api-open=false), the request must be signed. The process to sign the delete-db request is the similar to signing queries and transactions; only the end-point is different. .
 
 ```http
 Action: POST
@@ -172,7 +172,7 @@ Only one configuration change can be in process at once. Attempts to issues simu
 
 ## /query {#query}
 
-All single queries in FlureeQL syntax that include a `select` key should be issued through the `/fdb/[NETWORK-NAME]/[DBNAME-OR-DBID]/query` endpoint. If you do not have `fdb-open-api` set to true (it is true by default), then you'll need to sign your query ([signing queries](/concepts/identity/signatures.md#signed-queries)).
+All single queries in FlureeQL syntax that include a `select` key should be issued through the `/fdb/[NETWORK-NAME]/[DBNAME-OR-DBID]/query` endpoint. If you do not have `fdb-api-open` set to true (it is true by default), then you'll need to sign your query ([signing queries](/concepts/identity/signatures.md#signed-queries)).
 
 An example of an unsigned request to `/query` with the network, `dev` and the ledger `main`:
 
@@ -307,7 +307,7 @@ Body: {
 
 All unsigned transactions, except transaction issued through the GraphQL syntax, should be issued to the `/fdb/[NETWORK-NAME]/[DBNAME-OR-DBID]/transact` endpoint.
 
-If you do not have `fdb-open-api` set to true (it is true by default), then you cannot use the `/transact` endpoint. You'll need to use the [`/command` endpoint](#command).
+If you do not have `fdb-api-open` set to true (it is true by default), then you cannot use the `/transact` endpoint. You'll need to use the [`/command` endpoint](#command).
 
 An example of an unsigned request to `/transact`:
 
@@ -337,7 +337,7 @@ Body: [{
 
 ## /graphql Query {#graphql}
 
-All queries and transactions in GraphQL syntax should be issued through the `/fdb/[NETWORK-NAME]/[DBNAME-OR-DBID]/graphql` endpoint. If you do not have `fdb-open-api` set to true (it is true by default), then you'll need to sign your query ([signing queries](/concepts/identity/signatures.md#signed-queries)).
+All queries and transactions in GraphQL syntax should be issued through the `/fdb/[NETWORK-NAME]/[DBNAME-OR-DBID]/graphql` endpoint. If you do not have `fdb-api-open` set to true (it is true by default), then you'll need to sign your query ([signing queries](/concepts/identity/signatures.md#signed-queries)).
 
 An example of an unsigned request to `/graphql`:
 
@@ -359,7 +359,7 @@ Body: {"query": "{ graph {
 
 ## /graphql Transaction {#graphql-transaction}
 
-All queries and transactions in GraphQL syntax should be issued through the `/fdb/[NETWORK-NAME]/[DBNAME-OR-DBID]/graphql` endpoint. If you do not have `fdb-open-api` set to true (it is true by default), then you'll need to sign your GraphQL transaction like a query ([signing queries](/concepts/identity/signatures.md#signed-queries)).
+All queries and transactions in GraphQL syntax should be issued through the `/fdb/[NETWORK-NAME]/[DBNAME-OR-DBID]/graphql` endpoint. If you do not have `fdb-api-open` set to true (it is true by default), then you'll need to sign your GraphQL transaction like a query ([signing queries](/concepts/identity/signatures.md#signed-queries)).
 
 An example of an unsigned request to `/graphql`:
 
@@ -379,7 +379,7 @@ Body: {"query": "mutation addPeople ($myPeopleTx: JSON) {
 
 ## /sparql {#sparql}
 
-All queries in SPARQL syntax, regardless of type, should be issued through the `/fdb/[NETWORK-NAME]/[DBNAME-OR-DBID]/sparql` endpoint. If you do not have `fdb-open-api` set to true (it is true by default), then you'll need to sign your query ([signing queries](/concepts/identity/signatures.md#signed-queries)).
+All queries in SPARQL syntax, regardless of type, should be issued through the `/fdb/[NETWORK-NAME]/[DBNAME-OR-DBID]/sparql` endpoint. If you do not have `fdb-api-open` set to true (it is true by default), then you'll need to sign your query ([signing queries](/concepts/identity/signatures.md#signed-queries)).
 
 An example of an unsigned request to `/sparql`:
 
@@ -400,7 +400,7 @@ Body: "SELECT ?chat ?message ?person ?instant ?comments
 
 All queries in SQL syntax should be issued through the
 `/fdb/[NETWORK-NAME]/[DBNAME-OR-DBID]/sql` endpoint. If you do not have
-`fdb-open-api` set to true (it is true by default), then you'll need to sign
+`fdb-api-open` set to true (it is true by default), then you'll need to sign
 your query ([signing
 queries](/concepts/identity/signatures.md#signed-queries)).
 

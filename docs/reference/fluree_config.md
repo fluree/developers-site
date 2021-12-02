@@ -79,7 +79,7 @@ Property | Options | Description
 Property | Options | Description
 -- | -- | --
 `fdb-api-port` | `int` | Port in which the query peers will respond to API calls from clients
-`fdb-open-api` | `boolean` | If fdb-open-api is true, will allow full access on above port for any request and will utilize default auth identity to regulate query/read permissions. If false, every request must be signed, and the auth id associated with the signature will determine query/read permissions.
+`fdb-api-open` | `boolean` | If fdb-api-open is true, will allow full access on above port for any request and will utilize default auth identity to regulate query/read permissions. If false, every request must be signed, and the auth id associated with the signature will determine query/read permissions.
 
 ## Decentralized Ledger Settings {#decentralized-ledger-settings}
 

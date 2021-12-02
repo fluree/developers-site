@@ -4,7 +4,7 @@ sidebar_position: 4
 
 # Identity
 
-In Fluree, an auth record is the central component of identity. Every query and transaction is attributed to a particular auth record. If using a closed-API, the auth record is either the auth record that signed that query or transaction. If using a `fdb-open-api` (see [config options](/reference/fluree_config.md)), you can still sign queries and transactions. However, if you do not sign them, queries and transactions are automatically connected to a default auth record with root access.
+In Fluree, an auth record is the central component of identity. Every query and transaction is attributed to a particular auth record. If using a closed-API, the auth record is either the auth record that signed that query or transaction. If using a `fdb-api-open` (see [config options](/reference/fluree_config.md)), you can still sign queries and transactions. However, if you do not sign them, queries and transactions are automatically connected to a default auth record with root access.
 
 An auth record's `_auth/id` is derived from a private key. There are many ways to [generate a auth-public-private key trio](/concepts/identity/auth_records.md#generating-a-public-private-key-auth-id-triple).
 

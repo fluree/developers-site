@@ -8,13 +8,13 @@ In Fluree, you can sign both queries and transactions. The signature proves that
 the issuer of a given query or transaction has access to the private key
 associated with the signature.
 
-## `fdb-open-api` {#fdb-open-api}
+## `fdb-api-open` {#fdb-api-open}
 
 For both queries and transactions, a signature is not required if the option
-`fdb-open-api` is set to true (default
+`fdb-api-open` is set to true (default
 [config option](/reference/fluree_config.md) for the
 downloaded version of Fluree)
-In fact, the signature in signed query will be ignored if `fdb-open-api` is set
+In fact, the signature in signed query will be ignored if `fdb-api-open` is set
 to true.
 
 In the case of transactions, if you send a transaction to `/transact` or to
@@ -23,7 +23,7 @@ In the case of transactions, if you send a transaction to `/transact` or to
 If you do need to specify a signature, such as in the case of testing out user
 permissions, you can submit a [signed transaction](#signed-transactions) to the
 `/command` endpoint. As of `v0.13.0`, you can also submit an unsigned command
-to the `/command` endpoint, but only when `fdb-open-api` is true.
+to the `/command` endpoint, but only when `fdb-api-open` is true.
 
 ## NPM Package {#npm-package}
 
@@ -44,13 +44,13 @@ Fluree also has a user interface to help users submit signed queries and transac
 This can be found in the user interface by navigating to `/flureeql`. By
 clicking the "sign" button, you can toggle whether or not there is an option to
 sign queries and transactions. Note that the hosted version of Fluree does not
-allow you to sign queries, because `fdb-open-api` is set to true for all hosted
+allow you to sign queries, because `fdb-api-open` is set to true for all hosted
 accounts, so a signed query would be ignored regardless.
 
 ## Signed Queries {#signed-queries}
 
-If `fdb-open-api` is set to true, then you do not need to sign your queries. In
-fact, the signature in a signed query will be ignored if `fdb-open-api` is set
+If `fdb-api-open` is set to true, then you do not need to sign your queries. In
+fact, the signature in a signed query will be ignored if `fdb-api-open` is set
 to true.
 
 If you do need to sign your queries, you should have access to your private key.
@@ -116,16 +116,16 @@ query.
 
 ## Signed Transactions {#signed-transactions}
 
-If `fdb-open-api` is set to true, then you do not need to sign your transactions.
+If `fdb-api-open` is set to true, then you do not need to sign your transactions.
 Each ledger comes with a default auth record, which is either provided by you
 or automatically generated (see [config options](/reference/fluree_config.md)).
-If`fdb-open-api` is set to true, then all transactions submitted to `/transact`
+If`fdb-api-open` is set to true, then all transactions submitted to `/transact`
 will be signed with this default private key unless otherwise specified.
 
 All signed transactions need to be submitted to the
 [`/command` endpoint](/reference/http/examples.md#command).
 Transactions can be sent to the `/command` endpoint, regardless of whether
-`fdb-open-api` is true or not. All transactions submitted will be attributed to
+`fdb-api-open` is true or not. All transactions submitted will be attributed to
 the auth record that signs the transactions, not the default auth record
 (if there is one).
 
@@ -134,7 +134,7 @@ The `/command` endpoint takes a map with two keys:
 | Key | Description                                                               |
 | --- | ------------------------------------------------------------------------- |
 | cmd | Stringified command map                                                   |
-| sig | (optional if `fdb-open-api` is true). ECDSA signature of the value of the |
+| sig | (optional if `fdb-api-open` is true). ECDSA signature of the value of the |
 
 cmd key.
 multiTx | (optional). Array of txids that
