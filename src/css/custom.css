@@ -17,7 +17,7 @@
   --ifm-color-primary-lighter: #00b8f0;
   --ifm-color-primary-lightest: #11c7ff;
 
-  /* Fonts */
+  /* Typography */
   --ifm-heading-font-family: 'Open Sans', sans-serif;
   --ifm-font-family-base: 'Open Sans', sans-serif;
   --ifm-font-family-monospace: 'Courier New', monospace;
@@ -25,6 +25,39 @@
 
   /* Navbar */
   --ifm-navbar-padding-vertical: 0px;
+}
+
+h1 {
+  font-size: 36px;
+  font-weight: 700;
+}
+
+h2 {
+  font-size: 24px;
+  font-weight: 700;
+}
+
+h3 {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+h4 {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+h5 {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+h6 {
+  font-size: 16px;
+}
+
+p {
+  font-size: 16px;
 }
 
 .navbar {
@@ -198,3 +231,9 @@ html[data-theme='dark'] .card__header {
     white-space: normal;
   }
 }
+/* --ifm-h1-font-size: 2rem;
+--ifm-h2-font-size: 1.5rem;
+--ifm-h3-font-size: 1.25rem;
+--ifm-h4-font-size: 1rem;
+--ifm-h5-font-size: 0.875rem;
+--ifm-h6-font-size: 0.85rem; */
