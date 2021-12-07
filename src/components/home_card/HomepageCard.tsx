@@ -8,7 +8,7 @@ export default function HomepageCard({ title, description, link, Svg }: CardDeta
     return (
         <article className="col col--4">
             <div
-                className="card"
+                className="card padding--md"
                 style={{
                     backgroundColor: '#F1FBFF',
                 }}>
