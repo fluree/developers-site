@@ -12,13 +12,20 @@ const HomepageHeader = () => {
 		<header className={clsx('hero hero--primary', styles.heroBanner)}>
 			<div className="container">
 				<h1 className="hero__title">Fluree for Developers</h1>
-				<p className="hero__subtitle">{siteConfig.tagline}</p>
+				<p 
+					className="hero__subtitle"
+					style={{
+						marginBottom: '50px'
+					}}
+				>
+					{siteConfig.tagline}
+				</p>
 				<div className="container">
 					<div className="row">
 
 						<div className="col col--4 col--offset-2">
 							<Link
-								className="card shadow--tl"
+								className="card shadow--tl padding--md"
 								to="/docs/overview/getting_started"
 								style={{
 									backgroundColor: 'rgb(245, 246, 248)'
@@ -38,8 +45,10 @@ const HomepageHeader = () => {
 								</div>
 
 								<div className="card__footer">
-									<div className="button button--secondary button--block">
-										Learn More
+									<div className="button button--link button--block">
+										Learn More 
+										<img 
+											src="../../static/img/Vector.svg" alt="right arrow icon" />
 									</div>
 								</div>
 
@@ -48,7 +57,7 @@ const HomepageHeader = () => {
 
 						<div className="col col--4 ">
 							<Link
-								className="card shadow--tl"
+								className="card shadow--tl padding--md"
 								to="/docs/overview/fluree_basics"
 								style={{
 									backgroundColor: 'rgb(245, 246, 248)'
@@ -68,8 +77,10 @@ const HomepageHeader = () => {
 								</div>
 
 								<div className="card__footer">
-									<div className="button button--secondary button--block">
-										Learn More
+									<div className="button button--link button--block">
+										Learn More 
+										<img 
+											src="../../static/img/Vector.svg" alt="right arrow icon" />
 									</div>
 								</div>
 
