@@ -3,7 +3,7 @@ import ThemedImage from '@theme/ThemedImage';
 import styles from './Community.module.css';
 import useBaseUrl from '@docusaurus/useBaseUrl';
 import Link from '@docusaurus/Link';
-import { CardDetails } from '../../components/CardDetails.interface';
+import { CardDetails } from '../../components/section_card/CardDetails.interface';
 
 export default function CommunityCard(
         { title, description, link, svgPath, svgPathDark }: CardDetails

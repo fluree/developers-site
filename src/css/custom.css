@@ -146,59 +146,27 @@ html[data-theme='dark'] .docusaurus-highlight-code-line {
 
 .card__link {
   color: var(--ifm-color-gray-900);
-  background-color: var(--ifm-color-primary);
-  font-weight: 400;
-  white-space: normal;
-  display: grid;
-  grid-auto-flow: column;
-  padding: 1rem !important;
-  font-size: calc(0.875rem * var(--ifm-button-size-multiplier));
-  line-height: 1.5;
+  background-color: #F1FBFF;
   text-align: center;
-}
-
-@media screen and (min-width: 1440px) {
-  .card__link {
-    max-width: 25vw;
-  }
 }
 
 @media screen and (max-width: 600px) {
   .card__link {
-    max-width: 60vw;
+    margin-right: 30px;
   }
 }
 
-@media screen and (width: 1024px) {
-  .card__link {
-    --ifm-col-width: 42vw !important;
-  }
+.right-arrow__large {
+  width: 50px;
 }
 
 .card__link:hover {
-  background-color: var(--ifm-color-primary-darkest);
+  background-color: white;
   text-decoration: none;
-  color: var(--ifm-color-gray-900);
-}
-
-html[data-theme='dark'] .card {
-  background-color: #22272e;
-}
-
-html[data-theme='dark'] .card__link {
-  background-color: var(--ifm-color-primary-dark);
 }
 
 html[data-theme='dark'] .card__link:hover {
-  background-color: var(--ifm-color-primary-darkest);
-}
-
-html[data-theme='dark'] .card__link p {
-  color: var(--ifm-color-secondary);
-}
-
-html[data-theme='dark'] .card__header {
-  color: var(--ifm-color-secondary);
+  background-color: white;
 }
 
 .text__body {
@@ -231,9 +199,4 @@ html[data-theme='dark'] .card__header {
     white-space: normal;
   }
 }
-/* --ifm-h1-font-size: 2rem;
---ifm-h2-font-size: 1.5rem;
---ifm-h3-font-size: 1.25rem;
---ifm-h4-font-size: 1rem;
---ifm-h5-font-size: 0.875rem;
---ifm-h6-font-size: 0.85rem; */
+

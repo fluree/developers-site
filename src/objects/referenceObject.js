@@ -8,19 +8,19 @@ export const RefCardDetails = [
   {
     title: 'HTTP endpoints',
     description:
-      'Reference Docs on the HTTP endpoints exposed by the Fluree application',
+      'Reference documentation of the HTTP endpoints for managing and interacting with Fluree ',
     link: '/docs/reference/http/overview/',
   },
   {
     title: 'Clojure',
     description:
-      "Visit this section for docs on running the Fluree Clojure client; to be used in a Clojure app or via the REPL.",
+      "Visit this section for documentation on running the Fluree Clojure client, which be used in a Clojure app or via the REPL.",
     link: '/docs/reference/clojure/',
   },
   {
     title: 'Crypto',
     description:
-      'Documentation for the crypto libraries used by Fluree made public by the Fluree team.',
+      'Documentation for the crypto libraries used by Fluree and made available to the public by the Fluree team.',
     link: '/docs/reference/crypto/',
   },
 ];

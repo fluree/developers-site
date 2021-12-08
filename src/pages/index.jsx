@@ -5,6 +5,7 @@ import clsx from 'clsx';
 import React from 'react';
 import HomepageCards from '../components/home_card/HomepageCards';
 import styles from './index.module.css';
+import RightArrowSvg from '../../static/img/RightArrow.svg';
 
 const HomepageHeader = () => {
 	const { siteConfig } = useDocusaurusContext();
@@ -47,8 +48,7 @@ const HomepageHeader = () => {
 								<div className="card__footer">
 									<div className="button button--link button--block">
 										Learn More 
-										<img 
-											src="../../static/img/Vector.svg" alt="right arrow icon" />
+										<RightArrowSvg alt="right arrow icon"/>
 									</div>
 								</div>
 
@@ -79,8 +79,7 @@ const HomepageHeader = () => {
 								<div className="card__footer">
 									<div className="button button--link button--block">
 										Learn More 
-										<img 
-											src="../../static/img/Vector.svg" alt="right arrow icon" />
+										<RightArrowSvg alt="right arrow icon"/>
 									</div>
 								</div>
 

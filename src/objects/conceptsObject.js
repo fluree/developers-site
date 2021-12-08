@@ -2,7 +2,7 @@ export const ConceptCardDetails = [
   {
     title: 'Network Infrastructure',
     description:
-      "Query peers and clients, transactor groups, and consensus algorithms. The Infrastructure of a Fluree deployment.",
+      "Query peers, query clients, transactor groups, and consensus algorithms. This section goes into detail about the infrastructure of a Fluree deployment.",
     link: '/docs/concepts/infrastructure/network_infrastructure/',
   },
   {
@@ -14,7 +14,7 @@ export const ConceptCardDetails = [
   {
     title: 'Smart Functions',
     description:
-      'SmartFunctions are foundational. They are key to setting and enforcing permissions as well as several types of data validation in Fluree',
+      'SmartFunctions are foundational. They are key to setting and enforcing permissions as well as several types of data validation in Fluree.',
     link: '/docs/concepts/smart-functions/smartfunctions/',
   },
   {
