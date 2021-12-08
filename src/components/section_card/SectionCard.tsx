@@ -17,7 +17,7 @@ export default function SectionCard({ title, description, link }: CardDetails): 
 			</div>
 			<div className="card__footer">
 				<div className="button button--link button--block">
-					<RightArrowSvg alt="right arrow icon" className="right-arrow__large"/>
+					<RightArrowSvg alt="right arrow icon" />
 				</div>
 			</div>
 		</Link>

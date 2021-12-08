@@ -156,10 +156,6 @@ html[data-theme='dark'] .docusaurus-highlight-code-line {
   }
 }
 
-.right-arrow__large {
-  width: 50px;
-}
-
 .card__link:hover {
   background-color: white;
   text-decoration: none;
