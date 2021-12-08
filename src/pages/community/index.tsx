@@ -2,7 +2,7 @@ import React from 'react';
 import Layout from '@theme/Layout';
 import CommunityCard from './CommunityCard';
 import styles from './Community.module.css';
-import { CardDetails } from '../../components/CardDetails.interface';
+import { CardDetails } from '../../components/section_card/CardDetails.interface';
 
 const CommunityList: CardDetails[] = [
   {

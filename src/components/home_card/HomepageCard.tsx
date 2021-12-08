@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from '@docusaurus/Link';
-import { CardDetails } from '../CardDetails.interface';
+import { CardDetails } from '../section_card/CardDetails.interface';
 import styles from './HomepageCard.module.css';
 
 export default function HomepageCard({ title, description, link, Svg }: CardDetails
@@ -8,7 +8,7 @@ export default function HomepageCard({ title, description, link, Svg }: CardDeta
     return (
         <article className="col col--4">
             <div
-                className="card"
+                className="card padding--md"
                 style={{
                     backgroundColor: '#F1FBFF',
                 }}>

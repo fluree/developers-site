@@ -1,4 +1,4 @@
-import { CardDetails } from "../CardDetails.interface";
+import { CardDetails } from "../section_card/CardDetails.interface";
 
 export const HomepageCardDetails: CardDetails[] = [
     {
