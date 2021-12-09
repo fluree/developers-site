@@ -28,7 +28,7 @@ module.exports = {
 		},
 		announcementBar: {
 			id: 'new dev site announcement bar',
-			content: 'Welcome to the new fluree developers site! Try the new search feature to find what you are looking for. You can visit <a href="https://docsarchive.flur.ee" target="_blank">docsarchive.flur.ee</a> for older versions of fluree docs',
+			content: 'Welcome to the new fluree developers site! Try the new search feature to find what you are looking for. You can visit <a href="https://docsarchive.flur.ee" target="_blank">docsarchive.flur.ee</a> for older versions of fluree docs.',
 			backgroundColor: '#4B56A5',
 			textColor: 'white',
 			isCloseable: true
