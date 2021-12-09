@@ -13,7 +13,7 @@ const HomepageHeader = () => {
 		<header className={clsx('hero hero--primary', styles.heroBanner)}>
 			<div className="container">
 				<h1 className="hero__title">Fluree for Developers</h1>
-				<p 
+				<p
 					className="hero__subtitle"
 					style={{
 						marginBottom: '50px'
@@ -26,12 +26,8 @@ const HomepageHeader = () => {
 
 						<div className="col col--4 col--offset-2">
 							<Link
-								className="card shadow--tl padding--md"
-								to="/docs/overview/getting_started"
-								style={{
-									backgroundColor: 'rgb(245, 246, 248)'
-								}}
-							>
+								className={clsx('card shadow--tl padding--md', styles.bannerCard)}
+								to="/docs/overview/getting_started">
 
 								<div className="card__header">
 									<h3 className={styles.cardHeader}>
@@ -41,28 +37,23 @@ const HomepageHeader = () => {
 
 								<div className="card__body">
 									<p className={styles.cardBody}>
-										Dive right in to Fluree with our no-frills guide to get up and running  as quickly as possible.
+										Dive in to Fluree with our no-frills guide to get up and running  as quickly as possible.
 									</p>
 								</div>
 
 								<div className="card__footer">
 									<div className="button button--link button--block">
-										Learn More 
-										<RightArrowSvg alt="right arrow icon"/>
+										Learn More
+										<RightArrowSvg alt="right arrow icon" />
 									</div>
 								</div>
-
 							</Link>
 						</div>
 
 						<div className="col col--4 ">
 							<Link
-								className="card shadow--tl padding--md"
-								to="/docs/overview/fluree_basics"
-								style={{
-									backgroundColor: 'rgb(245, 246, 248)'
-								}}
-							>
+								className={clsx('card shadow--tl padding--md', styles.bannerCard)}
+								to="/docs/overview/fluree_basics">
 
 								<div className="card__header">
 									<h3 className={styles.cardHeader}>
@@ -72,17 +63,16 @@ const HomepageHeader = () => {
 
 								<div className="card__body">
 									<p className={styles.cardBody}>
-										Start here for the in-depth guide to learn how to install, operate, and work with data in Fluree.
+										Visit our in-depth guide on how to install and operate Fluree, and working with data in Fluree.
 									</p>
 								</div>
 
 								<div className="card__footer">
 									<div className="button button--link button--block">
-										Learn More 
-										<RightArrowSvg alt="right arrow icon"/>
+										Learn More
+										<RightArrowSvg alt="right arrow icon" />
 									</div>
 								</div>
-
 							</Link>
 						</div>
 

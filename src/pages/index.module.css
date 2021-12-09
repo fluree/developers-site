@@ -11,10 +11,26 @@
   }
 }
 
+@media screen and (max-width: 996px) {
+  .bannerCard {
+    margin-bottom: 1rem;
+  }
+}
+
+@media screen and (min-width: 997px) {
+  .bannerCard {
+    height: 275px;
+  }
+}
+
+.bannerCard {
+  background-color: var(--ifm-color-gray-100);
+}
+
 .cardHeader {
-  color: var(--ifm-color-gray-900)
+  color: var(--ifm-color-gray-900);
 }
 
 .cardBody {
-  color: var(--ifm-color-gray-700)
+  color: var(--ifm-color-gray-700);
 }
