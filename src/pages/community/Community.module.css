@@ -17,13 +17,12 @@ article {
   
   .communityCard {
     min-height: 3rem;
+
   }
 }
 
 .communityCard {
   border-radius: var(--ifm-global-radius);
-  padding-top: .7rem;
-  padding-left: 1rem;
   min-height: 1rem;
   text-decoration: none;
   color: var(--ifm-navbar-link-color);;
@@ -42,7 +41,6 @@ html[data-theme='dark'] .communityCard:hover {
 }
 
 .communitySvg {
-  max-height: 6rem;
-  max-width: 6rem;
+  margin-left: 10px;
 }
 
