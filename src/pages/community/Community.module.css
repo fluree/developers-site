@@ -5,8 +5,11 @@ article {
 .community {
   display: flex;
   align-items: center;
-  padding: 2rem 3rem;
-  width: 100%;
+  padding: 2rem 3rem 0rem 3rem;
+}
+
+.container {
+  width: 100vw;
 }
 
 @media screen and (max-width: 996px) {
@@ -14,7 +17,7 @@ article {
     margin-top: 0px;
     margin-bottom: 0px;
   }
-  
+
   .communityCard {
     min-height: 3rem;
   }
@@ -22,11 +25,9 @@ article {
 
 .communityCard {
   border-radius: var(--ifm-global-radius);
-  padding-top: .7rem;
-  padding-left: 1rem;
   min-height: 1rem;
   text-decoration: none;
-  color: var(--ifm-navbar-link-color);;
+  color: var(--ifm-navbar-link-color);
 }
 
 html[data-theme='light'] .communityCard:hover {
@@ -42,7 +43,17 @@ html[data-theme='dark'] .communityCard:hover {
 }
 
 .communitySvg {
-  max-height: 6rem;
-  max-width: 6rem;
+  margin-left: 10px;
 }
 
+.bannerYeti {
+  width: 6rem;  
+}
+
+.bannerText {
+  margin-top: 1rem;
+}
+
+.bannerP {
+  font-size: 20px;
+}
