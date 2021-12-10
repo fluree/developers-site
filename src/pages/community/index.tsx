@@ -3,7 +3,8 @@ import Layout from '@theme/Layout';
 import CommunityCard from './CommunityCard';
 import styles from './Community.module.css';
 import { CardDetails } from '../../components/section_card/CardDetails.interface';
-import SupportBanner from '../../components/mdx_partials/_SupportBanner.mdx'
+import SupportBanner from '../../components/support_banner/SupportBanner';
+
 
 const CommunityList: CardDetails[] = [
   {
@@ -52,9 +53,10 @@ export default function Community(): JSX.Element {
       </div>
       <section 
         style={{
-          margin: '0px 1rem 6rem 1rem'
-        }}>
-        <SupportBanner discussionBoard="community discussion board" supportEmail="support@flur.ee." />
+          margin: '0px 3rem 6rem 3rem'
+        }}
+      >
+        <SupportBanner />
       </section>
     </Layout>
   );
