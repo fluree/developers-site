@@ -3,6 +3,7 @@ import Layout from '@theme/Layout';
 import CommunityCard from './CommunityCard';
 import styles from './Community.module.css';
 import { CardDetails } from '../../components/section_card/CardDetails.interface';
+import SupportBanner from '../../components/mdx_partials/_SupportBanner.mdx'
 
 const CommunityList: CardDetails[] = [
   {
@@ -40,15 +41,21 @@ const CommunityList: CardDetails[] = [
 export default function Community(): JSX.Element {
   return (
     <Layout>
-      <main className={styles.community}>
-        <div className="container">
+      <div className={styles.community}>
+        <section className="container">
           <section className="row">
             {CommunityList.map((props, idx) => (
               <CommunityCard key={idx} {...props} />
             ))}
           </section>
-        </div>
-      </main>
+        </section>
+      </div>
+      <section 
+        style={{
+          margin: '0px 1rem 6rem 1rem'
+        }}>
+        <SupportBanner discussionBoard="community discussion board" supportEmail="support@flur.ee." />
+      </section>
     </Layout>
   );
 }
