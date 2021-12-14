@@ -30,6 +30,10 @@ article {
   color: var(--ifm-navbar-link-color);
 }
 
+.communityCard_h2 {
+  color: var(--ifm-color-primary);
+}
+
 html[data-theme='light'] .communityCard:hover {
   background-color: var(--ifm-color-secondary-light);
 }
