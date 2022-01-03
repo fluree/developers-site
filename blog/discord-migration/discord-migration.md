@@ -1,21 +1,26 @@
 ---
 title: Fluree is moving to Discord
 tags: [fluree, Discord, community]
-description: Fluree is moving to discord; why, when, what-for
+description: Fluree is moving our community to Discord
 ---
 
-> Discord has better features for members and tooling for community management.  
-> We believe it will be a better platform for the fluree community.
+> The fluree community has seen substantial growth over the last year.
+> With the velocity of growth and goals we have for the community,
+> we need a new home.
 
-I don't think it's a stretch to say that most of us are familiar with (or at least
-are aware of) Discord at this point. It is becoming an ever present tool for
-communication on the web. We have had the fluree community on Slack for the past
+Discord has become an ever present tool for communication on the web.
+We have had the fluree community on Slack for the past
 several years and for the most part have been satisfied by the platform. However,
-as we've grown, we've begun to run up against some of the short-comings of
-Slack as a platform for an open community. Once, we started to investigate alternatives,
-we found Discord to be an extremely attractive option. We did some preliminary testing
-and found it to be even better we than we had hoped. So, we decided to migrate
-our community.
+over the past year we've seen significant growth and as we've grown, we've begun
+to run up against some of the short-comings of Slack as a platform for an open
+community. As we imagined where we want to take the fluree community going
+forward, it became harder and harder to see how we could modify our vision
+to fit within the bounds of Slack. We needed a new platform for our community.
+After investigating the alternatives, we found Discord to be an extremely
+attractive option with all of the benefits provided by Slack and a ton of new
+functionality to boot. We did some preliminary testing and found it to be even
+better we than we had hoped.
+So, we made the tough decision to begin to migrate our community.
 
 ## Why Migrate?
 
@@ -57,7 +62,11 @@ in Slack is practically non-existent. Discord provides functionality which will 
 us to create the spaces we want and ensure a welcoming, helpful, and safe environment
 for all who choose to join us.
 
-We are extremely excited for this new chapter for the fluree community. Keep an
-eye on our [Twitter](https://twitter.com/flureepbc) or in our Slack in the coming
-weeks for an invite.
-We are all looking forward to seeing you there!
+We are extremely excited for this new chapter for the fluree community. There
+will be bumps in the road as we migrate such a large community, but we are
+confident this is the right choice, both for the long term health of the fluree
+community and for fluree itself.
+Keep an eye on our [Twitter](https://twitter.com/flureepbc) in the coming weeks
+for an invite link to the new Discord server. If you're in the fluree Slack, we'll
+be making an annoucement there as well.
+We look forward to seeing you in the new Fluree Discord!
