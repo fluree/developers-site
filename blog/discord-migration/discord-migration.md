@@ -7,8 +7,8 @@ description: Fluree is moving to discord; why, when, what-for
 > Discord has better features for members and tooling for community management.  
 > We believe it will be a better platform for the fluree community.
 
-I don't think its a stretch to say that most of us are familiar with (or at least
-are aware of) Discord at this point. It is becomming an ever present tool for
+I don't think it's a stretch to say that most of us are familiar with (or at least
+are aware of) Discord at this point. It is becoming an ever present tool for
 communication on the web. We have had the fluree community on Slack for the past
 several years and for the most part have been satisfied by the platform. However,
 as we've grown, we've begun to run up against some of the short-comings of
@@ -43,7 +43,7 @@ planned for this year!)
 Another issue with Slack for an open community is the way channels are structured.
 Channels are hidden by default and require a member to be invited or actively search
 for new channels to join. This is not the way Discord is set up. All channels are
-public by default, which creates an easy path to exploration and cross-polination,
+public by default, which creates an easy path to exploration and cross-pollination,
 with good tooling for a user to manage notifications per channel or category as desired.
 We think this is better for an open community and are excited for this change in
 structure.
@@ -53,10 +53,11 @@ structure.
 Fortunately, this hasn't been an issue thus far, but moderation is a _vital_ part
 of community management. Creating a safe space for all of our community members
 is extremely important to the fluree team and frankly the tooling for moderation
-in Slack is practically non-existent. Discord provides functionlity which will enable
+in Slack is practically non-existent. Discord provides functionality which will enable
 us to create the spaces we want and ensure a welcoming, helpful, and safe environment
 for all who choose to join us.
 
 We are extremely excited for this new chapter for the fluree community. Keep an
-eye on our social media or in our Slack in the coming weeks for an invite.
+eye on our [Twitter](https://twitter.com/flureepbc) or in our Slack in the coming
+weeks for an invite.
 We are all looking forward to seeing you there!
