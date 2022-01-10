@@ -149,7 +149,7 @@ Headers: None
 Body: {"server": "GHI"}
 ```
 
-If a majority of the network agrees to the configuration change, `GHI` will then have a preset amount of rounds to sync up it's network state - for example, it's RAFT state. By default, the new server has 10 rounds, but if you changed `fdb-group-catch-up-rounds` in your properties, it could be more or less. Once its RAFT state is synced, the server will attempt to copy all block and index files from the other servers in the network. This should all happen in one try, however, if you have a large number of blocks or ledgers, you may need to shut down and restart `GHI` (please do let us know if you encounter issues. This is a beta feature, and any feedback on your experiences is helpful. You can reach us on Slack or at `support@flur.ee`).
+If a majority of the network agrees to the configuration change, `GHI` will then have a preset amount of rounds to sync up it's network state - for example, it's RAFT state. By default, the new server has 10 rounds, but if you changed `fdb-group-catch-up-rounds` in your properties, it could be more or less. Once its RAFT state is synced, the server will attempt to copy all block and index files from the other servers in the network. This should all happen in one try, however, if you have a large number of blocks or ledgers, you may need to shut down and restart `GHI` (please do let us know if you encounter issues. This is a beta feature, and any feedback on your experiences is helpful. You can reach us on Discord or at `support@flur.ee`).
 
 Only one configuration change can be in process at once. Attempts to issues simultaneous additions or removals will be rejected.
 

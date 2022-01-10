@@ -20,19 +20,19 @@ const CommunityList: CardDetails[] = [
     link: 'https://github.com/fluree'
   },
   {
+    title: 'Discord',
+    svgPath: '/img/community_icons/Discord-Logo.svg',
+    description: 'Join community members and Fluree teammates for realtime chat and events. ',
+    link: 'https://discord.gg/pgjsvPa9Nm'
+  },
+  {
     title: 'Reddit',
     svgPath: '/img/community_icons/Reddit_icon.svg',
     description: 'Ask and answer questions on the r/Fluree page!',
     link: 'https://www.reddit.com/r/Fluree/'
   },
   {
-    title: 'Slack',
-    svgPath: '/img/community_icons/slack_icon.svg',
-    description: 'Join community members and Fluree teammates for realtime chat. ',
-    link: 'https://launchpass.com/flureedb'
-  },
-  {
-    title: 'Support',
+    title: 'Email',
     svgPath: '/img/community_icons/Email_icon.svg',
     description: 'Contact our support team to get in-depth help running Fluree. ',
     link: 'mailto:support@flur.ee'

@@ -69,5 +69,5 @@ If you can't find the answers you are looking for in our documentation, please
 let us know! We are always looking to improve the quality of support we provide.
 
 You can [post to our Github Discussions](https://github.com/fluree/db/discussions) to ask questions
-and get involved with our community, [join our Slack](https://launchpass.com/flureedb), or send an
+and get involved with our community, [join our Discord](https://discord.gg/pgjsvPa9Nm), or send an
 email to[support@flur.ee](mailto:support@flur.ee).

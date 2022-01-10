@@ -12,7 +12,7 @@ export default function CommunityCard(
             <Link to={link} className={styles.communityCard} >
                 <img
                     className={styles.communitySvg}
-                    alt={title}
+                    alt={`${title} Icon`}
                     src={useBaseUrl(`${svgPath}`)}
                 />
                 <div className="text--left padding-top--sm padding-right--lg padding-bottom--lg padding-left--sm">

@@ -141,8 +141,8 @@ module.exports = {
 							href: 'https://github.com/fluree/db/discussions'
 						},
 						{
-							label: 'Slack',
-							href: 'https://launchpass.com/flureedb',
+							label: 'Discord',
+							href: 'https://discord.gg/pgjsvPa9Nm',
 						},
 						{
 							label: 'Twitter',

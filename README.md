@@ -57,6 +57,6 @@ include a title and description along with any other useful files.
 
 ## Connect with the Fluree Team
 
-To connect directly with the Fluree team join our [Slack](https://launchpass.com/flureedb).
+To connect directly with the Fluree team join our [Discord](https://discord.gg/pgjsvPa9Nm).
 
 Visit our [Fluree](http://flur.ee/) website.
