@@ -131,17 +131,13 @@ the auth record that signs the transactions, not the default auth record
 
 The `/command` endpoint takes a map with two keys:
 
-| Key | Description                                                               |
-| --- | ------------------------------------------------------------------------- |
-| cmd | Stringified command map                                                   |
-| sig | (optional if `fdb-api-open` is true). ECDSA signature of the value of the |
-
-cmd key.
-multiTx | (optional). Array of txids that
-
-When submitting a transaction, the command map of type `tx` (transaction) needs
-to have the following keys in the following order. Documentation on command of
-type `new-db` and `default-key` is forthcoming.
+| Key | Description                                                                        |
+| --- | -----------------------------------------------------------------------------------|
+| cmd | Stringified command map                                                            |
+| sig | (optional if `fdb-api-open` is true). ECDSA signature of the value of the cmd key. |
+| multiTx | (optional). Array of txids that when submitting a transaction, the command map 
+of type `tx` (transaction) needs to have the following keys in the following order. 
+Documentation on command of type `new-db` and `default-key` is forthcoming.                 |
 
 ### Command Map {#command-map}
 
@@ -156,10 +152,10 @@ type `new-db` and `default-key` is forthcoming.
 | expire    | Epoch milliseconds after which point this transaction can no longer be submitted.                                                                                             |
 | txid-only | Boolean: if true, HTTP response returns only \_tx/id of attempted transaction; if false, returns a verbose description of the block (if successful) or the cause of rejection |
 
-deps | (optional, if no deps, simply exclude the key). An array of the `_tx/id`s
+| deps | (optional, if no deps, simply exclude the key). An array of the `_tx/id`s
 of any transactions this `tx` depends on. If any of the `_tx/id`s either do not
 exist in the ledger or resulted in failed transactions, then the command will
-not succeed.
+not succeed.            |
 
 #### Sig {#sig}
 
