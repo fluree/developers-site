@@ -150,9 +150,9 @@ Documentation on command of type `new-db` and `default-key` is forthcoming.     
 | fuel      | Max integer for the amount of fuel to use for this transaction                                                                                                                |
 | nonce     | Integer nonce, to ensure that the command map is unique.                                                                                                                      |
 | expire    | Epoch milliseconds after which point this transaction can no longer be submitted.                                                                                             |
-| txid-only | Boolean: if true, HTTP response returns only \_tx/id of attempted transaction; if false, returns a verbose description of the block (if successful) or the cause of rejection |
-
-| deps | (optional, if no deps, simply exclude the key). An array of the `_tx/id`s
+| txid-only | Boolean: if true, HTTP response returns only \_tx/id of attempted transaction; 
+if false, returns a verbose description of the block (if successful) or the cause of rejection |
+| deps      | (optional, if no deps, simply exclude the key). An array of the `_tx/id`s
 of any transactions this `tx` depends on. If any of the `_tx/id`s either do not
 exist in the ledger or resulted in failed transactions, then the command will
 not succeed.            |
