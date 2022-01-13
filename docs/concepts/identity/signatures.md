@@ -131,14 +131,11 @@ the auth record that signs the transactions, not the default auth record
 
 The `/command` endpoint takes a map with two keys:
 
-| Key     | Description                                                                        |
-| ------- | ---------------------------------------------------------------------------------- |
-| cmd     | Stringified command map                                                            |
-| sig     | (optional if `fdb-api-open` is true). ECDSA signature of the value of the cmd key. |
-| multiTx | (optional). Array of txids that when submitting a transaction, the command map     |
-
-of type `tx` (transaction) needs to have the following keys in the following order.
-Documentation on command of type `new-db` and `default-key` is forthcoming. |
+ Key     | Description                                                                                                                                                                                                                                    |
+| ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| cmd     | Stringified command map                                                                                                                                                                                                                        |
+| sig     | (optional if `fdb-api-open` is true). ECDSA signature of the value of the cmd key.                                                                                                                                                             |
+| multiTx | (optional). Array of txids that when submitting a transaction, the command map of type `tx` (transaction) needs to have the following keys in the following order. Documentation on command of type `new-db` and `default-key` is forthcoming. |
 
 ### Command Map {#command-map}
 
@@ -148,7 +145,7 @@ Documentation on command of type `new-db` and `default-key` is forthcoming. |
 | db        | `network/dbid`                                                                                                                                                                                                                                       |
 | tx        | The body of the transaction                                                                                                                                                                                                                          |
 | auth      | `_auth/id` of the auth                                                                                                                                                                                                                               |
-| fuel      | Max integer for the amount of fuel to use for this transaction                                                                                                                                                                                       |
+| fuel      | Max integer for the amount of **fuel** to use for this transaction                                                                                                                                                                                   |
 | nonce     | Integer nonce, to ensure that the command map is unique.                                                                                                                                                                                             |
 | expire    | Epoch milliseconds after which point this transaction can no longer be submitted.                                                                                                                                                                    |
 | txid-only | Boolean: if true, HTTP response returns only \_tx/id of attempted transaction; if false, returns a verbose description of the block (if successful) or the cause of rejection                                                                        |
