@@ -4,11 +4,11 @@ sidebar_position: 1
 
 # Basic Transaction
 
-Fluree allows you to specify transactions using FlureeQL, in a JSON array/vector syntax
+Fluree allows you to specify transactions using FlureeQL, a JSON array/vector syntax
 which contains subject maps to create, update, upsert or delete. The maximum transaction
 size is 10 MB.
 
-Transactions can also be done with GraphQL, for more information on on GraphQL transactions,
+Transactions can also be done with GraphQL, for more information on GraphQL transactions,
 reference the [GraphQL Transactions](/overview/query/graphql.md#transactions) section.
 
 ## Transact Keys {#transact-keys}

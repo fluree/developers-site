@@ -15,9 +15,9 @@ Different query types in this section should be issued to different API endpoint
 
 Subjects refer (join) to other subjects via any predicate that is of type `ref`. Every `ref` predicate relationship can be traversed, and can be done so in both directions -- forward and reverse.
 
-For a forward traversal example, note our predicate `chat/person` which is of type `ref` and refers to a person subject. When we select, `*` from `chat`, the results that return only show us the subject id from `chat/person`, they don't automatically crawl the graph to get more information about the `person`.
+For a forward traversal example, note our predicate `chat/person` which is of type `ref` and refers to a person subject. When we select `*` from `chat`, the results that return only show us the subject id from `chat/person`, they don't automatically crawl the graph to get more information about the `person`.
 
-In order to also include the person details, we add to our select cause with a sub-query within our original query. This new query would look like:
+In order to also include the person details, we add to our select clause with a sub-query within our original query. This new query would look like:
 
 <Tabs
   groupId="fluree-lang-options"
@@ -93,7 +93,7 @@ In order to also include the person details, we add to our select cause with a s
 </TabItem>
 </Tabs>
 
-In FlureeQl, this syntax is declarative and looks like the shape of the data you want returned. These sub-queries can continue to whatever depth of the graph you'd like, and for as many ref predicates as you like. Circular graph references are fine and are embraced.
+In FlureeQL, this syntax is declarative and looks like the shape of the data you want returned. These sub-queries can continue to whatever depth of the graph you'd like, and for as many ref predicates as you like. Circular graph references are fine and are embraced.
 
 ## Crawling the Graph, in Reverse
 
@@ -170,7 +170,7 @@ curl \
 </TabItem>
 </Tabs>
 
-In FlureeQl and SPARQL, note the underscore `_` that was added to `chat/person`, making it instead `chat/_person`. In GraphQL, note `chat_Via_person`.
+In FlureeQL and SPARQL, note the underscore `_` that was added to `chat/person`, making it instead `chat/_person`. In GraphQL, note `chat_Via_person`.
 
 This special syntax indicates the same relationship, but in reverse. You'll now see all people, with all their chat messages.
 
@@ -257,7 +257,7 @@ curl \
 
 When issuing a FlureeQL query, you can specify granular options that only apply to certain predicates. To do this, you need to use sub-select options.
 
-A basic select clause may look something like this: `["handle", "fullName"]`. Sub-select options are specified when any of those predicate names are turned into a map with the predicate name as the key, and an array as the value. For example, to give "handle" sub-select options, it would look like: `[ { "options": [OPTIONS HERE] }, "fullName"]`.
+A basic select clause may look something like this: `["handle", "fullName"]`. Sub-select options are specified when any of those predicate names are turned into a map with the predicate name as the key, and an array as the value. For example, to give "handle" sub-select options, it would look like: `[ { "handle": [OPTIONS HERE] }, "fullName"]`.
 
 You have already seen a similar pattern with ref predicates. For example in the FlureeQL statement: `"select": ["*", {"chat/_person": ["*"]}]`. The nested select, or sub-select, statement is `{"chat/_person": ["*"]}`.
 

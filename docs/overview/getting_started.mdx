@@ -65,7 +65,7 @@ Creating a ledger and any other interaction with Fluree can happen either throug
 
 ## AdminUI {#admin-ui}
 
-There is a built-in user interface which we call it the **AdminUI**. You can access the AdminUI by navigating to `localhost:[port]`, once you have an instance of Fluree running on your machine. If you did not change the port or IP address, it will be on [`localhost:8090`](http://localhost:8090/).
+There is a built-in user interface which we call the **AdminUI**. You can access the AdminUI by navigating to `localhost:[port]`, once you have an instance of Fluree running on your machine. If you did not change the port or IP address, it will be on [`localhost:8090`](http://localhost:8090/).
 
 You can see all the code for the AdminUI in our [AdminUI repo on Github](https://github.com/fluree/fluree-admin-ui).
 
@@ -98,7 +98,7 @@ There are few things which Fluree will write to the file system when a fresh led
 ### data/ {#data}
 
 The new `data` directory contains 2 directories; group/ and ledger/.
-Group/ contains all fo the raft files as well as a directory of raft snapshots. Ledger/ contains all of your ledger indexes. These are organized within sub-directories which are named according to the names you gave your ledgers in Fluree. This data directory can be moved or copied to a different Fluree instance directory and run from the directory if you choose. This is a good option if you want to use a newer Fluree version, but keep all of your previous ledgers.
+Group/ contains all of the raft files as well as a directory of raft snapshots. Ledger/ contains all of your ledger indexes. These are organized within sub-directories which are named according to the names you gave your ledgers in Fluree. This data directory can be moved or copied to a different Fluree instance directory and run from the directory if you choose. This is a good option if you want to use a newer Fluree version, but keep all of your previous ledgers.
 
 ### default_private_key.txt {#default_private_key}
 
