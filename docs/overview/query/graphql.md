@@ -10,7 +10,7 @@ If you don't already know and want to use GraphQL, we definitely recommend using
 
 Because FlureeQL is a JSON format, this allows queries to be more easily composed within your programming code and is built to support Fluree's advanced capabilities like graph recursion.
 
-All GraphQL queries and transactions can issued should be run through the [`/graphql`](/reference/http/examples.md#graphql) endpoint.
+All GraphQL queries and transactions should be run through the [`/graphql`](/reference/http/examples.md#graphql) endpoint.
 
 ## Queries {#queries}
 

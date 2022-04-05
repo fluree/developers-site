@@ -80,7 +80,7 @@ Additional Modifiers
 
 If using `groupBy`, aggregates are applied only to the values within that group.
 
-If select a mixture of aggregate and non-aggregate variables, the results of the aggregate are returned alongside every non-aggregate value. To see what this looks like, try issuing the below query against the basic schema.
+If selecting a mixture of aggregate and non-aggregate variables, the results of the aggregate are returned alongside every non-aggregate value. To see what this looks like, try issuing the below query against the basic schema.
 
 ```json
 {
@@ -91,7 +91,7 @@ If select a mixture of aggregate and non-aggregate variables, the results of the
 
 ## Where Key {#where-key}
 
-The value for the where key is an array- we'll call it a where-array in this section. Each item of the where-array acts to filter data, bind variables, or perform other complex data actions. The order of the items in a where-array is extremeley important, as each item is resolved sequentially.
+The value for the where key is an array- we'll call it a where-array in this section. Each item of the where-array acts to filter data, bind variables, or perform other complex data actions. The order of the items in a where-array is extremely important, as each item is resolved sequentially.
 
 A where-array can be comprised of any of the following items in any order:
 
@@ -99,11 +99,11 @@ A where-array can be comprised of any of the following items in any order:
 | --------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | [three-tuple](#three-tuple)                               | Looks for flakes (pieces of data) in the ledger that match a provided pattern, and bind variables to the results.                                                                                                                         |
 | [four-tuple](#four-tuple)                                 | Same as a simple three-tuple, except the first item in the tuple specifies a particular data source, such as Wikidata, another ledger, or the current ledger at a specific in time.                                                       |
-| [two-tuple variable binding](#two-tuple-variable-binding) | Bind a variable to a value, including to a calculated aggregate values. These variables can be used subsequent where-array items.                                                                                                         |
+| [two-tuple variable binding](#two-tuple-variable-binding) | Bind a variable to a value, including to a calculated aggregate value. These variables can be used in subsequent where-array items.                                                                                                         |
 | [binding map](#binding-map)                               | Serves the same function as a two-tuple variable binding, except the syntax is different.                                                                                                                                                 |
 | [optional map](#optional-map)                             | Like, three-tuples, looks for flakes (pieces of data) that match a provided pattern. However, when joining the results of this map with the queries existing resultset, will simply bind `null` if there is no match (a left outer join). |
 | [union map](#union-map)                                   | The two parts of a union map are outer joined.                                                                                                                                                                                            |
-| [filter map](#filter-map)                                 | Filters the results up that point in the query.                                                                                                                                                                                           |
+| [filter map](#filter-map)                                 | Filters the results up to that point in the query.                                                                                                                                                                                           |
 
 Each where-array item is resolved and then inner joined with the resultset up until that point. See the [Analytical Query](/concepts/analytical-queries/inner-joins-in-fluree.mdx) guide for more information.
 
@@ -111,7 +111,7 @@ Each where-array item is resolved and then inner joined with the resultset up un
 
 Every piece of data in Fluree can be expressed as `[ subject, predicate, object ]`. To read more about this, see the [Subject-Predicate-Object Model](/concepts/technical_overview.md#subject-predicate-object-model) in the `Technical Overview` document.
 
-When you include a three-tuple in your where-array, you specify the values for one or two parts of the tuple. The parts you don't specify are either `null` or variables. For example, in this three tuple, `["?person", "person/handle", "?handle"]`, only the predicate `person/handle` is specified. The subject `?person` and the object `?handle` are variables. You can also look-up a data for a known id using the pattern ["?s", "_id", 351843720888320].
+When you include a three-tuple in your where-array, you specify the values for one or two parts of the tuple. The parts you don't specify are either `null` or variables. For example, in this three tuple, `["?person", "person/handle", "?handle"]`, only the predicate `person/handle` is specified. The subject `?person` and the object `?handle` are variables. You can also look-up a data for a known id using the pattern `["?s", "_id", 351843720888320]`.
 
 The below table lists all the possible values for each part of the three tuple.
 
@@ -156,7 +156,7 @@ For example, the three tuple `["?person", "person/handle", "?handle"]` is equiva
 
 ### Two Tuple Variable Binding {#two-tuple-variable-binding}
 
-You can bind a variable to an aggregate value. As mentioned above, where-array items are resolved in the order in which they appear. This means that aggregates do NOT take into account the where-array item that come later in the array. To bind an intermediate aggregate value, just specify a two-tuple with the first item as a variable and the second item as the aggregate function. For example `["?maxBlock", "#(max ?bNum)"]`.
+You can bind a variable to an aggregate value. As mentioned above, where-array items are resolved in the order in which they appear. This means that aggregates do NOT take into account the where-array item that comes later in the array. To bind an intermediate aggregate value, just specify a two-tuple with the first item as a variable and the second item as the aggregate function. For example `["?maxBlock", "#(max ?bNum)"]`.
 
 Valid functions are the same as the ones listed in [Valid Aggregate Functions](#valid-aggregate-functions). You can also use the aggregate modifier (`distinct`) explained in the valid aggregate section (you can use the `as` modifier, but this will simply by ignored). A function must be preceded with a `#`.
 
@@ -370,7 +370,7 @@ WHERE {
 
 ### Optional Map {#optional-map}
 
-An optional map is map where the key is `optional`, and the value is an array of where-items (you can include any where-items within an optional map, such as three-tuples, four-tuples, two-tuple variable bindings, other optional maps, etc).
+An optional map is a map where the key is `optional`, and the value is an array of where-items (you can include any where-items within an optional map, such as three-tuples, four-tuples, two-tuple variable bindings, other optional maps, etc).
 
 For example:
 
@@ -413,7 +413,7 @@ A union map takes an two-item array as a value. The two items in this array is i
 
 ### Filter Map {#filter-map}
 
-A filter map has the key `filter`, and the value is an number of filter functions. Currently, all filter functions should be written using Clojure. The following are all of the accepted filter functions:
+A filter map has the key `filter`, and the value is a number of filter functions. Currently, all filter functions should be written using Clojure. The following are all of the accepted filter functions:
 
 | Name       | Example                                         | Explanation                                                                                                                           |
 | ---------- | ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |

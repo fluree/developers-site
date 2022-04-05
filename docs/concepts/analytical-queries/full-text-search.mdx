@@ -85,7 +85,7 @@ Transactions not supported in SPARQL.
 </Tabs>
 
 A predicate can be removed from the full-text search index (and thus from full-text
-search capability) at any time by simply setting `fullText` to false:
+search capability) at any time by simply setting `fullText` to false.
 
 <Tabs
   groupId="fluree-lang-options"
@@ -161,7 +161,7 @@ as a service call. For example:
 {
     "select": "?person",
     "where": [
-        ["?person", "fullText:person/fullName"", "doe"]
+        ["?person", "fullText:person/fullName", "doe"]
     ]
 }
 ```

@@ -23,8 +23,7 @@ To learn more about how to use smart functions, see the
 | `code`     | `string`         | Actual ledger code. Can just be `true` or `false`.        |
 | `doc`      | `string`         | A docstring for this function.                            |
 | `language` | `string`         | Programming language used (not yet implemented, currently only Clojure supported) |
-`spec` | `JSON` | (not yet implemented) Optional spec for parameters. Spec should
-be structured as a map, parameter names are keys and the respective spec is the value.
+`spec` | `JSON` | (not yet implemented) Optional spec for parameters. Spec should be structured as a map, parameter names are keys and the respective spec is the value.
 
 ## Universal Functions For `_fn/code` {#universal-functions}
 
@@ -86,7 +85,7 @@ in the hosted version of Fluree.
 | `uuid`          | none                                                                       | `(uuid)`                                                                                                                                    | Returns a UUID. Can be used in predicates of type `string` or `uuid`                                                                                                                                                                                                                                                                                                                                                              | 10                                      |
 | `cas`           | `compare-val new-val`                                                      | `(cas "hi" "hi again")`                                                                                                                     | For use as transaction function, if current db value does not equal `compare-val`, the transaction will fail otherwise it will get updated with `new-val`                                                                                                                                                                                                                                                                         | 20                                      |
 
-ledger function can also be combined, for instance `(inc (max 1.5 2 3))` will return 4.
+Ledger functions can also be combined, for instance `(inc (max 1.5 2 3))` will return 4.
 
 When you write a smart function and add it to the `_fn` collection, you can use the
 name of that smart function in other smart functions.

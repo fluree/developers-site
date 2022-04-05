@@ -42,7 +42,7 @@ The value of the select key is always an array. For the purposes of this section
 
 1. An `*`:
 
-   An `*` indicates "select all predicates" using the default options. An `*` may be used in conjunction with other select-array items, especially when the user wants to specify particular options. There are examples of this latter in the list.
+   An `*` indicates "select all predicates" using the default options. An `*` may be used in conjunction with other select-array items, especially when the user wants to specify particular options. There are examples of this later in the list.
 
    ```json
    {
@@ -55,7 +55,7 @@ The value of the select key is always an array. For the purposes of this section
 
    If a predicate is name-spaced, that means that the collection name is included in the predicate name, like `chat/message`. The way that the predicate is specified in the select-array is how it will be returned in the results.
 
-   Predicates do not have to be namespaced. The collection can often (but not always be inferred). For example, if selecting from the `chat` collection or a specific chat subject, `instant` is inferred to be `chat/instant`. However, with Fluree's flexible schema a predicate in any collection can be attached to any subject.
+   Predicates do not have to be namespaced. The collection can often (but not always) be inferred. For example, if selecting from the `chat` collection or a specific chat subject, `instant` is inferred to be `chat/instant`. However, with Fluree's flexible schema a predicate in any collection can be attached to any subject.
 
    ```json
    {
@@ -216,7 +216,7 @@ Where clause statements are simple expressions like `chat/instant > 151743700000
 
 The second item in the expression is any of the following operations `>`, `>=`, `<`, `<=`, `!=`, and `=`.
 
-The and the third item is a value. String values must be surrounded by escaped quotation marks, i.e. `person/handle != \"jdoe\"`.
+The third item is a value. String values must be surrounded by escaped quotation marks, i.e. `person/handle != \"jdoe\"`.
 
 Note: You are able to filter string values with `>`, `>=`, `<`, `<=`, although we do not recommend it. The results may not be sorted in an expected way, and we do not support any type of customizeable alphabetization.
 
