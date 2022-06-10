@@ -81,13 +81,13 @@ module.exports = {
           position: "left",
           label: "Concepts",
         },
-        // {
-        //   to: "/nexus",
-        //   docId: "nexus/getting-started",
-        //   type: "doc",
-        //   position: "left",
-        //   label: "Nexus",
-        // },
+        {
+          to: "/nexus",
+          docId: "nexus/getting-started",
+          type: "doc",
+          position: "left",
+          label: "Nexus",
+        },
         {
           to: "community/",
           label: "Community",
