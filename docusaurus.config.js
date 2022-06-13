@@ -83,7 +83,7 @@ module.exports = {
         },
         {
           to: "/nexus",
-          docId: "nexus/getting-started",
+          docId: "nexus/getting_started",
           type: "doc",
           position: "left",
           label: "Nexus",
@@ -138,6 +138,10 @@ module.exports = {
             {
               label: "Dev Hub",
               to: "/docs/overview/demos/developer-hub",
+            },
+            {
+              label: "Nexus",
+              to: "/docs/nexus/getting_started",
             },
           ],
         },
