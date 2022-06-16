@@ -1,5 +1,154 @@
 ---
-sidebar_label: Programmactically connecting to Nexus
+title: Programmactically Connecting to Nexus
+sidebar_label: Programmactically Connecting to Nexus
 keywords:
   - connect
+  - connecting to Nexus
 ---
+
+Before you can proceed connecting an application to nexus you will two key details that are found in the [connect page](https://developers.flur.ee/docs/dataset-pages/connect/) of your dataset.
+You will need the `dataset ID` found in the `connection string`, and an `API Key`.
+
+There are 2 flows for interacting with your Fluree Nexus dataset.
+
+1. You can either sign your queries and transactions programmatically as detailing in the [developer portal](https://developers.flur.ee/docs/concepts/identity/signatures/#signed-queries).
+2. You can generate an API Key on the Connect page and add that key to your headers as a Bearer Token.
+
+The following Javascript examples show what using an API Key would look like:
+
+## Query
+
+```javascript
+import fetch from "node-fetch";
+
+const query = { select: ["*"], from: "_collection" };
+const networkName = "fluree";
+const datasetID = `<DATASET-ID-HERE>`;
+const APIKey = `<API-KEY-HERE>`;
+
+const url = `https://api.dev.flur.ee/fdb/${networkName}/${datasetID}`;
+const headers = {
+  "Content-Type": "application/json",
+  Authorization: `Bearer ${APIKey}`,
+};
+
+try {
+  const resp = await fetch(`${url}/query`, {
+    method: "POST",
+    headers: headers,
+    body: JSON.stringify(query),
+  });
+  const data = await resp.json();
+  console.log(data);
+} catch (error) {
+  console.error(error);
+}
+```
+
+## Transact
+
+```javascript
+import fetch from "node-fetch";
+
+const transaction = [{ _id: "_user", username: "trey" }];
+const networkName = "fluree";
+const datasetID = `<DATASET-ID-HERE>`;
+const APIKey = `<API-KEY-HERE>`;
+
+const url = `https://api.dev.flur.ee/fdb/${networkName}/${datasetID}`;
+const headers = {
+  "Content-Type": "application/json",
+  Authorization: `Bearer ${APIKey}`,
+};
+
+try {
+  const resp = await fetch(`${url}/transact`, {
+    method: "POST",
+    headers: headers,
+    body: JSON.stringify(transaction),
+  });
+  const data = await resp.json();
+  console.log(data);
+} catch (error) {
+  console.error(error);
+}
+```
+
+## Clojure
+
+Fluree Nexus can also be used via the HTTP API from Clojure, but feel free to utilize our client library [Clojure API](https://developers.flur.ee/docs/reference/clojure/) that is a bit more Clojure-friendly.
+
+Before using the Fluree db library to connect to nexus, first register an auth id in your dataset. If you already have an account id and corresponding keypair, feel free to use that, otherwise you can use the `fluree.crypto` library to create one.
+
+```clojure
+(require '[fluree.crypto :as crypto])
+
+(def keypair (crypto/generate-key-pair))
+(def auth-id (crypto/account-id-from-private (:private keypair))
+```
+
+Then copy the auth-id string and transact a new auth on the Transact tab of your Nexus dataset.
+
+```json
+[
+  {
+    "_id": "_auth",
+    "_auth/id": "<AUTH_ID_FROM_PRIVATE_KEY>",
+    "_auth/roles": [["_role/name", "root"]],
+    "_auth/doc": "<helpful doc here>"
+  }
+]
+```
+
+Now we can connect using the Clojure library.
+
+```clojure
+(require '[fluree.db.api :as fdb])
+
+(def nexus-conn (fdb/connect "https://api.dev.flur.ee:443" {:private (:private keypair)}))
+;; extract your ledger name from the connection string on the `connect` tab of your dataset
+;; "https://api.dev.flur.ee/fdb/fluree/<some-long-number>"
+(def ledger "fluree/<some-long-number>")
+
+;; now you are free to use the fdb api
+
+;; transact:
+@(fdb/transact nexus-conn
+               ledger
+               [{:_id :_collection
+                 :_collection/name "test",
+                 :_collection/doc "A test collection for whatever",
+                 :_collection/version "1"}]
+               {:private-key (:private keypair)})
+
+;; query:
+@(fdb/query (fdb/db nexus-conn ledger) {:from "_collection" :select ["*"]})
+```
+
+## HTTP and Clojure
+
+```clojure
+(require '[org.httpkit.client :as http])
+(require '[cheshire.core :as json])
+
+(def connection-string "<GET_THIS_FROM_CONNECT_TAB_OF_NEXUS_DATASET>")
+(def api-key "<GENERATED_ON_CONNECT_TAB_OF_NEXUS_DATASET>")
+
+;; query
+(let [resp @(http/request {:url (str connection-string "/query")
+                           :method :post
+                           :headers {"Content-Type" "application/json"
+                                     "Authorization" (str "Bearer " api-key)}
+                           :body (json/stringify {:select ["*"] :from "_collection"})})]
+    (-> resp :body json/parse))
+
+
+;; transact
+(let [resp @(http/request {:url "https://api.dev.flur.ee/fdb/fluree/<DATASET ID HERE>/transact"
+                           :method :post
+                           :headers {"Content-Type" "application/json"
+                                     "Authorization" (str "Bearer " api-key)}
+                           :body (json/stringify [{:_id :_user
+                                                   :_user/username "dan"}])})]
+    (-> resp :body json/parse))
+```
