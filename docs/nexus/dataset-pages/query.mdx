@@ -8,3 +8,43 @@ The query page is where you can query the data in your dataset. You can toggle b
 You also have the ability to save your queries, to the right of the query editor you can locate recent queries and saved queries.
 
 ![querying gif](/img/querying.gif)
+
+## Charts and Tables
+
+The query page also offers different ways of visualizing your data, though there are certain key properties your queries will need to include.
+
+For viewing data in the chart view you will be to use the `groupBy` property in your analytical query. This will allow the UI to determine which fields to group together in order to make a chart.
+
+An example would be the following query:
+
+```json
+{
+  "select": [
+    "(count ?car)"
+  ],
+  "where": [
+    [
+      "?car",
+      "cars/model_make_id",
+      "?model"
+    ]
+  ]
+  "groupBy": "?model"
+}
+```
+
+For viewing data in the table view you will need to use variable binding on more than one variable, for more information visit [tuple variable bindings](https://developers.flur.ee/docs/overview/query/analytical_query/#two-tuple-variable-binding).
+The bindings will then be formatted into the headers of your table.
+
+An example would be the following query:
+
+```json
+{
+  "select": ["?name", "?type"],
+  "where": [
+    ["?predicate", "rdf:type", "_predicate"],
+    ["?predicate", "_predicate/name", "?name"],
+    ["?predicate", "_predicate/type", "?type"]
+  ]
+}
+```
