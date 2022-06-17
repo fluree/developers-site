@@ -106,13 +106,13 @@ module.exports = {
         },
       ],
     },
-    
+
     // Config for collapsing sidebar
     docs: {
       sidebar: {
-        hideable: true
-      }
-    } ,
+        hideable: true,
+      },
+    },
     footer: {
       style: "dark",
       logo: {
