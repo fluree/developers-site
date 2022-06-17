@@ -21,10 +21,10 @@ module.exports = {
       defaultMode: "light",
 
       // remove default sun-moon icons for dark mode switch
-      switchConfig: {
-        darkIcon: " ",
-        lightIcon: " ",
-      },
+      // switchConfig: {
+      //   darkIcon: " ",
+      //   lightIcon: " ",
+      // },
     },
     announcementBar: {
       id: "new dev site announcement bar",
@@ -106,8 +106,13 @@ module.exports = {
         },
       ],
     },
+    
     // Config for collapsing sidebar
-    hideableSidebar: true,
+    docs: {
+      sidebar: {
+        hideable: true
+      }
+    } ,
     footer: {
       style: "dark",
       logo: {
@@ -200,12 +205,6 @@ module.exports = {
       appId: "N3MISUHO2H",
       indexName: "prod_dev_site",
     },
-    gtag: {
-      // You can also use your "G-" Measurement ID here.
-      trackingID: "G-XDLKYE388T",
-      // Optional fields.
-      anonymizeIP: true, // Should IPs be anonymized?
-    },
     baseUrlIssueBanner: false, // Defaults to `true`
   },
   presets: [
@@ -216,6 +215,12 @@ module.exports = {
         docs: {
           sidebarPath: require.resolve("./sidebars.js"),
           editUrl: "https://github.com/fluree/developers-site/edit/main/",
+        },
+        gtag: {
+          // You can also use your "G-" Measurement ID here.
+          trackingID: "G-XDLKYE388T",
+          // Optional fields.
+          anonymizeIP: true, // Should IPs be anonymized?
         },
         // blog: {
         //   showReadingTime: true,
