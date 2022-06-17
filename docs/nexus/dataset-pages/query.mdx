@@ -48,3 +48,15 @@ An example would be the following query:
   ]
 }
 ```
+
+## Advanced Queries
+
+The Nexus app can determine what type of query you are making based on the clauses provided. Currently, in addition to standard & analytical queries, **block** and **history** queries are supported in FlureeQL.
+
+### Block Queries
+
+If a `block` clause is provided without a `select`, `selectOne`, `selectDistinct`, `from`, `where`, or `history` clause, a _block_ query will be attempted. [Click here for a more detailed look at block queries](/docs/guides/querying/query-advanced/1.md)
+
+### History Queries
+
+If a `history` clause is provided without a `select`, `selectOne`, `selectDistinct`, `from`, or `where` clause, a _history_ query will be attempted. [Click here for a more detailed look at history queries](/docs/guides/querying/query-advanced/3.md)
