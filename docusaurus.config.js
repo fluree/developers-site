@@ -139,7 +139,7 @@ module.exports = {
             },
             {
               label: "Guides",
-              to: "docs/guides/guides",
+              to: "docs/guides",
             },
             {
               label: "Tools",
