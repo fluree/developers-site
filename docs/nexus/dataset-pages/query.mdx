@@ -1,0 +1,62 @@
+---
+title: Query Page
+sidebar_label: Query
+sidebar_position: 2
+---
+
+The query page is where you can query the data in your dataset. You can toggle between using `FlureeQL`, `GraphQL`, `SPARQL`, or `SQL`.
+You also have the ability to save your queries, to the right of the query editor you can locate recent queries and saved queries.
+
+![querying gif](/img/querying.gif)
+
+## Charts and Tables
+
+The query page also offers different ways of visualizing your data, though there are certain key properties your queries will need to include.
+
+For viewing data in the chart view you will be to use the `groupBy` property in your analytical query. This will allow the UI to determine which fields to group together in order to make a chart.
+
+An example would be the following query:
+
+```json
+{
+  "select": [
+    "(count ?car)"
+  ],
+  "where": [
+    [
+      "?car",
+      "cars/model_make_id",
+      "?model"
+    ]
+  ]
+  "groupBy": "?model"
+}
+```
+
+For viewing data in the table view you will need to use variable binding on more than one variable, for more information visit [tuple variable bindings](https://developers.flur.ee/docs/overview/query/analytical_query/#two-tuple-variable-binding).
+The bindings will then be formatted into the headers of your table.
+
+An example would be the following query:
+
+```json
+{
+  "select": ["?name", "?type"],
+  "where": [
+    ["?predicate", "rdf:type", "_predicate"],
+    ["?predicate", "_predicate/name", "?name"],
+    ["?predicate", "_predicate/type", "?type"]
+  ]
+}
+```
+
+## Advanced Queries
+
+The Nexus app can determine what type of query you are making based on the clauses provided. Currently, in addition to standard & analytical queries, **block** and **history** queries are supported in FlureeQL.
+
+### Block Queries
+
+If a `block` clause is provided without a `select`, `selectOne`, `selectDistinct`, `from`, `where`, or `history` clause, a _block_ query will be attempted. [Click here for a more detailed look at block queries](/docs/guides/querying/query-advanced/1.md)
+
+### History Queries
+
+If a `history` clause is provided without a `select`, `selectOne`, `selectDistinct`, `from`, or `where` clause, a _history_ query will be attempted. [Click here for a more detailed look at history queries](/docs/guides/querying/query-advanced/3.md)
