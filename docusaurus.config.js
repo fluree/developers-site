@@ -99,6 +99,11 @@ module.exports = {
 
         // Navbar links - right aligned
         {
+          href: 'https://flur.ee/try',
+          label: 'Nexus Beta Sign-Up',
+          position: 'right',
+        },
+        {
           href: "https://github.com/fluree/developers-site",
           className: "header-github-link",
           position: "right",
