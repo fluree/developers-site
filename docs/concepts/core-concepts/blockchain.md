@@ -102,7 +102,7 @@ gives Fluree operators the flexibiltiy to migrate from a network protectected en
 run these methods simultaneously.
 
 Fluree is also in progress of natively supporting DIDs - W3C decentralized identifiers
-that can originate from different sources (differnt DID methods), or Fluree can
+that can originate from different sources (different DID methods), or Fluree can
 act as a DID repository itself.
 
 Regardless of the method of proving identity, validating that identity is the first
@@ -175,7 +175,7 @@ the ledger. They can be utilized for both permissioning and enforcing query (vie
 permissions as well as transaction (write) permissions - however in the context
 of this blockchain discussion the focus here is on trasactions/writes.
 
-SmartFunctions are custom business rules, even custom function that might be leveraged
+SmartFunctions are custom business rules, even custom functions that might be leveraged
 across business rules, stored as data (code as data) in the ledger itself. While
 Fluree always uses the latest version of SmartFunctions to enforce the ledger, every
 historical version is available and all provenance trackable. A SmartFunction can

@@ -104,7 +104,7 @@ a node from a balanced tree (b-tree). The root and all branch nodes point to the
 children nodes and so on down to the leaf nodes, which contain the raw Flake data.
 New Flakes from transactions get pushed into the the leaf nodes where they belong
 (based on sort order, so `spot`, `psot`, `post`, and `opst`) and nodes will split
-if the exceed 100kb. Because new Flakes will likely end up in a minimal set of leaf
+if they exceed 100kb. Because new Flakes will likely end up in a minimal set of leaf
 nodes, only those nodes are updated, along with their parents (branch nodes), meaning
 any index node not affected by new data remains untouched and can also remain active
 in any upstream cache.

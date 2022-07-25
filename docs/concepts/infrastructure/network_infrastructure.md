@@ -26,7 +26,7 @@ In Fluree, the role of a server handling queries (query server) is separated fro
 
 ## Query Peer (Not Currently Implemented) {#query-peer-not-currently-implemented}
 
-To meet slightly different goals, we have two flavors of query engines. The main type we call a query 'peer', and like any good peer it has direct access to every ledger, current and historical, and every upate on-hand. It will comes in Java, Clojure flavors, and Javascript and can will be able to run as an independent server exposing a REST and GraphQL APIs for your apps to utilize.
+To meet slightly different goals, we have two flavors of query engines. The main type we call a query 'peer', and like any good peer it has direct access to every ledger, current and historical, and every upate on-hand. It will come in Java, Clojure flavors, and Javascript and can will be able to run as an independent server exposing a REST and GraphQL APIs for your apps to utilize.
 
 ## Query Client {#query-client}
 
