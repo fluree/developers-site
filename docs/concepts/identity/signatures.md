@@ -43,9 +43,7 @@ Fluree also has a user interface to help users submit signed queries and transac
 
 This can be found in the user interface by navigating to `/flureeql`. By
 clicking the "sign" button, you can toggle whether or not there is an option to
-sign queries and transactions. Note that the hosted version of Fluree does not
-allow you to sign queries, because `fdb-api-open` is set to true for all hosted
-accounts, so a signed query would be ignored regardless.
+sign queries and transactions. 
 
 ## Signed Queries {#signed-queries}
 
