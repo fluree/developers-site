@@ -24,7 +24,7 @@ Being a graph database, the special type of ref (reference) is core to traversin
 
 When a new ledger is created, the first transaction, issued automatically by Fluree, initializes system collections and predicates.
 
-These system collections govern various ledger behaviors, such as schema, user rules, smart functions. Each of these system collections and their predicates is discussed in its respective section. The below list compiles all of the built-in collections in one place, and you can follow the link to any particular section for more information.
+These system collections govern various ledger behaviors, such as schema, user rules, and smart functions. Each of these system collections and their predicates is discussed in its respective section. The below list compiles all of the built-in collections in one place, and you can follow the link to any particular section for more information.
 
 ## All System Collections {#all-system-collections}
 

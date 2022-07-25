@@ -68,7 +68,7 @@ The basic building block of WHERE clause is the triple. To start, let's take a l
 Triple-Part | Example | Explanation
 -- | -- | --
 subject | `?person` | The subject is a variable: `?person`. We could have just as easily called this variable `?people` or `?elephant`- the name does not matter here.
-predicate | `fd:person/handle` | This predicate is comprised of a prefix, `fd:` and an predicate name `person/handle`. `fd:` stands for `Fluree` (see [sources](#sources) for more info).
+predicate | `fd:person/handle` | This predicate is comprised of a prefix, `fd:` and a predicate name `person/handle`. `fd:` stands for `Fluree` (see [sources](#sources) for more info).
 object | `jdoe` | We are looking for results where the subject can be anything, the predicate is `person/handle`, and the object is `jdoe`.
 
 We can combine this simple triple, `?person fd:person/handle "jdoe"` with additional triples, for example:

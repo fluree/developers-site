@@ -11,8 +11,7 @@ while providing redundancy.
 
 Decentralization expands decision making, and therefore trust around a ledger/db.
 It is important to note that proof of a ledger's integrity can be accomplished without
-decentralization. By integrity we mean identity around every transaction, tha
-t it
+decentralization. By integrity we mean identity around every transaction, that it
 hasn't been tampered with, and provenance for all data. To prove integrity, the
 external party or parties you want to offer such proof will need access to the
 ledger- something Fluree makes simple through permissioning. External parties can
