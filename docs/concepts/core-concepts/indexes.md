@@ -15,7 +15,7 @@ _This guide is a work in progress, additional details will be added._
 (+ optionally a Lucene index if full text searching is used). The [guide about
 Flakes](concepts/core-concepts/flakes.md) describes in more detail the anatomy of a
 Flake and how it is used, which can help greatly when understanding indexes. In
-summary, a Flake is a 6-tuple that contain a subject ID (`s`), precicate ID (`p`),
+summary, a Flake is a 6-tuple that contains a subject ID (`s`), predicate ID (`p`),
 object/value (`o`), a reference to the transaction/time it was created at (`t`),
 the boolean operation of adding or retracting the flake (`op`) and optional
 metadata (`m`).
