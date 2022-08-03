@@ -20,7 +20,7 @@ optional for most operations.
 | Key   | Type       | Description                                                                 |
 | ----- | ---------- | --------------------------------------------------------------------------- |
 | `_id` | subject id | Any subject id value which can include the numeric assigned permanent `_id` for a subject, any predicate marked as unique as a two-tuple, i.e. `["_user/username", "jdoe"]`, or a [temporary id](#temporary-ids) (for new entities). |
-`_action` | string | Optional (if it can be inferred). One of: `add`, `update`, `upsert` or `delete`. When using a temporary id, `add` is always inferred. When using an existing subject id, `update` is always inferred. `upsert` is inferred for new entities with a tempid if they include an predicate that was marked as `upsert`.
+`_action` | string | Optional (if it can be inferred). One of: `add`, `update`, `upsert` or `delete`. When using a temporary id, `add` is always inferred. When using an existing subject id, `update` is always inferred. `upsert` is inferred for new entities with a tempid if they include a predicate that was marked as `upsert`.
 
 ## Temporary Ids {#temporary-ids}
 

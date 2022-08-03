@@ -49,7 +49,7 @@ Predicate | Type | Description
 `_predicate/type` | `tag` | (required) Data type of this predicate such as `string`, `integer`, or a reference (join) to another subject - `ref`. See table below for valid data types.
 `_predicate/unique` | `boolean` | (optional) True if this predicate acts as a primary key.  Unique predicates can be used for idsubject (as the `_id` value in a transaction or query).  (Default false.)
 `_predicate/multi` | `boolean` | (optional) If this is a multi-cardinality predicate (holds multiple values), set to `true`. (Default false.)
-`_predicate/index` | `boolean` | (optional) True if an index should be created on this predicate. An predicate marked as `unique` automatically will generate an index and will ignore the value specified here. (Default false.)
+`_predicate/index` | `boolean` | (optional) True if an index should be created on this predicate. A predicate marked as `unique` automatically will generate an index and will ignore the value specified here. (Default false.)
 `_predicate/upsert` | `boolean` | (optional) Only applicable to predicates marked as `unique`. If a new subject transaction using this predicate resolves to an existing subject, update that subject. By default the transaction will throw an exception if a conflict with a `unique` predicate exists.
 `_predicate/noHistory` | `boolean` | (optional) By default, all history is kept. If you wish to turn this off for a certain subject, set this flag to true. Queries, regardless of time travel, will always show the current value.
 `_predicate/component` | `boolean` | (optional) For type 'ref' predicates only. Mark true if this predicate refers to an subject which only exists as part of the parent subject. If true, and the parent subject is deleted, the subject referenced by this predicate will also be deleted automatically. (Default false.)
@@ -59,7 +59,7 @@ Predicate | Type | Description
 `_predicate/txSpec` | [`ref`] | (optional)  A multi-cardinality list of `ref`s, which reference entities in the `_fn` collection. This predicate allows you to set specifications for all of the flakes pertaining to a certain predicate. To learn more, visit the Predicate Tx Specs section in the Fluree Guides.
 `_predicate/txSpecDoc` | `string` | (optional) Optional docstring to describe the txSpecs. Is thrown when any txSpec fails.
 `_predicate/restrictCollection` | `string` | (optional) Only applicable to predicates of `ref` (reference) types. It will restrict references to only be allowed from the specified collection.
-`_predicate/restrictTag` | `boolean` | (optional) Only applicable to predicates of type `tag`. If true, a tag, which corresponds to this predicate object must exist before adding predicate-object pair.
+`_predicate/restrictTag` | `boolean` | (optional) Only applicable to predicates of type `tag`. If true, a tag, which corresponds to this predicate object, must exist before adding predicate-object pair.
 `_predicate/encrypted` | `boolean` | (Not in production yet, optional) Expects the value to come in as an encrypted string. Type checking will be disabled, and ledger functions won't be permitted on this value.
 `_predicate/fullText` | `boolean` | (optional) If true, full text search enabled on this ledger. By default, the language for a Fluree ledger is set to English. You can change the default language in [_setting collection](/overview/schema/settings.md).
 

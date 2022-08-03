@@ -67,7 +67,7 @@ These Flakes can be represented in a spreadsheet format as follows:
 | 88   |         |         |            |        |         |        | ACME Inc |
 
 Here we see some relationships in the `follows` and `worksFor` columns. John follows
-Jane, and works for ACME Inc. Ultimately Flakes,while represented here as both a
+Jane, and works for ACME Inc. Ultimately Flakes, while represented here as both a
 list/set and a rectangle/spreadsheet, are made available as a high performing graph.
 
 Cells with no values are considered 'sparse' meaning they consume no disk space unlike
@@ -101,7 +101,7 @@ metadata for a timestamp, hash, or identity that transacted it, or querying info
 about the current (or previous) schema Fluree is using to enforce data consistency.
 
 In the Flake format, the subject ID (`s`) is a long integer and can be thought of
-as therow number in the giant spreadsheet analogy. Predicate IDs (`p`), and
+as the row number in the giant spreadsheet analogy. Predicate IDs (`p`), and
 transaction/time (`t`) are also subjects themselves, so their values in a Flake
 are pointers to the respective subject that contain additional information about
 them. Object values (`o`) can hold scalar values according to the defined schema
@@ -140,7 +140,7 @@ In addition to `s`, `p`, and `o`, Fluree adds:
 - The `op` is a boolean value that represents assertions and retractions across
   time. RDF triples have no notion of time - they represent a set of "facts" - which
   inheritly represent a single moment (time) of truth. Fluree's time travel requires
-  us to know data that used to be true, but not longer is as of a moment in time.
+  us to know data that used to be true, but no longer is as of a moment in time.
   A Flake where `op` is equal to `false` in a ledger means it is a fact that used
   to be true, but no longer is. A `true` value for `op` means it is a newly asserted
   fact as of that moment in time (represented by the Flake's `t` value).
@@ -180,7 +180,7 @@ many queries. Therefore, any Subject Identity can be used to refer to a subject.
 
 A Subject Identity is an unambiguous way to refer to a specifc subject within Fluree,
 This can always be done with a subject id if you know it, but alternatively you can
-use any or any predicate defined as unique (`unique: true`) along with the corresponding
+use any predicate defined as unique (`unique: true`) along with the corresponding
 unique value in the form of a two-tuple.
 
 For example, if we have the following 4 Flakes that are about a subject we'll call
@@ -247,7 +247,7 @@ possible in distributed systems.
 
 Because we want to transport as few index chunks as possible upstream to satisfy
 query needs, it then makes sense that if similar data is grouped together we will
-achievethis in common (but not all) circumstances. For example, queries to get recent
+achieve this in common (but not all) circumstances. For example, queries to get recent
 data about an invoice are likely to be followed by another query about another recent
 invoice. If all the data for the most recent invoices sits in a single index chunk,
 we might be able to move just one 100kb index segment in-memory upstream and satisfy
