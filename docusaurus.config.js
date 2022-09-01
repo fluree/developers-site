@@ -41,7 +41,7 @@ module.exports = {
       logo: {
         alt: "Fluree Yeti Logo",
         src: "img/fluree-logo@3x.png",
-        srcDark: "img/White-Horizontal.svg",
+        srcDark: "img/fluree-logo@3x-white.png",
         href: "https://flur.ee",
       },
 
@@ -122,7 +122,7 @@ module.exports = {
       style: "dark",
       logo: {
         alt: "Fluree Yeti Logo",
-        src: "img/White-Horizontal.svg",
+        src: "img/fluree-logo@3x-white.png",
         href: "https://flur.ee",
       },
       copyright: `
