@@ -40,8 +40,8 @@ module.exports = {
       // Main logo which links to fluree marketing site
       logo: {
         alt: "Fluree Yeti Logo",
-        src: "img/Dark-Horizontal.svg",
-        srcDark: "img/White-Horizontal.svg",
+        src: "img/fluree-logo@3x.png",
+        srcDark: "img/fluree-logo@3x-white.png",
         href: "https://flur.ee",
       },
 
@@ -99,9 +99,9 @@ module.exports = {
 
         // Navbar links - right aligned
         {
-          href: 'https://flur.ee/try',
-          label: 'Nexus Beta Sign-Up',
-          position: 'right',
+          href: "https://flur.ee/try",
+          label: "Nexus Beta Sign-Up",
+          position: "right",
         },
         {
           href: "https://github.com/fluree/developers-site",
@@ -122,7 +122,7 @@ module.exports = {
       style: "dark",
       logo: {
         alt: "Fluree Yeti Logo",
-        src: "img/White-Horizontal.svg",
+        src: "img/fluree-logo@3x-white.png",
         href: "https://flur.ee",
       },
       copyright: `

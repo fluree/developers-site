@@ -5,7 +5,7 @@
  * work well for content-centric websites.
  */
 @import url("https://fonts.googleapis.com/css?family=Open+Sans");
-
+@import url("https://rsms.me/inter/inter.css");
 /* You can override the default Infima variables here. */
 :root {
   /* Color */
@@ -30,34 +30,41 @@
 h1 {
   font-size: 36px;
   font-weight: 700;
+  font-family: Inter;
 }
 
 h2 {
   font-size: 24px;
   font-weight: 700;
+  font-family: Inter;
 }
 
 h3 {
-  font-size: 20px;
-  font-weight: 600;
+  font-size: 24px;
+  font-weight: 900;
+  font-family: Inter;
 }
 
 h4 {
   font-size: 18px;
   font-weight: 600;
+  font-family: Inter;
 }
 
 h5 {
   font-size: 16px;
   font-weight: 600;
+  font-family: Inter;
 }
 
 h6 {
   font-size: 16px;
+  font-family: Inter;
 }
 
 p {
   font-size: 16px;
+  font-family: Inter;
 }
 
 .navbar {
@@ -79,8 +86,8 @@ p {
   align-self: center;
   color: var(--ifm-color-primary);
   padding-right: 0.6rem;
-  padding-left: 0.8rem;
-  padding-bottom: 0.5rem;
+  padding-left: 0.2rem;
+  padding-bottom: 0.4rem;
   font-weight: 600;
   font-size: 1.2rem;
 }

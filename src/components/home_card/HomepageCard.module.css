@@ -6,26 +6,31 @@
 }
 #homepageH2 {
   text-align: center;
+  font-family: Inter;
 }
 
 #homepageAside {
   text-align: center;
-  color: var(--ifm-color-gray-600);
+  font-family: Inter;
+  color: var(--ifm-color-gray-900);
+}
+
+html[data-theme="dark"] #homepageAside {
+  color: var(--ifm-color-white);
 }
 
 .svgContainer {
   background-color: var(--ifm-color-primary);
   border-radius: 5px;
-  height: 2rem;
-  width: 2rem;
-  display: flex;
-  justify-content: center;
+  height: 2.25rem;
+  width: 2.25rem;
 }
 
 .avatarSvg {
   color: white;
-  height: 1.5rem;
-  width: 1.5rem;
+  height: "90%";
+  width: "90%";
+  margin: 0 auto;
 }
 
 .sectionContainer {
@@ -33,23 +38,23 @@
 }
 
 .cardContainer {
-    background-color: #F1FBFF;
+  background-color: #f1fbff;
 }
 
 @media screen and (max-width: 996px) {
-    .cardContainer {
-      margin-bottom: 1rem;
-      height: 212px;
-    }
-    #homepageAside {
-        margin-bottom: 1.5rem;
-    }
+  .cardContainer {
+    margin-bottom: 1rem;
+    height: 212px;
+  }
+  #homepageAside {
+    margin-bottom: 1.5rem;
+  }
 }
 
-@media screen  {
-    .cardContainer {
-      height: 250px;
-    }
+@media screen {
+  .cardContainer {
+    height: 250px;
+  }
 }
 
 .cardContainer:hover {
@@ -58,4 +63,5 @@
 
 .card__text {
   text-decoration: none;
+  font-family: Inter;
 }
