@@ -2,7 +2,7 @@ import { CardDetails } from "../section_card/CardDetails.interface";
 
 export const HomepageCardDetails: CardDetails[] = [
   {
-    title: "SmartFunctions",
+    title: "Smart Functions",
     description: "Work through lessons on SmartFunctions and how to use them.",
     link: "/docs/guides/advanced/smart-functions/1",
     Svg: require("../../../static/img/landing-page-icons/icon-cap-gown.svg")

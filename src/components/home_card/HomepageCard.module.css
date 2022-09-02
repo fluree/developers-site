@@ -6,11 +6,13 @@
 }
 #homepageH2 {
   text-align: center;
+  font-family: Inter;
 }
 
 #homepageAside {
   text-align: center;
-  color: var(--ifm-color-gray-600);
+  font-family: Inter;
+  color: var(--ifm-color-gray-900);
 }
 
 .svgContainer {
@@ -57,4 +59,5 @@
 
 .card__text {
   text-decoration: none;
+  font-family: Inter;
 }
