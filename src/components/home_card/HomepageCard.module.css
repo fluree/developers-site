@@ -16,16 +16,15 @@
 .svgContainer {
   background-color: var(--ifm-color-primary);
   border-radius: 5px;
-  height: 2rem;
-  width: 2rem;
-  display: flex;
-  justify-content: center;
+  height: 2.25rem;
+  width: 2.25rem;
 }
 
 .avatarSvg {
   color: white;
-  height: 1.5rem;
-  width: 1.5rem;
+  height: "90%";
+  width: "90%";
+  margin: 0 auto;
 }
 
 .sectionContainer {
