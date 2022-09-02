@@ -21,12 +21,9 @@
     "@svgr/webpack": "^5.5.0",
     "clsx": "^1.1.1",
     "file-loader": "^6.2.0",
-    "node": "^16.17.0",
-    "npm": "^8.19.0",
     "prism-react-renderer": "^1.2.1",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
-    "stable": "^0.1.8",
     "url-loader": "^4.1.1"
   },
   "browserslist": {
