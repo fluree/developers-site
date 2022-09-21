@@ -1,16 +1,22 @@
 import React from "react";
+import type { FC } from "react";
+import type { IconProps } from ".";
 
-export const CodeIcon = () => {
+export const CodeIcon: FC<IconProps> = ({
+  height = 24,
+  width = 24,
+  color = "#00A0D1",
+}) => {
   return (
     <svg
-      width={36}
-      height={36}
+      width={width}
+      height={height}
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
       viewBox="0 0 24 24"
       strokeWidth="2"
-      stroke="#00A0D1"
-      style={{position: "relative", bottom: 8}}
+      stroke={color}
+      style={{ position: "relative", bottom: 8 }}
     >
       <path
         strokeLinecap="round"

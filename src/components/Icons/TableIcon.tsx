@@ -1,13 +1,19 @@
 import React from "react";
+import type { FC } from "react";
+import type { IconProps } from ".";
 
-export const TableIcon = () => {
+export const TableIcon: FC<IconProps> = ({
+  height = 24,
+  width = 24,
+  color = "#00A0D1",
+}) => {
   return (
     <svg
-      width={36}
-      height={36}
+      width={width}
+      height={height}
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 24 24"
-      fill="#00A0D1"
+      fill={color}
       style={{ position: "relative", bottom: 8 }}
     >
       <path

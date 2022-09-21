@@ -1,13 +1,19 @@
 import React from "react";
+import type { FC } from "react";
+import type { IconProps } from ".";
 
-export const ArrowPathIcon = () => {
+export const ArrowPathIcon: FC<IconProps> = ({
+  height = 24,
+  width = 24,
+  color = "#00A0D1",
+}) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 24 24"
-      fill="#00A0D1"
-      height={36}
-      width={36}
+      fill={color}
+      height={height}
+      width={width}
     >
       <path
         fillRule="evenodd"
