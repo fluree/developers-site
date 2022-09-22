@@ -4,12 +4,63 @@ sidebar_label: Query
 sidebar_position: 2
 ---
 
-The query page is where you can query the data in your dataset. You can toggle between using `FlureeQL`, `GraphQL`, `SPARQL`, or `SQL`.
+import {
+  CodeIcon,
+  TableIcon,
+  ClockIcon,
+  ArrowPathIcon,
+  ArrowsUpDownIcon,
+  SettingsIcon,
+  ArrowTopRightOnBoxIcon,
+} from "../../../src/components/Icons";
+
+Nexus now offers two ways to view your data: [UI mode](#ui-mode) and [editor mode](#editor-mode)
+
+## UI Mode
+
+<TableIcon height={36} width={36} />
+
+This mode will allow you to [select](#selection) data using a checkbox-driven interface. Retrieved data is [viewed](#view) as a paginated table. A [toolbar](#toolbar) is provided for features such as sorting and time-travel.
+
+### Selection
+
+The current ledger's schema will populate a list of collections on the left side of the page. Each collection can be expanded to view the predicates, each of which has a corresponding checkbox. Select the predicates that you would like to view, and your records will be displayed in the table to the right.
+
+![Collection and Predicate Selection UI](/img/nexus/query/query-ui.png)
+
+### View
+
+Requested data will be viewable in a simple table format, with column names based on the selected predicates.
+
+#### Special Predicate views
+
+##### `ref`
+
+`ref` predicates will display the `_id` of the referenced subject, along with a button <ArrowTopRightOnBoxIcon height={16} width={16} color="#111827" /> that can be clicked to display an expanded view of the record in a slideover view.
+
+##### `uri`
+
+Predicates with a `uri` type will provide interactive links based on the values provided by the subject.
+
+### Toolbar
+
+| Function         | Icon                                        | Description                               |
+| ---------------- | ------------------------------------------- | ----------------------------------------- |
+| Settings         | <SettingsIcon height={36} width={36} />     | Settings for the UI view                  |
+| Sort / Order By  | <ArrowsUpDownIcon height={36} width={36} /> | Sort records by predicate                 |
+| Time Travel      | <ClockIcon height={36} width={36} />        | Choose a point in time for your query     |
+| Refresh / Update | <ArrowPathIcon height={36} width={36} />    | Update data to latest block in the ledger |
+
+## Editor Mode
+
+<CodeIcon height={36} width={36} />
+
+The editor is where you can create custom queries using the provided text editor. You can toggle between using `FlureeQL`, `GraphQL`, `SPARQL`, or `SQL`.
 You also have the ability to save your queries, to the right of the query editor you can locate recent queries and saved queries.
 
-![querying gif](/img/querying.gif)
+<!-- ![querying gif](/img/querying.gif) -->
 
-## Charts and Tables
+<!--## Charts and Tables
 
 The query page also offers different ways of visualizing your data, though there are certain key properties your queries will need to include.
 
@@ -48,6 +99,7 @@ An example would be the following query:
   ]
 }
 ```
+-->
 
 ## Advanced Queries
 
