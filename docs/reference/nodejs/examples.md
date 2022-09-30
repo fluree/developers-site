@@ -158,7 +158,7 @@ let flureeDbConn = flureenjs.connect(flureeServerUrl);
 const ledger = "test/chat";
 const myCollectionName = "artist";
 flureenjs
-  .db_p(flureeDbConn, ledger)
+  .db(flureeDbConn, ledger)
   .then((myDb) => {
     flureenjs
       .collectionId(myDb, myCollectionName)
@@ -201,7 +201,7 @@ let flureeDbConn = flureenjs.connect(flureeServerUrl);
 const ledger = "test/chat";
 const myCollectionName = "artist";
 flureenjs
-  .db_p(flureeDbConn, ledger)
+  .db(flureeDbConn, ledger)
   .then((myDb) => {
     flureenjs
       .collectionFlakes(myDb, myCollectionName)
