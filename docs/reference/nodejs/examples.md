@@ -64,11 +64,11 @@ Accepts block event data from a `listen` event, mapping flakes to either the `:a
 
 ### Parameter(s) {#parameters-1}
 
-| Name               | Value                                                                   |
-| ------------------ | ----------------------------------------------------------------------- |
+| Name               | Value                                                    |
+| ------------------ | -------------------------------------------------------- |
 | `connection`       | a connection object created using the `connect` function |
-| `ledger`           | a string identifying both the network and ledger-id                     |
-| `block-event-data` | block event data provided via `listen`                                  |
+| `ledger`           | a string identifying both the network and ledger-id      |
+| `block-event-data` | block event data provided via `listen`                   |
 
 ### Return(s) {#returns-1}
 
@@ -99,7 +99,7 @@ FlureeQL [block queries](/overview/query/block_query.mdx) should be submitted to
 
 | Name         | Value                                                                                                                                                                                                       |
 | ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `connection` | a connection object created using the `connect` function                                                                                                                                     |
+| `connection` | a connection object created using the `connect` function                                                                                                                                                    |
 | `ledger`     | a string identifying both the network and ledger-id                                                                                                                                                         |
 | `query-map`  | a map of key/value pairs defining the query                                                                                                                                                                 |
 | `options`    | an optional map of key/value pairs. Options can also be included in the `query-map` using the `:opts` keyword. When using a closed-api, either the `:auth` or `:jwt` should be included in the options map. |
@@ -259,6 +259,7 @@ An example of using `connect` with `keep-alive-fn` option:
 
 ```javascript
 const flureenjs = require("@fluree/flureenjs");
+let flureeConnection;
 function flureeConnect(url, options) {
   if (!url) {
     throw "Unable to connect to Fluree: Missing url. ";
@@ -276,7 +277,7 @@ function flureeConnect(url, options) {
   flureenjs
     .connect(url, cOpts)
     .then((conn) => {
-      reConnection = conn;
+      flureeConnection = conn;
     })
     .catch((error) => {
       console.error("Error connecting to Fluree DB", error);
@@ -295,8 +296,8 @@ Close a connection to a ledger server/group.
 
 ### Parameter(s) {#parameters-5}
 
-| Name         | Value                                                                   |
-| ------------ | ----------------------------------------------------------------------- |
+| Name         | Value                                                    |
+| ------------ | -------------------------------------------------------- |
 | `connection` | a connection object created using the `connect` function |
 
 ### Returns {#returns-6}
@@ -319,11 +320,11 @@ Closes a listener associated with a given connection, ledger and key
 
 ### Parameter(s) {#parameters-6}
 
-| Name         | Value                                                                   |
-| ------------ | ----------------------------------------------------------------------- |
+| Name         | Value                                                    |
+| ------------ | -------------------------------------------------------- |
 | `connection` | a connection object created using the `connect` function |
-| `ledger`     | a string identifying both the network and ledger-id                     |
-| `key`        | same arbitrary key provided to the `listen` function                    |
+| `ledger`     | a string identifying both the network and ledger-id      |
+| `key`        | same arbitrary key provided to the `listen` function     |
 
 ### Returns {#returns-7}
 
@@ -350,10 +351,10 @@ Returns a queryable ledger from the connection. The ledger object represents a p
 
 ### Parameter(s) {#parameters-7}
 
-| Key          | Value                                                                   |
-| ------------ | ----------------------------------------------------------------------- |
+| Key          | Value                                                    |
+| ------------ | -------------------------------------------------------- |
 | `connection` | a connection object created using the `connect` function |
-| `ledger`     | a string identifying both the network and ledger-id                     |
+| `ledger`     | a string identifying both the network and ledger-id      |
 
 ### Returns {#returns-8}
 
@@ -387,10 +388,10 @@ Deletes a ledger, such that a user will no longer be able to query or transact a
 
 ### Parameter(s) {#parameters-8}
 
-| Name         | Value                                                                   |
-| ------------ | ----------------------------------------------------------------------- |
+| Name         | Value                                                    |
+| ------------ | -------------------------------------------------------- |
 | `connection` | a connection object created using the `connect` function |
-| `ledger`     | a string identifying both the network and ledger-id                     |
+| `ledger`     | a string identifying both the network and ledger-id      |
 
 ### Returns {#returns-9}
 
@@ -539,10 +540,10 @@ Returns promise with ledger's status as a map, including index, indexes, block, 
 
 ### Parameter(s) {#parameters-12}
 
-| Name         | Value                                                                   |
-| ------------ | ----------------------------------------------------------------------- |
+| Name         | Value                                                    |
+| ------------ | -------------------------------------------------------- |
 | `connection` | a connection object created using the `connect` function |
-| `ledger`     | a string identifying both the network and ledger-id                     |
+| `ledger`     | a string identifying both the network and ledger-id      |
 
 ### Returns {#returns-13}
 
@@ -573,8 +574,8 @@ Returns a promise that eventually contains a list of ledgers that the connected 
 
 ### Parameter(s) {#parameters-13}
 
-| Name         | Value                                                                   |
-| ------------ | ----------------------------------------------------------------------- |
+| Name         | Value                                                    |
+| ------------ | -------------------------------------------------------- |
 | `connection` | a connection object created using the `connect` function |
 
 ### Returns {#returns-14}
@@ -607,10 +608,10 @@ If ledger doesn't exist, will return an empty map.
 
 ### Parameter(s) {#parameters-14}
 
-| Name         | Value                                                                   |
-| ------------ | ----------------------------------------------------------------------- |
+| Name         | Value                                                    |
+| ------------ | -------------------------------------------------------- |
 | `connection` | a connection object created using the `connect` function |
-| `ledger`     | a string identifying both the network and ledger-id                     |
+| `ledger`     | a string identifying both the network and ledger-id      |
 
 ### Returns {#returns-15}
 
@@ -641,12 +642,12 @@ Listens to all events of a given ledger. Supply a ledger identity, any key, and 
 
 ### Parameter(s) {#parameters-15}
 
-| Name         | Value                                                                   |
-| ------------ | ----------------------------------------------------------------------- |
+| Name         | Value                                                    |
+| ------------ | -------------------------------------------------------- |
 | `connection` | a connection object created using the `connect` function |
-| `ledger`     | a string identifying both the network and ledger-id                     |
-| `key`        | any arbitrary id                                                        |
-| `callback`   | callback function/handler                                               |
+| `ledger`     | a string identifying both the network and ledger-id      |
+| `key`        | any arbitrary id                                         |
+| `callback`   | callback function/handler                                |
 
 ### Returns {#returns-16}
 
@@ -675,8 +676,8 @@ Return a list of listeners currently registered for each ledger along with their
 
 ### Parameter(s) {#parameters-16}
 
-| Name         | Value                                                                   |
-| ------------ | ----------------------------------------------------------------------- |
+| Name         | Value                                                    |
+| ------------ | -------------------------------------------------------- |
 | `connection` | a connection object created using the `connect` function |
 
 ### Returns {#returns-17}
@@ -701,12 +702,12 @@ Monitors a ledger for a specific transaction id included in a block. Returns a p
 
 ### Parameter(s) {#parameters-17}
 
-| Name             | Value                                                                   |
-| ---------------- | ----------------------------------------------------------------------- |
+| Name             | Value                                                    |
+| ---------------- | -------------------------------------------------------- |
 | `connection`     | a connection object created using the `connect` function |
-| `ledger`         | a string identifying both the network and ledger-id                     |
-| `transaction-id` | the transaction id returned by the `transact` function                  |
-| `timeout`        | timeout, in milliseconds                                                |
+| `ledger`         | a string identifying both the network and ledger-id      |
+| `transaction-id` | the transaction id returned by the `transact` function   |
+| `timeout`        | timeout, in milliseconds                                 |
 
 ### Returns {#returns-18}
 
@@ -786,11 +787,11 @@ Creates a new ledger given a "network/id". If the network specified does not exi
 
 ### Parameter(s) {#parameters-19}
 
-| Name         | Value                                                                   |
-| ------------ | ----------------------------------------------------------------------- |
+| Name         | Value                                                    |
+| ------------ | -------------------------------------------------------- |
 | `connection` | a connection object created using the `connect` function |
-| `ledger`     | a string identifying both the network and ledger-id                     |
-| `options`    | an optional map of key/value pairs                                      |
+| `ledger`     | a string identifying both the network and ledger-id      |
+| `options`    | an optional map of key/value pairs                       |
 
 #### Option(s) {#options}
 
@@ -853,7 +854,7 @@ Generates a password auth record for an existing role, or a user. The user may e
 
 | Name         | Value                                                                                                                                    |
 | ------------ | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| `connection` | a connection object created using the `connect` function                                                                  |
+| `connection` | a connection object created using the `connect` function                                                                                 |
 | `ledger`     | a string identifying both the network and ledger-id                                                                                      |
 | `password`   | plain-text password                                                                                                                      |
 | `user`       | a string value associated with the \_user/username predicate                                                                             |
@@ -892,14 +893,14 @@ Attempts to authenitcate against a ledger for a provided password and either a u
 
 ### Parameter(s) {#parameters-22}
 
-| Name         | Value                                                                   |
-| ------------ | ----------------------------------------------------------------------- |
-| `connection` | a connection object created using the `connect` function |
-| `ledger`     | a string identifying both the network and ledger-id                     |
-| `password`   | plain-text password                                                     |
-| `user`       | a string value associated with the \_user/username predicate            |
-| `auth`       | a string value associated with the \_auth/id predicate                  |
-| `expire`     | requested time to expire token, specified in milliseconds               |
+| Name         | Value                                                        |
+| ------------ | ------------------------------------------------------------ |
+| `connection` | a connection object created using the `connect` function     |
+| `ledger`     | a string identifying both the network and ledger-id          |
+| `password`   | plain-text password                                          |
+| `user`       | a string value associated with the \_user/username predicate |
+| `auth`       | a string value associated with the \_auth/id predicate       |
+| `expire`     | requested time to expire token, specified in milliseconds    |
 
 ### Returns {#returns-23}
 
@@ -1102,11 +1103,11 @@ Attempts to renew a valid token. If the token is not valid or has expired, an ex
 
 ### Parameter(s) {#parameters-28}
 
-| Name         | Value                                                                   |
-| ------------ | ----------------------------------------------------------------------- |
-| `connection` | a connection object created using the `connect` function |
-| `jwt`        | a valid JSON Web Token                                                  |
-| `expire`     | requested time to expire token, specified in milliseconds (optional)    |
+| Name         | Value                                                                |
+| ------------ | -------------------------------------------------------------------- |
+| `connection` | a connection object created using the `connect` function             |
+| `jwt`        | a valid JSON Web Token                                               |
+| `expire`     | requested time to expire token, specified in milliseconds (optional) |
 
 ### Returns {#returns-29}
 
@@ -1150,10 +1151,10 @@ For example,
 
 ### Parameter(s) {#parameters-29}
 
-| Name         | Value                                                                   |
-| ------------ | ----------------------------------------------------------------------- |
+| Name         | Value                                                    |
+| ------------ | -------------------------------------------------------- |
 | `connection` | a connection object created using the `connect` function |
-| `ledger`     | a string identifying both the network and ledger-id                     |
+| `ledger`     | a string identifying both the network and ledger-id      |
 
 ### Returns {#returns-30}
 
@@ -1217,10 +1218,10 @@ Returns actual session object, containing cache, for a given ledger.
 
 ### Parameter(s) {#parameters-31}
 
-| Name         | Value                                                                   |
-| ------------ | ----------------------------------------------------------------------- |
+| Name         | Value                                                    |
+| ------------ | -------------------------------------------------------- |
 | `connection` | a connection object created using the `connect` function |
-| `ledger`     | a string identifying both the network and ledger-id                     |
+| `ledger`     | a string identifying both the network and ledger-id      |
 
 ### Returns {#returns-32}
 
@@ -1250,7 +1251,7 @@ is either true, when request succeeded, or false, otherwise.
 
 | Name          | Value                                                                                                                                                                                                                                                                                                                                                                                     |
 | ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `connection`  | a connection object created using the `connect` function                                                                                                                                                                                                                                                                                                                   |
+| `connection`  | a connection object created using the `connect` function                                                                                                                                                                                                                                                                                                                                  |
 | `network`     | (optional) a string identifying the network (e.g., "test" when full ledger name is "test\chat")                                                                                                                                                                                                                                                                                           |
 | `ledger-id`   | (optional) a string identifying the ledger within a network (e.g., "chat" when full ledger name is "test\chat")                                                                                                                                                                                                                                                                           |
 | `private-key` | <ul><li>New private key for one of the following scenarios:</li><li>- tx-group, when neither `network` nor `ledger-id` is supplied</li><li>- network, when the `network` is supplied but the `ledger-id` is not provided</li><li>- ledger, when both the `network` and `ledger-id` are supplied</li></ul>                                                                                 |
@@ -1471,12 +1472,12 @@ Options is a map with the following possible keys:
 
 ### Parameter(s) {#parameters-38}
 
-| Name          | Value                                                                   |
-| ------------- | ----------------------------------------------------------------------- |
+| Name          | Value                                                    |
+| ------------- | -------------------------------------------------------- |
 | `connection`  | a connection object created using the `connect` function |
-| `ledger`      | a string identifying both the network and ledger-id                     |
-| `transaction` | a map of key/value pairs defining the transaction                       |
-| `options`     | an optional map of key/value pairs                                      |
+| `ledger`      | a string identifying both the network and ledger-id      |
+| `transaction` | a map of key/value pairs defining the transaction        |
+| `options`     | an optional map of key/value pairs                       |
 
 ### Returns {#returns-39}
 
