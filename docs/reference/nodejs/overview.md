@@ -19,7 +19,6 @@ The available functions are below.
 | Delete Ledger  | [`deleteLedger`](/docs/reference/nodejs/examples#deleteLedger)   | Deletes a ledger                                                                 |
 | Ledger Info    | [`ledgerInfo`](/docs/reference/nodejs/examples#ledgerInfo)       | Returns information about a ledger, including blocks, indexes and current state  |
 | Ledger List    | [`ledgerList`](/docs/reference/nodejs/examples#ledgerList)       | Returns list of ledgers that the connected Fluree instances is currently serving |
-| Ledger Stats   | [`ledgerStats`](/docs/reference/nodejs/examples#ledgerStats)     | Returns ledger stats, including db size and number of flakes                     |
 | New Ledger     | [`newLedger`](/docs/reference/nodejs/examples#newLedger)         | Creates a new ledger                                                             |
 | Predicate ID   | [`predicateId`](/docs/reference/nodejs/examples#predicateId)     | Returns the ID of a predicate                                                    |
 | Predicate Name | [`predicateName`](/docs/reference/nodejs/examples#predicateName) | Returns the name of a predicate                                                  |

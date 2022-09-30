@@ -601,41 +601,6 @@ flureenjs
   });
 ```
 
-## **`ledgerStats`** {#ledgerStats}
-
-Returns a promise with ledger's stats, including db size and # of flakes.
-If ledger doesn't exist, will return an empty map.
-
-### Parameter(s) {#ledgerStats-parameters}
-
-| Name         | Value                                                    |
-| ------------ | -------------------------------------------------------- |
-| `connection` | a connection object created using the `connect` function |
-| `ledger`     | a string identifying both the network and ledger-id      |
-
-### Returns {#ledgerStats-returns}
-
-Returns a map with information about the requested ledger.
-
-### Code Example {#ledgerStats-example}
-
-```javascript
-const flureenjs = require("@fluree/flureenjs");
-const flureeServerUrl = "http://localhost:8090";
-const ledger = "test/chat";
-
-let flureeDbConn = flureenjs.connect(flureeServerUrl);
-
-flureenjs
-  .ledgerStats(flureeDbConn, ledger)
-  .then((results) => {
-    console.log(results);
-  })
-  .catch((error) => {
-    console.log(error);
-  });
-```
-
 ## **`listen`** {#listen}
 
 Listens to all events of a given ledger. Supply a ledger identity, any key, and a two-argument function that will be called with each event. The key is any arbitrary key, and is only used to close the listener via close-listener, otherwise it is transparent to the listener. The callback function's first argument is the event header/metadata and the second argument is the event data itself.
