@@ -14,7 +14,7 @@ The following commands are available in the JavaScript api library. JavaScript p
 
 > _For the following examples, it is assumed that you are using the downloaded Fluree Community Edition. Unless you changed the default_ `fdb-api-port`_, the full URL is_ `http://localhost:8090/`
 
-## **connect** {#connect}
+## **`connect`** {#connect}
 
 Connect to a ledger server using an URL address. If using a ledger group, multiple addresses can be supplied, separated by a comma.
 
@@ -23,18 +23,18 @@ There are 2 versions of the connect command:
 - `connect` returns a connection object
 - `connect_p` returns a connection object via a promise
 
-### Parameter(s) {#parameters}
+### Parameter(s) {#connect-parameters}
 
-| Name            | Value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
-| --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `server-string` | a string identifying one or more ledger servers                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| Name            | Value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `server-string` | a string identifying one or more ledger servers                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 | `options`       | <ul><li>a JavaScript object containing configuration options. The following options are currently supported:</li><li>- `keep-alive-fn`: a JavaScript function that is executed when a connection is abruptly dropped.</li><li>- `private`: The private-key identifying the Auth to be used for operations associated with the connection. This is required for accessing Fluree instances with a closed api (i.e., fdb-api-open=false) unless you are using password authentication.</li></ul> |
 
-### Returns {#returns}
+### Returns {#connect-returns}
 
 Returns a connection object.
 
-### JavaScript Example {#javascript-example}
+### JavaScript Example {#connect-example}
 
 An example of the `connect` command:
 
@@ -43,25 +43,22 @@ const flureeServerUrl = "http://localhost:8090";
 var myConn = flureedb.connect(flureeServerUrl);
 ```
 
-&nbsp;&nbsp;
-
 An example of the `connect_p` command:
 
 ```javascript
 const flureeServerUrl = "http://localhost:8090";
-flureedb.connect_p(flureeServerUrl)
-.then(conn => {
-  // execute a query or transaction
-})
-.catch(error => {
-  // error handling
-})
-.finally( () => {
-  // close connection
-});
+flureedb
+  .connect_p(flureeServerUrl)
+  .then((conn) => {
+    // execute a query or transaction
+  })
+  .catch((error) => {
+    // error handling
+  })
+  .finally(() => {
+    // close connection
+  });
 ```
-
-&nbsp;&nbsp;
 
 An example of using `connect_p` with `keep-alive-fn` option:
 
@@ -89,100 +86,101 @@ function flureeConnect(url, options){
         // -> or add re-try logic
     })
 
-    :
-    :
     const downloadedInstance = "http://localhost:8090"
     const options = {keepAlive: true};
     flureeConnect(downloadedInstance, options);
 ```
 
-## **close** {#close}
+## **`close`** {#close}
 
 Close a connection to a ledger server/group.
 
 <!-- markdownlint-disable MD024 -->
 
-### Parameter(s) {#parameters-1}
+### Parameter(s) {#close-parameters}
 
 | Name         | Value                                                                  |
 | ------------ | ---------------------------------------------------------------------- |
 | `connection` | a connection object created using the `connect` or `connect_p` command |
 
-### Returns {#returns-1}
+### Returns {#close-returns}
 
 Returns a boolean, false when the connection is not currently open; otherwise, true.
 
-### JavaScript Example {#javascript-example-1}
+### JavaScript Example {#close-example}
 
 ```javascript
 const flureeServerUrl = "http://localhost:8090";
 var myConn = flureedb.connect(flureeServerUrl);
-:
-:
+
 flureedb.close(myConn);
 ```
 
-## **db** {#db}
+## **`db`** {#db}
 
 Returns a queryable ledger from the connection. The ledger object represents a point-in-time ledger. As such, the ledger will not contain block updates submitted after acquisition of the channel.
 
-### Parameter(s) {#parameters-2}
+### Parameter(s) {#db-parameters}
 
 | Key          | Value                                                                  |
 | ------------ | ---------------------------------------------------------------------- |
 | `connection` | a connection object created using the `connect` or `connect_p` command |
 | `ledger`     | a string identifying both the network and ledger                       |
 
-### Returns {#returns-2}
+### Returns {#db-returns}
 
 Returns a queryable ledger as an asynchronous channel.
 
-### JavaScript Example {#javascript-example-2}
+### JavaScript Example {#db-example}
 
 ```javascript
 const flureeServerUrl = "http://localhost:8090";
 const myLedgerName = "test/chat";
 var myConn = flureedb.connect(flureeServerUrl);
 var myDb = flureedb.db(myConn, myLedgerName);
-:
-:
+
 flureedb.close(myConn);
 ```
 
-## **db_schema** {#db_schema}
+## **`db_schema`** {#db_schema}
 
 Generates a schema map for a point-in-time ledger.
 
-### Parameter(s) {#parameters-3}
+### Parameter(s) {#db_schema-parameters}
 
 | Name        | Value                                               |
 | ----------- | --------------------------------------------------- |
 | `db-source` | an asynchronous channel created by the `db` command |
 
-### Returns {#returns-3}
+### Returns {#db_schema-returns}
 
 Returns a JavaScript promise that will eventually deliver the schema map for a ledger.
 
-### JavaScript Example {#javascript-example-3}
+### JavaScript Example {#db_schema-example}
 
 ```javascript
 const flureeServerUrl = "http://localhost:8090";
 const myLedgerName = "test/chat";
 var myConn = flureedb.connect(flureeServerUrl);
 var myDb = flureedb.db(myConn, myLedgerName);
-:
-flureedb.db_schema(myDb)
-  .then( resp => {console.log('Success ', resp);})
-  .catch( error => {console.log('Error ', error);});
-:
+
+flureedb
+  .db_schema(myDb)
+  .then((resp) => {
+    console.log("Success ", resp);
+  })
+  .catch((error) => {
+    console.log("Error ", error);
+  });
+
 flureedb.close(myConn);
 ```
 
-## **new_ledger** {#new_ledger}
+## **`new_ledger`** {#new_ledger}
 
 Creates a new ledger given a "network/id". If the network specified does not exist, it creates a new network. This call returns a transaction id, the process does not wait for the ledger to be fully initialized before returning.
 
-### Parameter(s) {#parameters-4}
+### Parameter(s) {#new_ledger-parameters}
 
 | Name         | Value                                                                  |
 | ------------ | ---------------------------------------------------------------------- |
@@ -190,7 +188,7 @@ Creates a new ledger given a "network/id". If the network specified does not exi
 | `ledger`     | a string identifying both the network and ledger                       |
 | `options`    | an optional map of key/value pairs                                     |
 
-#### Option(s) {#options}
+#### Option(s)
 
 | Key          | Value                                                                                       |
 | ------------ | ------------------------------------------------------------------------------------------- |
@@ -200,39 +198,44 @@ Creates a new ledger given a "network/id". If the network specified does not exi
 | `:fork`      | If forking an existing db, ref to db (actual identity, not db-ident). Must exist in network |
 | `:forkBlock` | If fork is provided, optionally provide the block to fork at. Defaults to latest known.     |
 
-### Returns {#returns-4}
+### Returns {#new_ledger-returns}
 
 A JavaScript promise that eventually contains a transaction id. The transaction id can be used to query the results of the new ledger command.
 
-### JavaScript Example {#javascript-example-4}
+### JavaScript Example {#new_ledger-example}
 
 ```javascript
 const flureeServerUrl = "http://localhost:8090";
 const myLedgerName = "test/invoice";
 var myConn = flureedb.connect(flureeServerUrl);
-flureedb.new_ledger( myConn, myLedgerName )
-  .then( resp => {console.log('Success ', resp);})
-  .catch( error => {console.log('Error ', error);});
-  :
+flureedb
+  .new_ledger(myConn, myLedgerName)
+  .then((resp) => {
+    console.log("Success ", resp);
+  })
+  .catch((error) => {
+    console.log("Error ", error);
+  });
+
 flureedb.close(myConn);
 ```
 
-## delete_ledger {#delete_ledger}
+## **`delete_ledger`** {#delete_ledger}
 
 Deletes a ledger, such that a user will no longer be able to query or transact against that ledger. Currently, the files associated with the ledger are not physically deleted from disk. You can choose to delete those files yourself - or keep them. You will not be able to create a new ledger with the same name as the deleted ledger.
 
-### Parameter(s) {#parameters-5}
+### Parameter(s) {#delete_ledger-parameters}
 
 | Name         | Value                                                                  |
 | ------------ | ---------------------------------------------------------------------- |
 | `connection` | a connection object created using the `connect` or `connect_p` command |
 | `ledger`     | a string identifying both the network and ledger                       |
 
-### Returns {#returns-5}
+### Returns {#delete_ledger-returns}
 
 Returns a promise that eventually the results
 
-### JavaScript Example {#javascript-example-5}
+### JavaScript Example {#delete_ledger-example}
 
 ```javascript
 const flureeServerUrl = "http://localhost:8090";
@@ -243,11 +246,11 @@ flureedb.delete_ledger(myConn, "test/deleteme");
 flureedb.close(flureeDbConn);
 ```
 
-## **q** {#q}
+## **`query`** {#query}
 
 All single queries in FlureeQL syntax that include a `select` key should be issued through the `q` command.
 
-### Parameter(s) {#parameters-6}
+### Parameter(s) {#query-parameters}
 
 | Name        | Value                                               |
 | ----------- | --------------------------------------------------- |
@@ -255,11 +258,11 @@ All single queries in FlureeQL syntax that include a `select` key should be issu
 | `query-map` | a map of key/value pairs defining the query         |
 | `options`   | an optional map of key/value pairs                  |
 
-### Returns {#returns-6}
+### Returns {#query-returns}
 
 A JavaScript promise that eventually contains the results of the query or an error.
 
-### JavaScript Example {#javascript-example-6}
+### JavaScript Example {#query-example}
 
 An example of a query with the network, `test` and the ledger `chat`:
 
@@ -268,28 +271,28 @@ const flureeServerUrl = "http://localhost:8090";
 const myLedgerName = "test/chat";
 var myConn = flureedb.connect(flureeServerUrl);
 var myDb = flureedb.db(myConn, myLedgerName);
-:
-:
-var myQuery  = {
-  select: ['*'],
-  from:   '_collection'
+
+var myQuery = {
+  select: ["*"],
+  from: "_collection",
 };
-flureedb.q(myDb, myQuery)
-  .then( resp => {console.log('Success ', resp);})
-  .catch( error => {console.log('Error ', error);})
-;
-:
-:
+flureedb
+  .query(myDb, myQuery)
+  .then((resp) => {
+    console.log("Success ", resp);
+  })
+  .catch((error) => {
+    console.log("Error ", error);
+  });
+
 flureedb.close(myConn);
 ```
 
-&nbsp;&nbsp;
+## **`multi_query`** {#multi_query}
 
-## **multi_query** {#multi_query}
+If you are submitting multiple FlureeQL queries at once (using the [multi_query syntax](/overview/query/advanced_query.mdx#multiple-queries)), that should be done through the `multi_query` command.
 
-If you are submitting multiple FlureeQL queries at once (using the [multi-query syntax](/overview/query/advanced_query.mdx#multiple-queries)), that should be done through the `multi_query` command.
-
-### Parameter(s) {#parameters-7}
+### Parameter(s) {#multi_query-parameters}
 
 | Name        | Value                                               |
 | ----------- | --------------------------------------------------- |
@@ -297,11 +300,11 @@ If you are submitting multiple FlureeQL queries at once (using the [multi-query 
 | `query-map` | a map of key/value pairs defining the query         |
 | `options`   | an optional map of key/value pairs                  |
 
-### Returns {#returns-7}
+### Returns {#multi_query-returns}
 
 A JavaScript promise that eventually contains the results of the query or an error.
 
-### JavaScript Example {#javascript-example-7}
+### JavaScript Example {#multi_query-example}
 
 An example of a `multi_query`:
 
@@ -310,26 +313,28 @@ const flureeServerUrl = "http://localhost:8090";
 const myLedgerName = "test/chat";
 var myConn = flureedb.connect(flureeServerUrl);
 var myDb = flureedb.db(myConn, myLedgerName);
-:
-:
+
 var myMultiQuery = {
-      collections: { select: ['*'], from: '_collection'},
-      persons: {select: ['*'], from: 'person'}
-    };
-flureedb.multi_query(myDb, myMultiQuery)
-  .then( resp => {console.log('Success ', resp);})
-  .catch( error => {console.log('Error ', error);})
-;
-:
-:
+  collections: { select: ["*"], from: "_collection" },
+  persons: { select: ["*"], from: "person" },
+};
+flureedb
+  .multi_query(myDb, myMultiQuery)
+  .then((resp) => {
+    console.log("Success ", resp);
+  })
+  .catch((error) => {
+    console.log("Error ", error);
+  });
+
 flureedb.close(myConn);
 ```
 
-## **block_query** {#block_query}
+## **`block_query`** {#block_query}
 
 FlureeQL [block queries](/overview/query/block_query.mdx) should be submitted to the `block_query` command. This does not include other types of queries (basic queries, history queries, etc) that might have a "block" key. This only includes queries that are returning flakes from a block or set of blocks.
 
-### Parameter(s) {#parameters-8}
+### Parameter(s) {#block_query-parameters}
 
 | Name         | Value                                                                  |
 | ------------ | ---------------------------------------------------------------------- |
@@ -338,11 +343,11 @@ FlureeQL [block queries](/overview/query/block_query.mdx) should be submitted to
 | `query-map`  | a map of key/value pairs defining the query                            |
 | `options`    | an optional map of key/value pairs                                     |
 
-### Returns {#returns-8}
+### Returns {#block_query-returns}
 
 A JavaScript promise that eventually contains the results of the query or an error.
 
-### JavaScript Example {#javascript-example-8}
+### JavaScript Example {#block_query-example}
 
 An example of a `block_query`:
 
@@ -350,22 +355,25 @@ An example of a `block_query`:
 const flureeServerUrl = "http://localhost:8090";
 const myLedgerName = "test/chat";
 var myConn = flureedb.connect(flureeServerUrl);
-:
-:
-var myQuery = { block: [1,8] };
-flureedb.block_query(myConn, myLedgerName, myQuery)
-  .then( resp => {console.log('Success ', resp);})
-  .catch( error => {console.log('Error ', error);});
-:
-:
+
+var myQuery = { block: [1, 8] };
+flureedb
+  .block_query(myConn, myLedgerName, myQuery)
+  .then((resp) => {
+    console.log("Success ", resp);
+  })
+  .catch((error) => {
+    console.log("Error ", error);
+  });
+
 flureedb.close(myConn);
 ```
 
-## **block_range** {#block_range}
+## **`block_range`** {#block_range}
 
 Given a ledger, returns blocks from a start block (inclusive) to end, if provided (exclusive). Each block is a separate map, containing keys :block and :flakes.
 
-### Parameter(s) {#parameters-9}
+### Parameter(s) {#block_range-parameters}
 
 | Name         | Value                                                                  |
 | ------------ | ---------------------------------------------------------------------- |
@@ -375,11 +383,11 @@ Given a ledger, returns blocks from a start block (inclusive) to end, if provide
 | `end`        | an integer identifying the end block; end block is excluded            |
 | `options`    | an optional map of key/value pairs                                     |
 
-### Returns {#returns-9}
+### Returns {#block_range-returns}
 
 A JavaScript promise that eventually contains the results of the query or an error.
 
-### JavaScript Example {#javascript-example-9}
+### JavaScript Example {#block_range-example}
 
 An example of a `block_range`:
 
@@ -387,21 +395,24 @@ An example of a `block_range`:
 const flureeServerUrl = "http://localhost:8090";
 const myLedgerName = "test/chat";
 var myConn = flureedb.connect(flureeServerUrl);
-:
-:
-flureedb.block_range( myConn, myLedgerName, 1, 8 )
-  .then( resp => {console.log('Success ', resp);})
-  .catch( error => {console.log('Error ', error);});
-:
-:
+
+flureedb
+  .block_range(myConn, myLedgerName, 1, 8)
+  .then((resp) => {
+    console.log("Success ", resp);
+  })
+  .catch((error) => {
+    console.log("Error ", error);
+  });
+
 flureedb.close(myConn);
 ```
 
-## history-query {#history-query}
+## **`history_query`** {#history_query}
 
 FlureeQL [history queries](/overview/query/history_query.mdx) should be submitted to the `history` command. This command only includes queries like those in the linked section.
 
-### Parameter(s) {#parameters-10}
+### Parameter(s) {#history_query-parameters}
 
 | Name        | Value                                               |
 | ----------- | --------------------------------------------------- |
@@ -409,11 +420,11 @@ FlureeQL [history queries](/overview/query/history_query.mdx) should be submitte
 | `query-map` | a map of key/value pairs defining the query         |
 | `options`   | an optional map of key/value pairs                  |
 
-### Returns {#returns-10}
+### Returns {#history_query-returns}
 
 A JavaScript promise that eventually contains the results of the query or an error.
 
-### JavaScript Example {#javascript-example-10}
+### JavaScript Example {#history_query-example}
 
 An example of a `history_query`:
 
@@ -422,21 +433,24 @@ const flureeServerUrl = "http://localhost:8090";
 const myLedgerName = "test/chat";
 var myConn = flureedb.connect(flureeServerUrl);
 var myDb = flureedb.db(myConn, myLedgerName);
-:
-:
-var myQuery  = {
-  "history": ["person/handle", "zsmith"],
-  "block": 4
+
+var myQuery = {
+  history: ["person/handle", "zsmith"],
+  block: 4,
 };
-flureedb.history_query(myDb, myQuery)
-  .then( resp => {console.log('Success ', resp);})
-  .catch( error => {console.log('Error ', error);});
-:
-:
+flureedb
+  .history_query(myDb, myQuery)
+  .then((resp) => {
+    console.log("Success ", resp);
+  })
+  .catch((error) => {
+    console.log("Error ", error);
+  });
+
 flureedb.close(myConn);
 ```
 
-## transact {#transact}
+## **`transact`** {#transact}
 
 Submits a transaction for a ledger. Returns a promise that will eventually have the result of the tx, the txid (if :txid-only option used), or an exception either due to an invalid transaction or if the timeout occurs prior to a response.
 
@@ -459,7 +473,7 @@ Options is a map with the following possible keys:
   transactors. The txid can be used to look up/monitor the response at a later time.
 - timeout - will respond with an exception if timeout reached before response available.
 
-### Parameter(s) {#parameters-11}
+### Parameter(s) {#transact-parameters}
 
 | Name          | Value                                                                  |
 | ------------- | ---------------------------------------------------------------------- |
@@ -468,11 +482,11 @@ Options is a map with the following possible keys:
 | `transaction` | a map of key/value pairs defining the transaction                      |
 | `options`     | an optional map of key/value pairs                                     |
 
-### Returns {#returns-11}
+### Returns {#transact-returns}
 
 A JavaScript promise that eventually contains the transaction id or an error.
 
-### JavaScript Example {#javascript-example-11}
+### JavaScript Example {#transact-example}
 
 An example of `transact` using the default private-key for the ledger to sign the transaction:
 
@@ -480,63 +494,69 @@ An example of `transact` using the default private-key for the ledger to sign th
 const flureeServerUrl = "http://localhost:8090";
 const myLedgerName = "test/chat";
 var myConn = flureedb.connect(flureeServerUrl);
-:
-:
-var myTxn = [{
-  "_id":    "_user",
-  "username": "jdoe",
-  }];
-flureedb.transact(myConn, myLedgerName, myTxn)
-  .then( resp => {console.log('Success ', resp);})
-  .catch( error => {console.log('Error ', error);});
-:
-:
+
+var myTxn = [
+  {
+    _id: "_user",
+    username: "jdoe",
+  },
+];
+flureedb
+  .transact(myConn, myLedgerName, myTxn)
+  .then((resp) => {
+    console.log("Success ", resp);
+  })
+  .catch((error) => {
+    console.log("Error ", error);
+  });
+
 flureedb.close(myConn);
 ```
-
-&nbsp;&nbsp;
-&nbsp;&nbsp;
 
 An example of a `transact` providing the private-key and auth to be used for signing:
 
 ```javascript
-import { getSinFromPublicKey } from '@fluree/crypto-utils';
-:
-:
-const publicKey = '...';
-const privateKey = '...';
+import { getSinFromPublicKey } from "@fluree/crypto-utils";
+
+const publicKey = "...";
+const privateKey = "...";
 const auth = getSinFromPublicKey(publicKey);
-:
+
 const flureeServerUrl = "http://localhost:8090";
 const myLedgerName = "test/chat";
 var myConn = flureedb.connect(flureeServerUrl);
-:
-:
-var myTxn = [{
-  "_id":    "_user",
-  "username": "jdoe",
-  }];
+
+var myTxn = [
+  {
+    _id: "_user",
+    username: "jdoe",
+  },
+];
 var myOpts = {
-    "private-key": privateKey,
-    auth: auth,
-    expire: Date.now() + 30000,
-    nonce: 1,
-    timeout: 600000,
-    fuel: 100000
+  "private-key": privateKey,
+  auth: auth,
+  expire: Date.now() + 30000,
+  nonce: 1,
+  timeout: 600000,
+  fuel: 100000,
 };
-flureedb.transact(myConn, myLedgerName, myTxn, myOpts)
-  .then( resp => {console.log('Success ', resp);})
-  .catch( error => {console.log('Error ', error);});
-:
-:
+flureedb
+  .transact(myConn, myLedgerName, myTxn, myOpts)
+  .then((resp) => {
+    console.log("Success ", resp);
+  })
+  .catch((error) => {
+    console.log("Error ", error);
+  });
+
 flureedb.close(myConn);
 ```
 
-## **monitor_tx** {#monitor_tx}
+## **`monitor_tx`** {#monitor_tx}
 
 Monitors a ledger for a specific transaction id included in a block. Returns a promise that will eventually contain a response or an exception if the timeout period has expired. Also, the response itself may contain an exception, if the transaction resulted in an exception.
 
-### Parameter(s) {#parameters-12}
+### Parameter(s) {#monitor_tx-parameters}
 
 | Name             | Value                                                                  |
 | ---------------- | ---------------------------------------------------------------------- |
@@ -545,11 +565,11 @@ Monitors a ledger for a specific transaction id included in a block. Returns a p
 | `transaction-id` | the transaction id returned by the `transact` command                  |
 | `timeout`        | timeout, in milliseconds                                               |
 
-### Returns {#returns-12}
+### Returns {#monitor_tx-returns}
 
 A JavaScript promise that eventually returns the results from the monitor_tx command.
 
-### JavaScript Example {#javascript-example-12}
+### JavaScript Example {#monitor_tx-example}
 
 An example of `monitor_tx`:
 
@@ -557,22 +577,25 @@ An example of `monitor_tx`:
 const flureeServerUrl = "http://localhost:8090";
 const myLedgerName = "test/chat";
 var myConn = flureedb.connect(flureeServerUrl);
-:
-:
-var myTxId = 'f27e0b890bbc47e0bd67dc452fded9eb881548015d3e9860cf69bd5f19c20660';
-flureedb.monitor_tx (myConn, myLedgerName, myTxId, 6000)
-  .then( resp => {console.log('Returned', resp);})
-  .catch( error => {console.log('Error ', error);});
-:
-:
+
+var myTxId = "f27e0b890bbc47e0bd67dc452fded9eb881548015d3e9860cf69bd5f19c20660";
+flureedb
+  .monitor_tx(myConn, myLedgerName, myTxId, 6000)
+  .then((resp) => {
+    console.log("Returned", resp);
+  })
+  .catch((error) => {
+    console.log("Error ", error);
+  });
+
 flureedb.close(myConn);
 ```
 
-## **listen** {#listen}
+## **`listen`** {#listen}
 
 Listens to all events of a given ledger. Supply a ledger identity, any key, and a two-argument function that will be called with each event. The key is any arbitrary key, and is only used to close the listener via close-listener, otherwise it is transparent to the listener. The callback function's first argument is the event header/metadata and the second argument is the event data itself.
 
-### Parameter(s) {#parameters-13}
+### Parameter(s) {#listen-parameters}
 
 | Name         | Value                                                                  |
 | ------------ | ---------------------------------------------------------------------- |
@@ -581,11 +604,11 @@ Listens to all events of a given ledger. Supply a ledger identity, any key, and 
 | `key`        | any arbitrary id                                                       |
 | `callback`   | callback function/handler                                              |
 
-### Returns {#returns-13}
+### Returns {#listen-returns}
 
 Returns true if the listener is successfully added. Otherwise, an exception is returned.
 
-### JavaScript Example {#javascript-example-13}
+### JavaScript Example {#listen-example}
 
 ```javascript
 const flureeServerUrl = "http://localhost:8090";
@@ -595,35 +618,36 @@ var myConn;
 // connect to fluree using a promise.
 // the promise resolves when connection is
 // ready or errors
-flureedb.connect_p(flureeServerUrl)
-  .then(conn => {
-      myConn = conn;
+flureedb
+  .connect_p(flureeServerUrl)
+  .then((conn) => {
+    myConn = conn;
   })
-  .catch(error => {
-      console.error("Error connecting to Fluree DB", error);
+  .catch((error) => {
+    console.error("Error connecting to Fluree DB", error);
   });
 
 var myListenerKey = "supercalifragilisticexpialidocious";
-var someFunction = function(eventType, eventData) {
-    // do something
-    console.info("eventType: ", eventType);
-    console.info("eventData: ", eventData);
-  };
+var someFunction = function (eventType, eventData) {
+  // do something
+  console.info("eventType: ", eventType);
+  console.info("eventData: ", eventData);
+};
 
 // non-blocking wait for connection
-(async() => {
-        while (!myConn) {
-            await new Promise(resolve => setTimeout(resolve,1000));
-        }
-        addListener(myConn, myLedgerName, myListenerKey, someFunction);
-    })().catch(e => console.log(e));
+(async () => {
+  while (!myConn) {
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+  }
+  addListener(myConn, myLedgerName, myListenerKey, someFunction);
+})().catch((e) => console.log(e));
 ```
 
-## close_listener {#close_listener}
+## **`close_listener`** {#close_listener}
 
 Closes a listener associated with a given connection, ledger and key
 
-### Parameter(s) {#parameters-14}
+### Parameter(s) {#close_listener-parameters}
 
 | Name         | Value                                                                  |
 | ------------ | ---------------------------------------------------------------------- |
@@ -631,50 +655,46 @@ Closes a listener associated with a given connection, ledger and key
 | `ledger`     | a string identifying both the network and ledger                       |
 | `key`        | same arbitrary key provided to the `listen` command                    |
 
-### Returns {#returns-14}
+### Returns {#close_listener-returns}
 
 Returns true if a callback function was associated with the key and removed. Otherwise. nil is returned.
 
-### JavaScript Example {#javascript-example-14}
+### JavaScript Example {#close_listener-example}
 
 ```javascript
 const flureeServerUrl = "http://localhost:8090";
 const myLedgerName = "test/chat";
 var myConn = flureedb.connect(flureeServerUrl);
-:
-:
+
 var myListenerKey = "supercalifragilisticexpialidocious";
-var listenerClosed? = flureedb.close_listener(myConn, myLedgerName, myKey);
+var listenerClosed = flureedb.close_listener(myConn, myLedgerName, myKey);
 console.log("Closed listener?", listenerClosed?);
-:
-:
+
 flureedb.close(myConn);
 ```
 
-## listeners {#listeners}
+## **`listeners`** {#listeners}
 
 Return a list of listeners currently registered for each ledger along with their respective keys.
 
-### Parameter(s) {#parameters-15}
+### Parameter(s) {#listeners-parameters}
 
 | Name         | Value                                                                  |
 | ------------ | ---------------------------------------------------------------------- |
 | `connection` | a connection object created using the `connect` or `connect_p` command |
 
-### Returns {#returns-15}
+### Returns {#listeners-returns}
 
 Returns a list of listeners registered for the given connection object.
 
-### JavaScript Example {#javascript-example-15}
+### JavaScript Example {#listeners-example}
 
 ```javascript
 const flureeServerUrl = "http://localhost:8090";
 var myConn = flureedb.connect(flureeServerUrl);
-:
-:
+
 var myListeners = flureedb.listeners(myConn);
-console.log('listeners: ', myListeners);
-:
-:
+console.log("listeners: ", myListeners);
+
 flureedb.close(myConn);
 ```
