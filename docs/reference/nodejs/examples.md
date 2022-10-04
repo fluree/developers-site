@@ -339,7 +339,7 @@ const ledger = "test/chat";
 var flureeDbConn = flureenjs.connect(flureeServerUrl);
 
 const myKey = "supercalifragilisticexpialidocious";
-const listenerClosed? = flureenjs.closeListener(flureeDbConn, ledger, myKey);
+const listenerClosed = flureenjs.closeListener(flureeDbConn, ledger, myKey);
 console.log("Closed listener?", listenerClosed?);
 
 flureenjs.close(flureeDbConn);
