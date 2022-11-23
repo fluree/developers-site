@@ -54,7 +54,7 @@ There are other resources available on this site, such as:
 - [Technical Overview](/concepts/technical_overview.md): An explanatory document about the main
   components in Fluree.
 - [Guides and Lessons](/guides/guides.mdx): Walkthroughs and How-to's of important areas of Fluree.
-- [Reference](/reference/home.mdx): Reference docs for our Javascript, NodeJS, FlureeWorker, and
+- [Reference](/reference/reference.mdx): Reference docs for our Javascript, NodeJS, FlureeWorker, and
   other libraries.
 - [Concepts](/concepts/concepts.mdx): Long-form content where delve into the key concepts and
   architecture of Fluree.
