@@ -23,7 +23,7 @@ jobs:
           uses: reggionick/s3-deploy@v3
           with:
             folder: build
-            bucket: ${{ secrets.DEVSITE_S3_BUCKET }}
+            bucket: developers.flur.ee
             bucket-region: ${{ secrets.DEVSITE_S3_BUCKET_REGION }}
             dist-id: ${{ secrets.DEVSITE_CLOUDFRONT_DISTRIBUTION_ID }}
             invalidation: /
