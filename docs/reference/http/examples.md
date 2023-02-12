@@ -614,6 +614,7 @@ Returns a valid token for a given user or role. Sets a valid password for that u
 | user     | false    | You can pass in either a `_user/username` or a `subject _id`. An auth record with type `password-secp256k1` with the relevant salt will be created and attached to this `_user`. Either a user or roles must be provided.                  |
 | roles    | false    | You can pass in an array of role subjects or two-tuples. An auth record with type `password-secp256k1` with the relevant salt will be created and all the specified roles will be attached to it. Either a user or roles must be provided. |
 | expire   | false    | Expiration time in epoch ms.                                                                                                                                                                                                               |
+| create-user?   | false    | Pass `true` to create a `_user` with `_user/username` (specified in user parameter), or else an existing `_user` is required.                                                                                                                                                                                                               |
 
 If using a closed API, this request needs to contain a valid token in the header.
 
@@ -626,6 +627,8 @@ Headers:
 Body: {
     "password": "appleSaucePanFried",
     "user": "myUser",
+    "roles": ["admin"],
+    "create-user": true,
   "expire": "TIME IN EPOCH MS"
   }
 ```
