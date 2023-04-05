@@ -5,22 +5,25 @@ sidebar_position: 2
 
 In order to ensure speed of processing queries and transactions, different types of queries and transactions should be issued to different endpoints. All requests, unless otherwise specified, should be POST requests.
 
-## /dbs {#dbs}
+## /ledgers {#ledgers}
 
-A POST request with an empty object or a GET request to `/fdb/dbs` returns all the dbs in the transactor group. These requests do not need to be signed.
+A POST request with an empty object or a GET request to `/fdb/ledgers` returns all the ledgers in the transactor group.
+These requests do not need to be signed.
 
-An example of an unsigned request to `/dbs`.
+An example of an unsigned request to `/ledgers`.
 
 ```http
 Action: POST or GET
-Endpoint: http://localhost:8090/fdb/dbs
+Endpoint: http://localhost:8090/fdb/ledgers
 Headers: None
 Body: Null
 ```
 
-## /new-db {#new-db}
+## /new-ledger {#new-ledger}
 
-A ledger id must begin with a network name followed by a `/` and a dbid. Network names and dbids may only contain lowercase letters and numbers. In your request, you must specify `db/id`.
+A ledger id must begin with a network name followed by a `/` and a ledger name.
+Network and ledger names may only contain lowercase letters and numbers.
+In your request, you must specify a `ledger/id` key.
 
 If the network specified does not exist, it creates a new network. This request returns a command id, the request does not wait to ledger to be fully initialized before returning.
 
@@ -28,9 +31,9 @@ These requests do not need to be signed.
 
 ```http
 Action: POST
-Endpoint: http://localhost:8090/fdb/new-db
+Endpoint: http://localhost:8090/fdb/new-ledger
 Headers: None
-Body: {"db/id": "test/one"}
+Body: {"ledger/id": "test/one"}
 ```
 
 ## /nw-state {#nw-state}
@@ -105,7 +108,7 @@ Headers: None
 Body: { "format": "xml" , "block": 10 }
 ```
 
-## /delete-db {#delete-db}
+## /delete-ledger {#delete-ledger}
 
 This deletes a ledger. Deleting a ledger means that a user will no longer be able to query or transact against that ledger, but currently the actual ledger files will not be deleted on disk. You can choose to delete those files yourself - or keep them. You will not be able to create a new ledger with the same name as the deleted ledger.
 
@@ -113,66 +116,28 @@ Use the following request when Fluree server is running in open-api mode (i.e., 
 
 ```http
 Action: POST
-Endpoint: http://localhost:8090/fdb/delete-db
+Endpoint: http://localhost:8090/fdb/delete-ledger
 Headers: None
-Body: {"db/id": "NETWORK/DBID"}
+Body: {"ledger/id": "NETWORK/DBID"}
 ```
 
-When the Fluree server is running in closed-api mode (i.e., fdb-api-open=false), the request must be signed. The process to sign the delete-db request is the similar to signing queries and transactions; only the end-point is different. .
+When the Fluree server is running in closed-api mode (i.e., fdb-api-open=false), the request must be signed.
+The process to sign the delete-ledger request is the similar to signing queries and transactions; only the end-point is different.
 
 ```http
 Action: POST
-Endpoint: http://localhost:8090/fdb/delete-db
+Endpoint: http://localhost:8090/fdb/delete-ledger
 Headers {:content-type :application/json,
            "Digest" "SHA-256=WRw/lfS4v6C7whgUKhbfJPxPQ3wNnRx99NPqDcBCe9M=",
            "X-Fluree-Date" "Wed, 1 Jul 2020 17:38:13 GMT",
            "Signature" "keyId=\"na\",headers=\"(request-target) x-fluree-date digest\",algorithm=\"ecdsa-sha256\",signature=\"1b3044022072efe51f308084a691310824d6065d1b413fcd5d6d7ca310b78e99013db6a08102201485659f379abf8fdf2421e73cb60de2f86394ad22039ec5c8cb475e69b7fc6b\",date=\"Wed, 1 Jul 2020 17:38:13 GMT\""},
- Body: {"db/id": "NETWORK/DBID", "auth": "AUTH-ID"}
+ Body: {"ledger/id": "NETWORK/DBID", "auth": "AUTH-ID"}
 ```
-
-## /add-server {#add-server}
-
-This endpoint attempts to dynamically add server to the network. Please note, this is a beta feature in 0.13.0
-
-Let's say you have two servers running, `ABC` and `DEF`, in order to get a third server, `GHI` to join the network, you need to start up server `GHI` with the following properties. Note the properties can be set in a property file or environment variables as well:
-
-```http
-./fluree_start.sh -Dfdb-join?=true -Dfdb-group-servers=ABC@localhost:9790,DEF@localhost:9791,GHI@localhost:9792 -Dfdb-group-this-server=GHI -Dfdb-group-log-directory=data/GHI/raft/ -Dfdb-storage-file-directory=data/GHI/fdb/ -Dfdb-api-port=8092
-```
-
-Then, once `GHI` is running a request needs to be sent to either of the two servers already in the network, `ABC` or `DEF`:
-
-```http
-Action: POST
-Endpoint: http://localhost:8090/fdb/add-server
-Headers: None
-Body: {"server": "GHI"}
-```
-
-If a majority of the network agrees to the configuration change, `GHI` will then have a preset amount of rounds to sync up it's network state - for example, it's RAFT state. By default, the new server has 10 rounds, but if you changed `fdb-group-catch-up-rounds` in your properties, it could be more or less. Once its RAFT state is synced, the server will attempt to copy all block and index files from the other servers in the network. This should all happen in one try, however, if you have a large number of blocks or ledgers, you may need to shut down and restart `GHI` (please do let us know if you encounter issues. This is a beta feature, and any feedback on your experiences is helpful. You can reach us on Discord or at `support@flur.ee`).
-
-Only one configuration change can be in process at once. Attempts to issues simultaneous additions or removals will be rejected.
-
-## /remove-server {#remove-server}
-
-This endpoint attempts to dynamically remove a server from the network. Please note, this is a beta feature in 0.13.0
-
-Let's say you have three servers running, `ABC`, `DEF`, and `GHI`. If you want to shut down any of the servers, you can issue a request to any of the servers to shut down a given server.
-
-```http
-Action: POST
-Endpoint: http://localhost:8090/fdb/remove-server
-Headers: None
-Body: {"server": "GHI"}
-```
-
-If a majority of the network agrees to the configuration change, then `GHI` will be removed from the network. If `GHI` was the leader, then a new leader will be elected. Note, the running server will still have query access to the blocks it has received, but it will not be able to issue transaction and it will not receive updates.
-
-Only one configuration change can be in process at once. Attempts to issues simultaneous additions or removals will be rejected.
 
 ## /query {#query}
 
-All single queries in FlureeQL syntax that include a `select` key should be issued through the `/fdb/[NETWORK-NAME]/[DBNAME-OR-DBID]/query` endpoint. If you do not have `fdb-api-open` set to true (it is true by default), then you'll need to sign your query ([signing queries](/concepts/identity/signatures.md#signed-queries)).
+All single queries in FlureeQL syntax that include a `select` key should be issued through the `/fdb/[NETWORK-NAME]/[LEDGER-NAME]/query` endpoint.
+If you do not have `fdb-api-open` set to true (it is true by default), then you'll need to sign your query ([signing queries](/concepts/identity/signatures.md#signed-queries)).
 
 An example of an unsigned request to `/query` with the network, `dev` and the ledger `main`:
 
@@ -305,7 +270,7 @@ Body: {
 
 ## /transact {#transact}
 
-All unsigned transactions, except transaction issued through the GraphQL syntax, should be issued to the `/fdb/[NETWORK-NAME]/[DBNAME-OR-DBID]/transact` endpoint.
+All unsigned transactions, except transaction issued through the GraphQL syntax, should be issued to the `/fdb/[NETWORK-NAME]/[LEDGER-NAME]/transact` endpoint.
 
 If you do not have `fdb-api-open` set to true (it is true by default), then you cannot use the `/transact` endpoint. You'll need to use the [`/command` endpoint](#command).
 
@@ -337,7 +302,8 @@ Body: [{
 
 ## /graphql Query {#graphql}
 
-All queries and transactions in GraphQL syntax should be issued through the `/fdb/[NETWORK-NAME]/[DBNAME-OR-DBID]/graphql` endpoint. If you do not have `fdb-api-open` set to true (it is true by default), then you'll need to sign your query ([signing queries](/concepts/identity/signatures.md#signed-queries)).
+All queries and transactions in GraphQL syntax should be issued through the `/fdb/[NETWORK-NAME]/[LEDGER-NAME]/graphql` endpoint.
+If you do not have `fdb-api-open` set to true (it is true by default), then you'll need to sign your query ([signing queries](/concepts/identity/signatures.md#signed-queries)).
 
 An example of an unsigned request to `/graphql`:
 
@@ -359,7 +325,8 @@ Body: {"query": "{ graph {
 
 ## /graphql Transaction {#graphql-transaction}
 
-All queries and transactions in GraphQL syntax should be issued through the `/fdb/[NETWORK-NAME]/[DBNAME-OR-DBID]/graphql` endpoint. If you do not have `fdb-api-open` set to true (it is true by default), then you'll need to sign your GraphQL transaction like a query ([signing queries](/concepts/identity/signatures.md#signed-queries)).
+All queries and transactions in GraphQL syntax should be issued through the `/fdb/[NETWORK-NAME]/[LEDGER-NAME]/graphql` endpoint.
+If you do not have `fdb-api-open` set to true (it is true by default), then you'll need to sign your GraphQL transaction like a query ([signing queries](/concepts/identity/signatures.md#signed-queries)).
 
 An example of an unsigned request to `/graphql`:
 
@@ -379,7 +346,8 @@ Body: {"query": "mutation addPeople ($myPeopleTx: JSON) {
 
 ## /sparql {#sparql}
 
-All queries in SPARQL syntax, regardless of type, should be issued through the `/fdb/[NETWORK-NAME]/[DBNAME-OR-DBID]/sparql` endpoint. If you do not have `fdb-api-open` set to true (it is true by default), then you'll need to sign your query ([signing queries](/concepts/identity/signatures.md#signed-queries)).
+All queries in SPARQL syntax, regardless of type, should be issued through the `/fdb/[NETWORK-NAME]/[LEDGER-NAME]/sparql` endpoint.
+If you do not have `fdb-api-open` set to true (it is true by default), then you'll need to sign your query ([signing queries](/concepts/identity/signatures.md#signed-queries)).
 
 An example of an unsigned request to `/sparql`:
 
@@ -398,11 +366,8 @@ Body: "SELECT ?chat ?message ?person ?instant ?comments
 
 ## /sql {#sql}
 
-All queries in SQL syntax should be issued through the
-`/fdb/[NETWORK-NAME]/[DBNAME-OR-DBID]/sql` endpoint. If you do not have
-`fdb-api-open` set to true (it is true by default), then you'll need to sign
-your query ([signing
-queries](/concepts/identity/signatures.md#signed-queries)).
+All queries in SQL syntax should be issued through the `/fdb/[NETWORK-NAME]/[LEDGER-NAME]/sql` endpoint.
+If you do not have `fdb-api-open` set to true (it is true by default), then you'll need to sign your query ([signing queries](/concepts/identity/signatures.md#signed-queries)).
 
 An example of an unsigned request to `/sql`:
 
@@ -580,18 +545,20 @@ Body: None
 
 ## /storage {#storage}
 
-A GET request to `/fdb/storage/[NETWORK-NAME]/[DBNAME-OR-DBID]/[TYPE]` returns all key-value pairs of a certain type. You are not able to test this endpoint in the sidebar. These requests do not need to be signed.
+A GET request to `/fdb/storage/[NETWORK-NAME]/[LEDGER-NAME]/[TYPE]` returns all key-value pairs of a certain type.
+You are not able to test this endpoint in the sidebar.
+These requests do not need to be signed.
 
 ```http
 Action: GET
-Endpoint: http://localhost:8090/fdb/storage/[NETWORK-NAME]/[DBNAME-OR-DBID]/[TYPE]
+Endpoint: http://localhost:8090/fdb/storage/[NETWORK-NAME]/[LEDGER-NAME]/[TYPE]
 ```
 
-A GET request to `/fdb/storage/[NETWORK-NAME]/[DBNAME-OR-DBID]/[TYPE]/[KEY]` returns the value for the provided key.
+A GET request to `/fdb/storage/[NETWORK-NAME]/[LEDGER-NAME]/[TYPE]/[KEY]` returns the value for the provided key.
 
 ```http
 Action: GET
-Endpoint: http://localhost:8090/fdb/storage/[NETWORK-NAME]/[DBNAME-OR-DBID]/[TYPE]/[KEY]
+Endpoint: http://localhost:8090/fdb/storage/[NETWORK-NAME]/[LEDGER-NAME]/[TYPE]/[KEY]
 ```
 
 ## /sub {#sub}
