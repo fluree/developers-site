@@ -655,13 +655,12 @@ See the [Password Management Guide](/concepts/identity/password_management.md) f
 | -------- | -------- | ------------------------------------------------------------------------------- |
 | password | true     | A password string                                                               |
 | user     | false    | You must pass in your `_user/username`. Either a user or auth must be provided. |
-| auth     | false    | You must pass in your `_auth_id` . Either a user or auth must be provided.      |
+| auth     | false    | You may pass in your `_auth_id` . Either a user or auth must be provided.      |
 | expire   | false    | Requested time to expire in epoch milliseconds, i.e. `1000`.                    |
 
 ```http
 Action: POST
 Endpoint: http://localhost:8090/fdb/dev/main/pw/login
-Headers: { Authorization: "Bearer TOKEN-HERE" }
 Body: {
   "user": "myUsername",
   "password": "myPassword",
