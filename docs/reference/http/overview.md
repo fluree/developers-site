@@ -5,7 +5,9 @@ sidebar_label: Overview
 
 # Overview
 
-Downloaded endpoints can only be used in the downloadable versions of Fluree. All requests, except requests to `/health`, should be POST requests. The main downloaded endpoints are below, and they are all structured as follows:
+Downloaded endpoints can only be used in the downloadable versions of Fluree.
+All requests, except requests to `/health`, should be POST requests.
+The main downloaded endpoints are below, and they are all structured as follows:
 
 `/fdb/[NETWORK-NAME]/[LEDGER-NAME]/[ACTION]`
 
@@ -41,7 +43,10 @@ Downloaded endpoints can only be used in the downloadable versions of Fluree. Al
 
 ## Password Authentication Endpoints {#password-authentication-endpoints}
 
-You need password authentication enabled to use these endpoints. See [config options](/reference/fluree_config.md#password-and-jwt-token-settings) for all password authentication options. See the [Password Management Guide](/concepts/identity/password_management.md) for more information. For an implementation example refer to the [Comics Store](https://github.com/fluree/developer-hub) repo located in the Fluree Developer Hub.
+You need password authentication enabled to use these endpoints.
+See [config options](/reference/fluree_config.md#password-and-jwt-token-settings) for all password authentication options.
+See the [Password Management Guide](/concepts/identity/password_management.md) for more information.
+For an implementation example refer to the [Comics Store](https://github.com/fluree/developer-hub) repo located in the Fluree Developer Hub.
 
 | Action                                             | Endpoint                                        | Explanation                                                                                          |
 | -------------------------------------------------- | ----------------------------------------------- | ---------------------------------------------------------------------------------------------------- |

@@ -1,9 +1,11 @@
 ---
 sidebar_position: 2
 ---
+
 # HTTP Examples
 
-In order to ensure speed of processing queries and transactions, different types of queries and transactions should be issued to different endpoints. All requests, unless otherwise specified, should be POST requests.
+In order to ensure speed of processing queries and transactions, different types of queries and transactions should be issued to different endpoints.
+All requests, unless otherwise specified, should be POST requests.
 
 ## /ledgers {#ledgers}
 
@@ -25,7 +27,8 @@ A ledger id must begin with a network name followed by a `/` and a ledger name.
 Network and ledger names may only contain lowercase letters and numbers.
 In your request, you must specify a `ledger/id` key.
 
-If the network specified does not exist, it creates a new network. This request returns a command id, the request does not wait to ledger to be fully initialized before returning.
+If the network specified does not exist, it creates a new network.
+This request returns a command id, the request does not wait to ledger to be fully initialized before returning.
 
 These requests do not need to be signed.
 
@@ -38,7 +41,8 @@ Body: {"ledger/id": "test/one"}
 
 ## /nw-state {#nw-state}
 
-This provides a status of the Fluree network as recorded by a particular (ledger or transact) server.  Status information includes raft state, list of servers in the Fluree network, list of ledgers, and the current # of transactions queued.
+This provides a status of the Fluree network as recorded by a particular (ledger or transact) server.
+Status information includes raft state, list of servers in the Fluree network, list of ledgers, and the current # of transactions queued.
 
 To retrieve the status, simply send an empty POST request to the `/nw-state` endpoint.
 
@@ -51,40 +55,40 @@ Body: None
 
 The result is a map of key/value pairs, for example:
 
-```http
-{:snapshot-term 11,
- :latest-index 19940,
- :snapshot-index 19800,
- :other-servers [],
- :index 19940,
- :snapshot-pending nil,
- :term 11,
- :leader "myserver",
- :timeout-at 1611088055092,
- :this-server "myserver",
- :status "leader",
- :id 88389,
- :svr-state [{:id "myserver", :active? true}],
- :commit 19940,
- :servers {:myserver {:vote [11 true],
-                      :next-index 19748,
-                      :match-index 19940,
-                      :snapshot-index nil,
-                      :stats {:sent 0, :received 0, :avg-response 0}}},
- :raft {:version 3,
-        :leases {:servers {:myserver {:id "myserver", :expire 1611088056918}}},
-        :_work {:networks {:test "myserver"}},
-        :_worker {:myserver {:networks {:test 1610570486137}}},
-        :cmd-queue [{:test 0}],
-        :new-db-queue [{:test 0}],
-        :networks {:test {:dbs {:chat {:status "ready", :block 6, :index 1, :indexes {:1 1610570484628}},
-                                :invoice {:status "ready", :block 5, :index 1, :indexes {:1 1610571471362}},
-                                :test/nl-1 {},
-                                :nl-2 {:status "ready", :block 2, :index 1, :indexes {:1 1610985470087}},
-                                :test/nl-2 {}}}}},
- :voted-for "myserver",
- :open-api true,
- :timeout-ms 666}
+```json
+{"snapshot-term": 11,
+ "latest-index": 19940,
+ "snapshot-index": 19800,
+ "other-servers": [],
+ "index": 19940,
+ "snapshot-pending": null,
+ "term": 11,
+ "leader": "myserver",
+ "timeout-at": 1611088055092,
+ "this-server": "myserver",
+ "status": "leader",
+ "id": 88389,
+ "svr-state": [{"id": "myserver", "active?": true}],
+ "commit": 19940,
+ "servers": {"myserver": {"vote": [11 true],
+                      "next-index": 19748,
+                      "match-index": 19940,
+                      "snapshot-index": null,
+                      "stats": {"sent": 0, "received": 0, "avg-response": 0}}},
+ "raft": {"version": 3,
+        "leases": {"servers": {"myserver": {"id": "myserver", "expire": 1611088056918}}},
+        "_work": {"networks": {"test": "myserver"}},
+        "_worker": {"myserver": {"networks": {"test": 1610570486137}}},
+        "cmd-queue": [{"test": 0}],
+        "new-ledger-queue": [{"test": 0}],
+        "networks": {"test": {"ledgers": {"chat": {"status": "ready", "block": 6, "index": 1, "indexes": {"1": 1610570484628}},
+                                "invoice": {"status": "ready", "block": 5, "index": 1, "indexes": {"1": 1610571471362}},
+                                "test/nl-1": {},
+                                "nl-2": {"status": "ready", "block": 2, "index": 1, "indexes": {"1": 1610985470087}},
+                                "test/nl-2": {}}}}},
+ "voted-for": "myserver",
+ "open-api": true,
+ "timeout-ms": 666}
 ```
 
 ## /export {#export}
@@ -110,7 +114,10 @@ Body: { "format": "xml" , "block": 10 }
 
 ## /delete-ledger {#delete-ledger}
 
-This deletes a ledger. Deleting a ledger means that a user will no longer be able to query or transact against that ledger, but currently the actual ledger files will not be deleted on disk. You can choose to delete those files yourself - or keep them. You will not be able to create a new ledger with the same name as the deleted ledger.
+This deletes a ledger.
+Deleting a ledger means that a user will no longer be able to query or transact against that ledger, but currently the actual ledger files will not be deleted on disk.
+You can choose to delete those files yourself - or keep them.
+You will not be able to create a new ledger with the same name as the deleted ledger.
 
 Use the following request when Fluree server is running in open-api mode (i.e., fdb-api-open=true)
 
@@ -191,35 +198,37 @@ Body: { "query1": { "select": ["*"], "from": "_collection"},
         "query2": { "select": ["*"], "from": "_predicate"}}
 ```
 
-To build the body of this query, create unique names for your queries, and set those as the keys of the your JSON query. The values of the keys should be the queries themselves.
+To build the body of this query, create unique names for your queries, and set those as the keys of the your JSON query.
+The values of the keys should be the queries themselves.
 
 For example, this query selects all chats and people at once.
 
 ```json
 {
-    "chatQuery": {
-        "select": ["*"],
-        "from": "chat"
-    },
-    "personQuery": {
-         "select": ["*"],
-        "from": "person"
-    }
+  "chatQuery": {
+    "select": ["*"],
+    "from": "chat"
+  },
+  "personQuery": {
+    "select": ["*"],
+    "from": "person"
+  }
 }
 ```
 
-Any errors will be returned in a header, called `X-Fdb-Errors`. For example, incorrectCollection is attempting to query a collection that does not exist.
+Any errors will be returned in a header, called `X-Fdb-Errors`.
+For example, incorrectCollection is attempting to query a collection that does not exist.
 
 ```json
 {
-    "incorrectCollection": {
-        "select": ["*"],
-        "from": "apples"
-    },
-    "personQuery": {
-         "select": ["*"],
-        "from": "person"
-    }
+  "incorrectCollection": {
+    "select": ["*"],
+    "from": "apples"
+  },
+  "personQuery": {
+    "select": ["*"],
+    "from": "person"
+  }
 }
 ```
 
@@ -241,7 +250,8 @@ The response will have a status of 207, and it will only return the response for
 
 ## /block {#block}
 
-FlureeQL [block queries](/overview/query/block_query.mdx) should be submitted to the `/block` endpoint. This does not include other types of queries (basic queries, history queries, etc) that might have a "block" key. This only includes queries like those in the linked section - queries that are returning flakes from a block or set of blocks.
+FlureeQL [block queries](/overview/query/block_query.mdx) should be submitted to the `/block` endpoint. This does not include other types of queries (basic queries, history queries, etc) that might have a "block" key.
+This only includes queries like those in the linked section - queries that are returning flakes from a block or set of blocks.
 
 An example of an unsigned request to `/block`:
 
@@ -254,7 +264,8 @@ Body: { "block": 5 }
 
 ## /history {#history}
 
-FlureeQL [history queries](/overview/query/history_query.mdx) should be submitted to the `/history` endpoint. This only includes queries like those in the linked section.
+FlureeQL [history queries](/overview/query/history_query.mdx) should be submitted to the `/history` endpoint.
+This only includes queries like those in the linked section.
 
 An example of an unsigned request to `/history`:
 
@@ -272,7 +283,8 @@ Body: {
 
 All unsigned transactions, except transaction issued through the GraphQL syntax, should be issued to the `/fdb/[NETWORK-NAME]/[LEDGER-NAME]/transact` endpoint.
 
-If you do not have `fdb-api-open` set to true (it is true by default), then you cannot use the `/transact` endpoint. You'll need to use the [`/command` endpoint](#command).
+If you do not have `fdb-api-open` set to true (it is true by default), then you cannot use the `/transact` endpoint.
+You'll need to use the [`/command` endpoint](#command).
 
 An example of an unsigned request to `/transact`:
 
@@ -286,9 +298,13 @@ Body: [{
   }]
 ```
 
-By specifying a `Request-Timeout` header, you can set a transaction timeout. The maximum transaction size that is currently permitted by Fluree is 2MB. A sufficiently large transaction can take 50 seconds or longer to be resolved. By default, your request will timeout after 60 seconds.
+By specifying a `Request-Timeout` header, you can set a transaction timeout.
+The maximum transaction size that is currently permitted by Fluree is 2MB.
+A sufficiently large transaction can take 50 seconds or longer to be resolved.
+By default, your request will timeout after 60 seconds.
 
-An example of setting your own custom timeout is below. The value provided to `Request-Timeout` is in milliseconds.
+An example of setting your own custom timeout is below.
+The value provided to `Request-Timeout` is in milliseconds.
 
 ```http
 Action: POST
@@ -390,7 +406,8 @@ To see examples of sending a request to the `/command` endpoint, see [signed tra
 
 ## /reindex {#reindex}
 
-Available in `0.11.7` or higher. Reindexes the specified ledger.
+Available in `0.11.7` or higher.
+Reindexes the specified ledger.
 
 ```http
 Action: POST
@@ -399,17 +416,18 @@ Headers: None
 Body: None
 ```
 
-This request may take some time to return. It will return a map, such as the following:
+This request may take some time to return.
+It will return a map, such as the following:
 
 ```json
 {
-    "block": 13,
-    "t": -27,
-    "stats": {
-        "flakes": 899990,
-        "size": 41435614,
-        "indexed": 13
-    }
+  "block": 13,
+  "t": -27,
+  "stats": {
+    "flakes": 899990,
+    "size": 41435614,
+    "indexed": 13
+  }
 }
 ```
 
@@ -422,24 +440,25 @@ Headers: None
 Body: None
 ```
 
-This request may take some time to return. It will return a map, such as the following:
+This request may take some time to return.
+It will return a map, such as the following:
 
 ```json
 {
-    "block": 13,
-    "t": -27,
-    "stats": {
-        "flakes": 899990,
-        "size": 41435614,
-        "indexed": 13
-    }
+  "block": 13,
+  "t": -27,
+  "stats": {
+    "flakes": 899990,
+    "size": 41435614,
+    "indexed": 13
+  }
 }
 ```
 
 ## /hide {#hide}
 
-This is a beta feature. To read about how it works, visit
-[hiding flakes](/concepts/infrastructure/mutability.md#hiding-flakes).
+This is a beta feature.
+To read about how it works, visit [hiding flakes](/concepts/infrastructure/mutability.md#hiding-flakes).
 
 ```http
 Action: POST
@@ -453,7 +472,10 @@ Body: {
 
 ## /gen-flakes {#gen-flakes}
 
-Returns the list of flakes that would be added to a ledger if a given transaction is issued. The body of this request is simply the transaction. Note that this is a test endpoint. This does _NOT_ write the returned flakes to the ledger.
+Returns the list of flakes that would be added to a ledger if a given transaction is issued.
+The body of this request is simply the transaction.
+Note that this is a test endpoint.
+This does _NOT_ write the returned flakes to the ledger.
 
 ```http
 Action: POST
@@ -471,12 +493,13 @@ Returns the results of a query using the existing ledger flakes, including flake
 
 The request expects a map with two key-value pairs:
 
-| Key      | Value                                                                              |
-| -------- | ---------------------------------------------------------------------------------- |
-| `flakes` | An array of valid flakes                                                           |
+| Key      | Value                                                                            |
+| -------- | -------------------------------------------------------------------------------- |
+| `flakes` | An array of valid flakes                                                         |
 | `query`  | A query to issue against the current ledger plus the flakes in the flakes value. |
 
-The `t` on the flakes provided has to be current with the latest ledger. For example, if you used `gen-flakes`, but then issued a transaction, you will need to use `gen-flakes` again to generate new valid flakes.
+The `t` on the flakes provided has to be current with the latest ledger.
+For example, if you used `gen-flakes`, but then issued a transaction, you will need to use `gen-flakes` again to generate new valid flakes.
 
 ```http
 Action: POST
@@ -493,13 +516,14 @@ Given a valid set of flakes that could be added to the ledger at a given point i
 
 The request expects a map with the following key-value pairs:
 
-| Key      | Value                                                                                                                                                           |
-| -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `flakes` | An array of valid flakes                                                                                                                                        |
+| Key      | Value                                                                                                                                                         |
+| -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `flakes` | An array of valid flakes                                                                                                                                      |
 | `txn`    | A transaction to issue against the current ledger plus the flakes in the flakes value. This endpoint does _NOT_ actually write the transaction to the ledger. |
-| `auth`   | (Optional) The `_auth/id` with which to issue the transaction.                                                                                                  |
+| `auth`   | (Optional) The `_auth/id` with which to issue the transaction.                                                                                                |
 
-The `t` on the flakes provided has to be current with the latest ledger. For example, if you used `gen-flakes`, but then issued a transaction, you will need to use `gen-flakes` again to generate new valid flakes.
+The `t` on the flakes provided has to be current with the latest ledger.
+For example, if you used `gen-flakes`, but then issued a transaction, you will need to use `gen-flakes` again to generate new valid flakes.
 
 ```http
 Action: POST
@@ -525,7 +549,9 @@ Body: {
 
 ## /health {#health}
 
-A GET request to `/fdb/health` returns whether the server is ready or not. You are not able to test this endpoint in the sidebar. These requests do not need to be signed.
+A GET request to `/fdb/health` returns whether the server is ready or not.
+You are not able to test this endpoint in the sidebar.
+These requests do not need to be signed.
 
 ```http
 Action: GET
@@ -563,17 +589,23 @@ Endpoint: http://localhost:8090/fdb/storage/[NETWORK-NAME]/[LEDGER-NAME]/[TYPE]/
 
 ## /sub {#sub}
 
-A POST request to `/fdb/sub` handles subscriptions. More documentation on this feature coming soon. You are not able to test this endpoint in the sidebar. These requests do not need to be signed.
+A POST request to `/fdb/sub` handles subscriptions.
+More documentation on this feature coming soon.
+You are not able to test this endpoint in the sidebar.
+These requests do not need to be signed.
 
 ## /new-keys {#new-keys}
 
-A POST request with an empty object or a GET request to `/fdb/new-keys` returns a valid public key, private key, and auth-id. Learn more about [how identity is established in Fluree](/concepts/identity/auth_records.md#generating-a-public-private-key-auth-id-triple). These requests do not need to be signed.
+A POST request with an empty object or a GET request to `/fdb/new-keys` returns a valid public key, private key, and auth-id.
+Learn more about [how identity is established in Fluree](/concepts/identity/auth_records.md#generating-a-public-private-key-auth-id-triple).
+These requests do not need to be signed.
 
 ## /pw/generate {#pwgenerate}
 
 See the [Password Management Guide](/concepts/identity/password_management.md) for more information.
 
-Returns a valid token for a given user or role. Sets a valid password for that user or role.
+Returns a valid token for a given user or role.
+Sets a valid password for that user or role.
 
 | Keys     | Required | Explanations                                                                                                                                                                                                                               |
 | -------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -601,7 +633,8 @@ Body: {
 
 See the [Password Management Guide](/concepts/identity/password_management.md) for more information.
 
-This endpoint returns a valid JWT token. You need to pass a NON-expired JWT token in the header, and an expiration time (in epoch milliseconds from now), to the body of the request.
+This endpoint returns a valid JWT token.
+You need to pass a NON-expired JWT token in the header, and an expiration time (in epoch milliseconds from now), to the body of the request.
 
 | Keys   | Required | Explanations                                       |
 | ------ | -------- | -------------------------------------------------- |
