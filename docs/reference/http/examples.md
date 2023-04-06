@@ -561,6 +561,8 @@ Endpoint: http://localhost:8090/fdb/health
 ## /garbage-collect-ledger {#garbage-collect-ledger}
 
 A POST request to `/fdb/garbage-collect-ledger` with valid ledger ID contained in the payload will initiate the garbage collection process for the specified ledger, if needed.
+This process is useful for freeing up disk space for ledgers which have had a large number of transactions.
+Any "stale" index nodes that are no longer needed by the ledger will be removed from storage.
 
 ```http
 Action: POST
