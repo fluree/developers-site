@@ -558,6 +558,35 @@ Action: GET
 Endpoint: http://localhost:8090/fdb/health
 ```
 
+## /garbage-collect-ledger {#garbage-collect-ledger}
+
+A POST request to `/fdb/garbage-collect-ledger` with valid ledger ID contained in the payload will initiate the garbage collection process for the specified ledger, if needed.
+
+```http
+Action: POST
+Endpoint: http://localhost:8090/fdb/garbage-collect-ledger
+Body: {
+  "ledger/id": "test/dev"
+}
+```
+
+There will be no response until the ledger has completed the operation.
+Once garbage collection is completed, the response will resemble the example below.
+
+```json
+{
+  "garbage-collected": "test/dev"
+}
+```
+
+If there was no "garbage" to collect, the response will look like this.
+
+```json
+{
+  "no-garbage": "test/dev"
+}
+```
+
 ## /ledger-stats {#ledger-stats}
 
 A POST request to `/fdb/[NETWORK-NAME]/[DBID]/ledger-stats` provides stats about the requested ledger.

@@ -56,13 +56,14 @@ For an implementation example refer to the [Comics Store](https://github.com/flu
 
 ## Other endpoints {#other-endpoints}
 
-| Action         | Method | Endpoint                                                 | Description                                                                     |
-| -------------- | ------ | -------------------------------------------------------- | ------------------------------------------------------------------------------- |
-| Block Stats    | POST   | `/fdb/[NETWORK-NAME]/[LEDGER-NAME]/block-range-with-txn` | Block data, including signatures, instant, hash, flakes and transactions        |
-| Health         | ANY    | `/fdb/health`                                            | Returns whether or not the server is ready.                                     |
-| Ledger Stats   | POST   | `/fdb/[NETWORK-NAME]/[LEDGER-NAME]/ledger-stats`         | General ledger stats, including status, # flakes, current block, and size (kb). |
-| WebSocket      | GET    | `/fdb/ws`                                                | Handles websocket subscriptions                                                 |
-| Network Status | ANY    | `/fdb/nw-state`                                          | Returns status of Fluree network, raft state, etc.                              |
+| Action             | Method | Endpoint                                                 | Description                                                                     |
+| ------------------ | ------ | -------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| Block Stats        | POST   | `/fdb/[NETWORK-NAME]/[LEDGER-NAME]/block-range-with-txn` | Block data, including signatures, instant, hash, flakes and transactions        |
+| Health             | ANY    | `/fdb/health`                                            | Returns whether or not the server is ready.                                     |
+| Ledger Stats       | POST   | `/fdb/[NETWORK-NAME]/[LEDGER-NAME]/ledger-stats`         | General ledger stats, including status, # flakes, current block, and size (kb). |
+| WebSocket          | GET    | `/fdb/ws`                                                | Handles websocket subscriptions                                                 |
+| Network Status     | ANY    | `/fdb/nw-state`                                          | Returns status of Fluree network, raft state, etc.                              |
+| Garbage Collection | POST   | `/fdb/garbage-collect-ledger`                            | Initialize garbage collection for a ledger                                      |
 
 For both queries and transactions, a signature is not required if the option `fdb-api-open` is set to true (default for the downloaded version of Fluree).
 
