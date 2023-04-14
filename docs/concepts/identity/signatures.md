@@ -43,7 +43,7 @@ Fluree also has a user interface to help users submit signed queries and transac
 
 This can be found in the user interface by navigating to `/flureeql`. By
 clicking the "sign" button, you can toggle whether or not there is an option to
-sign queries and transactions. 
+sign queries and transactions.
 
 ## Signed Queries {#signed-queries}
 
@@ -129,18 +129,18 @@ the auth record that signs the transactions, not the default auth record
 
 The `/command` endpoint takes a map with two keys:
 
- Key     | Description                                                                                                                                                                                                                                    |
+| Key     | Description                                                                                                                                                                                                                                    |
 | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | cmd     | Stringified command map                                                                                                                                                                                                                        |
 | sig     | (optional if `fdb-api-open` is true). ECDSA signature of the value of the cmd key.                                                                                                                                                             |
-| multiTx | (optional). Array of txids that when submitting a transaction, the command map of type `tx` (transaction) needs to have the following keys in the following order. Documentation on command of type `new-db` and `default-key` is forthcoming. |
+| multiTx | (optional). Array of txids that when submitting a transaction, the command map of type `tx` (transaction) needs to have the following keys in the following order. Documentation on command of type `new-ledger` and `default-key` is forthcoming. |
 
 ### Command Map {#command-map}
 
 | Key       | Description                                                                                                                                                                                                                                          |
 | --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| type      | `tx`, `new-db`, or `default-key`                                                                                                                                                                                                                     |
-| db        | `network/dbid`                                                                                                                                                                                                                                       |
+| type      | `tx`, `new-ledger`, or `default-key`                                                                                                                                                                                                                 |
+| ledger    | `network/ledger-id`                                                                                                                                                                                                                                  |
 | tx        | The body of the transaction                                                                                                                                                                                                                          |
 | auth      | `_auth/id` of the auth                                                                                                                                                                                                                               |
 | fuel      | Max integer for the amount of **fuel** to use for this transaction                                                                                                                                                                                   |
