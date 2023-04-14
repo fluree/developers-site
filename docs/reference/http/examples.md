@@ -23,9 +23,10 @@ Body: Null
 
 ## /new-ledger {#new-ledger}
 
-A ledger id must begin with a network name followed by a `/` and a ledger name.
-Network and ledger names may only contain lowercase letters and numbers.
-In your request, you must specify a `ledger/id` key.
+A ledger id must begin with a network name followed by a `/` and a ledger name.  Network
+and ledger names may only contain lowercase letters and numbers.  In your request, you
+must specify a `ledger/id` key. You may optionally include an `owners` key with a value
+of an array of auth ids that you would like bootstrap as root in the new ledger.
 
 If the network specified does not exist, it creates a new network.
 This request returns a command id, the request does not wait to ledger to be fully initialized before returning.

@@ -193,7 +193,7 @@ Creates a new ledger given a "network/id". If the network specified does not exi
 | Key          | Value                                                                                       |
 | ------------ | ------------------------------------------------------------------------------------------- |
 | `:alias`     | an alias for the ledger, if different than the id                                           |
-| `:root`      | account id to bootstrap with (string). Defaults to connection default account id            |
+| `:owners`    | auth ids to bootstrap with (array of string).                                               |
 | `:doc`       | doc string about this ledger                                                                |
 | `:fork`      | If forking an existing db, ref to db (actual identity, not db-ident). Must exist in network |
 | `:forkBlock` | If fork is provided, optionally provide the block to fork at. Defaults to latest known.     |
