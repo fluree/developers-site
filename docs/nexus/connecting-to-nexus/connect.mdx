@@ -86,7 +86,7 @@ Before using the Fluree db library to connect to nexus, first register an auth i
 (require '[fluree.crypto :as crypto])
 
 (def keypair (crypto/generate-key-pair))
-(def auth-id (crypto/account-id-from-private (:private keypair))
+(def auth-id (crypto/account-id-from-private (:private keypair)))
 ```
 
 Then copy the auth-id string and transact a new auth on the Transact tab of your Nexus dataset.
