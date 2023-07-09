@@ -27,13 +27,13 @@ Add to the artifact to your dependencies:
 Leiningen -
 
 ```clojure
-[com.fluree/db "1.0.0-rc22"]
+[com.fluree/db "2.0.3"]
 ```
 
 deps.edn -
 
 ```clojure
-com.fluree/db {:mvn/version "1.0.0-rc22"}
+com.fluree/db {:mvn/version "2.0.3"}
 ```
 
 Require the api and establish a connection to your Fluree server:
