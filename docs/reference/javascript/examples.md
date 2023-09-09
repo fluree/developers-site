@@ -639,7 +639,7 @@ var someFunction = function (eventType, eventData) {
   while (!myConn) {
     await new Promise((resolve) => setTimeout(resolve, 1000));
   }
-  addListener(myConn, myLedgerName, myListenerKey, someFunction);
+  flureedb.listen(myConn, myLedgerName, myListenerKey, someFunction);
 })().catch((e) => console.log(e));
 ```
 
