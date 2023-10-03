@@ -239,6 +239,11 @@ module.exports = {
           customCss: require.resolve("./src/css/custom.css"),
         },
       },
+      {
+        googleTagManager: {
+          containerId: "GTM-5KKG5N5",
+        },
+      },
     ],
   ],
 };
