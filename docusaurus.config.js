@@ -223,7 +223,7 @@ module.exports = {
         },
         gtag: {
           // You can also use your "G-" Measurement ID here.
-          trackingID: "G-XDLKYE388T",
+          trackingID: "GTM-5KKG5N5",
           // Optional fields.
           anonymizeIP: true, // Should IPs be anonymized?
         },
@@ -237,9 +237,6 @@ module.exports = {
         // },
         theme: {
           customCss: require.resolve("./src/css/custom.css"),
-          googleTagManager: {
-            containerId: "GTM-5KKG5N5",
-          },
         },
       },
     ],
