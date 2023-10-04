@@ -241,4 +241,16 @@ module.exports = {
       },
     ],
   ],
+  scripts: [
+    // Object format.
+    {
+      src: "https://static.reo.dev/cb8a71410d7f8f8/reo.js",
+      async: true,
+      onload: function () {
+        Reo.init({
+          clientID: "cb8a71410d7f8f8",
+        });
+      },
+    },
+  ],
 };
