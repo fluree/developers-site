@@ -244,12 +244,12 @@ module.exports = {
   scripts: [
     {
       // Object format.
-      src: "https://static.reo.dev/cb8a71410d7f8f8/reo.js",
-      async: true,
-      onLoad:
-        typeof window !== "undefined" &&
-        window.Reo &&
-        window.Reo.init({ clientID: "cb8a71410d7f8f8" }),
+      src: "./src/scripts/reo.js",
+      // async: true,
+      // onLoad:
+      //   typeof window !== "undefined" &&
+      //   window.Reo &&
+      //   window.Reo.init({ clientID: "cb8a71410d7f8f8" }),
     },
   ],
 };
