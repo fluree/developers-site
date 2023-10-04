@@ -244,7 +244,7 @@ module.exports = {
   scripts: [
     {
       // Object format.
-      src: "./src/scripts/reo.js",
+      src: "scripts/reo.js",
       // async: true,
       // onLoad:
       //   typeof window !== "undefined" &&
