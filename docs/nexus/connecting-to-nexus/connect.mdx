@@ -96,7 +96,7 @@ Then copy the auth-id string and transact a new auth on the Transact tab of your
   {
     "_id": "_auth",
     "_auth/id": "<AUTH_ID_FROM_PRIVATE_KEY>",
-    "_auth/roles": [["_role/name", "root"]],
+    "_auth/roles": [["_role/id", "root"]],
     "_auth/doc": "<helpful doc here>"
   }
 ]
@@ -141,8 +141,8 @@ Now we can connect using the Clojure library.
                            :method :post
                            :headers {"Content-Type" "application/json"
                                      "Authorization" (str "Bearer " api-key)}
-                           :body (json/stringify {:select ["*"] :from "_collection"})})]
-    (-> resp :body json/parse))
+                           :body (json/generate-string {:select ["*"] :from "_collection"})})]
+    (-> resp :body json/parse-string))
 
 
 ;; transact
@@ -150,7 +150,7 @@ Now we can connect using the Clojure library.
                            :method :post
                            :headers {"Content-Type" "application/json"
                                      "Authorization" (str "Bearer " api-key)}
-                           :body (json/stringify [{:_id :_user
-                                                   :_user/username "dan"}])})]
+                           :body (json/generate-string [{:_id :_user
+                                                         :_user/username "dan"}])})]
     (-> resp :body json/parse))
 ```
