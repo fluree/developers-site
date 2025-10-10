@@ -1,0 +1,622 @@
+import Admonition from "@theme/Admonition";
+import { FlureeMermaid } from "@site/src/components/Mermaid/FlureeMermaid.jsx";
+
+# From Tables to Graphs: How to Model Entities in a Graph Database
+
+Fluree is a graph database, and graph databases use a different paradigm for
+modeling data than you're used to with relational databases. This guide will
+lead you from the relational world to the graph world, pointing out the traps
+you might encounter when trying to translate your relational intuition to this
+new environment. By the end of the guide, you should be able to start creating
+data models for your systems that take advantage of the possibilities that a
+graph database affords.
+
+## Breaking out of the rectangle: modeling data as graphs
+
+To start, we must separate _data modeling_ from _schema design_.
+
+Data modeling, by my definition, is the process of figuring out what parts of
+the world we care about, and how to represent them. It involves identifying what
+_entity types_ we want to record information about, and what attributes we want
+to use to describe those entities. It can also include the logical rules
+governing the lifecycles of those entities, the relationships among them, and
+any security concerns.
+
+Data modeling takes place at the conceptual level, and is meant to convey your
+understanding of the business domain. We often record and share this
+understanding using [_entity relationship diagrams
+(ERDs)_](https://www.lucidchart.com/pages/er-diagrams). Here's an example ERD
+which shows how you model a system where customers place orders:
+
+<FlureeMermaid
+  chart={`erDiagram 
+    CUSTOMER ||--o{ ORDER : places
+    CUSTOMER {
+        string name
+        string custNumber
+        string sector
+    }
+    ORDER ||--|{ LINE-ITEM : contains
+    ORDER {
+        int orderNumber
+        string deliveryAddress
+    }
+    LINE-ITEM {
+        string productCode
+        int quantity
+        float pricePerUnit
+    }`}
+/>
+
+Schema design is the process of translating a data model into an implementation
+that your data store understands. It's about specifying the columns your tables
+will contain, as well as metadata like their indexes. Schema design is also
+where you think about how to enforce the constraints of your data model, e.g. by
+choosing the correct column data types, adding uniqueness constraints, and so
+on.
+
+You can also use ERDs to convey schema designs. Notice in this ERD it contains
+information on primary keys and foreign keys, information that's not needed for
+a data model:
+
+
+<FlureeMermaid
+  chart={`erDiagram 
+    CUSTOMER ||--o{ ORDER : places
+    CUSTOMER {
+        string name
+        string custNumber PK
+        string sector
+    }
+    ORDER ||--|{ LINE-ITEM : contains
+    ORDER {
+        int orderNumber PK
+        string custNumber FK
+        string deliveryAddress
+    }
+    LINE-ITEM {
+        int orderNumber FK
+        string productCode
+        int quantity
+        float pricePerUnit
+    }`}
+/>
+
+In the relational world, you _must_ define table schemas to store data. These
+schemas implement our understanding of our domain's _data model_. They give us
+something concrete to refer to to make sure that the data we're recording
+correctly matches our understanding of the domain, and they enforce constraints
+on the data, giving us some guardrails to make sure we don't record invalid
+data. Table schemas are where your conceptual understanding of how you want to
+represent the world meets the cold hard reality of how you're actually storing
+data.
+
+In the graph world, you don't have to define any schemas to start storing data.
+You just start storing data. In the examples we've seen so far, we just throw
+together any triples we feel like. This feels one hundred percent exactly like
+crossing a high wire one thousand feet above the earth -- without a safety net
+-- while juggling chainsaws. How do you cope?
+
+When migrating from the relational world to the graph world, it's unclear how to
+transfer your skillset over. What applies, and what doesn't? Are your approaches
+to data modeling still relevant? What about schema design?
+
+To give you just a couple examples:
+
+- In the relational world, you have to create a join table to capture
+  many-to-many relationships. In the graph world, nodes can just directly
+  reference each other without an intermediary.
+- In the relational world, you must store data in tables and tables necessarily
+  constrain what attributes can be associated with an entity. Not so in the
+  graph world - by default, entities can have any attributes.
+
+While schema design and data modeling are interconnected, this document focuses
+on data modeling. It touches on schema design to the extent that it points out
+how our table-oriented notions of schema design percolate up into our data
+modeling, but it doesn't get into any specifics about how to implement schemas
+for your graph data store; that's a large enough topic that it deserves its own,
+separate explanation.
+
+With that understanding of what we mean by "data modeling", let's look at the
+different ways we can record the data that we're attempting to model, and how
+the structure we use (graph or table), influences our approach to data modeling.
+
+## Representing Entities with Tables
+
+If you're an experienced database practitioner, your brain is now wired at a
+fundamental level to think of data as rows in tables, so to rewire it we'll need
+to revisit the fundamentals. It's like making the transition from imperative
+programming to functional programming, or even learning programming at all. What
+you thought was *the* way of representing the world was really only *a* way of
+representing the world.
+
+So, fundamentals: To record information about the world, we organize symbols
+using some kind of structure. The text that you're reading, for example, is
+written English, which is a phonetic system for mapping symbols to spoken
+language. It organizes letter symbols into word symbols, and then organizes
+those into sentences using punctuation symbols and white space.
+
+While it's possible to use full English sentences to record all the information
+we care about, it would be hard to write programs that can query that
+information and make connections across datasets. Instead we rely on additional
+structures to encode information.
+
+A table is a visual structure for organizing information that lets us
+consistently and compactly describe an entity's properties. I'm talking about
+tables in general here, not just database tables: tables that you draw on paper,
+or excel sheets, or even nutrition labels. Take this table of tea information:
+
+| Name                         | Brew Temp | Brew Time |
+|------------------------------|-----------|-----------|
+| Uji Gyokuro Yume no Ukihashi | 60        | 150-180   |
+| Uji Gyokuro Fujitsubo        | 60        | 150       |
+| Shirakawa Gyokuro            | 50        | 150-180   |
+
+Each row represents some *entity*, some thing in the universe that we want to
+describe. Each column represents an *attribute* of that entity, some property of
+the entity that we're interested in. The intersection of row and column is a
+cell, and cells record a specific *value* for that entity and attribute. For
+example, the third row describes an entity that has the `Name` `Shirakawa
+Gyokuro`, a `Brew Temp` of `50` (celsius), and a `Brew Time` of `150-180`.
+
+The table is probably one of the oldest structures we humans use for organizing
+information. As far as technology goes, the humble table is wildly successful.
+If you could buy stock in "table" back in like 10,000 b.c. you would be very rich by
+now.
+
+Its longevity is due in part, I think, to its intuitive appeal. The visual
+processing systems in our brains are able to quickly parse and navigate the
+information stored in tables.
+
+But the information itself is not inherently tabular. Our brains are just used
+to thinking about it that way. Tables are just one way of representing it.
+Anything you can represent with a table, you can also represent with a graph.
+Let's have a look.
+
+## Representing Entities with Graphs
+
+Here's how you could organize the same data into a graph:
+
+<FlureeMermaid
+  chart={`graph TB
+  t1 -->|name| t1n(Uji Gyokuro Yume no Ukihashi)
+  t1 -->|brew temp| t1tmp(60)
+  t1 -->|brew time| t1bt(150-180)
+  t2 -->|name| t2n(Uji Gyokuro Fujitsubo)
+  t2 -->|brew temp| t2tmp(60)
+  t2 -->|brew time| 150
+  t3 -->|name| t3n(Shirakawa Gyokuro)
+  t3 -->|brew temp| 50
+  t3 -->|brew time| t2bt(150-180)
+  classDef default ry:5,rx:5
+  `}
+/>
+
+This graph encodes the same information as the table above, capturing the
+relationships between entities, attributes, and values. The nodes `t1`, `t2`,
+and `t3` correspond to rows in a database. Each of these nodes has three
+*directed edges* labeled `name`, `brew temp`, and `brew time`, and pointing to
+values which correspond to the cell values in a table.
+
+A directed edge indicates that the relationship exists only one way: `t2` has a
+`brew time` of `150`, but `150` does not have a `brew time` of `t2`. The
+starting node is called the _tail_ and the ending node is called the _head_.
+
+So tables and graphs are two different ways of organizing symbols to record
+information. There's no information in the graph example that's not contained in
+the table example, and vice versa.
+
+Still, there are some notable differences between how we're able to use these
+two representations, including:
+
+* Tables contain less repetition than graphs
+* The visual structure of tables makes it easier for us as humans to answer some
+  kinds of questions by scanning the table. For example, it's easier to answer
+  the question, "Do we have information about Shirakawa Gyokuro?"
+* All entities are explicitly named in graphs, whereas with tables entities are
+  implied by the row. You can refer to an entity by e.g. row number, or by the
+  value of one of the columns, but this kind of naming is ad hoc
+
+There are other differences between the representations, and we'll talk about
+those more later. The main takeaway for now, though, is that it's possible to
+structure the information stored in tables as graphs.
+
+## Entities, Attributes, and Values
+
+Tables and graphs are two different ways of structuring entities, attributes,
+and values. Their different organization systems are key to understanding the
+nuances in how we approach data modeling between table world and graph world.
+
+The combination of entity, attribute, and value is the atomic unit of
+information. This combination is how we say something about something. "Daniel
+has a cat", "the cat is named Potato", "Potato is yelling" - all of these
+statements express a relationship between two things, and these relationships
+can all be captured using *EAV (entity, attribute, value) triples*. (If you're
+familiar with RDF, EAV triples are another, more generic way of talking about
+subject, predicate, object triples.) Triples are also called _statements_ or
+_facts_.
+
+A triple is an ordered sequence of three phrases:
+
+```
+person, name, Daniel
+person, has, cat
+cat, name, Potato
+cat, yelling?, true
+```
+
+Or, to take our tea example:
+
+```
+t1, name, Uji Gyokuro Yume no Ukihashi
+t1, brew temp, 60
+t1, brew time, 150-180
+```
+
+Tables organize triples by displaying them in a grid. While we tend to think of
+"rows" as the atomic unit of information, really you can conceptually break down
+rows further into aggregates of cells that describe the attributes and values
+for a single entity.
+
+Graphs organize triples by displaying them as nodes with directed edges. Each
+combination of head, directed edge, tail captures a triple. With graphs you
+don't inherently need to constrain the possible attributes.
+
+If you're recording information purely as EAV triples, there is no inherent
+notion of "entity type". It's possible and reasonable to record information as
+collections of EAV triples, without introducing constraints or trying to
+categorize groups of triples.
+
+When you define a table, however, you must define its columns. Therefore, tables
+by their very nature constrain what attributes are associated with the entities
+recorded in that table. If the table doesn't have a column for an attribute, you
+can't record that attribute in that table.
+
+This isn't the case with graphs! This understanding of how tables and graphs
+represent EAV triples, and the limits that tables introduce, will help us
+understand how to model data outside of the world of tables.
+
+## Data modeling skills still apply, but the world is expanded
+
+How do we do data modeling with graph data? Good news: you can still rely on the
+data modeling techniques that you're used to. Tools like Entity Relationship
+Diagrams are just as useful for graph data as they are for relational data. You
+might have other implementation-agnostic tools at your disposal like [Domain
+Driven
+Design](https://learn.microsoft.com/en-us/archive/msdn-magazine/2009/february/best-practice-an-introduction-to-domain-driven-design)
+to discover the relevant entity types in your system; you can still use those
+too.
+
+The difference is that with graph data, the notions of "entity," "entity type,"
+and "attribute" are more generic and more expansive than with tables. Take our
+Daniel / cat example:
+
+```
+person, name, Daniel
+person, has, cat
+cat, name, Potato
+cat, yelling?, true
+```
+
+<FlureeMermaid
+  chart={`graph TB
+  person -->|name| Daniel
+  person -->|has| cat
+  cat -->|name| Potato
+  cat -->|yelling?| true
+  classDef default ry:5,rx:5
+  `}
+/>
+
+How does this differ from the way you would store this in a relational database?
+
+- There is no explicitly defined entity type. Database systems can allow you to
+  define entity types which they then use to validate your data and enforce
+  constraints, but this is optional - entities don't have to be an instance of
+  an entity type to exist.
+- `person` and `cat` are both able to use the same attribute, `name`
+- The `person` entity is able to directly refer to the `cat` entity. With
+  tables, you can only indirectly refer to other entities via foreign keys.
+
+This example illustrates the ways that "thinking in tables" influences our data
+modeling process. To get used to data modeling with graphs, step one is
+disentangling table-specific design details from your conceptual models.
+Lower-level table-specific implementation considerations (like creating primary
+and foreign keys) can exert influence upward, shaping your conceptual designs.
+It's like how the building materials you use might affect the way you design a
+house, even though the principles of architecture remain constant. (I think. I
+have never designed a house. Or studied architecture.)
+
+### Graphs let you capture any relationships between any two things
+
+How do we go about disentangling table-specific design details from conceptual
+models? Let's start by recalling that an EAV triple captures a relationship
+between two things, and "a relationship between two things" is the basic
+building block of information. Tables structure relationships (captured as
+columns) between entities (captured as rows) and values (captured as the value
+in a cell). Graphs structure relationships as two nodes with a directed edge
+pointing from one to the other.
+
+When you're in data modeling mode, you want to consider the direct relationships
+that can exist between the entities in your system, without concern for how you
+might implement those relationships in a table. Tables constrain our thinking
+around entity relationships in a few ways:
+
+1. Entities can't directly refer to each other.
+2. Entities can't exist without the supporting structures of rows and tables
+3. Entities are only allowed to have a limited set of attributes
+4. There's a strict correspondence between entity type and attribute; if an
+   attribute isn't in a table schema, the entity can't have it. Likewise,
+   entities can't have attributes from other table schemas.
+
+These constraints don't exist with graphs. In fact, graphs allow you to capture
+nearly _any_ relationships between _any_ two entities, and tables don't. The
+notion of "entity" is also broader than in the relational world. For example,
+you can even treat an attribute as an entity, in that you can create EAV triples
+that describe attributes by relating them to other entities. The graph below
+shows EAV triples we've recorded for the `name`, `has`, and `yelling`
+attributes, along with a new `describes` attribute:
+
+```
+name, describes, identity
+has, describes, ownership
+yelling?, describes, vocal state
+describes, describes, meaning
+```
+
+<FlureeMermaid
+  chart={`graph TB
+  name -->|describes| identity
+  has -->|describes| ownership
+  yelling? -->|describes| vs(vocal state)
+  describes -->|describes| meaning
+  classDef default ry:5,rx:5
+  `}
+/>
+
+This might feel strange to you. How can `name` be both an entity and an
+attribute? For that matter, it might even feel strange to you to talk about
+`name` as an entity at all; we're used to thinking of entities as _anonymous
+containers_ for attribute/value pairs, not as referenceable things that exist in
+the same data space as all other data. With graph databases, there are no
+containers for entities; there's just nodes and the edges that connect them with
+no end or beginning. Thus we can even have `describes` used as both an entity
+and an attribute. It feels strange, but over time you'll get used to it.
+
+Anyway, if we return to our definition of information as consisting of
+statements about how things are related, we can see that graph databases are
+both more permissive and more direct in the relationships that you're allowed to
+capture, and you'll want to take this permissiveness and directness into account
+when you're constructing your data models. When working with tables you must
+necessarily constrain the attributes that an entity is allowed to have, and
+entities can't refer directly to each other. When working with graph data, you
+don't need to define any constraints, and entities can have any attributes
+unless you introduce constraints. Entities can also refer to each other
+directly.
+
+These differences have further implications for data modeling, and we're going
+to keep exploring them below.
+
+### Entities can refer to each other directly
+
+In the relational world you cannot construct an EAV triple where one row
+directly references another row; instead, you must _indirectly_ reference other
+rows via foreign keys. You cannot construct your data like this:
+
+<FlureeMermaid
+  chart={`graph TB
+  person -->|has| cat
+  classDef default ry:5,rx:5
+  `}
+/>
+
+Instead, you must construct a `person` table and a `cat` table, where the person
+has a `catId` column whose value matches the `id` column in `cat`:
+
+<FlureeMermaid
+  chart={`graph TB
+  person -->|catId| p1(1)
+  cat -->|id| c1(1)
+  classDef default ry:5,rx:5
+  `}
+/>
+
+The relationship between `person` and `cat` has to be inferred, usually via the
+`WHERE` clause of a SQL query.
+
+### You don't need join tables for many-to-many relationships
+
+An extension of this concept is that you don't have to create the equivalent of
+a join table to capture many-to-many relationships. You can just capture them
+directly:
+
+<FlureeMermaid
+  chart={`graph TB
+  person-1 -->|loves| cat-1
+  person-1 -->|loves| cat-2
+  person-2 -->|loves| cat-1
+  person-2 -->|loves| cat-2
+  cat-1 -->|loves| person-1
+  cat-1 -->|loves| person-2
+  cat-2 -->|loves| person-1
+  cat-2 -->|loves| person-2
+  classDef default ry:5,rx:5
+  `}
+/>
+
+But if you need to you can introduce an entity that represents a relationship.
+The graph below includes nodes named `feeling-1`, `feeling-2`, and `feeling-3`
+which serve the same function as a record in a join table. We introduce these
+intermediary nodes in this case because there's additional information we want
+to include about the feelings these entities have for each other: the type of
+feeling (`love`, `hate`, etc) and the intensity of the feeling:
+
+<FlureeMermaid
+  chart={`graph TB
+  person-1 -->|feels| feeling-1
+  feeling-1 -->|type| love
+  feeling-1 -->|object| cat-1
+  feeling-1 -->|intensity| 10
+ 
+  person-2 -->|feels| feeling-2
+  feeling-2 -->|type| love
+  feeling-2 -->|object| cat-1
+  feeling-2 -->|intensity| 8
+
+  cat-1 -->|feels| feeling-3
+  feeling-3 -->|type| love
+  feeling-3 -->|object| person-1
+  feeling-3 -->|intensity| 10
+
+  classDef default ry:5,rx:5
+  `}
+/>
+
+Here's how you might capture this as an ERD:
+
+<FlureeMermaid
+  chart={`erDiagram 
+    PERSON ||--o{ FEELING : feels
+    PERSON {
+        string name
+    }
+    CAT ||--o{ FEELING : feels
+    CAT {
+        string name
+    }
+    FEELING ||--o{ PERSON : target
+    FEELING ||--o{ CAT : target
+    FEELING {
+        string type
+        node object
+        int intensity
+    }`}
+/>
+
+### Attributes are independent of entity type
+
+In the relational world, attribute names are scoped to table definitions. Two
+tables might use the same name for a column, and it might have the same meaning
+or it might not. For example, a `poem` table and a `book` table both have a column
+named `author`, and it's likely they both name the same thing. If they do,
+however, that is a matter of convention, a matter of agreement among the people
+using that database. The fact that `author` is meant identically in the two
+tables cannot be captured in the database itself.
+
+By the same token, you might have a `locations` table with a `coordinates`
+column, and your colleague might have a `places` table with a `coordinates`
+column. Does `coordinates` mean the same thing in these two tables? Maybe, maybe
+not. Maybe you're both using latitude and longitude, or maybe one of you is and
+the other is using the Universal Transverse Mercator (UTM) coordinate system.
+There's no way to know without additional contextual information (like docs)
+outside the databases themselves.
+
+With graph data, the meaning is clear. If you have triples like this, you know
+that the meaning of `author` is the same in both:
+
+```
+The Leash, author, Ada Limon
+Demon Copperhead, author, Barbara Kingsolver
+```
+
+And if you have triples like this, you know that there are two distinct
+attributes being used:
+
+```
+"durham nc", lat_lng_coordinates, "35.9,78.9"
+"durham nc", utm_coordinates, "689419.80,3985328.70"
+```
+
+Table constraints artificially limit the way you think about and communicate
+data modeling. Because it's not possible to use the same attribute in two
+different tables, we don't think about what that means for our data or how to
+communicate it.
+
+With graphs, the same attribute can belong to multiple entity types, and you can
+therefore capture that in your data models. You can communicate this by using
+the same attribute names in your ERDs when the meaning of the attribute is the
+same, and using different attribute names when the meaning is different.
+
+### Normalization
+
+With relational databases, we attempt to [normalize our
+schemas](https://learn.microsoft.com/en-us/office/troubleshoot/access/database-normalization-description)
+to reduce duplication and minimize the likelihood of data drift, where the same
+information is recorded in multiple places and those places are not all kept in
+sync.
+
+Normalizing your data can introduce inefficiencies, however, as querying the
+data can involve expensive JOINs and UNIONs. Normalization is therefore balanced
+with intentional denormalization, duplicating data across table rows to improve
+performance.
+
+With graph databases, you generally normalize your data without concern for
+denormalization. You can apply the same heuristics for figuring out when to
+normalize your graph data: for example, if you have an e-commerce site and are
+recording orders, you might record your data in a "denormalized" way by
+recording a billing address for each order:
+
+<FlureeMermaid
+  chart={`graph TB
+  order-1 -->|street-address| as(123 chapel hill rd)
+  order-1 -->|city| ac(Durham)
+  order-2 -->|street-address| bs(123 chapel hill rd)
+  order-2 -->|city| bc(Durham)
+  classDef default ry:5,rx:5
+  `}
+/>
+
+Or you might introduce an `address` entity that orders can refer to:
+
+<FlureeMermaid
+  chart={`graph TB
+  order-1 -->|address| address-1
+  order-2 -->|address| address-1
+  address-1 -->|street-address| as(123 chapel hill rd)
+  address-1 -->|city| ac(Durham)
+  classDef default ry:5,rx:5
+  `}
+/>
+
+The latter is generally preferred, where possible. It more clearly reflects your
+application's data model and it's better for data integrity. Because of how
+graph databases store data, you don't have to worry about the efficiency of
+querying normalized data like you do with relational databases.
+
+### Entities can have multiple types
+
+One of the biggest differences between the table approach and graph approach is
+that, with graphs, _entities can have multiple types_. This is because an entity
+type is defined in terms of attributes an entity has, whereas with tables the
+"type" of the entity is rigidly bound to the table that contains it. Sure, it's
+possible to create tables that have a `type` column as a kind of workaround, but
+even then graph systems exhibit a degree of flexibility that's simply not
+possible with tables.
+
+With a graph system, you could say that an entity has a `PERSON` type and an
+`EMPLOYEE` type. `PERSON` entities should have `name` and `birth-date`
+attributes, and `EMPLOYEE` entities should have an `employee-number` field.
+Here's how you might capture this as an ERD:
+
+<FlureeMermaid
+  chart={`erDiagram 
+    PERSON {
+        string name
+        date birth-date
+    }
+    EMPLOYEE {
+        string employee-number
+    }`}
+/>
+
+The following triples would define an entity that has both types:
+
+```
+entity-1, name, "Ash Williams"
+entity-1, birth-date, "1958-06-22"
+entity-1, employee-number, "333"
+```
+
+This article doesn't describe the practical implications of this fact or the
+ways that you can leverage it. The point here is that it's at least possible,
+whereas it's not possible to do something like this with a relational database.

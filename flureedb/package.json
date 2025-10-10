@@ -1,0 +1,34 @@
+{
+	"description": "JavaScript library facilitating access to a Fluree instance",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/fluree/flureejs.git"
+	},
+	"license": "SEE LICENSE IN LICENSE",
+	"name": "@fluree/flureedb",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"keywords": [
+		"fluree",
+		"javascript",
+		"database",
+		"ledger"
+	],
+	"author": "Fluree PBC (https://flur.ee)",
+	"version": null,
+	"main": "fluree-browser-sdk.js",
+	"dependencies": {
+		"source-map-support": "^0.5.21",
+		"axios": "^1.7.7",
+		"ws": "^8.8.0",
+		"js-sha3": "^0.8.0",
+		"scrypt-js": "^3.0.1",
+		"@fluree/sjcl": "^1.0.8-3",
+		"form-data": "^4.0.0",
+		"seedrandom": "^3.0.5",
+		"bufferutil": "^4.0.7",
+		"utf-8-validate": "^5.0.10",
+		"@cljs-oss/module-deps": "^1.1.1"
+	}
+}

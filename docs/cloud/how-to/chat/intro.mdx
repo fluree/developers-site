@@ -1,0 +1,87 @@
+---
+title: Introduction
+keywords:
+  - LLM
+  - Chat
+  - Ask
+---
+
+import Admonition from "@theme/Admonition";
+
+---
+
+The Fluree Data Agent is a powerful tool that enables you to interact with your data in a conversational way. 
+Ask questions and explore your data using a natural language interface grounded in your dataset's structure. 
+This guide provides step-by-step instructions to enable Fluree's Data Agent interface for your dataset.
+
+## Requirements
+There are two things you'll need before you can chat with your data:
+
+### 1. A Fluree Cloud Account
+If you don't already have a Fluree Cloud Account you can go directly to [the registration page](https://data.flur.ee/signup) 
+or head to the [Getting Started documentation](/docs/cloud/getting-started/account-registration) for specific instructions on how to create a Fluree Cloud Account.
+
+### 2. A Fluree Cloud dataset that uses a *Fluree Data Model*
+After logging into your Fluree Cloud account, you can go directly to [the create dataset form](https://data.flur.ee/new/dataset) to create a new Fluree Cloud dataset. 
+You can also navigate to the [Getting Started documentation](/docs/cloud/getting-started/create-new-dataset) for specific instructions on how to create a Fluree Cloud dataset.
+
+A **Fluree Data Model**, or `f:DataModel`, is simply a schema that the Data Agent can use to understand the structure of your data and the relationships between entities in your dataset.
+You can read more about the `f:DataModel`, its components, and how it works [further down this page](#fdatamodel).
+
+<Admonition type="info">
+In this Guide and throughout the documentation, you will see data values that start with `f:`, as in `f:DataModel`.
+This is the compacted form. The full value replaces `f:` with `https://ns.flur.ee/ledger#` and so our example of `f:DataModel` is actually stored as `https://ns.flur.ee/ledger#DataModel`.
+</Admonition>
+
+## Path to your Chat-enabled Dataset
+Fluree Cloud is built to be your easiest path to working with your data. You have a few options for layering a *Fluree Data Model* into your dataset.
+Choose the path that matches your source data and follow the guide with the goal of defining a data model that's compatible with the <span className="text-ui-main-500 font-bold">Fluree Data Agent</span>. 
+Each item is a link to the next document in the series.
+ 1. [Upload Documents](./with-unstructured.mdx)  
+    You have unstructured documents like PDFs, Word docs, or text files.
+ 1. [Upload Tables](./with-structured.mdx)  
+    You have structured data from a relational database export or in a spreadsheet or set of CSV files.
+ {/* 1. [Bring your own Ontology](./with-ontology.mdx)  
+    You have a custom ontology or data model that you want to use. */}
+
+
+<Admonition type="info">
+The following description of `f:DataModel` is a technical breakdown of what the Data Agent needs to understand your data.
+Reading this description is not necessary to use the Data Agent. The paths above will guide you through using the automated tools to generate an `f:DataModel` from your data sources.
+If you're not currently interested in how the `f:DataModel` works and how the Fluree Data Model uses it, please feel free to skip ahead to the next doc on your path. You can always come back here later to dive a little deeper.
+</Admonition>
+
+## `f:DataModel`
+In broad terms, a data model is a map of the structure of your data.  
+In Fluree Cloud, an `f:DataModel` is a specific type of data model that is used to describe the structure of your dataset in a way that the Fluree Data Agent can understand.
+A data model conforms to `f:DataModel` if it contains the following elements:
+ 1. A <span className="text-ui-main-500 font-bold italic">root node</span> with:
+    - An `@type` of `f:DataModel`; this defines the entity as the root node of your Fluree Data Model.
+    - A property, `f:classes`, who's value is a <span className="text-ui-main-500 font-bold italic">list of classes</span>, each with an `@type` of `rdfs:Class`, that comprehensively describe your data model.
+ 2. A <span className="text-ui-main-500 font-bold italic">list of properties</span>, each with:
+    - An `@type` of `rdf:Property`; this defines the entity as a property in your Fluree Data Model.
+    - An `rdfs:domain` that points to the class that the property appears on.
+    - An `rdfs:range` that points to the class that the property points to or the datatype of the property.
+
+<Admonition type="info">
+  We use the term ***conforms*** here because it's not enough for your dataset to just *contain* an element with an `@type` of `f:DataModel`. 
+  The `f:DataModel` must adequately describe the shape and contents of your dataset and the data must abide by the data types and enumeration values defined by your `f:DataModel`.
+</Admonition>
+
+The above is the minimum needed to enable the Fluree Data Agent. You could stop here and the Agent would be able to generate full, complex queries based on your `f:DataModel`.
+However, the more detail you can provide in your `f:DataModel`, the more powerful the Data Agent will be. 
+Providing *annotations* like labels, descriptions, preferred and alternate names, and enumerated values will make your data more accessible for the Data Agent and more intuitive for the end user.  
+
+Go further by including the following elements in your `f:DataModel` definition to enhance the Data Agent's capabilities:  
+ 1. **Labels**  
+    Every element in your `f:DataModel` should have an <code className="text-ui-main-500 font-bold italic">rdfs:label</code> property that provides a human-readable name for the element. This is the primary name that the Data Agent will use to refer to and recognize the element.  
+ 1. **Descriptions**  
+    Descriptions can be added to every element in your `f:DataModel` using the <code className="text-ui-main-500 font-bold italic">rdfs:comment</code> property to provide additional context and information for the element. 
+    A descriptive and concise <code className="text-ui-main-500 font-bold italic">rdfs:comment</code> can greatly aid the Data Agent understand the element's purpose and how it relates to other elements in the dataset.
+ 1. **Preferred and Alternate Labels**  
+    Use the <code className="text-ui-main-500 font-bold italic">skos:prefLabel</code> and <code className="text-ui-main-500 font-bold italic">skos:altLabel</code> properties to provide additional names for every element in your `f:DataModel`. 
+    These can be used to provide synonyms or abbreviations that your end users might use when communicating with the Data Agent.
+ 1. **Enumerated Values**  
+    To describe that a property can be one of specific set of values, set it's `rdfs:range` to an *Enumerated Class*.  
+    An ***Enumerated Class*** is defined by using the <code className="text-ui-main-500 font-bold italic">f:oneOf</code> property to enumerate the closed list of subclasses that an instance of the enumerated class can be. 
+    For example, an enumerated class `TrafficLightColor` would have an <code className="text-ui-main-500 font-bold italic">f:oneOf</code> property that lists `Red`, `Yellow`, and `Green` as the only possible values for the class.

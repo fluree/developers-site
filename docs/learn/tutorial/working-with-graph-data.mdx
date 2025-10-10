@@ -1,0 +1,560 @@
+import Admonition from "@theme/Admonition";
+import { FlureeMermaid } from "@site/src/components/Mermaid/FlureeMermaid.jsx";
+import SandboxDrawer from "@site/src/components/sandbox_drawer/SandboxDrawer.jsx";
+// import SandboxButton from "@site/src/components/sandbox_drawer/SandboxButton.jsx";
+
+# Working with Graph Data
+
+The last chapter focused on how you can describe individual entities using RDF
+triples, how those triples form a graph, and how you can use JSON to encode
+triples. This chapter refines our notion of "entity" and shows how you can use
+JSON to encode relationships between entities.
+
+Along the way, we'll focus on a problem: How do you represent the following
+graph in JSON? How would you insert it into Fluree?
+
+<FlureeMermaid
+  chart={`graph TB
+  j(_:f100) -->|"@id"| jid(_:f100)
+  j -->|name| jn(Jack)
+  j -->|species| sp1(Mongolian death worm)
+  j -->|bestFriend| l
+  l(_:f101) -->|"@id"| lid(_:f101)
+  l -->|name| ln(Lucia)
+  l -->|species| sp2(Mongolian death worm)
+  l -->|bestFriend| j
+`}
+/>
+
+This shows two Mongolian death worms named `Jack` and `Lucia` who have a
+reciprocal `bestFriend` relationship. JSON on its own has no standard way for
+representing this kind of relationship. You'd need some way for `_:f100` to
+refer to `_:f101`, and while you could come up with a convention for doing that,
+it would be idiosyncratic to your system and difficult to enforce and maintain.
+
+This chapter will show you how to use JSON-LD, a W3C standard, to represent this
+relationship -- and virtually any other graph. It will show you how store these
+graphs in Fluree.
+
+## Representing entities
+
+Before we enter the realm of JSON-LD, I first need to clarify some subtleties
+around how we use the word "entity." Many of us think of an entity as similar to
+a _row_ in a relational database or an _object_ in an object oriented language.
+An entity has _fields_ (if it's in a db) or _attributes_ (if it's an OO object),
+and those fields/attributes have _values_. There's a distinction between the
+entity as a data container (row or object), and the data that it contains.
+
+RDF does not technically support this kind of distinction. It's all just nodes
+connected by arcs, resources connected by predicates. Take this graph:
+
+In the triple `["Jack", "loves", "cheesecake"]`, none of the elements can be
+said to have the privileged position of "entity" as something which encompasses
+the other elements. This notion is reinforced when you visualize the triple:
+
+<FlureeMermaid
+  chart={`
+graph LR
+  j(Jack) -->|loves| c(cheesecake)
+`}
+/>
+
+There's no container here, just two nodes and an arc. The arc does have a
+direction, from Jack to cheesecake, but there's nothing stopping you from
+reading this as "cheesecake is loved by Jack" or from adding an arc from
+cheesecake to Jack.
+
+Nevertheless, the notion of an entity as a container is useful and it feels
+intuitive. If we're modeling customer data, we want to be able to talk about _a
+customer_ as an actual thing that has properties or attributes. The resolution
+here is to just acknowledge that you can impose that kind of organization onto
+an RDF graph, _but_ it's a convenience for your thinking and communication, and
+_not_ something that's technically reflected in the way RDF data is structured.
+
+We also need to contend with the practical fact that we are representing our
+data using JSON objects, which actually _are_ containers. How do we bridge this
+gap between RDF's notion of data as a non-hierarchical collection of nodes and
+arcs, and JSON's inherently hierarchical structure?
+
+When we say that a JSON object represents an entity, what we mean is that the
+JSON object's key/value pairs correspond to RDF predicates and objects in a set
+of triples, and all of those triples have the same subject.
+
+That gets us part of the way to bridging the gap. But what is the subject? How
+do we even specify that? Take this JSON:
+
+{/* <SandboxButton /> */}
+
+```json
+{
+  "name": "Jack",
+  "species": "Mongolian death worm"
+}
+```
+
+The key/value pairs correspond to RDF predicates and objects, so where would we
+even specify a subject? As it turns out, there's a W3C standard that defines how
+to fully represent RDF data using JSON data structures, including how to specify
+the subject in a JSON object. It's called JSON-LD which stands for _JSON for
+Linked Data_.
+
+## JSON-LD
+
+JSON-LD is a standard for representing RDF data using JSON data structures.
+Because RDF data describes graphs, JSON-LD can also be thought of as a way to
+represent graphs using JSON. I'll talk about JSON-LD from both perspectives.
+
+JSON-LD is just JSON, but with some additional rules for structuring objects to
+provide the information machines and humans need to interpret the JSON as a
+graph. When I say _a JSON-LD object_, I mean a JSON object that's being
+interpreted using the rules of the JSON-LD standard.
+
+These rules are necessary because JSON on its own doesn't provide us with a
+standard way of representing the kinds of relationships we want to represent,
+like the mutual `"bestFriend"` relationship between Jack and Lucia from earlier.
+With JSON-LD, though, you can represent virtually any graph.
+
+This is useful in itself; using JSON-LD also gives you a couple strategic
+advantages:
+
+1. Because it's built on top of JSON, you can leverage the wealth of existing
+   tools for working with JSON data.
+2. Because it's a standard, JSON-LD-structured data is portable and composable
+   in a way that simply isn't possible otherwise. It provides a common language
+   for representing information across systems, removing the need to constantly
+   write software that translates between data system.
+
+In the same way that JSON is a data format that's defined independently from any
+particular application, JSON-LD is a way to represent graphs that's defined
+independently of any database, including Fluree. Fluree provides a JSON-LD
+interface, meaning that the data you insert and update is formatted as JSON-LD,
+queries you write (and the results they return) are too. To understand how to use Fluree, we'll need to
+learn JSON-LD.
+
+## Inserting JSON-LD Data
+
+Let's return to the question of how we indicate the RDF subject in a JSON
+object. With JSON-LD, you use the `"@id"` key:
+
+{/* <SandboxButton /> */}
+
+```json
+{
+  "@id": "_:f100",
+  "name": "Jack",
+  "species": "Mongolian death worm"
+}
+```
+
+<Admonition type="caution">
+
+In real-world usage you'll want to use _IRIs_ for `"@id"` values, a topic
+we'll cover in the next chapter. IRIs typically look like URIs, with values
+like `"http://cryptid-research.com/researchers/jack"`.
+
+We'll keep formatting @id's using the `_:` prefix for the time being, but if
+for some reason you stop the tutorial here just be aware that it'll be
+important to learn how to work with IRIs.
+
+For those familiar with RDF, note that Fluree treats blank node identifiers as
+stable identifiers, such that if you run multiple transactions using the same
+blank node id for `@id`, then it will modify a single subject rather than
+inserting new subjects.
+
+</Admonition>
+
+This corresponds to the following graph:
+
+<FlureeMermaid
+  chart={`
+graph LR
+  j(_:f100) -->|name| jn(Jack)
+  j -->|species| s1("Mongolian death worm")
+`}
+/>
+
+So that answers the question of how to encode the subject in a JSON object, but
+you're probably wondering about where we got the string `"_:f100"`, and what
+role Fluree plays in creating these values. After all, in other database systems
+there are mechanisms for generating unique primary keys; how does this work in Fluree?
+
+The answer actually has a surprising amount of depth to it, but for now I'm just
+going to focus on the bare minimum you need to know in order to understand how
+to represent the `"bestFriend"` relationship:
+
+1. Because JSON-LD is a strict serialization of RDF triples, and because RDF triples always have a subject, every entity in JSON-LD (and in Fluree) must have an `"@id"` value, even if none is explicitly supplied.
+2. You don't need to provide an `"@id"` value explicitly. If you don't, Fluree will generate one for you. These data entities are known as _blank nodes_, and Fluree's `@id` assignment follows a pattern of **`_:f[integer value]`**.
+3. If you do provide an `"@id"` value, this value (conventionally, a URI string representing an entity with global uniqueness) becomes an identifier that makes it easier to qualify your updates to (or your queries against) that node in the future.
+4. When we transact facts against an entity by referencing its `"@id"` value, those updates effectively qualify _upserts_ against that entity. If an entity with that subject IRI already exists, the facts will be applied to it. If it doesn't exist, that entity will be created.
+5. If you include an `"@id"` value in your JSON object, its value does not have
+   to match Fluree's naming scheme, and its value doesn't need to already exist
+   in the database. That is to say: you can generate new identifiers using your
+   own system in order to create new entities in Fluree.
+
+Let's look at the following transactions (and feel free to try them out directly in the sandbox!)
+
+<Admonition type="info">
+  In all of the following examples we will be using Fluree's `insert` key to
+  assert the following information. We are also able to combine the `insert` key
+  with the `delete` key to issue more nuanced updates to existing data, and we
+  can even use the `where` key to bind existing data to `?logicVariables`,
+  making it possible to execute all kinds of surgical, precise updates to new or
+  existing data.
+</Admonition>
+
+{/* <SandboxButton /> */}
+
+```jsonc
+// This will insert or update the following facts about
+// the entity with the subject IRI, "http://example.org/jack"
+
+{
+  "insert": {
+    "@id": "http://example.org/jack",
+    "name": "Jack",
+    "species": "Mongolian death worm"
+  }
+}
+```
+
+{/* <SandboxButton /> */}
+
+```jsonc
+// This will insert the same predicate-object pairs as the
+// previous transaction, but because no @id is provided, Fluree
+// will generate a new blank node entity with an arbitrary @id IRI
+
+{
+  "insert": {
+    "name": "Jack",
+    "species": "Mongolian death worm"
+  }
+}
+```
+
+{/* <SandboxButton /> */}
+
+```jsonc
+// We see here the same predicate-object facts as above, but
+// with an entirely new subject IRI, "http://example.org/some-new-identifier".
+// Nodes are directly identified by their @id subject IRI, not by other
+// predicate-object pairs, so this transaction will not affect or update
+// data on "http://example.org/jack"
+
+{
+  "insert": {
+    "@id": "http://example.org/some-new-identifier",
+    "name": "Jack",
+    "species": "Mongolian death worm"
+  }
+}
+```
+
+<Admonition type="info">
+  We also have a pattern for updating data on existing entities without using
+  their `@id` subject IRIs as identifiers. We'll look at this later, but it
+  involves issuing a kind of subquery with the `where` key to find entities
+  matching particular data conditions, and then using our `?logicVariable`
+  patterns to update data on the results of those subqueries.
+</Admonition>
+
+So that's how we represent a single entity with JSON-LD. To represent our best
+friend graph, though, we'll need to represent multiple entities. Here's how to
+do that:
+
+{/* <SandboxButton /> */}
+
+```json
+{
+  "insert": [
+    {
+      "@id": "_:f100",
+      "bestFriend": {
+        "@id": "_:f101"
+      },
+      "name": "Jack",
+      "species": "Mongolian death worm"
+    },
+    {
+      "@id": "_:f101",
+      "bestFriend": {
+        "@id": "_:f100"
+      },
+      "name": "Lucia",
+      "species": "Mongolian death worm"
+    }
+  ]
+}
+```
+
+With JSON-LD, you can use an array to represent a collection of entities. This
+is how we can use JSON to represent any number of nodes and relationships in a
+graph.
+
+`"@id"` is a _keyword_, meaning that JSON-LD assigns them special meaning that's
+not present solely in the data itself. `"@id"` is still a JSON key like `"name"`
+or any other key, but tools that interpret JSON as JSON-LD (like Fluree) know
+that the key has additional significance, designating an identifier that should
+be used as the subject for a set of triples.
+
+This is generally what it means for JSON-LD to be a standard implemented on top
+of JSON. JSON-LD defines keywords and their possible values so that applications
+will have a clear way of translating JSON into internal data structures.
+
+Note the value of `"bestFriend"`: it's not simply the string for the `"@id"`
+being referenced, it's a JSON object with the key `"@id"`. It's not this:
+
+```json
+{ "bestFriend": "_:f100" }
+```
+
+It's this:
+
+```json
+{
+  "bestFriend": {
+    "@id": "_:f100"
+  }
+}
+```
+
+Any time you want to reference an identifier, make sure you do it in this way.
+
+You can transact multiple entities with Fluree in an array, and Fluree will insert
+all entities, meaning that it will create triples for all the key/value pairs in
+the JSON object. If you were to transact the JSON with the death worms above, Fluree
+would create the following triples:
+
+{/* <SandboxButton /> */}
+
+```json
+[
+  ["_:f100", "@id", "_:f100"],
+  ["_:f100", "name", "Jack"],
+  ["_:f100", "species", "Mongolian death worm"],
+  ["_:f100", "bestFriend", "_:f101"],
+  ["_:f101", "@id", "_:f101"],
+  ["_:f101", "name", "Lucia"],
+  ["_:f101", "species", "Mongolian death worm"],
+  ["_:f101", "bestFriend", "_:f100"]
+]
+```
+
+Thus, it's possible to insert multiple entities at the same time, and for the
+entities to refer to each other.
+
+## Querying graph data
+
+Graphs have no logical beginning or end, nor do they have containers in the way
+we're used to with other databases. Yet, it's useful to represent them in JSON,
+which imposes a bounded, hierarchical structure on the data. We've explored this
+from the perspective of transactions but how do we represent and issue queries by using JSON-LD?
+
+As a reminder from the last chapter, when you execute a query, it's like you're telling Fluree how to:
+
+1. Filter Fluree's nodes down to some initial set of nodes
+2. Recursively include adjacent arcs and nodes
+3. Return the selected nodes and arcs as JSON
+
+### A simple query
+
+Let's start with a simple query:
+
+{/* <SandboxButton /> */}
+
+```json
+{
+  "select": {
+    "?s": ["*"]
+  },
+  "where": {
+    "@id": "?s",
+    "bestFriend": "?friend"
+  }
+}
+```
+
+If you've inserted the two Mongolian death worm entities above, you should get a
+result that looks like this:
+
+```json
+[
+  {
+    "@id": "_:f101",
+    "bestFriend": {
+      "@id": "_:f100"
+    },
+    "name": "Lucia",
+    "species": "Mongolian death worm"
+  },
+  {
+    "@id": "_:f100",
+    "bestFriend": {
+      "@id": "_:f101"
+    },
+    "name": "Jack",
+    "species": "Mongolian death worm"
+  }
+]
+```
+
+What is the relationship between the query and the results? As in the last
+chapter, the `"where"` clause is responsible for filtering down Fluree's set of
+nodes to those that meet some criteria, and for binding those nodes to a logic
+variable.
+
+Here, the object `{ "@id": "?s", "bestFriend": "?friend" }` selects those nodes that have
+any value on the predicate named `"bestFriend"`, regardless of what that value may be. It binds the subject IRIs of those nodes to the `"?s"` logic variable. In our example, the
+`"_:f100"` and `"_:f101"` node identifiers get bound to `"?s"`.
+
+<Admonition type="info">
+  In this example, we create a `?friend` logic variable in our `where` clause,
+  but we aren't using the values bound to `?friend` within the `select`
+  statement where we shape the projection of our query results. Here, it's
+  simply being used to express that we care about nodes that have any possible
+  value on the predicate, `bestFriend`, but we don't want to limit our result
+  set by pre-specifying what that value should be.
+</Admonition>
+
+When we use subject IRI logic variables from our `where` clause to project results via our `select` clause syntax,
+we need to tell Fluree how to represent the nodes that are bound to those logic variables.
+
+We could say, `"select": { "?s": ["*"] }` if we wanted Fluree to crawl every property on the subjects bound to `?s` and represent each property-object value as a JSON key-value pair, or we could be more explicit in the property-object pairs we need returned from this query, for example `"select": { "?s": ["name", "species"] }`, if we only wanted JSON objects returned with the `name` and `species` properties.
+
+Fluree will construct a JSON object for each of the selected nodes, and it will
+use the `"select"` clause to determine which keys and values to include in the
+JSON object.
+
+Let's put this all together. Fluree is storing this graph:
+
+<FlureeMermaid
+  chart={`
+graph TB
+  j(_:f100) -->|"@id"| jid(_:f100)
+  j -->|name| jn(Jack)
+  j -->|species| sp1(Mongolian death worm)
+  j -->|bestFriend| l
+  l(_:f101) -->|"@id"| lid(_:f101)
+  l -->|name| ln(Lucia)
+  l -->|species| sp2(Mongolian death worm)
+  l -->|bestFriend| j
+`}
+/>
+
+The `"where"` clause of your query uses the `?s` logic variable, and given our pattern that looks for any `?s` with any value on the property, `bestFriend`, it binds the `"_:f100"` and `"_:f101"` node IRIs to `?s`, because they are the only nodes with an outgoing arc named `"bestFriend"`. The `"select"` clause specifies
+that you want to build a JSON object for each of these nodes such that every
+outgoing arc (and its corresponding value) is encoded as key/value pairs in the
+JSON object.
+
+Thus, the query results include two JSON objects, one for each node. Each JSON
+object includes the keys `"name"`, `"species"`, and `"bestFriend"` (as well as the JSON key-value pair `@id`, because even though this represents the _subject_ identifier and is not strictly a _property_, JSON has no other way to represent this than with the JSON-LD `@id` key).
+
+The value of `"bestFriend"` is not just the string `"_:f100"` or `"_:f101"`.
+Instead, it's the object `{"@id": "_:f100"}`. `"@id"` values are always encoded
+this way.
+
+### Graph-Crawling in our Select Clauses
+
+There's a practical reason for this: you might want to populate that object with
+more key/value pairs. Check out this query and the result:
+
+{/* <SandboxButton /> */}
+
+```json
+{
+  "select": {
+    "?s": [
+      "name",
+      {
+        "bestFriend": ["*"]
+      }
+    ]
+  },
+  "where": {
+    "@id": "?s",
+    "bestFriend": "?friend"
+  }
+}
+```
+
+Result:
+
+```json
+[
+  {
+    "name": "Lucia",
+    "bestFriend": {
+      "@id": "_:f100",
+      "name": "Jack",
+      "species": "Mongolian death worm",
+      "bestFriend": {
+        "@id": "_:f101"
+      }
+    }
+  },
+  {
+    "name": "Jack",
+    "bestFriend": {
+      "@id": "_:f101",
+      "name": "Lucia",
+      "species": "Mongolian death worm",
+      "bestFriend": {
+        "@id": "_:f100"
+      }
+    }
+  }
+]
+```
+
+Whereas in the previous queries, we saw the graph data expanded for the `?s` nodes, but not for any additional entities downstream of those nodes, in this query we are explicitly including in our `select` clause that if a property, `bestFriend` exists, and if the value(s) of this property are, themselves, subject identifiers for other nodes, then return all data (`["*"]`) on those downstream nodes.
+
+The `"select"` clause that yields this result is `["name", {"bestFriend":
+["*"]}]`. The `"name"` portion works just as described before: it directs Fluree
+to include the `"name"` property-object arc for the selected subject. The object `{"bestFriend":
+["*"]}` is where things get interesting.
+
+Let's call this object a _node object template_. The keys of a node object
+template (`"bestFriend"`) correspond to arcs, and the values are arrays that
+specify how to build a JSON object for the arcs' nodes (the node that
+`"bestFriend"` points to).
+
+The node object template `{"bestFriend": ["*"]}` is saying, _include the
+bestFriend arc. Use a JSON object to represent the node that the bestFriend arc
+points to. To construct that JSON object, include all of the node's outgoing
+arcs._
+
+In my mind, I think of this as Fluree using the arcs you specify to travel to
+each node and then running a little recipe to determine how to represent that
+node. With the array `["name", {"bestFriend": ["*"]}]`, Fluree travels down the
+`"name"` arc to a value node. Because `"name"` is a simple string, the recipe is "just
+return the value of this node". Next, Fluree travels down the `"bestFriend"`
+arc. Because `"bestFriend"` is specified with a node object template, the recipe
+is "construct a JSON object using the array `["*"]`".
+
+Fluree then travels down each outgoing arc from the `"bestFriend"` node. It
+travels down `"name"`, `"species"`, and `"bestFriend"` arcs, and this
+time the recipe is "just return the value of this node."
+
+### Data in the shape you need it
+
+Fluree's combination of graph data and flexible querying brings a benefit that
+isn't obvious: it's a lot easier to get data in the shape that your application
+needs it, rather than having to go through extra processing steps to translate
+between the data structures your database returns and the ones your app actually
+needs. For more examples of data in different shapes and more complex queries,
+see [the reference documentation for the Fluree Query Syntax](/docs/reference/flureeql-query-syntax/).
+
+## Summary
+
+- [JSON-LD is a W3C standard](https://www.w3.org/TR/json-ld/) that defines how
+  to represent RDF graphs using JSON
+- JSON-LD keywords are JSON keys that are given special meaning in a JSON-LD
+  context
+- You use the `"@id"` key to signify the _subject_ for a JSON-LD object
+- You use arrays to encode multiple JSON-LD entities
+- Fluree queries specify:
+  1. How to filter Fluree's nodes down to some initial set of nodes
+  2. Which nodes and arcs to include in the JSON that's returned
+  3. How to transform the selected nodes and arcs into JSON
+
+{/* <SandboxDrawer /> */}

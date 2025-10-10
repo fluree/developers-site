@@ -1,0 +1,107 @@
+---
+title: View Your Data
+sidebar_label: View
+sidebar_position: 0
+---
+
+import {
+  ForwardIcon,
+  BackwardIcon,
+  ClockIcon,
+  ArrowPathIcon,
+  CodeBracketIcon,
+  TableCellsIcon,
+} from "@heroicons/react/24/solid";
+import collectionDrawer from "../../../../src/assets/nexus/data-page/expanded-class.png";
+import propertyView from "../../../../src/assets/nexus/data-page/properties.png";
+import timeTravelToolbar from "../../../../src/assets/nexus/data-page/time-travel-closeup.png";
+import highlightQueryTab from "../../../../src/assets/nexus/data-page/highligh-query-tab.png";
+import highlightResults from "../../../../src/assets/nexus/data-page/results-highlight.png";
+import Image from "@theme/IdealImage";
+import { FigureWithCaption } from "../../../../src/components/FigureWithCaption";
+
+Nexus now offers two ways to view your data: [UI mode](#ui-mode) and [editor mode](#editor-mode)
+
+## UI Mode
+
+<TableCellsIcon className="h-12 w-12 text-fluree-blue" />
+
+This mode will allow you to [select](#selection) data using a checkbox-driven interface.
+Retrieved data is [viewed](#view) as a paginated table.
+
+### Selection
+
+If SHACL class shapes have been registered within a dataset, they will appear in an expandable tree view on this page.
+In the first image below, you can see a demo dataset that features several classes related to a film catalog.
+The `ex:movie` class is expanded, and the class's properties (and their data types) are displayed below.
+Checking the box next to the class name will select / de-select all of the classes properties.
+
+The second image below shows the "properties" view.
+This view shows _all_ properties that are present in a dataset, and allow you to query any records that contain each selected property.
+
+<FigureWithCaption caption="The two primary methods for retrieving data.">
+  <div className="flex flex-row justify-around">
+    <Image
+      img={collectionDrawer}
+      alt="An expanding tree view of several data classes"
+      className="w-2/5 shadow-xl"
+    />
+    <Image
+      img={propertyView}
+      alt="A list of data properties with accompanying checkboxes"
+      className="w-2/5 shadow-xl"
+    />
+  </div>
+</FigureWithCaption>
+
+The "Keyword Filter" box can be used to refine the classes / properties displayed at any given time, which can be handy if a dataset contains a wide variety of data types.
+
+### View
+
+Requested data will be viewable in a simple table format, with column names based on the selected properties.
+
+<FigureWithCaption caption="The results for requesting the `ex:title` and  `ex:runtime` properties of the `ex:Movie` class.">
+  <Image
+    className="shadow-lg"
+    img={highlightResults}
+    alt="Screenshot of a table of query results"
+  />
+</FigureWithCaption>
+
+#### Time Travel Toolbar
+
+Using this toolbar in conjunction with the class and property selectors, a user can view the state of their data at any given point during its lifetime.
+
+<FigureWithCaption caption="The key to your data's past">
+  <Image
+    img={timeTravelToolbar}
+    className="shadow-xl"
+    alt="A close-up image of the Time Travel toolbar"
+  />
+</FigureWithCaption>
+
+| Button                                                 | Function                                                                  |
+| ------------------------------------------------------ | ------------------------------------------------------------------------- |
+| <BackwardIcon className="h-6 w-6 text-fluree-blue" />  | Move backward one transaction                                             |
+| <ForwardIcon className="h-6 w-6 text-fluree-blue" />   | Move forward one transaction                                              |
+| <ClockIcon className="h-6 w-6 text-fluree-blue" />     | Use a date & time picking input to specify a chronological moment in time |
+| <ArrowPathIcon className="h-6 w-6 text-fluree-blue" /> | Reset the time to the most current transaction                            |
+
+## Editor Mode
+
+<CodeBracketIcon className="h-12 w-12 text-fluree-blue" />
+
+The editor is where you can create custom queries using the provided text editor.
+You also have the ability to save your queries, and to the right of the query editor you can locate recent queries and saved queries.
+
+Currently, only queries using FlureeQL are supported, but SPARQL query support is in the pipeline.
+
+<FigureWithCaption caption="Make sure the Query tab is highlighted above the editor">
+  <Image
+    img={highlightQueryTab}
+    alt='The data management page with an arrow pointing to the "query" tab'
+    className="shadow-lg"
+  />
+</FigureWithCaption>
+
+[Click here](/docs/reference/flureeql-query-syntax) to find out more about querying your Nexus datasets.

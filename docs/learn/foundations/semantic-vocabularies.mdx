@@ -1,0 +1,71 @@
+# Semantic Vocabularies
+
+The term "semantics" refers to the study of meaning behind words and language. In the context of data, we use the term "Semantic Vocabulary" to describe the predicates, or column names, that organize our data, and the meaning behind these terms. At first glance, this may seem like an overcomplication of the traditional "schema", so let's first examine the crucial differences between Schemas and Semantic Vocabularies.
+
+## Semantic Vocabularies vs "Schema"
+
+### Semantic Vocabularies
+
+Semantic Vocabularies are defined by the following characteristics:
+
+- Semantic Vocabularies are **universal**. If one is available, you will always use an _existing_ rather than create your own, and they are often standardized within industries.
+
+- Semantic Vocabularies are **consistent**. The terms and meanings of a vocabulary are consistent with the rest of the world, rather than consistent just within an organization.
+
+- Semantic Vocabularies are **self-describing**. Each term in a vocabulary is linked to a single, immutable definition that includes a data type, and is uniformly understood by each user of the vocabulary.
+
+You can imagine that a semantic vocabulary is a bit like the Dewey Decimal system. Every library in the entire world has a universal understanding of how their books + media should be organized, and terms like "Author Name" are not disputed or treated differently between libraries because every library has the same working definition for every term.
+
+### Traditional Schemas
+
+Schemas on the other hand, are defined by the following characteristics:
+
+- Schemas are often **specific** to a database or table for which they were created.
+
+- Because of this specificity, it is not uncommon for different schemas, even those in a single database or organization are prone to **conflicts**. That is because there is no enforcement of a universal vocabulary, and so concepts and terms are easily duplicated with the creation of each new table.
+
+- Terms in schemas are also often **context-dependent** because there is no barrier to creating new schemas, and often it is easier to just make your own than try to replicate someone else's schema that was built for a different use case or system.
+
+If a Semantic Vocabulary is like the Dewey Decimal system, a schema could be used to describe any number of ways you might organize your bookshelf at home. You could organize it by color or genre. You could organize it via "Author Name"; referring to EITHER full, first or last name. Each of these, although perhaps questionable choices, would all be valid schemas. But using any one of them to find books on somebody else's shelf probably wouldn't be that effective.
+
+### Examples
+
+Let's look at two examples of the same data being described using these different methods. First, let's examine data about My Cat From Hell star Jackson Galaxy in the format of a traditional schema:
+
+```json
+ "NameF": "Richard Kirschner",
+
+ "Nickname": "Jackson Galaxy",
+
+ "Occupation": "Cat Whisperer"
+```
+
+The terms "NameF", "Nickname", and "Occupation" are not attached to an existing semantic vocabulary, and are **specific** to this use case. The attribute "NameF" is an example of how schemas are **context-dependent** because in this situation as you would only know the author intended this field to capture _full names_ by looking at the data itself. Therefore, it is very likely you would encounter **conflicts** if trying to merge reconcile this data with someone else's schema containing reality show stars.
+
+In contrast, let's organize the same information using the schema.org semantic vocabulary for Person instead:
+
+```json
+ "https://schema.org/Person/givenName": "Richard",
+
+ "https://schema.org/Person/familyName": "Kirschner",
+
+ "https://schema.org/Person/additionalName": "Jackson Galaxy",
+
+ "https://schema.org/Person/knowsAbout": "Cats"
+```
+
+You can follow each of these IRIs to schema.org to find the **universal** definition for each term, without needing to look at a supplemental data dictionary; in other words this data is **self-describing**. Furthermore, one could confidently merge this data with an existing dataset about celebrities if the authors of that data used schema.org/Person to represent their data, since the use of this semantic vocabulary ensures **consistency** across systems, contexts, and authors.
+
+## Benefits of Using Semantic Vocabularies
+
+As demonstrated in the above examples, there are many benefits to utilizing Semantic Vocabularies. The **self-describing** nature of your data means that the vocabulary itself _is data_. The use of any given term describes a plethora of knowledge about what the term is, why you used it, and what other features it may be connected to. The **universal** nature of semantic vocabularies make data easy to share with clients or partners, without lengthy discussions and data-dictionaries. And Semantic Vocabularies foster collaboration within organizations due to the **consistent** definitions and requirements always already defined in each term.
+
+## Ontologies
+
+Ontology in the context of metaphysics refers to the "nature of being", and in the context of semantic vocabularies we can think about 'Ontologies' in much the same way. Ontologies are a semantic vocabulary that contains relationships, such as hierarchies or equivalent properties. This is an appropriate term, as within these vocabularies we describe not only what the terms _are_, but the nature of their _being_ in relation to each other. Popular vocabularies such as RDFS and OWL can be used to integrate with existing semantic vocabularies to establish the hierarchies and relationships within your data. If you are interested, check out our How-To Guide on Ontologies (link here) to learn more about implementing these vocabularies.
+
+## Summary
+
+In this article we discussed the definition of semantic vocabularies and compared them to traditional schemas, we examined examples of how semantic vocabularies and schemas can be used to describe the same data, and discussed the benefits of utilizing a semantic vocabulary. And finally, we touched on ontologies, semantic vocabularies that describe relationships and hierarchies, and described how they can be used to surface new connections and relationships within a semantic vocabulary.
+
+Thank you so much for reading this, if you have any questions or feedback, or would like to join our community to connect with other folks learning about and discussing these topics check out our [discord server](https://discord.com/invite/pgjsvPa9Nm)!

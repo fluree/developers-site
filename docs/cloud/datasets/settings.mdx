@@ -1,0 +1,151 @@
+---
+title: Settings
+---
+
+import { FigureWithCaption } from "../../../src/components/FigureWithCaption.tsx";
+import settingsImage from "../../../src/assets/nexus/data-page/settings-screen.png";
+import collaboratorImage from "../../../src/assets/nexus/data-page/collaborator.png";
+import apiKeyImage from "../../../src/assets/nexus/data-page/api-key.png";
+import Image from "@theme/IdealImage";
+import Admonition from "@theme/Admonition";
+
+<div class="overview">
+  The following is an overview of the Settings Screen within the Dataset
+  Management UI in Nexus.
+</div>
+
+---
+
+
+## Overview
+
+The _Settings Screen_ provides an interface for managing such items as your dataset's _collaborators_ and _API keys_ that enable application integration.
+
+<Admonition type="caution">
+
+The _Settings Screen_ makes it possible for other human and machine identities to both access (and possibly update) your dataset.
+
+When setting individuals as _collaborators_, it is possible to give them either **read-only** or **read-write** roles. The same is true when generating _API keys_ for programmatic interface access to your dataset.
+
+Please be careful when managing your dataset's settings!
+
+</Admonition>
+
+---
+
+<FigureWithCaption caption="A view of the Settings Screen for an example dataset">
+  <div className="flex flex-row justify-around">
+    <Image
+      img={settingsImage}
+      alt="A view of the dataset management UI with the Settings Screen open"
+      className="shadow-xl"
+    />
+  </div>
+</FigureWithCaption>
+
+## Collaborators
+
+The _Collaborators_ tab of the _Settings UI_ allows you to view and manage the identities that have access to your dataset. You can add collaborators by their _username_ or _email_ and assign them _roles_ (aka _policy groups_) that exist for your dataset.
+
+<Admonition type="info">
+By default, each dataset will start with a `ReadAllRole` that allows read-only access to data in your dataset.
+
+More nuanced roles can be created (e.g. that only have read-access to particular classes or even to particular properties on particular classes) via the Policy Management UI or directly through transactions that establish _Policies_ and _PolicyGroups_. You can see some [examples of those in our Cookbook, here](/docs/reference/cookbook/#limiting-access).
+
+</Admonition>
+
+When you add a collaborator to your dataset, your dataset will appear for that user in their main dashboard of datasets. They will be able to visit your dataset with limited access (collaborators cannot, for example, create or update policies or policy groups, nor can they manage settings for your dataset).
+
+For example, if we add a collaborator with the default `ReadAllRole`, that user will be able to access your dataset and query your data (either directly or through the Notebooks UI), but they cannot issue transactions to insert, update, or delete anything in your dataset.
+
+<Admonition type="danger">
+If you **do not add a role to a collaborator**, they will have **full read-write access** to your dataset.
+
+A collaborator without an assigned role will effectively be a _superuser_ for your dataset.
+
+</Admonition>
+
+---
+
+<FigureWithCaption caption="The modal for adding a collaborator to your dataset">
+  <div className="flex flex-row justify-around">
+    <Image
+      img={collaboratorImage}
+      alt="A view of the modal for adding a collaborator to your dataset"
+      className="w-3/5 shadow-xl"
+    />
+  </div>
+</FigureWithCaption>
+
+## API Keys
+
+The _API Keys_ tab of the _Settings UI_ allows you to view and manage the API keys that have been generated for your dataset. You can generate new API keys, delete existing ones, and manage the _roles_ (aka _policy groups_) that are associated with each key.
+
+Creating API keys for your dataset allows 3rd-party clients (e.g. applications, scripts, etc.) to query and/or transact against your dataset programmatically. For example, you can use an API key to access your dataset from a Jupyter Notebook or to integrate your dataset with a custom application.
+
+### Generating an API Key
+
+To generate an API key...
+
+1. (**Optional**) Provide a name for your new API key. Giving your API key a name will make it easier in the future to update permissions associated with that key, or to delete it entirely.
+2. (**Optional**) Provide a role (or roles) for your new API key.
+   > **NOTE**: if you do _not_ provide a limited role (e.g. `ReadOnlyRole`) for the API key, then it will have full permissions to read-write all data in your dataset.
+3. Click the `Generate key` button.
+
+Your API key will be generated and displayed in the UI. You can copy the key to your clipboard by clicking the `Copy` button.
+
+<Admonition type="caution">
+  The `Generated API Key` will only be shown to you once. If you lose it, you
+  will need to generate a new one.
+</Admonition>
+
+---
+
+<FigureWithCaption caption="The UI for generating a new API key">
+  <div className="flex flex-row justify-around">
+    <Image
+      img={apiKeyImage}
+      alt="A view of the UI for generating a new API key"
+      className="shadow-xl"
+    />
+  </div>
+</FigureWithCaption>
+
+### Using an API Key
+
+Once you have generated and copied your API key from the steps described above, you can use it to programmatically issue any query or transaction against your dataset.
+
+We effectively need to just track three things:
+
+1. **The Fluree API URL** for all Fluree-hosted datasets. This is visible at the top of our API Keys screen, but it is consistent across all datasets: `https://data.flur.ee/fluree/[ query | transact | history ]`
+2. **The API Key** that we generated above. We will use this as the `Authorization` header of our HTTP request (e.g. `Authorization: 7G5ka...vtlq5g`).
+3. **The Fluree Identifier for our dataset**. Keep in mind that this is Fluree's own identifier for your dataset. My account & dataset name may be `fluree/docs`, but I will notice in my Query Editor and Notebooks that Fluree identifies my dataset as `fluree-jld/387028092977716`.
+
+For example, let's take the following query from our `Quick Start Guide` Notebook:
+
+```json
+{
+  "from": "fluree-jld/387028092977716",
+  "where": {
+    "@id": "?id",
+    "@type": "Yeti"
+  },
+  "select": { "?id": ["@type", "age", "name", "verified"] }
+}
+```
+
+I can now issue this query externally from the UI, for example with the following `curl` command:
+
+```bash
+curl --location 'https://data.flur.ee/fluree/query' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: 7G5ka...vtlq5g' \
+--data '{
+  "from": "fluree-jld/387028092977716",
+  "where": {
+    "@id": "?id",
+    "@type": "Yeti"
+  },
+  "select": { "?id": ["@type", "age", "name", "verified"] }
+}'
+```

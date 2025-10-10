@@ -1,0 +1,79 @@
+import Admonition from "@theme/Admonition";
+import Image from "@theme/IdealImage";
+import { FigureWithCaption } from "../../../src/components/FigureWithCaption";
+import fullScreenNotebook from "@site/src/assets/nexus/dataset-management/overview-screen-full-notebook.png";
+import datasetNavMenu from "@site/src/assets/nexus/dataset-management/overview-screen-nav-menu.png";
+
+# Overview
+
+<div class="overview">
+  The following is an overview of the `Dataset View`. We will explore
+  the various tabs and their functionality.
+</div>
+
+---
+
+## Introduction
+
+You can manage your datasets using the `Dataset View`. This UI is accessible by clicking any dataset on the datasets page.
+
+<Admonition type="note">
+  If you have just created a new dataset, you will be automatically redirected
+  to the `Dataset View`.
+</Admonition>
+
+We will step through each of the tabs in the `Dataset View`. They include:
+
+- **[`About`](../about/)**: General information about the dataset, including a `readme`, `tags`, `context`, and associated `collaborators`.
+  {/* - **[`Data`](../view-data/)**: A managed view of the data in your dataset by `class` or by `property`. */}
+- **`Models`**: Upload a data model as a blueprint of your data structures.
+- **`Files`**: Transact PDF and csv to quickly and easily get your data into Fluree.
+- **[`Policies`](../policies/)**: UI for managing the `access control policies` for your dataset.
+- **[`Settings`](../settings/)**: Settings for your dataset, including management for `collaborators` and `API keys` for application integration.
+- **[`Notebooks`](../notebooks/)**: UI for organizing and saving sets of `queries`, `transactions`, and notes, for your own use or to share with others.
+- **`Queries`**: UI for querying and transacting against your dataset. See our [Cookbook of Query Examples](/docs/reference/cookbook/#querying) for examples.
+- **[`Chats`](../how-to/chat/intro.mdx)**: Ask questions and explore your data using a natural language interface grounded in your dataset's structure.
+
+---
+
+<FigureWithCaption caption="Navigation items for the Dataset View">
+  <div className="flex flex-row justify-around">
+    <Image
+      img={datasetNavMenu}
+      alt="A list of navigation items available for your dataset"
+      className="w-2/5 shadow-xl"
+    />
+  </div>
+</FigureWithCaption>
+
+---
+
+## Working with a New Dataset
+
+When you first create a new dataset, you will be automatically redirected to the [`notebooks`](../notebooks/) screen with a `Quick Start Guide` notebook.
+
+<Admonition type="tip">
+  If you prefer to learn about working with data in Fluree through a hands-on
+  experience, the `Quick Start Guide` notebook is a great place to start.
+</Admonition>
+
+The `Quick Start Guide` notebook will walk you through the following steps:
+
+1. **Adding Sample Data**
+2. **Querying the Data**
+3. **Querying for Linked / Relational Data**
+4. **Issuing Advanced Queries**
+   - **Time-Travel Queries**
+   - **Semantic Inferencing**
+
+---
+
+<FigureWithCaption caption="After creating a dataset, you will first arrive at this Quick Start Guide notebook">
+  <div className="flex flex-row justify-around">
+    <Image
+      img={fullScreenNotebook}
+      alt="A view of the dataset management UI with the Quick Start Guide notebook open"
+      className="shadow-xl"
+    />
+  </div>
+</FigureWithCaption>

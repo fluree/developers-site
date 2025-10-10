@@ -1,0 +1,137 @@
+import Admonition from "@theme/Admonition";
+
+# Data Types
+
+<div class="overview">
+  Fluree supports each of the following data types, as expressed in any of the
+  following ways.
+</div>
+
+---
+
+<Admonition type="info" title="Data Types in Fluree">
+  Because Fluree is a JSON-LD database, and because JSON-LD and RDF datasets
+  conventionally express data types according to the W3C _XML Schema_ (**XSD**) standard for data types,
+  Fluree supports all of the XSD data types.
+
+In the following doc, you will see `xsd:...` used to refer to these data types. This is a shorthand for `http://www.w3.org/2001/XMLSchema#...`, which is the full IRI for each of the XSD data types.
+
+For example, `xsd:string` is the same as `http://www.w3.org/2001/XMLSchema#string`.
+
+</Admonition>
+
+## Data Types
+
+### Coercible Data Types
+
+Data types are considered 'coercible' if the correct data type can be inferred, and then data of one type can be converted to that target data type without causing conflicts. Fluree determines these data type targets through (**1**) user-defined SHACL constraints or (**2**) through transaction syntax that explicitly expresses a data type at transaction-time (or, in the absence of either, according to Fluree's own default logic). In any of these cases, data is often coerced to adhere to a uniform formatting. To learn more about data types in SHACL and transactions, check out our sections on these topics below.
+
+| Data Type                | Definition                                                      | Example Inputs                                                                                                                                                                                                                                                   |
+| ------------------------ | --------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `xsd:string`             | Represents a sequence of characters.                            | `"anything in quotations"`                                                                                                                                                                                                                                       |
+| `xsd:anyURI`             | Represents a Uniform Resource Identifier (URI).                 | `"anything in quotations"`                                                                                                                                                                                                                                       |
+| `xsd:boolean`            | Represents a boolean value, either "true" or "false".           | `"true"`, `true`, `"false"`, `false`                                                                                                                                                                                                                             |
+| `xsd:date`               | Represents a date in the format YYYY-MM-DD.                     | `"1980-10-5Z"`,`"1980-10-5"`, `"2022-01-05T00:00:00.000-00:00"`, `"2022-01-05T00:00:00"`                                                                                                                                                                         |
+| `xsd:time`               | Represents a time of day in the format hh:mm:ss.                | `"12:42:00"`, `"12:42:00Z"`, `"09:30:10-06:00"`, `"11:14:32.833Z"` , `"11:14:32.83Z"`, `"11:14:32.8331Z"`, `"12:42:00.43"`, `"12:42:00.4331"`                                                                                                                    |
+| `xsd:dateTime`           | Represents a date and time in the format YYYY-MM-DDThh:mm:ss.   | `"1980-10-5T11:23:00Z"`, `"1980-10-05T11:23:00-06:00"`, `"1980-10-05T11:23:00Z"`, `"2021-09-24T11:14:32.833Z"`, `"2021-09-24T11:14:32.8331Z"`, `"2021-09-24T11:14:32.83Z"`, `"2021-09-24T11:14:32.833"`,`"2021-09-24T11:14:32.8331"`, `"2021-09-24T11:14:32.83"` |
+| `xsd:decimal`            | Represents decimal numbers with arbitrary precision.            | `3.14`, `"3.14"`, `42`,                                                                                                                                                                                                                                          |
+| `xsd:double`             | Represents double-precision floating-point numbers.             | `"INF"`, `"-INF"`,`3.14`,`3`                                                                                                                                                                                                                                     |
+| `xsd:float`              | Represents single-precision floating-point numbers.             | `"INF"`, `"-INF"`,`3.14`,`3`                                                                                                                                                                                                                                     |
+| `xsd:integer`            | Represents integer numbers.                                     | `42`, `"42"`, `-42`, `0`                                                                                                                                                                                                                                         |
+| `xsd:int`                | Represents signed 32-bit integer numbers.                       | `42`, `"42"`, `-42`, `0`                                                                                                                                                                                                                                         |
+| `xsd:unsignedInt`        | Represents unsigned 32-bit integer numbers.                     | `42`, `0`, `"42"`                                                                                                                                                                                                                                                |
+| `xsd:nonNegativeInteger` | Represents an integer greater than or equal to zero.            | `42`, `0`, `"42"`, `"0"`                                                                                                                                                                                                                                         |
+| `xsd:positiveInteger`    | Represents a positive integer greater than zero.                | `42`, `"42"`                                                                                                                                                                                                                                                     |
+| `xsd:negativeInteger`    | Represents a negative integer.                                  | `-42`, `"-42"`                                                                                                                                                                                                                                                   |
+| `xsd:nonPositiveInteger` | Represents an integer less than or equal to zero.               | `0`, `"0"`, `-42`, `"-42"`                                                                                                                                                                                                                                       |
+| `xsd:long`               | Represents a signed long integer (64-bit).                      | `42`, `"42"`, `-42`, `"-42"`                                                                                                                                                                                                                                     |
+| `xsd:unsignedLong`       | Represents an unsigned long integer (64-bit).                   | `42`, `"42"`                                                                                                                                                                                                                                                     |
+| `xsd:short`              | Represents a signed short integer (16-bit).                     | `42`, `"42"`, `-42`, `"-42"`                                                                                                                                                                                                                                     |
+| `xsd:unsignedShort`      | Represents an unsigned short integer (16-bit).                  | `42`, `"42"`                                                                                                                                                                                                                                                     |
+| `xsd:byte`               | Represents a signed byte (8-bit).                               | `42`, `"42"`, `-42`, `"-42"`                                                                                                                                                                                                                                     |
+| `xsd:unsignedByte`       | Represents an unsigned byte (8-bit).                            | `42`, `"42"`                                                                                                                                                                                                                                                     |
+| `xsd:normalizedString`   | Represents a string without any leading or trailing whitespace. | `"foo bar \tbaz"`, `" foo   bar  baz "` + string containing a tab                                                                                                                                                                                                |
+| `xsd:token`              | Represents a string with whitespace collapsed.                  | `" foo bar \t\t\t baz "`                                                                                                                                                                                                                                         |
+| `xsd:language`           | Represents a language identifier.                               | `"en "`, `" en-US"`, `"\tes-MX"`                                                                                                                                                                                                                                 |
+
+### Non-Coercible Data Types
+
+The following are the only non-coercible data types in Fluree.
+
+| Data Type       | Definition                                                                                                                    | Example Inputs             |
+| --------------- | ----------------------------------------------------------------------------------------------------------------------------- | -------------------------- |
+| `xsd:hexBinary` | Represents binary data in hexadecimal format.                                                                                 | `"anything in quotations"` |
+| `xsd:duration`  | Represents a duration of time, such as "P3Y6M4DT12H30M5S" for 3 years, 6 months, 4 days, 12 hours, 30 minutes, and 5 seconds. | `"anything in quotations"` |
+
+## Using Data Types
+
+### Fluree Defaults
+
+If no data type is set in SHACL constraints or in the context or body of a transaction, data types will be captured by default in the following ways:
+
+1. All values transacted in _double quotation marks_, such as `"Pirates!"` will be coerced into `xsd:string`.
+
+2. Numerical values such as `"schema:age": 32` will be coerced to `xsd:long`.
+
+3. Numerical values with decimals such as `"schema:numberOfRocks": 32.5` will be coerced to `xsd:decimal`
+
+### Using Data Types in Transactions
+
+There are two ways to explicitly instruct Fluree to use a target data type in FlureeQL transactions. The first is by utilizing the `@context`, like so:
+
+```json
+{
+  "@context": [
+    "https://ns.flur.ee",
+    { "schema:birthday": { "@type": "xsd:dateTime" } }
+  ],
+  "ledger": "cookbook/base",
+  "insert": {
+    "@id": "ex:freddy",
+    "schema:birthday": ["2001-11-5T11:00:00Z"]
+  }
+}
+```
+
+Alternatively, you could write this same transaction in the following way:
+
+```json
+{
+  "@context": ["https://ns.flur.ee"],
+  "ledger": "cookbook/base",
+  "insert": {
+    "@id": "ex:freddy",
+    "schema:birthday": {
+      "@type": "xsd:dateTime",
+      "@value": "2001-11-5T11:00:00Z"
+    }
+  }
+}
+```
+
+### Using Data Types in SHACL Constraints
+
+Another common use case for data types is setting SHACL property shapes which result in restricting properties to specific data types. For example,
+let's say that we want to ensure that all values assigned to the property `"schema:birthday"` are enforced as `xsd:dateTime`, we could write our constraint like this:
+
+```json
+{
+  "@context": "https://ns.flur.ee",
+  "ledger": "cookbook/data-type",
+  "insert": {
+    "@id": "ex:UserShape",
+    "@type": ["sh:NodeShape"],
+    "sh:targetClass": { "@id": "ex:Person" },
+    "sh:property": [
+      {
+        "sh:path": { "@id": "schema:birthDate" },
+        "sh:datatype": { "@id": "xsd:dateTime" }
+      }
+    ]
+  }
+}
+```
+
+Without setting a target data type for this property, Fluree would reasonably interpret string-literal `dateTime` values simply as strings. From now on whenever you try to transact values on `ex:Person` entities with the `"schema:birthDate"` property, Fluree will try to coerce the data on that property to `xsd:dateTime` instead of `xsd:string`. This will occur even if you don't specify the data type in your transaction.
+
+However, if you do express an `@type` datatype within your transaction on a property with an existing SHACL data type constraint, Fluree will coerce according to `@type`, throwing a coercion error if not possible. If the data type expressed by `@type` does not equal the data type expressed by `sh:datatype`, then it will throw a `sh:datatype` constraint violation error. Therefore it it important to note that there are **two types of errors** that can arise here: _coercion errors_ relating to the data type expressed in a transaction, and `sh:datatype` _constraint violation errors_ when the data transacted is incompatible with existing SHACL constraints.

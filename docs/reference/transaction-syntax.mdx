@@ -1,0 +1,614 @@
+import Admonition from "@theme/Admonition";
+
+# Transaction Syntax
+
+## Introduction
+
+Transactions modify the data stored in Fluree. Transaction data is encoded as a JSON object and can be a JSON object or an array of objects.
+
+Transaction objects come in two types, `insert` and `delete`, where `insert` and `delete` can be combined in the space of one transaction to perform surgical updates against data state.
+
+Fluree treats transaction objects as JSON-LD, and any object that is _not_ a `delete` object will be inserted as RDF triples in the database. Therefore, any valid JSON-LD object is a valid `insert` object.
+
+You can, however, transact vanilla JSON that doesn't use JSON-LD conventions (such as `@id` or `@type`):
+
+```json focus=3:5
+{
+  "ledger": "notable-people",
+  "insert": {
+    "name": "Shonda Rhimes"
+  }
+}
+```
+
+JSON-LD keywords can, however, be used and will be interpreted according to their JSON-LD meaning:
+
+```json
+{
+  "@context": {
+    "ex": "http://example.org/",
+    "schema": "http://schema.org/"
+  },
+  "ledger": "notable-people",
+  "insert": {
+    "@id": "ex:shonda-rhimes",
+    "schema:name": "Shonda Rhimes"
+  }
+}
+```
+
+Arbitrarily nested JSON-LD is also supported:
+
+```json
+{
+  "@context": {
+    "@base": "http://schema.org/",
+    "@vocab": "http://schema.org/"
+  },
+  "ledger": "media",
+  "insert": {
+    "@id": "https://www.wikidata.org/wiki/Q836821",
+    "@type": ["Movie"],
+    "name": "The Hitchhiker's Guide to the Galaxy",
+    "disambiguatingDescription": "2005 British-American comic science fiction film directed by Garth Jennings",
+    "titleEIDR": "10.5240/B752-5B47-DBBE-E5D4-5A3F-N",
+    "isBasedOn": {
+      "@id": "https://www.wikidata.org/wiki/Q3107329",
+      "@type": "Book",
+      "name": "The Hitchhiker's Guide to the Galaxy",
+      "isbn": "0-330-25864-8",
+      "author": {
+        "@id": "https://www.wikidata.org/wiki/Q42",
+        "@type": "Person",
+        "name": "Douglas Adams"
+      },
+      "isbn": "0-330-25864-8",
+      "name": "The Hitchhiker's Guide to the Galaxy"
+    },
+    "name": "The Hitchhiker's Guide to the Galaxy",
+    "titleEIDR": "10.5240/B752-5B47-DBBE-E5D4-5A3F-N"
+  }
+}
+```
+
+See [the W3C standard for JSON-LD](https://www.w3.org/TR/json-ld11/) for more information on structuring JSON-LD objects.
+
+## Sample Data & Ledger
+
+You can recreate and test each of the sample transactions in this page using the json objects below to create the "media" ledger and transact in your sample data.
+
+<details>
+<summary>Create Test Ledger "media"</summary>
+```json
+{
+  "@context": {
+    "schema": "http://schema.org/",
+    "wiki": "https://www.wikidata.org/wiki/",
+    "ex": "http://example.org/"
+  },
+  "ledger": "media",
+  "insert": {
+    "@id": "wiki:Q836821",
+    "@type": [
+      "schema:Movie"
+    ],
+    "schema:name": "The Hitchhiker's Guide to the Galaxy",
+    "schema:disambiguatingDescription": "2005 British-American comic science fiction film directed by Garth Jennings",
+    "schema:titleEIDR": "10.5240/B752-5B47-DBBE-E5D4-5A3F-N",
+    "schema:isBasedOn": {
+      "@id": "wiki:Q3107329",
+      "@type": "schema:Book",
+      "schema:name": "The Hitchhiker's Guide to the Galaxy",
+      "schema:isbn": "0-330-25864-8",
+      "schema:author": {
+        "@id": "wiki:Q42",
+        "@type": "schema:Person",
+        "schema:name": "Douglas Adams"
+      }
+    },
+    "ex:boxOfficeGross": "$5,128,935.00",
+    "ex:starring": "Andrew Johnson"
+  }
+}
+```
+</details>
+
+## Transaction Object: Insert
+
+### Insert a Single Record
+
+In this example we are inserting a new record to our "media" ledger for the book "The Phantom Tollbooth"
+
+```json
+{
+  "@context": {
+    "schema": "http://schema.org/",
+    "wiki": "https://www.wikidata.org/wiki/"
+  },
+  "ledger": "media",
+  "insert": [
+    {
+      "@id": "wiki:The_Phantom_Tollbooth",
+      "@type": "schema:Book"
+    }
+  ]
+}
+```
+
+### Insert Multiple Records
+
+In this example we will insert two records, one for the book Hyperion, and the other for the animated series AEon Flux.
+
+```json
+{
+  "@context": {
+    "schema": "http://schema.org/",
+    "wiki": "https://www.wikidata.org/wiki/",
+    "ex": "http://example.org/"
+  },
+  "ledger": "media",
+  "insert": [
+    {
+      "@id": "wiki:Hyperion_(Simmons_novel)",
+      "@type": "schema:Book"
+    },
+    {
+      "@id": "wiki:%C3%86on_Flux",
+      "@type": "ex:animatedSeries",
+      "schema:name": "AEon Flux",
+      "schema:description": "Such a weird awesome show"
+    }
+  ]
+}
+```
+
+## Transaction object: delete
+
+To delete a subject, the transaction object must include the `"delete"` key. We will also often use the `where` key to bind existing data to logic variables, and then use them to qualify the exact existing data to be retracted. [For more on the `where` clause, see our Reference Doc on FlureeQL Syntax](/docs/reference/flureeql-query-syntax/#where).
+
+### Deleting All Facts on a Subject
+
+Delete all facts pertaining to the TV Show `"AEon Flux"`:
+
+```json
+{
+  "@context": {
+    "wiki": "https://www.wikidata.org/wiki/"
+  },
+  "ledger": "media",
+  "where": {
+    "@id": "wiki:%C3%86on_Flux",
+    "?p": "?o"
+  },
+  "delete": {
+    "@id": "wiki:%C3%86on_Flux",
+    "?p": "?o"
+  }
+}
+```
+
+### Deleting Values on a Single Predicate for a Single Subject
+
+If a subject has a name of `"The Hitchhiker's Guide to the Galaxy"`, delete the value(s) of the `schema:name` predicate for that subject:
+
+```json
+{
+  "@context": {
+    "schema": "http://schema.org/"
+  },
+  "ledger": "media",
+  "where": {
+    "@id": "?s",
+    "schema:name": "?name"
+  },
+  "values": ["?name", ["The Hitchhiker's Guide to the Galaxy"]],
+  "delete": {
+    "@id": "?s",
+    "schema:name": "?name"
+  }
+}
+```
+
+### Deleting All Subjects with a Particular Property
+
+Delete all subjects that contain the property `schema:description`
+
+```json
+{
+  "@context": {
+    "schema": "http://schema.org/"
+  },
+  "ledger": "media",
+  "where": {
+    "@id": "?s",
+    "schema:description": "?description",
+    "?p": "?o"
+  },
+  "delete": {
+    "@id": "?s",
+    "?p": "?o"
+  }
+}
+```
+
+### Deleting All Subjects with a Particular Value on a Particular Property
+
+Delete all subjects with the `@type` property `"schema":"Movie"`
+
+```json
+{
+  "@context": {
+    "schema": "http://schema.org/"
+  },
+  "ledger": "media",
+  "where": {
+    "@id": "?s",
+    "@type": "schema:Movie",
+    "?p": "?o"
+  },
+  "delete": {
+    "@id": "?s",
+    "?p": "?o"
+  }
+}
+```
+
+## Update Transactions
+
+Unlike `insert` and `delete`, 'update' is not a transaction object in Fluree. However it is still possible perform updates to existing data, often using a combination of `where`, `delete`, and `insert`, or even the schema of the data itself, to build the logic necessary for each transaction.
+
+### Update Existing Value
+
+To replace an existing value, first `delete` the existing value, and then `insert` your desired data.
+
+<Admonition type="caution">
+
+The below transaction is somewhat brittle. It will **ONLY** delete the existing value of `"ex:boxOfficeGross"` if the value in the delete statement matches the current data state. If the `delete` value contains a typo such as `"$5,128,935"`, instead of **replacing** the `"ex:boxOfficeGross"` value with `"$26,232,138.00"`, `"ex:boxOfficeGross"` will include **both** the new and existing values. See below for how to more dynamically and safely update existing data.
+
+</Admonition>
+
+```json
+{
+  "@context": {
+    "wiki": "https://www.wikidata.org/wiki/",
+    "ex": "http://example.org/"
+  },
+  "ledger": "media",
+  "delete": {
+    "@id": "wiki:Q836821",
+    "ex:boxOfficeGross": "$5,128,935.00"
+  },
+  "insert": {
+    "@id": "wiki:Q836821",
+    "ex:boxOfficeGross": "$26,232,138.00"
+  }
+}
+```
+
+<details>
+<summary>Test Query</summary>
+```json
+{
+  "@context": {
+    "wiki": "https://www.wikidata.org/wiki/",
+    "ex": "http://example.org/"
+  },
+  "from": "media",
+  "select": { "wiki:Q836821": ["ex:boxOfficeGross"] }
+}
+```
+</details>
+
+### Update New OR Existing Value
+
+If you don't know the specific value you are replacing in your data, or if you don't know if a subject/predicate exists to begin with, or if you want to minimize the risk of human error, you can write a value-agnostic transaction.
+
+First, use `where` to search for any existing value, then `delete` to get rid of that value, and then `insert` our new value. Here is an example:
+
+```json
+{
+  "@context": {
+    "wiki": "https://www.wikidata.org/wiki/",
+    "ex": "http://example.org/"
+  },
+  "ledger": "media",
+  "where": {
+    "@id": "wiki:Q836821",
+    "ex:starring": "?star"
+  },
+  "delete": {
+    "@id": "wiki:Q836821",
+    "ex:starring": "?star"
+  },
+  "insert": {
+    "@id": "wiki:Q836821",
+    "ex:starring": "Martin Freeman"
+  }
+}
+```
+
+<details>
+<summary>Test Query</summary>
+```json
+{
+  "@context": {
+    "wiki": "https://www.wikidata.org/wiki/",
+    "ex": "http://example.org/"
+  },
+  "from": "media",
+  "select": { "wiki:Q836821": ["ex:starring"] }
+}
+```
+</details>
+
+### Update Nested Data
+
+To upsert new nested data you can include the full JSON-LD upsert in your transaction like so:
+
+```json
+{
+  "@context": {
+    "wiki": "https://www.wikidata.org/wiki/",
+    "ex": "http://example.org/"
+  },
+  "ledger": "media",
+  "where": {
+    "@id": "?s",
+    "name": "The Hitchhiker's Guide to the Galaxy"
+  },
+  "insert": {
+    "@id": "?s",
+    "ex:starring": "Martin Freeman",
+    "ex:alsoAppearsIn": {
+      "@id": "wiki:Sherlock_(TV_series)",
+      "name": "Sherlock",
+      "@type": ["TV Series"],
+      "ex:starring": "Martin Freeman",
+      "ex:alsoAppearsIn": {
+        "@id": "wiki:Q836821"
+      }
+    }
+  }
+}
+```
+
+However, there is a risk in the above transaction that no entities get bound to `?s`. When inserting nested data, if any parent nodes are dependent on a binding from the `"where"` clause (in this case `"?s"`), and if `?s` fails to resolve to any existing entities, then nested / children data won't be transacted if the parent data isn't transacted first.
+
+To avoid this you can transact nested data as _**siblings**_, as demonstrated in the following example:
+
+```json
+{
+  "@context": {
+    "wiki": "https://www.wikidata.org/wiki/",
+    "ex": "http://example.org/"
+  },
+  "ledger": "media",
+  "where": {
+    "@id": "?s",
+    "name": "The Hitchhiker's Guide to the Galaxy"
+  },
+  "insert": [
+    {
+      "@id": "?s",
+      "ex:starring": "Martin Freeman",
+      "ex:alsoAppearsIn": { "@id": "wiki:Sherlock_(TV_series)" }
+    },
+    {
+      "@id": "wiki:Sherlock_(TV_series)",
+      "name": "Sherlock",
+      "@type": ["TV Series"],
+      "ex:starring": "Martin Freeman",
+      "ex:alsoAppearsIn": {
+        "@id": "wiki:Q836821"
+      }
+    }
+  ]
+}
+```
+
+By inserting our data as _**siblings**_, we can ensure that even if the data dependent on `?s` fails to be inserted, the data that is not dependent on `?s` will still be inserted.
+
+<details>
+<summary>Test Query</summary>
+```json
+{
+  "@context": {
+    "ex": "http://example.org/"
+  },
+  "from": "media",
+  "select": {
+    "?s": [
+      "ex:starring",
+      "ex:alsoAppearsIn"
+    ]
+  },
+  "where": {
+    "@id": "?s",
+    "ex:starring": "?star"
+  }
+}
+```
+</details>
+
+### Update Multi-Cardinality Data
+
+In order to entirely retract-and-replace a set of values on a multi-cardinality property, you can do the following:
+
+```json
+{
+  "@context": {
+    "wiki": "https://www.wikidata.org/wiki/",
+    "ex": "http://example.org/"
+  },
+  "ledger": "media",
+  "where": {
+    "@id": "wiki:Q836821",
+    "ex:starring": "?anyValues"
+  },
+  "delete": {
+    "@id": "wiki:Q836821",
+    "ex:starring": "?anyValues"
+  },
+  "insert": {
+    "@id": "wiki:Q836821",
+    "ex:starring": [
+      "Martin Freeman",
+      "Sam Rockwell",
+      "Mos Def",
+      "Zooey Deschanel",
+      "Bill Nighy",
+      "Alan Rickman",
+      "Anna Chancellor",
+      "John Malkovich"
+    ]
+  }
+}
+```
+
+<details>
+<summary>Test Query</summary>
+```json
+{
+  "@context": {
+    "ex": "http://example.org/"
+  },
+  "from": "media",
+  "select": {
+    "?s": [
+      "ex:starring"
+    ]
+  },
+  "where": {
+    "@id": "?s",
+    "ex:starring": "?star"
+  }
+}
+```
+</details>
+
+### Append to Array
+
+If you only want to append new values to an array in your transaction, you can use the `insert` term like this:
+
+```json
+{
+  "@context": {
+    "wiki": "https://www.wikidata.org/wiki/",
+    "ex": "http://example.org/"
+  },
+  "ledger": "media",
+  "insert": {
+    "@id": "wiki:Q836821",
+    "ex:starring": ["Bill Nye"]
+  }
+}
+```
+
+<details>
+<summary>Test Query</summary>
+```json
+{
+  "@context": {
+    "ex": "http://example.org/",
+    "wiki": "https://www.wikidata.org/wiki/"
+  },
+  "from": "media",
+  "select": { "wiki:Q836821": ["ex:starring"] }
+}
+```
+</details>
+
+### Only Update a Specific Array
+
+You can also use a `where` clause to only upsert to a set of values _**if those values contain a value or values of interest**_:
+
+```json
+{
+  "@context": {
+    "wiki": "https://www.wikidata.org/wiki/",
+    "ex": "http://example.org/"
+  },
+  "ledger": "media",
+  "where": {
+    "@id": "wiki:Q836821",
+    "ex:starring": "?stars"
+  },
+  "values": ["?stars", ["Martin Freeman"]],
+  "delete": {
+    "@id": "wiki:Q836821",
+    "ex:starring": "?stars"
+  },
+  "insert": {
+    "@id": "wiki:Q836821",
+    "ex:starring": [
+      "Martin Freeman",
+      "Sam Rockwell",
+      "Mos Def",
+      "Zooey Deschanel",
+      "Bill Nighy",
+      "Alan Rickman",
+      "Anna Chancellor",
+      "John Malkovich"
+    ]
+  }
+}
+```
+
+<details>
+<summary>Test Query</summary>
+```json
+{
+  "@context": {
+    "ex": "http://example.org/",
+    "wiki": "https://www.wikidata.org/wiki/"
+  },
+  "from": "media",
+  "select": { "wiki:Q836821": ["ex:starring"] }
+}
+```
+</details>
+
+### Update Ordered Lists
+
+Syntactically, updating ordered lists is exactly the same as unordered lists. As of right now, Fluree does not enable upserting data to a specific location within an ordered list. Instead users must delete the existing list and replace it with desired data, in the desired order.
+
+Here is an example of how this transaction could look:
+
+```json
+{
+  "@context": {
+    "wiki": "https://www.wikidata.org/wiki/",
+    "ex": "http://example.org/"
+  },
+  "ledger": "media",
+  "where": {
+    "@id": "wiki:Q836821",
+    "ex:starring": "?values"
+  },
+  "delete": {
+    "@id": "wiki:Q836821",
+    "ex:starring": "?values"
+  },
+  "insert": {
+    "@id": "wiki:Q836821",
+    "ex:starring": {
+      "@container": "@list",
+      "@value": ["Jean Paul Sartre", "Frederick Neitzche", "Simone De Beauvoir"]
+    }
+  }
+}
+```
+
+<details>
+<summary>Test Query</summary>
+```json
+{
+  "@context": {
+    "ex": "http://example.org/",
+    "wiki": "https://www.wikidata.org/wiki/"
+  },
+  "from": "media",
+  "select": { "wiki:Q836821": ["ex:starring"] }
+}
+```
+</details>

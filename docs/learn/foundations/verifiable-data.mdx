@@ -1,0 +1,70 @@
+import Admonition from "@theme/Admonition";
+
+# The Components and Implications of Verifiable Data
+
+If you've spent any time at all learning about Fluree, it is likely you've encountered the phrase "Verifiable Data". In this article we will break down the technical components we are referencing when we use the term "verifiable data", as well as the implications and real-world applications of this functionality.
+
+## Immutable Data
+
+When we say data is immutable what we mean in the most basic sense is that it is unchangeable. This does not mean the data is static, rather that with each moment of change in our data, we append assertions & retractions to the previous data state **rather than mutating data state in-place**. If you are familiar with how code commits in `git` will layer state changes to previous commits, then you are already familiar with this notion. Just like in `git`, data state changes in Fluree are immutable, and data state at any particular commit or dateTime can be audited or revisited with provable guarantees about who did what, when, and what was the outcome.
+
+What does this mean in practice? Well, let's imagine you live in a universe where all data is immutable. And in this universe you are collaborating with others on a representation of Lucia, the Mongolian death worm:
+
+<img src="/img/lucia_no_hair.png" width="400" height="300" />
+
+As of your last contribution, Lucia looked pretty awesome. But maybe the next time you revisit her, she's looking a bit different... it seems maybe that someone has given her three curly hairs and some dramatic eyebrows:
+
+<img src="/img/lucia_with_hair.png" width="400" height="300" />
+
+Oof that is a lot scarier, what did she look like before? It's hard to remember. And who exactly made these catastrophic changes to our beloved deathworm?
+
+Well because we're in a universe where all data is immutable, when someone else made changes to your drawing of Lucia, all of our previous commits to Lucia were never directly mutated: each moment in the history of Lucia's changing body are immutable, reproducible, and auditable.
+
+![Two Lucia Drawings](/img/two_lucias.png)
+
+In this universe we can revisit the representation of Lucia as she was two days ago. We can audit with 100% cryptographic accuracy every moment when Lucia changed, and find out who committed those changes. If we wanted to share our version of Lucia before she grew these wild new facial features, we can share our data as it existed at a particular moment in time, and at that moment in time, Lucia will be preserved in perfect immutability forever.
+
+<Admonition type="info">
+  Technically there are five changes in this example - two eyebrows and three
+  hairs. This metaphor could be extended into discussing commits, which, similar
+  to GitHub, refer to a collection of small changes grouped together. Stay tuned
+  for more documentation regarding commits and their details!
+</Admonition>
+
+In contrast to a typical database, if you would like to replace `"first_name" : "Lilly"` with `"first_name" : "Lillian"` Fluree won't throw out the previous value `"Lilly"`, instead preserving this state change in the immutable blockchain ledger as data we can always return back to. By preserving the immutability of previous data state each time we introduce a change or diff, we are creating a database of Provable Data.
+
+## Provable Data
+
+Because Fluree leverages immutable data on an immutable blockchain ledger, users are no longer confined to a single snapshot of their current database when auditing and validating their data. Instead, users can perform both time-travel and history queries that lend provability to data, far and above the typical functionality of the modern database.
+
+### Time Travel queries
+
+Imagine that you are trying to guess how many jellybeans are in a jar. You can ask "how many jellybeans are in the jar right now?", but you can also travel back in time two days prior and ask "how many jellybeans are in the jar right now?" from that perspective too.
+
+![Time Traveling](/img/time_travel_jellybeans2.png)
+
+This is what we are doing in time travel queries. Time Travel queries give you the ability to move your vantage point in orientation to your ledger and query your data from any moment since the ledgers inception. You can ask questions such as _"What did this query look like in my database as of 10 days ago?"_. To learn more about time travel syntax check out our [reference documentation](../../../reference/flureeql-query-syntax/#t).
+
+### History Queries
+
+History queries are also powered by immutability, but are preformed differently than time-travel queries. While time-travel allows users to view the ledger from different points in history, history queries capture each of the data state changes that effected a given entity up until the present moment.
+
+To use our jelly-bean jar example, a history query would be like pulling a pink jellybean out of the jar and asking who put it there, if it used to be red and then faded over time, or if anyone pulled it out and then put it back in.
+
+![History Jellybean](/img/history_jellybeans.png)
+
+Or, to give a more concrete example, a history query could be: _"How many different `"address"` values have been associated with `"first_name" : "Lilly"`"_. To learn more about performing history queries and their syntax check out this [reference article](../../../reference/history-syntax/).
+
+## Real-World Applications
+
+Jellybeans and Mongolian Death Worms aside, there are incredibly powerful implications for Fluree's application of verifiable data. Here are some of the ways Fluree's verifiable data is currently in action:
+
+[Students at the International Islamic University of Malaysia built a secure voting platform](https://medium.com/fluree/how-marzex-tech-built-a-secure-voting-platform-with-fluree-a16ad290d839)
+
+[Sinisana used Fluree to ensure Halal Beef moves through their supply chain properly](https://flur.ee/fluree-blog/fluree-customer-sinisana-provides-supply-chain-traceability-for-food-safety/)
+
+[Arizona State University is utilizing Fluree to centralize student academic credentials](https://tln.asu.edu/technology)
+
+So, dear reader, what problems might you solve? What kind of solutions could **you** build leveraging the awe-inspiring power of verifiable data?
+
+If you'd like to give us feedback on this article, ask any clarifying questions, or connect with other developers utilizing Fluree join our [Discord](https://discord.gg/pgjsvPa9Nm)! We look forward to connecting with you soon.

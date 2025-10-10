@@ -1,0 +1,58 @@
+# Page Title
+
+<div class="overview">
+  Subtitle for page (what information will the user discover on this page?)
+</div>
+
+---
+
+## Overview
+
+From the [Diataxis Whitepaper on Documentation Material](https://diataxis.fr/reference/#)
+
+> The only purpose of a reference guide is to describe, as succinctly as possible, and in an orderly way. Whereas the content of tutorials and how-to guides are led by needs of the user, reference material is led by the product it describes.
+
+> In the case of software, reference guides describe the software itself - APIs, classes, functions and so on - and how to use them.
+
+Reference Doc pages should provide the following purpose:
+
+### What Users Need to Know
+
+- How to use this capability (more so than _why_ this capability exists)
+- What is the API endpoint (or endpoints) for this capability
+- What is the syntax for this capability, which pieces of syntax are required, and which are optional
+- What does each syntax piece enable and how does the user use it
+
+## Page Heading #1
+
+Page Headings are used to introduce each new section of content. A reference page on Query Syntax would reasonably have page headings for Overview, From, Select, Where, etc.
+
+Keep in mind that each "## Page Heading" and "### Page Sub-Heading" will be added to the Table of Contents that appears on the right-hand side nav for that page
+
+You can add tables to a page using table markdown syntax
+
+| key                   | required? | type                 | description                                                                                                                                   |
+| --------------------- | --------- | -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| `@context`            | no        | `string` or `object` | @context allows you to specify the context for your query. If you don't specify a context, the default context will be used.                  |
+| [`select`](#select)   | yes       | `array` or `object`  | select determines what objects are returned in query results.                                                                                 |
+| [`where`](#where)     | yes       | `array`              | where describes the query conditions and bindings (RDF patterns, filters, aggregates, etc) that the select clause can return as query results |
+| [`groupBy`](#groupby) | no        | `array` or `string`  | groupBy lets you group query results by a predicate and perform aggregate operations on the groups.                                           |
+| [`having`](#having)   | no        | `array` or `string`  | having lets you filter on grouped data using arbitrary expressions.                                                                           |
+
+### Page Sub-Heading 1
+
+Page Sub-Headings are used to introduce sub-sections of content within each Page Heading. A Page Heading for "where" in a Query Syntax Page would likely have sub-headings like "Three-Tuple Query Conditions", "Filter Maps", "Optional Maps", etc
+
+<details>
+<summary>Collapsible Content</summary>
+```json
+{
+  "select": {
+    "?s": ["*]
+  },
+  "where": [
+    ["?s", "@type", "rdfs:Class"]
+  ]
+}
+```
+</details>

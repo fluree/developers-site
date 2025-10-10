@@ -1,0 +1,201 @@
+---
+title: Chat with Tables
+keywords:
+  - LLM
+  - Chat
+  - Ask
+  - Spreadsheets
+  - CSV
+---
+
+
+import Admonition from "@theme/Admonition";
+import Image from "@theme/IdealImage";
+import { Button } from "@site/src/components/Button";
+import { ArrowDownTrayIcon } from "@heroicons/react/24/outline";
+import { FigureWithCaption } from "../../../../src/components/FigureWithCaption.tsx";
+import fileTabImage from "../../../../src/assets/nexus/chat-agent/structured-files-tab.png";
+import processFileImage from "../../../../src/assets/nexus/chat-agent/structured-process-file.png";
+import transactFileImage from "../../../../src/assets/nexus/chat-agent/structured-transact-file.png";
+import viewAndChatImage from "../../../../src/assets/nexus/chat-agent/structured-view-data.png";
+import chatImage from "../../../../src/assets/nexus/chat-agent/structured-chat.png";
+
+---
+
+<Admonition type="info">
+Please see the [Introduction](./intro.mdx) for a list of requirements you'll need before you can chat with your data.
+</Admonition>
+
+
+## Path to your Chat-enabled Dataset
+Fluree Cloud is built to be your easiest path to working with your data. You have a few options for layering a *Fluree Data Model* into your dataset.
+Choose the path that matches your source data and follow the guide with the goal of defining a data model that's compatible with the <span className="text-ui-main-500 font-bold">Fluree Data Agent</span>.
+ 1. [Upload Documents](./with-unstructured.mdx)  
+    You have unstructured documents like PDFs, Word docs, or text files.
+ 1. **Upload Tables (*this guide*)**  
+    You have structured data from a relational database export or in a spreadsheet or set of CSV files.
+ {/* 1. [Bring your own Ontology](./with-ontology.mdx)  
+    You have a custom ontology or data model that you want to use. */}
+
+### Path: Upload Tables
+Fluree's [native data format](../../../../learn/tutorial/fluree-data-model/#understanding-json-ld-flurees-data-model), JSON-LD, can easily represent structured data from a variety of sources and formats, including CSV.
+And there are many fantastic tools and libraries that can help you convert your structured data into JSON-LD.  
+That said, as mentioned in the [Introduction](./intro.mdx#fdatamodel), the Fluree Data Agent is designed to work with a specific data model, the `f:DataModel`.
+This guide, with the help of the provided `Import Template` and Fluree Cloud's `File Import` tool, will help you import your structured data with a compatible `f:DataModel` so that you can chat with your data.
+
+The steps you'll take are:
+1. **[Fill in the `Import Template` with your data model](#step-1)**  
+Even if you don't have a data model, the template will help you define one. 
+
+2. **[Normalize your data into CSVs](#step-2)**  
+Using the entities and attributes you defined in the data model template, you'll create at least one CSV for each entity that contains the data you want to import for that entity.
+
+3. **[Upload your data model and instance data](#step-3)**  
+Finally, you'll upload the data model spreadsheet and instance data CSVs to your Fluree Cloud dataset using the `File Import` tool.
+
+At the end of this guide, you'll have a new Fluree Cloud dataset that contains your source data enriched with a data model that you can use with the Fluree Data Agent.
+
+<Admonition type="info">
+If you'd like a completed sample to reference as you follow the steps in this guide, please feel free to download the *Hardware Supply Chain Model* and *CSVs* from [the Quickstart Guide](./quickstart.mdx#importing-your-data).
+</Admonition>
+
+#### Step 1: Fill in the Import Template with your Data Model \{#step-1\}
+Click the button below to download the `Fluree Data Model Import Template` spreadsheet.
+<div className="flex justify-center my-6">
+  <Button
+    href="/downloads/FlureeDataModelImportTemplate.xlsx"
+    download
+    variant="primary"
+    size="lg"
+    className="shadow-md"
+  >
+    <ArrowDownTrayIcon className="w-5 h-5" />
+    <span>Fluree Data Model Import Template (.xlsx)</span>
+  </Button>
+</div>
+
+There are four tabs in the spreadsheet:
+1. **Instructions**
+   This tab contains instructions for how to use the template. It has a section for each of the other tabs, with a description of what you need to do in each tab.
+   It also has a section that explains how to include additional tabs for defining picklists, or subclasses that enumerate a list of values for an attribute.
+2. **Main Information**  
+   This tab asks a handful of metadata about your data model, including the name and description of your data model and a base URL to use for the elements of your data model.  These values are used to generate the `f:DataModel` for your dataset.
+3. **Entities**
+   This is where you'll define the entities in your data model. When imported, each entity is used to define a Class in your data model. Each entity should have a unique name and a meaningful description that other users and the Data Agent can use to understand exactly what the entity is and does.
+4. **Attributes**
+   This is where you'll define the attributes for each entity. Each attribute should have a unique name and a data type that describes the kind of data you want to import for that attribute. The values are used to validate the data in your CSVs and to generate properties in the `f:DataModel` for your dataset.  
+   Here are a few things to keep in mind when defining your attributes:
+   - Every entity defined in the `Entities` tab must be represented by at least one Attribute in the `Attributes` tab, the Attribute that defines the entity's `Primary Key Identifier`.
+   - If a value of `Foreign Key Reference` is selected for the `Data Type` of an Attribute, the `Related Entity` column must be populated with the appropriate entity. This will create a relationship between the two entities in your data model. If the entity does not appear in the `Related Entity` picklist, be sure you've defined it in the `Entities` tab.
+   - If a value of `Picklist` is selected for the `Data Type` of an Attribute, the `Related Entity` column must be populated with the appropriate picklist entity. This will create a relationship between the two entities in your data model. If the entity does not appear in the `Related Entity` picklist, be sure you've defined it in the `Entities` tab.
+
+**To define enumerated values for your picklist entities**, you can create additional tabs to the spreadsheet to define picklists or subclasses that enumerate a list of values for an attribute. You'll need one additional tab for each picklist or subclass you want to define.  
+Here are the steps to follow:
+- Create a new tab in the spreadsheet and name it with the name of the entity you want to use as a picklist.  
+- The first column of the new tab should have a header that takes the name of your identifier attribute for the picklist entity, e.g. *Code* or *Enum ID*.
+- The second column header should be the name of the attribute that contains the name of the picklist entity, e.g. *Name* or *Label*.
+- The third column header should be the name of the attribute that contains the description of the picklist entity, e.g. *Description* or *Definition*.
+- Any additional columns in the new tab can be defined and will be included on your Picklist Entity.
+
+
+#### Step 2: Normalize your Data into CSVs \{#step-2\}
+Once you've defined your data model in the `Import Template`, you'll need to create at least one CSV for each entity that contains the data you want to import for that entity. 
+
+<Admonition type="info">
+If your instance data for an entity is larger than 5MB, you must split it into multiple CSVs, each no larger than 5MB. This is a limitation of the Fluree Cloud `File Import` tool.
+Each CSV must have a unique file name but must begin with the name of the entity it represents. For example, if your entity is called `Person`, your CSVs should be named `Person_1.csv`, `Person_2.csv`, etc.
+</Admonition>
+
+Here are some things to keep in mind when creating your CSVs:
+- The headers for the CSV must match the names of the attributes you defined in the `Attributes` tab of the `Import Template`.
+- Each row in the CSV should contain the data for one instance of the entity. 
+- The values in the CSV must match the data types you defined for each attribute in the `Attributes` tab of the `Import Template`.
+- If an attribute is defined as having a data type of `Foreign Key Reference`, the value in the CSV must match the value of the `Primary Key Identifier` of the related entity. 
+- If an attribute is defined as having a data type of `Picklist`, the value in the CSV must match the value of the `Primary Key Identifier` of the picklist entity in the `Import Template`.
+
+#### Step 3: Upload your Data Model Spreadsheet and Instance Data CSVs \{#step-3\}
+Once you've filled in your data model and created your CSVs, you're ready to upload them to your Fluree Cloud dataset using the `File Import` tool.
+Here's the step-by-step:
+1. **Navigate to your new dataset**  
+   If you've just created your new dataset, you're already on your Dataset page. 
+   If not, navigate to [your Datasets screen](https://data.flur.ee/datasets) and click on your new, empty dataset.
+2. **Call up the `Files` tab**  
+   Click on the `Files` entry in the dataset menu on the left of the screen. This will open the `Files` tab for your dataset.
+
+   <FigureWithCaption caption="Dataset View indicating the Files tab">
+   <div className="flex flex-row justify-around">
+      <Image
+         img={fileTabImage}
+         alt="A screen capture of the Dataset View that indicates the `Files` item in the left-hand dataset menu with a red arrow"
+         className="shadow-xl"
+      />
+   </div>
+   </FigureWithCaption>
+
+3. **Upload your data model spreadsheet and instance data CSVs**  
+   Either drag and drop your files onto the window or click on the `Select Files` button in the top right of the `Files` tab to open a file picker dialog.
+   Select the `Fluree Data Model Import Template` spreadsheet you filled out in [Step 1](#step-1) and the instance data CSVs you created in [Step 2](#step-2) and click `Open`.
+   The files will be uploaded to your dataset and will appear in the list of files in the `Files` tab.
+
+4. **Process your files**  
+
+   <Admonition type="info">
+   **Be sure to process the `Fluree Data Model Import Template` file first. This will create the `f:DataModel` for your dataset and is required for processing instance data CSVs.**
+   </Admonition>
+
+   After your files have been uploaded, the Action button on each file's record will change to `Process`. 
+   Click this button to kick off the automated import process. Depending on the size of your files, this process may take some time.
+   Feel free to navigate away from this screen and return later to check on the progress.
+
+   <FigureWithCaption caption="Files tab indicating the Process button">
+   <div className="flex flex-row justify-around">
+      <Image
+         img={processFileImage}
+         alt="A view of the Files UI that indicates the `Process` action button on the right side of the File table record"
+         className="shadow-xl"
+      />
+   </div>
+   </FigureWithCaption>
+
+   <Admonition type="info">
+   The screenshot above also includes a light-blue arrow that indicates a switch you can use to automatically process and transact the data from uploaded files without having to manually take action to move the process along.
+   </Admonition>
+
+5. **View and transact your extracted data**  
+   When the processing of your files is complete, the Status column will indicate "Processed" and the Action button will change to `Transact`.
+   You can click on the vertical ellipsis icon to the right of the `Transact` button to expose a submenu where you can `Download JSON` to see your extracted data.
+   If everything looks good, click the `Transact` button to add the extracted data to your dataset.
+   
+   <FigureWithCaption caption="Files tab indicating the Transact button and File Submenu">
+   <div className="flex flex-row justify-around">
+      <Image
+         img={transactFileImage}
+         alt="A view of the Files UI that indicates the `Transact` action button and the File Submenu (vertical ellipsis) on the right side of the File table record"
+         className="shadow-xl"
+      />
+   </div>
+   </FigureWithCaption>
+
+6. **Browse your data in `View Data` and chat with your data in `Chat`**  
+   Click on the `View Data` tab to see your data in a table format. You can also click on the `Chat` tab to start chatting with your data using the Fluree Data Agent.
+   The Data Agent will use the `f:DataModel` you defined in the `Import Template` to understand the structure of your data and the relationships between entities in your dataset.
+
+   <FigureWithCaption caption="Files tab indicating options for viewing data and opening a chat session">
+   <div className="flex flex-row justify-around">
+      <Image
+         img={viewAndChatImage}
+         alt="A view of the Files UI that indicates the `View Data` action button on the right side of the File table record, and the `View Data` and `Chat` menu items in the left-hand Dataset menu"
+         className="shadow-xl"
+      />
+   </div>
+   </FigureWithCaption>
+
+   <FigureWithCaption caption="Chat tab showing a sample question and answer with the Fluree Data Agent">
+   <div className="flex flex-row justify-around">
+      <Image
+         img={chatImage}
+         alt="A view of the Chat UI showing a sample question and answer with the Fluree Data Agent"
+         className="shadow-xl"
+      />
+   </div>
+   </FigureWithCaption>

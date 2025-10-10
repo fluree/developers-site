@@ -1,0 +1,234 @@
+---
+title: Connect apps to your Dataset
+keywords:
+  - connect
+  - connecting to Fluree Cloud
+  - integration
+  - integrate
+---
+
+import { FigureWithCaption } from "../../../src/components/FigureWithCaption.tsx";
+import settingsImage from "../../../src/assets/nexus/data-page/settings-screen.png";
+import collaboratorImage from "../../../src/assets/nexus/data-page/collaborator.png";
+import apiKeyImage from "../../../src/assets/nexus/data-page/api-key.png";
+import Image from "@theme/IdealImage";
+import Admonition from "@theme/Admonition";
+
+<div class="overview">
+  The following is a guide on integrating 3rd-party applications/clients with
+  your Fluree dataset.
+</div>
+
+---
+
+## Overview
+
+To connect an external client to a Fluree Cloud dataset, you'll first need to use the Settings UI for your dataset to generate an API Key.
+
+<Admonition type="info">
+
+API Keys can be configured with different policy groups / permissions. Be
+thoughtful about the level of access you grant to your API Keys.
+
+For more
+information on generating and managing API Keys, [you can read the documentation about API Keys here.](/docs/cloud/datasets/settings/#api-keys)
+
+</Admonition>
+
+---
+
+<FigureWithCaption caption="The UI for generating a new API key">
+  <div className="flex flex-row justify-around">
+    <Image
+      img={apiKeyImage}
+      alt="A view of the UI for generating a new API key"
+      className="shadow-xl"
+    />
+  </div>
+</FigureWithCaption>
+
+### Using an API Key
+
+API Keys can be used in the `Authorization` header of HTTP requests to authenticate against the Fluree Cloud Platform's API.
+
+A simple example of using an API Key to query a dataset would look like this:
+
+```bash
+curl --location 'https://data.flur.ee/fluree/query' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: 7G5ka...vtlq5g' \
+--data '{
+  "from": "fluree-jld/387028092977716",
+  "where": {
+    "@id": "?id",
+    "@type": "Yeti"
+  },
+  "select": { "?id": ["@type", "age", "name", "verified"] }
+}'
+```
+
+<Admonition type="info">
+
+Besides the query itself, the two important parts of this request are...
+
+    1. The `Authorization` header, the value of which is simply the API Key you generated.
+    2. The `from` clause of the query (or the `ledger` clause of a transaction), which is the **name of your dataset** (e.g. `fluree-jld/387028092977716`). You can find this value on the **Query** or **Notebooks** section for your dataset.
+
+</Admonition>
+
+The following Javascript examples show what using an API Key would look like:
+
+### Query
+
+```javascript
+import fetch from "node-fetch";
+
+const datasetID = `<DATASET-ID-HERE>`;
+const APIKey = `<API-KEY-HERE>`;
+
+const query = {
+  from: datasetID,
+  select: { "http://example.org/andrew": ["*"] },
+};
+
+const url = "https://data.flur.ee/fluree/query"; // notice we use /query here
+const headers = {
+  "Content-Type": "application/json",
+  Authorization: APIKey,
+};
+
+try {
+  const resp = await fetch(url, {
+    method: "POST",
+    headers: headers,
+    body: JSON.stringify(query),
+  });
+  const data = await resp.json();
+  console.log(data);
+} catch (error) {
+  console.error(error);
+}
+```
+
+### Transact
+
+```javascript
+import fetch from "node-fetch";
+
+const datasetID = `<DATASET-ID-HERE>`;
+const APIKey = `<API-KEY-HERE>`;
+
+const transaction = {
+  ledger: datasetID,
+  insert: { "@id": "http://example.org/andrew", "@type": "Person" },
+};
+
+const url = "https://data.flur.ee/fluree/transact"; // notice we use /transact here
+const headers = {
+  "Content-Type": "application/json",
+  Authorization: APIKey,
+};
+
+try {
+  const resp = await fetch(url, {
+    method: "POST",
+    headers: headers,
+    body: JSON.stringify(transaction),
+  });
+  const data = await resp.json();
+  console.log(data);
+} catch (error) {
+  console.error(error);
+}
+```
+
+## Example Application
+
+The following is a simple example of a React application that uses an API Key to query a dataset.
+
+You can run the app (and view the source code) directly in your browser by clicking the _Stackblitz_ link below, or you can visit the GitHub repo to clone and run the example application locally:
+
+[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz_small.svg)](https://stackblitz.com/github/fluree/nexus-example-react-app?file=md!README.md) [![Open in GitHub](https://img.shields.io/badge/Open%20in-GitHub-blue?logo=github)](https://github.com/fluree/nexus-example-react-app)
+
+    {/*
+
+## Clojure
+
+Fluree Cloud can also be used via the HTTP API from Clojure, but feel free to utilize our client library [Clojure API](/docs/reference/clojure/) that is a bit more Clojure-friendly.
+
+Before using the Fluree db library to connect to Fluree Cloud, first register an auth id in your dataset. If you already have an account id and corresponding keypair, feel free to use that, otherwise you can use the `fluree.crypto` library to create one.
+
+```clojure
+(require '[fluree.crypto :as crypto])
+
+(def keypair (crypto/generate-key-pair))
+(def auth-id (crypto/account-id-from-private (:private keypair))
+```
+
+Then copy the auth-id string and transact a new auth on the Transact tab of your Fluree Cloud dataset.
+
+```json
+[
+  {
+    "_id": "_auth",
+    "_auth/id": "<AUTH_ID_FROM_PRIVATE_KEY>",
+    "_auth/roles": [["_role/name", "root"]],
+    "_auth/doc": "<helpful doc here>"
+  }
+]
+```
+
+Now we can connect using the Clojure library.
+
+```clojure
+(require '[fluree.db.api :as fdb])
+
+(def cloud-conn (fdb/connect "https://api.dev.flur.ee:443" {:private (:private keypair)}))
+;; extract your ledger name from the connection string on the `connect` tab of your dataset
+;; "https://api.dev.flur.ee/fdb/fluree/<some-long-number>"
+(def ledger "fluree/<some-long-number>")
+
+;; now you are free to use the fdb api
+
+;; transact:
+@(fdb/transact cloud-conn
+               ledger
+               [{:_id :_collection
+                 :_collection/name "test",
+                 :_collection/doc "A test collection for whatever",
+                 :_collection/version "1"}]
+               {:private-key (:private keypair)})
+
+;; query:
+@(fdb/query (fdb/db cloud-conn ledger) {:from "_collection" :select ["*"]})
+```
+
+## HTTP and Clojure
+
+```clojure
+(require '[org.httpkit.client :as http])
+(require '[cheshire.core :as json])
+
+(def connection-string "<GET_THIS_FROM_CONNECT_TAB_OF_DATASET>")
+(def api-key "<GENERATED_ON_CONNECT_TAB_OF_DATASET>")
+
+;; query
+(let [resp @(http/request {:url (str connection-string "/query")
+                           :method :post
+                           :headers {"Content-Type" "application/json"
+                                     "Authorization" (str "Bearer " api-key)}
+                           :body (json/stringify {:select ["*"] :from "_collection"})})]
+    (-> resp :body json/parse))
+
+
+;; transact
+(let [resp @(http/request {:url "https://api.dev.flur.ee/fdb/fluree/<DATASET ID HERE>/transact"
+                           :method :post
+                           :headers {"Content-Type" "application/json"
+                                     "Authorization" (str "Bearer " api-key)}
+                           :body (json/stringify [{:_id :_user
+                                                   :_user/username "dan"}])})]
+    (-> resp :body json/parse))
+```
+
+\*/}

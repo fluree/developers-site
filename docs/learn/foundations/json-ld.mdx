@@ -1,0 +1,551 @@
+import Admonition from "@theme/Admonition";
+import { FlureeMermaid } from "@site/src/components/Mermaid/FlureeMermaid.jsx";
+import SandboxDrawer from "@site/src/components/sandbox_drawer/SandboxDrawer.jsx";
+import SandboxButton from "@site/src/components/sandbox_drawer/SandboxButton.jsx";
+
+# JSON-LD
+
+JSON-LD is a [W3C standard](https://www.w3.org/TR/json-ld11/) for serializing
+semantic web RDF graph data as JSON. With it, you can encode a graph like this:
+
+<FlureeMermaid
+  chart={`graph TB
+  s(http://microsoft.com/people/#SatyaNadella) -->|http://schema.org/name| sn(Satya Nadella)
+  s -->|http://schema.org/jobTitle| jt(CEO)
+`}
+/>
+
+Using this JSON:
+
+```json
+{
+  "@context": "http://schema.org",
+  "@id": "http://microsoft.com/people/#SatyaNadella",
+  "name": "Satya Nadella",
+  "jobTitle": "CEO"
+}
+```
+
+This document explains the rationale behind the semantic web approach to
+representing data. It also explains the basics of JSON-LD syntax so that you can
+understand it when you read it and so you can encode your own data as JSON-LD.
+
+If you'd like a more detailed introduction to these concepts and technologies,
+please read [our tutorial](../../tutorial/introduction/).
+
+## RDF and semantic web
+
+JSON-LD serializes _Resource Description Framework_ (or _RDF_) data. Fluree
+implements JSON-LD for transactions; you send JSON-LD objects to Fluree to add
+data to your database.
+
+In RDF, a _resource_ is anything that you want to capture information about;
+it's analogous to _entity_. The _Resource Description Framework_ is a standard
+that lays out rules for capturing data -- describing resources -- such that the
+data can be unambiguously understood by any system that understands RDF. It's
+like a protocol for representing data, similar to how TCP/IP and HTTP are
+protocols for exchanging information on the internet.
+
+Without such a standard, every data system is responsible for creating its own
+way to represent data: What should fields be named? How do you refer to
+entities? How do you capture relationships between entities? Data systems must,
+in effect, create their own idiosyncratic representational systems for their
+data.
+
+This _distributed data_ -- data that is not managed by a central authority, with
+an uncoordinated network of producers and consumers -- is made much more useful
+if it's translated into the same representation. Developers have spent untold
+hours translating among these systems, and RDF nearly eliminates the need for
+this kind of work.
+
+The RDF spec has rules for two aspects of representing data:
+
+- How to describe the relationship between two resources
+- How to unambiguously refer to resources
+
+Relationships are captured as _subject, predicate, object_ (SPO) triples. The
+examples below are informal (indicated by the `<>` brackets), meaning they don't
+follow formatting specifications, but they convey the underlying idea:
+
+```
+<Reggie> <loves> <honey>
+<Reggie> <loves> <guitar>
+<Megan> <is the mother of> <Ruby>
+<Ruby> <loves> <mangoes>
+```
+
+| subject    | predicate            | object      |
+| ---------- | -------------------- | ----------- |
+| `<Reggie>` | `<loves>`            | `<honey>`   |
+| `<Reggie>` | `<loves>`            | `<guitar>`  |
+| `<Megan>`  | `<is the mother of>` | `<Ruby>`    |
+| `<Ruby>`   | `<loves>`            | `<mangoes>` |
+
+Triples like this allow us to describe relationships between any two things.
+This is the essence of data: two things, and the relationship between them.
+
+Triples can be used to represent graphs:
+
+<FlureeMermaid
+  chart={`graph TB
+  r(Reggie) -->|loves| h(honey)
+  r(Reggie) -->|loves| g(guitar)
+  m(Megan) -->|is the mother of| ruby(Ruby)
+  ruby -->|loves| mangoes(mangoes)
+`}
+/>
+
+This is an essential aspect of RDF: it's used to represent graph data.
+
+So that's the first part of the data "language" that RDF describes. The second
+part is how to unambiguously refer to resources: my `<Reggie>` may or may not be
+the same as your `<Reggie>`; for that matter, my `<loves>` might be different
+from yours. Resolving these kinds of ambiguities is a huge part of the work of
+translating among data systems.
+
+RDF introduces structure to our data representations so that we can
+unambiguously refer to the things we're describing and their relationships.
+Instead of freeform plain text, we use _Internationalized Resource Identifiers_,
+or _IRIs_, (which are essentially like URIs). The above data might be captured
+like this:
+
+```
+http://reggies-domain.com/#person http://emotions.com/love "honey"
+http://reggies-domain.com/#person http://emotions.com/love "guitar"
+http://megan-family.com/megan http://schema.com/parent http://megan-family.com/ruby
+http://megan-family.com/ruby http://emotions.com/love "mangoes"
+```
+
+If you're using the IRI `http://megan-family.com/megan` and I'm also using IRI,
+we can be certain that we're referring to the same entity. Likewise, wherever we
+use the IRI `http://schema.com/parent`, we know we're both referring to the same
+kind of relationship between two entities.
+
+Note that the objects in SPO triples can be strings ("honey" and "mangoes"
+above). They can also be numbers and other values; for more information see [RDF
+datatypes](https://www.w3.org/TR/rdf11-concepts/#section-Datatypes).
+
+JSON-LD is a standard for serializing these RDF triples into JSON. Serializing
+RDF data as JSON is desirable because there is ample language and tooling
+support for working with JSON.
+
+The rest of this document explains basic vocabulary and rules for understanding
+how a JSON-LD object relates to RDF data.
+
+## node objects and properties
+
+JSON-LD uses JSON objects to capture the subject, predicate, object triples that
+describe resources. In a JSON-LD context, a JSON object can be referred to as a
+_node object_. The word _node_ is used because RDF captures graph data, and a
+single JSON object is "about" a node in that graph.
+
+This JSON object describes a node where the node being described has a
+`"http://emotions.com/love"` relationship with `"http://objects.com/honey"`:
+
+```
+{
+ "http://emotions.com/love": "honey"
+}
+```
+
+We would say that the node has the _property_ `"http://emotions.com/love"`, with
+a _value_ of `"http://objects.com/honey"`. _Property_ is synonymous with
+"predicate", and _value_ is synonymous with "object".
+
+But what is the subject? How do you identify the node being described? That's
+where the `@id` keyword comes in.
+
+## `@id` and keywords
+
+The `@id` keyword designates the subject for a node object:
+
+```
+{
+ "@id": http://reggies-domain.com/#person,
+ "http://emotions.com/love": "honey",
+ "http://emotions.com/love": "guitar"
+}
+```
+
+A library that parses JSON objects as JSON-LD could read this and convert it
+into the following RDF triple:
+
+```
+http://reggies-domain.com/#person http://emotions.com/love "honey"
+http://reggies-domain.com/#person http://emotions.com/love "guitar"
+```
+
+### keywords
+
+The `"@id"` example above shows how the JSON format does not support the
+parsing of a JSON object as a set of RDF triples. We need special designators
+like `"@id"` along with rules for interpreting these designators in order to
+treat JSON objects as RDF data.
+
+These designators are called _keywords_, and their role in including RDF
+information in JSON objects is defined by the [W3C's JSON-LD
+specification](https://www.w3.org/TR/json-ld11/).
+
+Generally, the key value pairs of a JSON object are treated as properties and
+values for a node. Keywords, however, are treated differently, as described by
+the spec. We've already seen this with `@id`: it doesn't designate another
+property of the node, rather, it indicates what node is being described by the
+JSON object.
+
+This doc also describes `@context` and `@type`, showing how they help
+serialize RDF data as JSON objects.
+
+## `@context`, aliases, metadata
+
+The `@context` keyword is almost always included in JSON-LD objects, and
+understanding its role is essential to understanding the JSON-LD data you're
+working with. It serves two primary functions:
+
+- It defines _aliases_
+- It contains other metadata like the language being used (English, Chinese, etc)
+
+### aliases
+
+You'll most often see `@context` used to define namespace aliases. Namespace
+aliases allow you to use _compact IRIs_.
+
+IRIs take the form of _http://domain.com/some/path/your/value_, and including
+this full path every time can be very repetitive. It's harder for humans to
+write and parse, and it can unnecessarily consume bandwidth. Compact IRIs are a
+way of reducing this repetition. Here's an example:
+
+```
+{
+  "@context": {
+    "schema": "http://schema.org/"
+  },
+  "schema:familyName": "Worrel",
+  "schema:givenName": "Ernest"
+}
+```
+
+`schema:familyName` and `schema:givenName` are compact IRIs. Compact IRIs are
+handled as follows:
+
+1. _If_ a string has the form `namespace:identifier`, and `namespace` is a key under
+   `@context`
+2. _Then_ replace `namespace:` with the corresponding value under `@context`
+
+In this example, instances of `"schema:"` are replaced with
+`"http://schema.org/"`. Applications that understand JSON-LD, like Fluree, will
+expand namespaces into their full form when parsing JSON-LD objects.
+
+### replacements
+
+`@context` can also be used to define simple replacements:
+
+```
+{
+  "@context": {
+    "familyName": "http://schema.org/familyName",
+    "givenName": "http://schema.org/givenName",
+  },
+  "familyName": "Worrel",
+  "givenName": "Ernest"
+}
+```
+
+When a key in a JSON-LD object (like `"familyName"`) has an entry in the
+`@context`, then that key will be replaced with the value in the `@context`.
+
+### `@base`, `@vocab`, and relative IRIs
+
+JSON-LD supports _relative IRIs_. These are analogous to relative file system
+paths or relative URLs, like when you use `./tutorial/introduction` instead of
+an absolute path like
+`https://next.developers.flur.ee/docs/learn/tutorial/introduction/`.
+
+You can use a relative IRI for `@id` values. These are all valid:
+
+```json
+{
+  "@id": ""
+}
+
+{
+  "@id": "SatyaNadella"
+}
+
+{
+  "@id": "people/SatyaNadella"
+}
+```
+
+By default, the relative IRI is resolved against the IRI used to retrieve the
+JSON-LD document, so if you got these examples from `http://microsoft.com/` then
+they would resolve to:
+
+```json
+{
+  "@id": "http://microsoft.com/"
+}
+
+{
+  "@id": "http://microsoft.com/SatyaNadella"
+}
+
+{
+  "@id": "http://microsoft.com/people/SatyaNadella"
+}
+```
+
+You can also set the base IRI for resolving relative IRIs using the `@base`
+keyword in a `@context`:
+
+```json
+{
+  "@context": {
+    "@base": "http://google.com/"
+  },
+  "@id": "SundarPichai"
+}
+```
+
+Here, the `@id` would resolve to `http://google.com/SundarPichai`
+
+You can also set the base IRI for properties and `@type`s by setting `@vocab` in
+the `@context`:
+
+```json
+{
+  "@context": {
+    "@base": "http://google.com/",
+    "@vocab": "http://schema.org/"
+  },
+  "@id": "SundarPichai"
+  "name": "Sundar Pichai"
+}
+```
+
+This JSON-LD object serializes this RDF triple:
+
+```
+http://google.com/SundarPichai http://schema.org/name "Sundar Pichai"
+```
+
+You can also define your `@vocab` relative to your `@base`:
+
+```json
+{
+  "@context": {
+    "@base": "http://google.com/",
+    "@vocab": "properties/"
+  },
+  "@id": "SundarPichai"
+  "name": "Sundar Pichai"
+}
+```
+
+Here, the `@vocab` is resolved to `http://google.com`, so this object serializes
+this triple:
+
+```
+http://google.com/SundarPichai http://google.com/properties/name "Sundar Pichai"
+```
+
+If you set `@base` and include an empty string for `@vocab`, then `@vocab` will
+resolve to the same string as `@base`:
+
+```json
+{
+  "@context": {
+    "@base": "http://google.com/",
+    "@vocab": ""
+  },
+  "@id": "SundarPichai"
+  "name": "Sundar Pichai"
+}
+```
+
+The triple:
+
+```
+http://google.com/SundarPichai http://google.com/name "Sundar Pichai"
+```
+
+### metadata
+
+The `@context` can also be used to set metadata like the language of string
+values in the JSON-LD object.
+
+### Other ways to define the context
+
+The value of `@context` can be a JSON object. There are two other days to define
+the `@context`:
+
+- Provide a URL which points to a document which contains a JSON object that
+  defines the `@context`
+- Provide an array of such URLs
+
+These are both valid:
+
+```
+{
+  "@context": "http://schema.org"
+}
+
+{
+  "@context": [
+    "http://schema.org",
+    "http://www.w3.org/2004/02/skos/core#"
+  ]
+}
+```
+
+### Further reading
+
+This document doesn't cover the full range of behavior governed by the
+`@context` object. To learn more, check out the [JSON-LD
+specification](https://www.w3.org/TR/json-ld11/#the-context).
+
+## `@type`
+
+The `@type` keyword is an alias for `rdf:type`. `rdf:type` is a property
+introduced by [RDF Schema](https://www.w3.org/TR/rdf12-schema/), also known as
+_RDFS_.
+
+A full explanation of RDFS and how to use it is outside the scope of these docs.
+The [W3C specification](https://www.w3.org/TR/rdf12-schema/) is a good starting
+point, and the book [_Semantic Web for the Working
+Ontologist_](https://dl.acm.org/doi/book/10.1145/3382097) gives the topic a full
+treatment.
+
+    { /*
+
+## `@graph`
+
+In the RDF world, your data is contained by graphs. You can name your graphs and
+you can specify which graph a data set belongs to.
+
+So far, the data examples we've shown haven't specified which graph they belong
+to. RDF data with no graph specified belongs to the _default graph_.
+
+To work with a named graph, you structure your JSON-LD object like this:
+
+```json
+{
+  "@id": "IRI for graph goes here",
+  "@graph": [
+    // array of node objects
+  ]
+}
+```
+
+The `@id` key at the top level is the name of your graph, and it should be an
+IRI. The `@graph` keyword is an array of node objects. These node objects
+describe the RDF data that belongs to the graph specified by `@id` at the top
+level. Here's a brief example:
+
+```json
+{
+  "@context": {
+    "my-business": "http://my-business.com/"
+  },
+  "@id": "my-business:graphs/payroll",
+  "@graph": [
+    {
+      "@id": "my-business:employees/e-210050",
+      "my-business:salary": 80000
+    }
+  ]
+}
+```
+
+A single JSON-LD object can contain multiple graphs. To do that, the top-level
+object should be a vector:
+
+```json
+[
+  {
+    "@id": "http://graph-iri-1.com/",
+    "@graph": [...]
+  },
+  {
+    "@id": "http://graph-iri-1.com/",
+    "@graph": [...]
+  }
+]
+```
+
+\*/}
+
+## JSON-LD and Fluree
+
+Fluree introduces additional concepts and tools for working with JSON-LD.
+
+    { /*
+
+### Default context
+
+Fluree allows you to set a _default context_ for ledgers. The default context is
+used when you transact a JSON-LD object that does not include a `@context` key.
+For example, if you default context is this:
+
+```json
+{
+  "ex": "http://example.org/",
+  "f": "https://ns.flur.ee/ledger#",
+  "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+  "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+  "schema": "http://schema.org/",
+  "skos": "http://www.w3.org/2008/05/skos#",
+  "wiki": "https://www.wikidata.org/wiki/"
+}
+```
+
+then you could transact the following JSON-LD (which has no `@context` key), and
+the `rdf` and `schema` namespace aliases would get expanded:
+
+```json
+{
+  "@id": "http://my-business.com/employees/13015",
+  "rdf:type": "Person",
+  "schema:name": "Max Regular"
+}
+```
+
+If you do include a `@context` key, then the default context will not be used at
+all, so if you want to use any of the aliases defined in your default context,
+you must include them in the `@context` as well.
+
+If you don't set a default context when creating your ledger, then Fluree sets a
+one for you: a default default context. We'll call it the built-in context to
+avoid confusion.
+
+\*/}
+
+### `id`, and `type`
+
+Fluree's built-in context includes:
+
+```json
+{
+  "id": "@id",
+  "type": "@type"
+}
+```
+
+Aliasing `@id` and `@type` like this is somewhat common among RDF practitioners.
+If you see `id` and `type` being used as keys without the preceding `@` symbol,
+it's likely that those keys are aliases of the corresponding JSON-LD keywords.
+The aliases can be set in the `@context`.
+
+### Fluree accepts plain JSON
+
+Fluree allows you to transact JSON objects like the following:
+
+```json
+{
+  "@id": "320-1214-1231",
+  "name": "Bill Waters"
+}
+```
+
+If you send Fluree data like this, then it will treat the `"320-1214-1231"` and `"name` as naive identifiers, unless you have leveraged `@base` & `@vocab`
+to instead treat `@id` like a relative IRI and `name` like a
+relative property name.
