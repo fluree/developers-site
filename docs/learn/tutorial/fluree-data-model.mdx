@@ -1,0 +1,1061 @@
+import Admonition from "@theme/Admonition";
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+import { FlureeMermaid } from "@site/src/components/Mermaid/FlureeMermaid.jsx";
+
+# Fluree's Data Model
+
+Learning a new database paradigm can feel like trying to make your way around a
+new town: there are a few sites that you recognize, but you have no sense of how
+they connect. They're like little islands in your mind. A grocery store island,
+a movie theater island, an island for the chupacabra feeding ground you've been
+staking out. It feels like teleporting as you follow whatever instructions the
+GPS gives you.
+
+That is, until you finally look at a map and discover the relationships among
+the places. Suddenly, you realize that the chupacabra spot is just a couple
+blocks from the ice cream parlor you like, and you could easily walk there after
+you're done taking field notes for the day. Rather than following random
+instructions from the ether, you can interact with the world in predictable
+ways.
+
+This chapter is that map. Here, you'll learn the underlying model that will help
+you make sense of how you interact with Fluree. You'll learn:
+
+- What it means for Fluree to be a _JSON-LD (JSON for Linked-Data) database_ which is a version of an _RDF (Resource Description Framework) graph database_
+- What RDF is and how its data model compares to
+  the relational model
+- Which concepts you can apply from the relational world and which ones don't
+  apply
+- The relationship between this internal model of how data is represented and
+  Fluree's interfaces for transacting and querying
+
+This will allow you to confidently construct queries that get the database to do
+what you want it to do, and to understand the queries you encounter in the wild.
+
+We're going to develop this understanding by walking through some basic examples
+of inserting and querying simple records.
+
+## Inserting and Retrieving Data
+
+Fluree allows you to insert and query data using JSON. When you insert a JSON
+object, it's similar to inserting a row in a table of a relational database or a
+document in a document database, in that the JSON document describes an entity.
+
+With Fluree, we'll use the term _entity_ to signify something that you want to
+record data about. We represent entities using JSON objects. Here's a JSON
+object that represents an entity:
+
+{/* <SandboxButton /> */}
+
+```json
+{
+  "name": "Derek",
+  "species": "yeti",
+  "favorite_food": "kale"
+}
+```
+
+Let's insert it into Fluree. To do that, we need to embed this object in a
+parent JSON object that includes the ledger we're using to store our data, and
+we need to POST the resulting JSON to the `/fluree/transact` endpoint:
+
+```sh
+curl --location 'http://localhost:58090/fluree/transact' \
+--header 'Content-Type: application/json' \
+--data '{
+  "ledger": "cryptids",
+  "insert": {
+    "name": "Derek",
+    "species": "yeti",
+    "favorite_food": "kale"
+  }
+}'
+```
+
+<Admonition type="note">
+  For the rest of this tutorial, when we transact data you can assume that doing
+  so means placing it in a JSON object like the one above and making a POST
+  request to the `/fluree/transact` endpoint. Examples will only include the
+  value of the `"insert"` key.
+</Admonition>
+
+Doing this _executes a transaction_. To execute a transaction is to commit an update to the
+data stored in your database. Unlike a normal database, we do not mutate data in-place, but rather append diffs in data state to previous & immutable data commits (very similar to `git` commits, if you're familiar with those). We'll discuss this more in subsequent chapters--how it makes your data provable and time-travelable!
+
+We'll also discuss later how to update and
+delete data, and how to include multiple modifications in a transaction. You'll
+see, too, how you can perform multiple operations in a single transaction (insert
+multiple records, insert a new record and update an existing one, etc).
+
+When you execute the transaction you should see something like this as a
+response:
+
+```json
+{
+  "ledger": "cryptids",
+  "commit": "fluree:file://cryptids/main/commit/12d7...272f.json",
+  "t": 1,
+  "tx-id": "ec1c...b4bf"
+}
+```
+
+Your response will vary from this in many ways. For example your value for the
+`"t"` key might not be `1`, your `"commit"` address might be something else, etc. These
+differences aren't important. As long as you don't see a response that indicates
+an error, you should be OK. In fact, we're going to ignore this response for
+now, as it's not relevant to understanding the relationship between Fluree's
+interface and internal model.
+
+Queries are also formatted as JSON. Here's an example query that would retrieve
+the entity we just transacted:
+
+{/* <SandboxButton /> */}
+
+```json
+{
+  "select": {
+    "?s": ["*"]
+  },
+  "where": {
+    "@id": "?s",
+    "species": "yeti"
+  }
+}
+```
+
+You can run the query by sending a POST request to the `/fluree/query` endpoint:
+
+```sh
+curl --location 'http://localhost:58090/fluree/query' \
+--header 'Content-Type: application/json' \
+--data '{
+  "from": "cryptids",
+  "select": {
+    "?s": ["*"]
+  },
+  "where": {
+    "@id": "?s",
+    "species": "yeti"
+  }
+}'
+```
+
+As with transactions, when we talk about running a query you can assume that the
+request will look like the one above.
+
+This query is like asking Fluree to _find all records that have a `"species"` of
+`"yeti"`, and give them to me with all their properties_.
+
+You should see this response:
+
+```json
+[
+  {
+    "@id": "_:f211106232532992",
+    "name": "Derek",
+    "species": "yeti",
+    "favorite_food": "kale"
+  }
+]
+```
+
+Notice that the entity is returned in an array; query results will always be arrays.
+
+Where did that `"@id"` come from? I'll explain that below in the section on
+Fluree's data model.
+
+Now let's add another yeti. Transact this:
+
+{/* <SandboxButton /> */}
+
+```json
+{
+  "name": "Kelly",
+  "species": "yeti",
+  "sightings": [
+    {
+      "day": "2022-12-20",
+      "location": "ski basin"
+    },
+    {
+      "day": "2022-12-21",
+      "location": "Target"
+    }
+  ]
+}
+```
+
+Note that this yeti data contains nested JSON objects in `"sightings"`. Fluree
+allows you to work with arbitrarily nested data. This is convenient, as you
+don't have to write code to manage the mismatch between how your application
+needs data, and how the database stores it.
+
+When we run the same query as before, we should see the new record:
+
+{/* <SandboxButton /> */}
+
+```jsonc
+// query
+
+{
+  "select": {
+    "?s": ["*"]
+  },
+  "where": {
+    "@id": "?s",
+    "species": "yeti"
+  }
+}
+```
+
+```jsonc
+// results
+
+[
+  {
+    "@id": "_:f211106232532993",
+    "name": "Kelly",
+    "species": "yeti",
+    "sightings": [
+      {
+        "@id": "_:f211106232532994"
+      },
+      {
+        "@id": "_:f211106232532995"
+      }
+    ]
+  },
+  {
+    "@id": "_:f211106232532992",
+    "name": "Derek",
+    "species": "yeti",
+    "favorite_food": "kale"
+  }
+]
+```
+
+Our new yeti is there, but notice that we're not seeing the full JSON objects
+for `"sightings"`. I just told you that Fluree can work with arbitrarily nested
+data, so you might be tempted to call me a liar. Rest assured that you'll learn
+what's going on here, and how to retrieve that data, by the end of this chapter
+-- and it will be easier than with relational systems. (Hint: When you insert
+nested JSON objects, the database will create new records and reference them
+from the parent record.)
+
+Stepping back, we can already glean a number of facts about how to interact with
+Fluree from these interactions. We've learned some things about inserting data:
+
+- You don't need to specify a schema before inserting data into the database (if
+  the thought of a schema-less data store makes you sweat, fear not! Later in
+  this tutorial you'll learn how to enable schema enforcement)
+- You can send Fluree arbitrary JSON objects to store; `"sightings"` shows that
+  you can send nested data
+- The two records you inserted shared some keys (`"name"` and `"species"`), but
+  not all of them (`"favorite_food"` and `"sightings"`)
+- When you insert data, Fluree will automatically generate an `"@id"` key for
+  each inserted object
+
+And we've learned some things about querying the database:
+
+- It's structured as a JSON object, rather than a plain text SQL string
+- In some ways it looks like SQL: there's a `"select"` and a `"where"`, for
+  example
+- But it also has this weird `"?s"` thing and there's no `"from"`
+
+<Admonition type="info">
+  Some databases use the term _query_ to refer to both operations that modify
+  the data stored in the db, and operations that retrieve data. I will use
+  _transaction_ to refer to operations that insert, update, or delete data, and
+  will use _query_ for read operations.
+</Admonition>
+
+At this point, we can either keep moving forward with a partial understanding of
+what's happening or dig deep like the intrepid scientists we are and put these
+interactions under a microscope. Obviously, as self-respecting members of the
+cryptozoology community, we're going to opt for the microscope.
+
+## Understanding JSON-LD, Fluree's Data Model
+
+You interact with Fluree via JSON. The data you insert is formatted as JSON
+objects, and the query results you receive are formatted as JSON objects. But vanilla JSON ultimately has certain shortcomings that make it unsuitable for things like
+data collaboration, interoperability, and data integrity--all of which are problems that JSON-LD (and RDF by extension) solves. To really get the most out of Fluree, it will be useful to have a working model for how the
+JSON you send and receive can be empowered by the data representation model of JSON-LD.
+
+A relational database management system (RDBMS) implements the _relational_ data
+model. It provides you with _tables_ that contain _records_. In the same way
+that you need to understand what tables and records are to become proficient at
+using relational databases, you need to understand the _JSON for Linked-Data (JSON-LD) model_ to become proficient at using Fluree.
+
+<Admonition type="info">
+  JSON-LD is a strict serialization format for RDF, and both JSON-LD and RDF are
+  W3C standards that defines syntax, data types, and relationships for
+  representing linked, semantic information. This definition isn't directly
+  relevant to developing a functional understanding of interacting with JSON-LD
+  data, but it will become more relevant as we explore the world of open data,
+  and how a universally adopted data model can benefit you and your data. The
+  W3C provides a [good RDF primer](https://www.w3.org/TR/rdf11-concepts/).
+</Admonition>
+
+With RDF you don't have tables and records. Instead, you have _sets_ of
+_[subject, predicate, object] triples_, also called _RDF triples_ or just
+_triples_. Triples are positional data structures that hold three elements. In JSON-LD, we represent triples as JSON objects of key-value pairs, and we use an `@id` key to represent the subject of each fact. An RDF triple like `["Derek", "species", "yeti"]` would be represented in JSON-LD as:
+
+```json
+{
+  "@id": "Derek",
+  "species": "yeti"
+}
+```
+
+<Admonition type="info">
+  For the remainder of this tutorial, we will represent code blocks of data both
+  as JSON-LD and the RDF triples they represent. You can use the **tabs in each
+  code block** to see either representation--they express literally equivalent
+  data, simply in either the serialization of JSON-LD or RDF triples (here as
+  arrays/vectors of triples).
+</Admonition>
+
+In this tutorial we will represent triples as JSON arrays of the form _[subject,
+predicate, object]_. This isn't a standard way to represent them, it's just
+convenient for teaching. Examples of triples include `["Minhocão", "is", "an
+earthworm"]` and `["Minhocão", "eats", "horses"]`. In the first, `"Minhocão"` is
+the subject, `"an earthworm"` is the object, and `"is"` describes the
+relationship between the two. In the second, `"eats"` describes the relationship
+between `"Minhocão"` and `"horses"`.
+
+The W3C has precise technical definitions for these terms, but for our purposes
+you can think of subjects and objects as "things in the world you want to
+describe," and predicates as the verb phrases that capture the relationships
+between those things.
+
+<Admonition type="note">
+
+In these docs you'll sometimes see full verb phrases like _lives in_ or _first
+sighted on_ for predicates, and you'll also sometimes see phrases like
+_location_ or _name_. You can think of the latter as more concise forms of
+verb phrases connecting subject and object, where _location_ is short for
+something like _is located at_ and _name_ is short for something like _is
+named_.
+
+</Admonition>
+
+RDF refers to the "things" we're describing as _resources_, hence Resource
+Description Framework. The _resource_ concept roughly maps to _record_ in
+relational database land.
+
+We can represent a graph with a set of triples by treating the subjects and
+objects as nodes in the graph, and predicates as directed arcs connecting them.
+Here's a set of facts and the graph it forms:
+
+<CH.Code>
+```json JSON-LD
+{
+  "@id": "Mothman",
+  "lives_in": "West Virginia",
+  "first_sighted_on": "November 12, 1966"
+}
+```
+```json RDF
+[
+  ["Mothman", "lives_in", "West Virginia"], 
+  ["Mothman", "first_sighted_on", "November 12, 1966"] 
+]
+```
+</CH.Code>
+
+<FlureeMermaid
+  chart={`
+  graph LR
+  mm(Mothman) -->|lives in| wv(West Virginia)
+  mm -->|first sighted on| d(November 12, 1966)
+`}
+/>
+
+<Admonition type="note">
+  If you click the _**RDF**_ tab above, you'll see that we represent a set of
+  triples as a JSON array. There's no standard for representing sets, so here
+  we're doing this for convenience. Note that this is not meant to imply that
+  the set is literally a JSON array. In particular, sets are unordered, but JSON
+  arrays are ordered. A set is an abstraction that we have to depict _somehow_,
+  and formatting it as a JSON array seems reasonable.
+</Admonition>
+
+This is a more abstract example that deviates from the RDF standard a little. In
+real RDF systems, the subjects and objects will be either _identifiers_ or
+_literal values_. For now, let's use numbers as identifiers. With this stricter
+understanding of JSON-LD and RDF triples, we can revise the Mothman example to be a little
+more accurate:
+
+<CH.Code>
+```json JSON-LD
+{
+  "@id": 1,
+  "is_named": "Mothman",
+  "lives_in": {
+    "@id": 2,
+    "is_named": "West Virginia"
+  },
+  "first_sighted_on": "November 12, 1966"
+}
+```
+```json RDF
+[
+  [1, "is named", "Mothman"],
+  [1, "lives in", 2],
+  [2, "is named", "West Virginia"],
+  [1, "first sighted on", "November 12, 1966"]
+]
+```
+</CH.Code>
+
+<FlureeMermaid
+  chart={`
+  graph LR
+    mm(1) -->|is named| Mothman
+    mm -->|lives in| wv
+    wv(2) -->|is named| wvn(West Virginia)
+    mm -->|first sighted on| d(November 12, 1966)
+`}
+/>
+
+Here, `1` and `2` are identifiers for our resources, and our triples are
+_describing_ the resources. We're saying that the "thing" referred to by `1` is
+named Mothman, and it lives in the "thing" referred to by `2`. `2` is named West
+Virginia. The strings `"Mothman"` and `"West Virginia"` are data literals.
+
+This data model gives a powerful way of capturing information about things in
+the world we care about, and the relationships among them.
+
+To recap:
+
+- Every database must implement a _data model_, which consists of containers and
+  the data structures allowed in those containers.
+- Fluree is an _JSON-LD database_. Rather than inserting _records_ into
+  _tables_, you insert _triples_ into _sets_, and for operational convenience, we express those triples as JSON.
+- RDF triples consist of a _subject_, _predicate_, and _object_.
+- Subjects and objects are _resources_. Resources are anything you want to
+  describe
+- In practice, resources will be either identifiers or literal values
+- Predicates are verb phrases that describe the relationship between subject and
+  object
+- You can represent graphs as triple sets
+
+## How Fluree Receives JSON
+
+Now we can start to make sense of the behavior we saw earlier. We started by
+inserting this JSON object:
+
+<CH.Code>
+```json JSON-LD
+{
+  "name": "Derek",
+  "species": "yeti",
+  "favorite_food": "kale"
+}
+```
+```json RDF
+[
+  [???, "name", "Derek"],
+  [???, "species", "yeti"],
+  [???, "favorite_food", "kale"]
+]
+```
+</CH.Code>
+
+If you clicked on the **RDF** tab in the code block above, you may have noticed that these aren't valid RDF triples--there's no _subject_ described in our JSON.
+When you tell Fluree to insert this JSON object, it needs to understand each fact in terms of its `[subject, predicate, object]`. Since we don't specify a subject identifier, Fluree generates one
+for us, and it's something like the following data is added to a graph:
+
+<CH.Code>
+```json JSON-LD
+{
+  "@id": "_:f211106232532992",
+  "name": "Derek",
+  "species": "yeti",
+  "favorite_food": "kale"
+}
+```
+```json RDF
+[
+  ["_:f211106232532992", "name", "Derek"],
+  ["_:f211106232532992", "species", "yeti"],
+  ["_:f211106232532992", "favorite_food", "kale"]
+]
+```
+</CH.Code>
+
+There is a direct relationship between the key-value pairs in our JSON object and the predicate-object pairs in our triples. The JSON-LD spec defines this relationship.
+
+What we are typically missing in vanilla JSON is a canonical representation of our _subject_. Hence, the JSON-LD spec reserves `"@id"` for encoding the
+identifier for a resource's subject:
+
+<CH.Code>
+```json JSON-LD
+{
+  "@id": "http://example.org/derek",
+  "name": "Derek"
+}
+```
+```json RDF
+  ["http://example.org/derek", "name", "Derek"]
+```
+</CH.Code>
+
+<Admonition>
+  In this example above, we used a URL (or IRI) for our subject identifier.
+  We'll talk more about why this is a convention later, but in short, if we want
+  our data to participate in a common set of meanings across the web (or even
+  outside of our single database instance), it's important that our identifiers
+  are globally unique. URLs are a great way to achieve this.
+</Admonition>
+
+So now we know what happens when data flows into Fluree from a client: JSON objects
+are validated against their representation as RDF triples, and all of this data is added to the graph. How does data flow
+back in the other direction? When you query Fluree, how do we describe our data query conditions and produce a result set that is also returned as JSON? Let's look at that next.
+
+## How Fluree Queries Use and Return JSON
+
+Queries tell Fluree how to filter down the data in your graph to return the result subsets you
+want.
+
+Let's see how this works with a new query:
+
+{/* <SandboxButton /> */}
+
+```json
+{
+  "where": {
+    "@id": "?s",
+    "name": "Derek"
+  },
+  "select": {
+    "?s": ["name", "favorite_food"]
+  }
+}
+```
+
+In English, it's as if this query is saying, "Find all subjects with a property
+of `"name"` and an object value of `"Derek"`. For each of those subjects, return results for any data on the properties, `"name"` and `"favorite_food"`.
+
+Given the data we've inserted so far, the query is operating on this overall graph:
+
+<CH.Code>
+```json JSON-LD
+[
+  {
+    "@id": "_:f211106232532992",
+    "name": "Derek",
+    "species": "yeti",
+    "favorite_food": "kale"
+  },
+  {
+    "@id": "_:f211106232532993",
+    "name": "Kelly",
+    "species": "yeti",
+    "sightings": [
+      { "@id": "_:f211106232532994" },
+      { "@id": "_:f211106232532995" }
+    ]
+  },
+  {
+    "@id": "_:f211106232532994",
+    "day": "2022-12-20",
+    "location": "ski basin"
+  },
+  {
+    "@id": "_:f211106232532995",
+    "day": "2022-12-21",
+    "location": "Target"
+  }
+]
+```
+```json RDF
+[
+  // derek triples
+  ["_:f211106232532992", "name", "Derek"],
+  ["_:f211106232532992", "species", "yeti"],
+  ["_:f211106232532992", "favorite_food", "kale"],
+  // kelly triples
+  ["_:f211106232532993", "name", "Kelly"],
+  ["_:f211106232532993", "species", "yeti"],
+  ["_:f211106232532993", "sightings", "_:f211106232532994"],
+  ["_:f211106232532993", "sightings", "_:f211106232532995"],
+  // first sighting triples
+  ["_:f211106232532994", "day", "2022-12-20"],
+  ["_:f211106232532994", "location", "ski basin"],
+  // second sighting triples
+  ["_:f211106232532995", "day", "2022-12-21"],
+  ["_:f211106232532995", "location", "Target"]
+]
+````
+</CH.Code>
+
+The `where` clause in our query (i.e. `"where": { "@id": "?s", "name": "Derek" }`) matches the following data in our graph:
+
+<CH.Code>
+```json JSON-LD
+[
+  {
+    "@id": "_:f211106232532992",
+    "name": "Derek",
+    "species": "yeti",
+    "favorite_food": "kale"
+  }
+]
+```
+```json RDF
+[
+  // derek triples
+  ["_:f211106232532992", "name", "Derek"],
+  ["_:f211106232532992", "species", "yeti"],
+  ["_:f211106232532992", "favorite_food", "kale"],
+]
+````
+</CH.Code>
+
+And because our `"select"` statement is asking for the `"name"` and `"favorite_food"` properties of the subject (`"?s"`), we get the following result:
+
+<CH.Code>
+```json JSON-LD
+[
+  {
+    "@id": "_:f211106232532992",
+    "name": "Derek",
+    "favorite_food": "kale"
+  }
+]
+```
+```json RDF
+[
+  ["_:f211106232532992", "name", "Derek"],
+  ["_:f211106232532992", "favorite_food", "kale"],
+]
+````
+</CH.Code>
+
+The key point here is that a query describes how to filter the stored set of
+JSON-LD graph data to another, more specific set, which Fluree then uses to construct the query results.
+
+## Fluree's Query Language is a JSON-LD version of SPARQL
+
+How exactly does Fluree do this, though? What is the precise relationship
+between the query you define and the filtering that happens?
+
+To fully understand what's going on, let's walk through the query one step at a
+time so that we'll know what `"where"`, `"select"`, and that weird-looking
+`"?s"` are doing. We'll continue working with the same query and set of triples
+as before:
+
+{/* <SandboxButton /> */}
+
+```jsonc
+// our query
+
+{
+  "where": {
+    "@id": "?s",
+    "name": "Derek"
+  },
+  "select": {
+    "?s": ["name", "favorite_food"]
+  }
+}
+```
+
+<CH.Code>
+```jsonc JSON-LD
+// our database's current graph state
+
+[
+  {
+    "@id": "_:f211106232532992",
+    "name": "Derek",
+    "species": "yeti",
+    "favorite_food": "kale"
+  },
+  {
+    "@id": "_:f211106232532993",
+    "name": "Kelly",
+    "species": "yeti",
+    "sightings": [
+      { "@id": "_:f211106232532994" },
+      { "@id": "_:f211106232532995" }
+    ]
+  },
+  {
+    "@id": "_:f211106232532994",
+    "day": "2022-12-20",
+    "location": "ski basin"
+  },
+  {
+    "@id": "_:f211106232532995",
+    "day": "2022-12-21",
+    "location": "Target"
+  }
+]
+```
+```jsonc RDF
+// our database's current graph state
+
+[
+  // derek triples
+  ["_:f211106232532992", "name", "Derek"],
+  ["_:f211106232532992", "species", "yeti"],
+  ["_:f211106232532992", "favorite_food", "kale"],
+  // kelly triples
+  ["_:f211106232532993", "name", "Kelly"],
+  ["_:f211106232532993", "species", "yeti"],
+  ["_:f211106232532993", "sightings", "_:f211106232532994"],
+  ["_:f211106232532993", "sightings", "_:f211106232532995"],
+  // first sighting triples
+  ["_:f211106232532994", "day", "2022-12-20"],
+  ["_:f211106232532994", "location", "ski basin"],
+  // second sighting triples
+  ["_:f211106232532995", "day", "2022-12-21"],
+  ["_:f211106232532995", "location", "Target"]
+]
+````
+
+</CH.Code>
+
+The `"where"` clause `{ "@id": "?s", "name": "Derek" }` is expressing, "Find all subject
+ids with a property of `"name"` and object value of `"Derek"`". It's _also_ expressing,
+"_bind_ those subject ids to the _logic variable_ `"?s"`".
+
+Logic variables are how we're able to refer to resources across different parts
+of our query. To _bind_ a logic variable is to associate it with a set of
+values, in this case the set of subjects that exist in a triple where the
+property is `"name"` and the object value is `"Derek"`. In our current graph, this set of subjects has only
+one member, `"_:f211106232532992"`.
+
+When you bind a logic variable, it's as if Fluree is keeping track of these
+bindings in a lookup table, something akin to this:
+
+```json
+{ "?s": ["_:f211106232532992"] }
+```
+
+When you refer to a bound logic variable, it's as if you're saying "for each
+value in the set associated with this logic variable, perform some action."
+Let's look at this in our original query:
+
+{/* <SandboxButton /> */}
+
+```json
+{
+  "where": {
+    "@id": "?s",
+    "name": "Derek"
+  },
+  "select": {
+    "?s": ["name", "favorite_food"]
+  }
+}
+```
+
+The `"select"` clause references the logic variable, `"?s"`, and in this context
+it's like saying "for each subject id in `"?s"`, crawl our graph and return results for any values on the properties, `"name"` and `"favorite_food"`.
+
+<Admonition type="note">
+The idea of a `?binding` or _logic variable_ comes from the SPARQL standard.
+
+All of Fluree's query language syntax is derived from the [W3C SPARQL standard (SPARQL Protocol and RDF Query Language)](https://www.w3.org/TR/sparql12-query/).
+Fluree implements a JSON version of _SPARQL_ that simplifies the programmatic generation of queries and the application utility of query results. If you want to work directly with SPARQL, Fluree does have API endpoints that are SPARQL-compliant, but we generally find that developers have an easier time automating JSON queries than SPARQL multiline strings.
+
+This guide won't cover SPARQL in depth, but it won't shy from describing
+SPARQL concepts when relevant.
+
+</Admonition>
+
+This combination of `"select"` and `"where"` filters down the total set of
+graph data that we have stored to only the following result set:
+
+<CH.Code>
+```json JSON-LD
+[
+  {
+    "@id": "_:f211106232532992",
+    "name": "Derek",
+    "favorite_food": "kale"
+  }
+]
+```
+```json RDF
+[
+  ["_:f211106232532992", "name", "Derek"],
+  ["_:f211106232532992", "favorite_food", "kale"],
+]
+````
+</CH.Code>
+
+## It's All Graphs
+
+So far we've focused on Fluree as a graph database, but maybe it isn't clear how a graph database is constituted by RDF triples.
+
+The fact that graphs can be represented as sets of triples is not an incidental
+property of RDF triple stores. Rather, we store data as triples _because_
+triples form graphs.
+
+Graphs are fundamentally different data structures than table records, and they
+make certain kinds of computations (like "find all friends of friends" or "find
+all yetis that share a favorite food") a lot easier to express in code and a lot
+more efficient to run on a machine, to the point where certain kinds of queries
+that aren't even possible with an RDBMS are practical with a graph database.
+
+Why is this important? _The Practitioner's Guide to Graph Data_ puts it well:
+
+> Extracting value from data can be achieved when you are able to connect pieces
+> of information and construct new insights. Extracting value in data comes from
+> understanding the complex network of relationships within your data.
+
+As an industry, we're realizing more and more the value that can be derived from
+modeling and querying the _relationships_ among our data, and graph technologies
+are the best tools we have for this.
+
+If you haven't worked with a graph database before, you'll see more examples of
+what they make possible and how to work with them throughout this tutorial. For
+now, let's focus on filling out our map of how Fluree works.
+
+To recap: Fluree provides a JSON interface for data, and that JSON can be seamlessly serialized back and forth as sets of triples. These triples fundamentally represent a graph.
+
+Is there a difference between a triple set and a graph? There isn't. We'll use
+the terms _graph_ and _triple set_ interchangeably: they both refer to the same
+thing, a collection of triples that represent a graph.
+
+You'll think in terms of graphs, not triple sets, as you model your data. When
+you think about the problems you're trying to solve, you'll ask yourself
+questions like, "how can I get information on all yetis?" or "how can I find
+locations that are frequented by the most diverse populations of cryptids?".
+From there you might sketch out different possible graphs to describe the
+relationships among the resources you're considering, and reason about how to
+travel the network of nodes and arcs to answer these questions.
+
+For example, here's a graph of our yeti data (I've shortened the IDs for space,
+so `"_:f211106232532992"` is `"_:f91"` below):
+
+<FlureeMermaid chart={`
+  graph LR
+    d(_:f92) -->|"@id"| did(_:f92)
+    d -->|name| Derek
+    d -->|species| y1(yeti)
+    d -->|favorite_food| kale
+
+    k(_:f93) -->|"@id"| kid(_:f93)
+    k -->|name| Kelly
+    k -->|species| y2(yeti)
+    k -->|sightings| s1
+    k -->|sightings| s2
+
+    s1(_:f94) -->|"@id"| s1id(_:f94)
+    s1 -->|day| s1d("2022-12-20")
+    s1 -->|location| s1l(ski basin)
+
+    s2(_:f95) -->|"@id"| s2id(_:f95)
+    s2 -->|day| s2d(2022-12-21)
+    s2 -->|location| s2l(Target)
+
+`} />
+
+In looking at this graph, you can begin to see how you might answer the question
+of what locations have the most diverse cryptid populations. If you start at
+`"Target"`, you can follow the `"sightings"` arc back to the subject with @id
+`"_:f93"`. From there, you can follow the `"species"` arc. This might begin to
+give you some insight into how you might construct a query to answer this
+question. (We're not going to actually answer that question in this tutorial; I
+just want you to start getting used to examining graph data to answer questions
+about your data.)
+
+It's powerful to be able to reason at the graph level, as graphs naturally have
+visual representations, and there's a whole field of study devoted to graph
+thinking. At the same time, thinking in terms of sets of triples is still
+important. Particularly if you look to make your data in Fluree interoperable with other datasets that might represent the same RDF structure in more strict-triple formats, like TURTLE or N-Triples.
+
+You may have noticed that JSON objects can represent graphs. You can confirm
+this with a kind of syllogism: if JSON objects can represent sets of triples,
+and sets of triples can represent graphs, then JSON objects can represent
+graphs.
+
+We've had a glimpse of this when we inserted Kelly's data:
+
+```jsonc
+// this was inserted
+
+{
+  "name": "Kelly",
+  "species": "yeti",
+  "sightings": [
+    {
+      "day": "2022-12-20",
+      "location": "ski basin"
+    },
+    {
+      "day": "2022-12-21",
+      "location": "Target"
+    }
+  ]
+}
+```
+
+Internally, the nested JSON objects within the `"sightings"` array were each
+treated as a new subject, and Fluree created a set of triples for each of them.
+
+We've seen how we can use the triples that got stored to construct a graph:
+
+<FlureeMermaid chart={`
+  graph TB
+    k(_:f93) -->|"@id"| kid(_:f93)
+    k -->|name| Kelly
+    k -->|species| yeti
+    k -->|sightings| s1
+    k -->|sightings| s2
+
+    s1(_:f94) -->|"@id"| s1id(_:f94)
+    s1 -->|day| s1d("2022-12-20")
+    s1 -->|location| s1l(ski basin)
+
+    s2(_:f95) -->|"@id"| s2id(_:f95)
+    s2 -->|day| s2d(2022-12-21)
+    s2 -->|location| s2l(Target)
+
+`} />
+
+There's a direct translation between JSON and the triples that get stored, and
+the graph that you can derive from those triples.
+
+Using everything we've learned so far, we can now understand the query results
+we got earlier and why they didn't include all of Kelly's sighting data. Here's
+the query and the JSON object that got returned for Kelly:
+
+{/* <SandboxButton /> */}
+
+```jsonc
+// query
+
+{
+  "where": {
+    "@id": "?s",
+    "species": "yeti"
+  },
+  "select": {
+    "?s": ["*"]
+  }
+}
+```
+
+```jsonc
+// query result included this JSON object (along with the Derek yeti)
+
+{
+  "@id": "_:f211106232532993",
+  "name": "Kelly",
+  "species": "yeti",
+  "sightings": [
+    {
+      "@id": "_:f211106232532993"
+    },
+    {
+      "@id": "_:f211106232532994"
+    }
+  ]
+}
+```
+
+The data that got returned included the nodes `"_:f94"` and `"_:f95"`, but it
+didn't include those nodes' children.
+
+The reason is that when we inserted Kelly's data, the nested JSON objects of our transaction actually represent relationships between Kelly and separate "sighting" entities unto themselves.
+These sighting entities, just like "Kelly" and "Derek", can and do have their own sets of property-object facts.
+Fluree captures the
+relationship between the _Kelly_ subject and the _sighting_ subjects by treating the `sightings` property as a directed edge from _Kelly_ to each referent node:
+
+```json
+["_:f93", "sightings", "_:f94"],["_:f93", "sightings", "_:f95"]
+```
+
+Our query's `"select"` clause specified, `{"?s": ["*"]}`, meaning _return all
+property-object pairs for the matched subject_. These facts for `_Kelly_` on `sightings`, then, are simply pointers to these two entity nodes. If you wanted to crawl those graph edges so that your query result set also includes data for those downstream entities, you must update the `"select"`
+clause of your query:
+
+<CH.Section>
+{/* <SandboxButton /> */}
+
+```json
+{
+  "where": {
+    "@id": "?s",
+    "species": "yeti"
+  },
+  "select": {
+    "?s": ["*", { "sightings": ["*"] }]
+  }
+}
+```
+
+We added [`{"sightings": ["*"]}`](focus://7), which tells Fluree _include all
+triples where the subject is equal to the object of `"sightings"`_. If this
+doesn't quite make sense yet, don't worry because we're going to examine what's
+going on in here in great detail in the next chapter.
+
+</CH.Section>
+
+The reason why we need to add this clause to get the nested sighting data is in
+part practical: if Fluree returned the entire graph of associated nodes, it
+could conceivably return your entire data set every time.
+
+The relationship between JSON-LD and graphs is the heart of Fluree. We
+use JSON at the application level, sending JSON objects to Fluree in
+transactions and sending/receiving JSON objects back in response to queries. Whether you think of JSON-LD as simply JSON or as strict serializations of RDF triples, internally, Fluree understands that data as a graph.
+
+Both JSON objects and triples are different ways of representing graphs. We use
+JSON at the application level because programming languages have a lot of
+tooling for manipulating JSON, and it's easy to map JSON to programming
+languages' native data structures. Fluree uses triples internally in part
+because they're computationally efficient for things like index segment creation and retrieval, but unless you're already familiar with RDF or want to understand how JSON-LD represents RDF graph structures, you can fortunately think entirely about your data, queries, and transactions in terms of JSON.
+
+## Summary
+
+- Every database must implement a _data model_, which consists of containers and
+  the data structures allowed in those containers
+- Fluree is a _JSON-LD graph database_. Rather than inserting _records_ into
+  _tables_, you insert _triples_ into _graphs_
+- You can represent graphs as sets of triples or as JSON-LD objects
+- RDF triples consist of a _subject_, _predicate_, and _object_
+- JSON-LD objects represent _subject_ with `@id`, and _predicate-object_ pairs as key-value object pairs
+- Subjects and objects are _resources_. Resources are anything you want to
+  describe
+- In practice, resources will be either identifiers or literal values
+- Predicates are verb phrases that describe the relationship between subject and
+  object
+- Fluree queries are written in a dialect of _SPARQL_
+- Graph databases are usually better than other databases at extracting value
+  from the connections in your data because they can traverse relationships
+  efficiently, and because they're more flexible in modeling those relationships
+- The graph perspective is useful when modeling and reasoning about your data
+- JSON can be used to represent graph data and reason about queries
+
+Just for fun, here's a graph of some of the things we've covered:
+
+<FlureeMermaid
+  chart={`
+  graph TB
+    f(Fluree) -->|is a| gdb(graph database)
+    gdb -->|contains many| g
+    g(graph) -->|contains many| gn(node)
+    g(graph) -->|contains many| ga(arc)
+    json -->|represents| g
+    rdft(RDF triple) -->|includes| s(subject)
+    rdft(RDF triple) -->|includes| p(predicate)
+    rdft(RDF triple) -->|includes| o(object)
+    rdfts(triple set) -->|contains many| rdft
+    rdfts(triple set) -->|represents| g
+    s -->|is a| resource
+    o -->|is a| resource
+    p -->|is a| vp(verb phrase)
+    SPARQL -->|queries| rdfts
+    f -->|implements| SPARQL
+    g(graph) -->|contains many| rdft
+`}
+/>
+
+{/* <SandboxDrawer /> */}

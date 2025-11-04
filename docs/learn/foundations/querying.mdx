@@ -1,0 +1,746 @@
+import Admonition from "@theme/Admonition";
+import { FlureeMermaid } from "@site/src/components/Mermaid/FlureeMermaid.jsx";
+
+# Querying in depth
+
+This document covers the inner workings of Fluree's query engine. By the end of
+it, you should be able to mentally simulate the operations that Fluree performs
+in response to any query that you send it, and thus be able to effectively write
+whatever query you need. It covers:
+
+- The query engine's process for interpreting queries and producing results
+- The conceptual query model that the query engine implements
+- The individual components of a Fluree query, and how they relate to this model
+  - Select clause
+  - Where clause
+  - Logic variables
+
+This document assumes some experience with databases, but because Fluree's
+approach differs from the dominant relational paradigm we're going to start with
+the basics.
+
+## Querying basics
+
+I find it helpful to think of query as comprised of:
+
+- Asking your database questions about your data, like "How many employees do we
+  have per department?" and "What is the mailing address for order XYZ?"
+- Formatting the results
+
+Everything we cover in this doc comes down to doing these two basic tasks:
+asking questions, and putting the answers into a format that best meets our
+needs.
+
+## Using `select` and `where` to scope and format results
+
+We'll begin our exploration of Fluree queries with a simple dataset and some
+basic queries, and use those to illuminate underlying query concepts. The
+dataset is a small collection of cards, containing just aces and deuces for all
+four suits:
+
+{/* <SandboxButton /> */}
+
+```json
+[
+  {
+    "@id": "ca",
+    "rank": "ace",
+    "suit": "clubs"
+  },
+  {
+    "@id": "da",
+    "rank": "ace",
+    "suit": "diamonds"
+  },
+  {
+    "@id": "ha",
+    "rank": "ace",
+    "suit": "hearts"
+  },
+  {
+    "@id": "sa",
+    "rank": "ace",
+    "suit": "spades"
+  },
+  {
+    "@id": "c2",
+    "rank": "2",
+    "suit": "clubs"
+  },
+  {
+    "@id": "d2",
+    "rank": "2",
+    "suit": "diamonds"
+  },
+  {
+    "@id": "h2",
+    "rank": "2",
+    "suit": "hearts"
+  },
+  {
+    "@id": "s2",
+    "rank": "2",
+    "suit": "spades"
+  }
+]
+```
+
+With this dataset we might ask, "What is the suit of every card in our
+database?", and we might want to format this as an array of strings, like
+`["clubs", "diamonds", "hearts", "spades", "clubs", "diamonds", "hearts",
+"spades"]`. In Fluree, queries are defined as JSON objects. Here's a query that
+would give us the result we're looking for:
+
+```json
+{
+  "select": "?suit",
+  "where": {
+    "@id": "?card",
+    "suit": "?suit"
+  }
+}
+```
+
+Fluree's query engine processes this query in two phases:
+
+- Generating _solutions_ to the where clause
+- _Projecting_ the solutions into JSON data structures using the `select` clause
+
+_Solution_ and _projection_ are used here in a very technical sense derived from
+mathematics. Understanding these is key to understanding how to construct Fluree
+queries - they form the underlying conceptual model that will allow us to make
+sense of Fluree's query syntax. Therefore, we're going to focus first on
+explaining these concepts, slowly introducing aspects of the query syntax when
+they help illuminate the concepts. Once the conceptual foundation is in place,
+we'll give a more exhaustive tour of the syntax elements, relating them back to
+the concepts.
+
+Here's a glimpse at how the solution and projection phases operate in the
+example above. First, it's as if the solution phase internally produces this
+array:
+
+```json
+[
+  { "?card": "ca", "?suit": "clubs" },
+  { "?card": "da", "?suit": "diamonds" },
+  { "?card": "ha", "?suit": "hearts" },
+  { "?card": "sa", "?suit": "spades" },
+  { "?card": "c2", "?suit": "clubs" },
+  { "?card": "d2", "?suit": "diamonds" },
+  { "?card": "h2", "?suit": "hearts" },
+  { "?card": "s2", "?suit": "spades" }
+]
+```
+
+The projection phase takes this data and produces a view of it, selecting the
+value corresponding to `"?suit"` and returning the array `["clubs", "diamonds",
+"hearts", "spades", "clubs", "diamonds", "hearts", "spades"]`. Note that Fluree
+returns an array, and there's one element in that array for each solution that
+gets generated.
+
+## Solutions and the `where` clause
+
+The term _solution_ is borrowed from math. In your youth you may have been
+tasked to "solve for x" in equations like `x² = 4`. There are two solutions: 2,
+and -2. Another way to articulate this is that we're posing this problem:
+
+> What possible values can the variable `x` be that would make the statement the
+> statement `x² = 4` true?"
+
+We can state the solution to this problem by statement by enumerating the values
+that, when assigned to the variable `x`, make the statement true:
+
+> `x²` is true when `x` equals `2` and `x` equals `-2`
+
+Similarly, you can think of the where clause of a query as posing a problem.
+The phrase _where clause_ refers to the entire value that the `where` key is
+associated with. In our example, the where clause is `{ "@id": "?card", "suit": "?suit" }`, and it poses this problem:
+
+> What possible values can the variables `?card` and `?suit` have that would
+> make the statement _`?card` has a property `suit` whose value is `?suit`_
+> true, given the data stored in the database?
+
+Fluree's query engine internally processes the where clause by generating all
+solutions to the clause's "problem". These solutions take the form of a set of
+data structures the capture the values of the variables that make the `where`
+clause true, like this one:
+
+```json
+{ "?card": "ca", "?suit": "clubs" }
+```
+
+When we use the phrase _make the `where` clause_ true, what we mean is that we
+can find the resulting facts in the database. Another way of looking is that is
+that we want to find all subgraphs of this form:
+
+<FlureeMermaid
+  chart={`graph TB
+  ?card -->|suit| ?suit
+`}
+/>
+
+While Fluree isn't written in JavaScript and does not use JSON objects
+internally, it can be helpful to think of Fluree as generating a JSON array of
+such data structures like the one we saw at the end of the previous section.
+
+Note that Fluree relies on the data that you've stored in your database to
+generate these solutions. Fluree doesn't generate a solution like `{"?card":
+"ca", "?suit": "diamonds"}` because there is no data in the database such that
+the statement `{ "@id": "?card", "suit": "?suit" }` will be true.
+
+At the beginning of the guide, we said that querying is comprised of asking
+questions about your database, and formatting the results. This process of
+generating solutions is part of how we ask questions.
+
+### Logic variables
+
+I've been referring to `?card` and `?suit` as variables, but the more jargon-y
+term we use for these kinds of identifiers is _logic variable_. Fluree logic
+variables start with question marks.
+
+This is so that we don't confuse them with the kind of variables we usually
+encounter in a computing context, like when we're writing Python or JavaScript
+code. In a language like Python, a variable is a symbol that designates a kind
+of container whose contents can change over the course of the program.
+
+Logic variables, by contrast, serve the same function as `x` when solving `x² =
+4`. They're a way for us to express a "problem" in the form of the relationships
+that must hold among the nodes in our database. They're also a way for us to
+refer to the components of the solution, which is handy when we're building
+projections of the solutions.
+
+We say that logic variables _bind_ a value to a key in the generated solutions.
+Given this solution:
+
+```json
+{ "?card": "ca", "?suit": "clubs" }
+```
+
+We'd say that `"?card"` is bound to `"ca"` and `"?suit"` is bound to `"clubs"`.
+
+## Projection and the `select` clause
+
+After Fluree generates solutions based on the `where` clause, it formats those
+solutions using the `select` clause. We call the formatted view of a solution a
+_projection_. To see how this works, let's look at our query again:
+
+```json
+{
+  "select": "?suit",
+  "where": {
+    "@id": "?card",
+    "suit": "?suit"
+  }
+}
+```
+
+The solution generation phase internally generates an array with values that
+look like `{"?card": "ca", "?suit": "clubs"}`, Then the projection phase
+iterates over each solution that was generated, using the value of the select
+clause (`"?suit"` in this instance) to transform the solution into the desired
+format.
+
+You can think of the select clause as a declarative description of a function
+that should get applied to every solution. When the select clause includes a
+logic value, like `"?suit"`, it means "return the value for this key in the
+solution."
+
+This process of "generate solutions that satisfy the where clause, then project
+each solution as described by the select clause" is the core of how querying
+works in Fluree.
+
+So far, we've only looked at simple `select` and `where` clauses so that we
+could focus on the fundamentals of this process. Fluree, however, is capable of
+handling much more sophisticated queries that allow you to quickly get precisely
+the data you need, in the shape you want it. In the upcoming sections we'll
+share more precise descriptions of Fluree's `select` and `where` syntax,
+spending time with each element and showing how they're just extensions of the
+core process of "solve and project".
+
+## The anatomy of a `where` clause
+
+The where clause we've been working with identifies a shape of a node with one property of interest,
+
+```json
+{
+  "@id": "?card",
+  "suit": "?suit"
+}
+```
+
+This expresses the problem:
+
+> What possible values can the variables `?card` and `?suit` have that would
+> make the statement _`?card` has a property `suit` whose value is `?suit`_
+> true, given the data stored in the database?
+
+Let's look at each component of the where clause to see how this meaning is
+derived from the component.
+
+First, a `where` clause is defined using JSON-LD patterns for describing data. This can mean that the `where` clause can take a single JSON-LD object or an array with one or more objects. Each
+element is called a _where expression_. The where clause we're working with has
+a single where expression, `{ "@id": "?card", "suit": "?suit" }`.
+
+### SPO expressions
+
+If you are familiar with RDF or SPARQL (the RDF Query Language), this JSON-LD expression effectively describes a single triple expression: `["?card", "suit", "?suit"]`.
+We can think of this as a _subject, predicate, object expression_, abbreviated
+to _SPO expression_. Its name comes from the fact that the array is used to
+express a relationship that we want to hold true in the _subject, predicate,
+object_ triples that Fluree has stored.
+
+When writing these expressions as JSON-LD, we can use either literal values or logic variables for any subject, predicate, or object in the expression. All of the following are valid `where` expressions:
+
+```json
+{ "@id": "?card", "suit": "clubs" }
+{ "@id": "?card", "suit": "?suit" }
+{ "@id": "ca", "suit": "?suit" }
+{ "@id": "ca", "?property": "?value" }
+```
+
+- **`{ "@id": "?card", "suit": "clubs" }`**: This expression is interested in evaluating for all nodes that have the value, `"clubs"`, on the property, `"suit"`.
+  - Fluree will assign those matching node IDs to the logic variable, `?card`
+- **`{ "@id": "?card", "suit": "?suit" }`**: This expression is interested in evaluating for all nodes that have **any value** on the property, `"suit"`.
+  - Fluree will assign matching node IDs to the logic variable, `?card`, and their matching property values to the logic variable, `?suit`.
+- **`{ "@id": "ca", "suit": "?suit" }`**: This expression is interested in evaluating for **any value** on the property, `"suit"`, but specifically for the node with the ID of `"ca"`.
+  - Fluree will assign the matching property values to the logic variable, `?suit`.
+- **`{ "@id": "ca", "?property": "?value" }`**: This expression is interested in evaluating for **any value** on **any property** for the node with the ID of `"ca"`.
+  - Fluree will assign the property names to the logic variable, `?property`, and the matching values to the logic variable, `?value`.
+
+For example, let's say we ran this query:
+
+```json
+{
+  "select": ["?property", "?value"],
+  "where": {
+    "@id": "ca",
+    "?property": "?value"
+  }
+}
+```
+
+This query is asking, "What are all facts in our data base that have a subject
+of `"ca"`?" For each SPO triple that's found, we generate a solution by binding
+the elements of the triples to the corresponding logic variables. We bind the
+property to the key `"?property"` and the object to the key `"?value"`.
+
+```json
+[
+  { "?property": "id", "?value": "ca" },
+  { "?property": "rank", "?value": "ace" },
+  { "?property": "suit", "?value": "clubs" }
+]
+```
+
+Then, the select clause `["?property", "?value"]` formats the solutions (we'll
+cover this more later) to return the following result:
+
+```json
+[
+  ["id", "ca"],
+  ["rank", "ace"],
+  ["suit", "clubs"]
+]
+```
+
+### boolean AND
+
+When our `where` clause combines terms within a single JSON-LD object, it does so with a sort of "logical `AND`".
+
+Take this query:
+
+```json
+{
+  "select": "?card",
+  "where": {
+    "@id": "?card",
+    "rank": "ace",
+    "suit": "clubs"
+  }
+}
+```
+
+The `where` clause of the query is asking, "What value can I use for _?card_ such
+that BOTH the facts `"rank": "ace"` AND `"suit": "clubs"` exist on that entity in the database?" A result of `["ca"]` would be returned if
+the database contains this node:
+
+```json
+{
+  "@id": "ca",
+  "rank": "ace",
+  "suit": "clubs",
+  ...
+}
+```
+
+If another entity had the property value of `"rank": "ace"` **but had the property value of `"suit": "hearts"`**, it would not be returned in the result set.
+
+<Admonition type="info">
+Note that the database could contain other facts about the node, like
+`{"@id": "ca", "rank": "ace", "suit": "clubs", "color": "black"}`.
+</Admonition>
+
+Another way of looking at this is that we're trying to find subgraphs of the
+entire graph stored in the database, where the subgraph looks like this:
+
+<FlureeMermaid
+  chart={`graph TB
+  ?card -->|rank| ace
+  ?card -->|suit| clubs
+`}
+/>
+
+For all such subgraphs, we generate a solution and bind the value of `?card`.
+
+In general, when a where clause has multiple conditions with multiple literal and logical values, you're asking,
+"What values can I bind to the logic variables so that it's possible to find
+every resulting triple in the database matching these literal conditions?" Or, to phrase it from the graph
+perspective, you're asking, "What values can I bind to the logic variables so
+that it's possible to find the resulting subgraph in the database?"
+
+To further illustrate the relationship between queries, boolean logic, and logic
+variables, let's look at this query:
+
+```json
+{
+  "select": ["?card", "?property"],
+  "where": {
+    "@id": "?card",
+    "rank": "ace",
+    "?property": "clubs"
+  }
+}
+```
+
+This is similar to the previous query, except that it uses the logic variable
+`"?property"` where the previous query has the literal value `"suit"`. As a
+graph, it looks like this:
+
+<FlureeMermaid
+  chart={`graph TB
+  ?card -->|rank| ace
+  ?card -->|?property| clubs
+`}
+/>
+
+The result might look like this:
+
+```json
+[["ca", "suit"]] // where "ca" is the value of ?card and "suit" is the value of ?property
+```
+
+That pretty much covers it for creating boolean ANDs for where clauses! Let's
+look at boolean ORs.
+
+### boolean OR
+
+To introduce OR logic to your where clause, you can use either a _union expression_ or the _values_ keyword.
+
+Let's look at _union expressions_ first. A union expression may be better understood as a _full outer join_. It expresses that data matching this condition **OR** that condition should be returned.
+
+Our union expressions take the shape of an array, with a form such as `["union", EXPRESSION 1, EXPRESSION 2, ...]`
+
+The first element, `"union"`, works as a keyword instructing Fluree to treat the _following elements_ as expressions to be outer-joined together.
+
+```json
+{
+  "select": "?card",
+  "where": [
+    { "@id": "?card", "rank": "ace" },
+    [
+      "union",
+      { "@id": "?card", "suit": "clubs" },
+      { "@id": "?card", "suit": "hearts" }
+    ]
+  ]
+}
+```
+
+This instructs the query engine to generate solutions where:
+
+1. A subject has a `rank` of `ace`
+2. AND the same subject EITHER
+   1. has a `suit` of `clubs`
+   2. OR has a `suit` of `hearts`
+
+A union expression can contain any number of SPO expressions, and those
+expressions are combined using OR logic. It's like you're telling the query
+engine, _generate a result when you can find an SPO triple that matches **any** of
+these expressions_.
+
+Notice that we combined the union expression with an initial expression, `{ "@id": "?card", "rank": "ace" }`. This expression and the union expression are combined with AND logic. If you wanted to
+run a query with expressions that were only combined with OR logic, you would
+write something like this:
+
+```json
+{
+  "select": "?card",
+  "where": [
+    [
+      "union",
+      { "@id": "?card", "suit": "clubs" },
+      { "@id": "?card", "suit": "hearts" }
+    ]
+  ]
+}
+```
+
+This where clause only has one element, a union expression. All expressions that
+get added at the top level of a where clause are combined with AND logic, and
+all expressions that added to the union expression are combined with OR logic.
+
+## Projections
+
+After the query engine generates solutions with the where clause, it uses the
+select clause to _project_ each solution, creating the data structures that best
+fit the needs of our application.
+
+Let's build up our understanding of select clauses by starting with a basic
+example:
+
+```json
+{
+  "select": "?suit",
+  "where": {
+    "@id": "?card",
+    "suit": "?suit"
+  }
+}
+```
+
+This creates the following solutions:
+
+```json
+[
+  { "?card": "ca", "?suit": "clubs" },
+  { "?card": "c2", "?suit": "clubs" },
+  { "?card": "da", "?suit": "diamonds" },
+  { "?card": "d2", "?suit": "diamonds" },
+  { "?card": "ha", "?suit": "hearts" },
+  { "?card": "h2", "?suit": "hearts" },
+  { "?card": "sa", "?suit": "spades" },
+  { "?card": "s2", "?suit": "spades" }
+]
+```
+
+The select clause of `"?suit"` tells the query engine, "build the final result
+by retrieving the value of the `"?suit"` binding for each solution." The query
+engine does that, and returns this:
+
+```json
+[
+  "clubs",
+  "clubs",
+  "diamonds",
+  "diamonds",
+  "hearts",
+  "hearts",
+  "spades",
+  "spades"
+]
+```
+
+I think of the query engine as treating the select clause like a template
+written in a specialized templating language: you give the engine data
+structures that describe what you want the final result to look like, and it
+fills in the values. When you give it the name of a logic variable, for example,
+it replaces the logic variable with the value from the current solution's
+bindings.
+
+To understand this templating language is to understand how to write select
+clauses, so let's look at its components. We've already seen a select clause
+which consists solely of a string containing a logic variable gets interpreted.
+The templating language also has rules for handling the following:
+
+- Top-level arrays
+- Objects
+- Logic variables within these contexts
+
+### Top-level arrays
+
+This query contains a valid select clause:
+
+```json
+{
+  "select": ["?card", "?suit"],
+  "where": {
+    "@id": "?card",
+    "suit": "?suit"
+  }
+}
+```
+
+The return value is:
+
+```json
+[
+  ["c2", "clubs"],
+  ["ca", "clubs"],
+  ["d2", "diamonds"],
+  ["da", "diamonds"],
+  ["h2", "hearts"],
+  ["ha", "hearts"],
+  ["s2", "spades"],
+  ["sa", "spades"]
+]
+```
+
+When your select clause as a whole is an array, the elements of the array can be
+either logic variables or objects. When they're logic variables, then the logic
+variables are replaced with their bindings. Objects are processed using the
+rules described in the next section.
+
+### Objects
+
+Some Fluree concepts are easier to understand from the triple store perspective,
+and some are easier to understand from the graph perspective. The use of objects
+in your select clause is easier to understand from the graph perspective.
+
+You use objects to describe how to serialize subgraphs as JSON objects in your
+results. When you use an object, it should have one key whose value is an array.
+The key identifies a node, and the array identifies what arcs (and the nodes the
+point to) that we want to include. For example, given this query:
+
+```json
+{
+  "select": { "?card": ["suit"] },
+  "where": {
+    "@id": "?card",
+    "rank": "?rank"
+  }
+}
+```
+
+we get this result:
+
+```json
+[
+  { "suit": "clubs" },
+  { "suit": "clubs" },
+  { "suit": "diamonds" },
+  { "suit": "diamonds" },
+  { "suit": "hearts" },
+  { "suit": "hearts" },
+  { "suit": "spades" },
+  { "suit": "spades" }
+]
+```
+
+The where clause does not contain `"suit"`, yet the result does. What's
+happening here is that the the object `{"?card": ["suit"]}` is telling the query
+engine to serialize values bound to `"?card"` as a JSON object. `"?card"` is
+bound to a node. The array `["suit"]` describes how to serialize this node as a
+JSON object: by creating a key/value pair where the key is `"suit"`, and the
+value is the node that `"suit"` points to in the database.
+
+The projection phase of a query takes solutions and uses their bindings to
+produce a result. When the select clause of a query contains an object, that
+tells the query engine to crawl property paths from a node and use the resulting values to construct a JSON
+object.
+
+Our example select clause, `{"?card": ["suit"]}`, contains only a single crawl path
+that we want to include, but you can include as many as you'd like. This query:
+
+```json
+{
+  "select": { "?card": ["suit", "rank"] },
+  "where": {
+    "@id": "?card",
+    "rank": "?rank"
+  }
+}
+```
+
+returns this:
+
+```json
+[
+  { "rank": "2", "suit": "spades" },
+  { "rank": "2", "suit": "hearts" },
+  { "rank": "2", "suit": "diamonds" },
+  { "rank": "2", "suit": "clubs" },
+  { "rank": "ace", "suit": "spades" },
+  { "rank": "ace", "suit": "hearts" },
+  { "rank": "ace", "suit": "diamonds" },
+  { "rank": "ace", "suit": "clubs" }
+]
+```
+
+You can also include the special string `"*"` in the array of arcs to include all arcs for a given node:
+
+```json
+{
+  "select": { "?card": ["*"] },
+  "where": {
+    "@id": "?card",
+    "rank": "?rank"
+  }
+}
+```
+
+yielding:
+
+```json
+[
+  { "id": "s2", "rank": "2", "suit": "spades" },
+  { "id": "h2", "rank": "2", "suit": "hearts" },
+  { "id": "d2", "rank": "2", "suit": "diamonds" },
+  { "id": "c2", "rank": "2", "suit": "clubs" },
+  { "id": "sa", "rank": "ace", "suit": "spades" },
+  { "id": "ha", "rank": "ace", "suit": "hearts" },
+  { "id": "da", "rank": "ace", "suit": "diamonds" },
+  { "id": "ca", "rank": "ace", "suit": "clubs" }
+]
+```
+
+Finally, you can further describe the subgraph you want to build by including
+nested objects. Our dataset doesn't actually include any data with multiple
+layers of connections, but here's what such a query would look like:
+
+```json
+{
+  "select": { "?card": [{ "suit": ["*"] }] },
+  "where": {
+    "@id": "?card",
+    "suit": "?suit"
+  }
+}
+```
+
+Translated to English, the select clause `{"?card": [{"suit": ["*"]}]}` reads:
+
+> Take the node bound to `?card` in the current solution as a starting point to
+> build an object. Include one arc for that node, `"suit"`. When building the
+> JSON for that arc, construct a nested JSON object, and include all the arcs
+> for the node that `"suit"` points to.
+
+So, if we had a graph that looked like this:
+
+<FlureeMermaid
+  chart={`graph TB
+  ca -->|suit| c(Clubs)
+  c -->|name| n(Clubs)
+  c -->|description| d(Three-leaf clover)
+`}
+/>
+
+The query above would return this JSON:
+
+```json
+[
+  {
+    "suit": {
+      "description": "Three-leaf-clover",
+      "name": "Clubs"
+    }
+  },
+  ...
+]
+```
+
+## Summary
+
+This covers the core concepts of running Fluree queries. First, the query engine
+creates _solutions_ which satisfy all _where expressions_. Solutions consist of
+_logic variable bindings_. These solutions are then used in the projection phase
+to build data structures that match your use case.

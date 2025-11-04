@@ -1,0 +1,60 @@
+---
+title: Update Your Data
+sidebar_position: 1
+sidebar_label: Update
+---
+
+import { CodeBracketIcon, TableCellsIcon } from "@heroicons/react/24/solid";
+import { FigureWithCaption } from "../../../../src/components/FigureWithCaption";
+import Image from "@theme/IdealImage";
+import highlightAddInstances from "../../../../src/assets/nexus/data-page/highlight-add-instances.png";
+import addMovie from "../../../../src/assets/nexus/data-page/add-movie.png";
+import highlightTx from "../../../../src/assets/nexus/data-page/highlight-tx-tab.png";
+
+Being able to see your data is valuable, but being able to **update** that data is just as important, if not more so.
+
+## UI Mode
+
+<TableCellsIcon className="h-12 w-12 text-fluree-blue" />
+
+If you have registered a schema using SHACL class shapes, you can use the Nexus UI tools to create new subjects in those classes.
+
+<FigureWithCaption caption="Adding a new movie instance.">
+  <Image
+    className="shadow-lg"
+    img={highlightAddInstances}
+    alt="The class selection interface with 'add instances' highlighted"
+  />
+</FigureWithCaption>
+
+Clicking "add instances" will take you to a page with a form that is populated with input fields based on the declared types of each class property.
+Click the "+ Add Instance" button, fill out the appropriate input fields, and hit the "Transact" button at the bottom of the form.
+
+<FigureWithCaption caption="Add new data with dynamically created forms based on your SHACL Class shape definitions!">
+  <Image
+    className="shadow-lg"
+    img={addMovie}
+    alt="A form for creating new instances of the ex:Movie class"
+  />
+</FigureWithCaption>
+
+You can even add multiple instances in the same transactions, by clicking on the "+ Add Instance" button again.
+Once you hit the transact button, your new instances will be committed to your dataset.
+
+## Editor Mode
+
+<CodeBracketIcon className="h-12 w-12 text-fluree-blue" />
+
+In the editor mode, make sure that it is set to "Transact" mode.
+
+<FigureWithCaption caption='Be sure to click the "Transact" tab directly above the editor.'>
+  <Image
+    className="shadow-lg"
+    alt="The data management editor with an error highlighting the Transact tab"
+    img={highlightTx}
+  />
+</FigureWithCaption>
+
+From here, you can place any valid transactable data inside the `txn` object, and then click the "Transact" button to commit your data to the dataset.
+
+For more on how to transact your own JSON data in this fashion, [click here](/docs/reference/http-api#flureetransact).

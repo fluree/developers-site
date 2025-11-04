@@ -1,0 +1,175 @@
+import Admonition from "@theme/Admonition"; 
+
+## Use Case: Transacting Root Access Policy
+
+Let's break down the use of these keys in constructing an example policy transaction:
+
+<CH.Section>
+
+- [Transact policy with `"@id": "ex:rootPolicy"`](focus://5:5)
+
+- [Instantiate data will be `"@type": ["f:Policy"]` ](focus://6:6)
+
+- Identify which data this policy will pertain to, in this case it's [`"f:targetNode"` will be `"f:allNodes"`](focus://7:7)
+
+- After establishing that we are transacting a new policy that will apply to all nodes, we have to explain what the policy actually _does_. This logic will always fall inside of the [`"f:allow"` object](focus://8:14)
+  - here we are creating a new line of logic for our policy assocated with the [`@id` value `"ex:rootAccessAllow"`](focus://10:10).
+  - This new policy adds a [`"f:targetRole"` with the `@id` value `"ex:rootRole"`](focus://11:11)
+  - And finally, we make it so that any user with the `"ex:rootRole"` can [perform view and modify actions on all data](focus://12:12)
+
+```json
+{
+  "@context": "https://ns.flur.ee",
+  "ledger": "cookbook/base",
+  "insert": {
+    "@id": "ex:rootPolicy",
+    "@type": ["f:Policy"],
+    "f:targetNode": { "@id": "f:allNodes" },
+    "f:allow": [
+      {
+        "@id": "ex:rootAccessAllow",
+        "f:targetRole": { "@id": "ex:rootRole" },
+        "f:action": [{ "@id": "f:view" }, { "@id": "f:modify" }]
+      }
+    ]
+  }
+}
+```
+
+</CH.Section>
+<CH.Section>
+
+Once the policy is written, you can transact the users, like [`ex:andrew`](focus://6:6), to have [assigned roles](focus://7:7). Users will be identified with a [Fluree did](focus://5:5), which users can generate from our [npm library](https://www.npmjs.com/package/@fluree/crypto-utils#get-auth-id-from-public-key) (NOTE: you will append `did:fluree` to the value generated).
+
+```json
+{
+  "@context": "https://ns.flur.ee",
+  "ledger": "cookbook/base",
+  "insert": {
+    "@id": "did:fluree:TfCzWTrXqF16hvKGjcYiLxRoYJ1B8a6UMH6",
+    "ex:user": { "@id": "ex:andrew" },
+    "f:role": { "@id": "ex:rootRole" }
+  }
+}
+```
+
+</CH.Section>
+<CH.Section>
+
+From this point forward, you will only be able to query or transact data, [using your user `did`, to your ledger with the role `ex:rootRole`](focus://10:13).
+
+```json
+{
+  "from": "cookbook/base",
+  "where": {
+    "@id": "?s",
+    "schema:name": "?name"
+  },
+  "select": {
+    "?s": ["*"]
+  },
+  "opts": {
+    "role": "ex:rootRole",
+    "did": "did:fluree:TfCzWTrXqF16hvKGjcYiLxRoYJ1B8a6UMH6"
+  }
+}
+```
+
+</CH.Section>
+
+<Admonition type="warning">
+  Transactions that violate policies will fail with the appropriate error.
+  However, for security reasons, the responses for queries that violate a policy
+  will only return data allowed as determined by the policy. For this reason,
+  you should always endevor to test that your policy does and does not work as
+  expected.
+</Admonition>
+
+## Use Case: Limiting Access
+
+<CH.Section>
+
+Policies can include complicated logic defining read and write permissions. This example from the cookbook below states:
+
+- [users with a `yetiRole`](focus://11:11)
+
+- [are allowed to view data](focus://8:14)
+
+- [associated with the class `ex:Yeti`](focus://7:7)
+- [except that which pertains to the `schema:age`](focus://17:18) [of a user **other** than the one submitting the query](focus://24:26).
+
+```json
+{
+  "@context": "https://ns.flur.ee",
+  "ledger": "cookbook/base",
+  "insert": {
+    "@id": "ex:yetiPolicy",
+    "@type": ["f:Policy"],
+    "f:targetClass": { "@id": "ex:Yeti" },
+    "f:allow": [
+      {
+        "@id": "ex:yetiViewAllow",
+        "f:targetRole": { "@id": "ex:yetiRole" },
+        "f:action": [{ "@id": "f:view" }]
+      }
+    ],
+    "f:property": [
+      {
+        "@id": "ex:yetisViewOnlyOwnAge",
+        "f:path": { "@id": "schema:age" },
+        "f:allow": [
+          {
+            "@id": "ex:ageViewRule",
+            "f:targetRole": { "@id": "ex:yetiRole" },
+            "f:action": [{ "@id": "f:view" }],
+            "f:equals": {
+              "@list": [{ "@id": "f:$identity" }, { "@id": "ex:user" }]
+            }
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+This additional complexity, where a user is only allowed to view data associated with their own profile, is outlined in the `f:property` object in the query above.
+Here we use a binding for `f:equals` where `f:$identity` is a placeholder for information about the user. This is possible because data and access evaluation happens inside the data, so we can use datastate
+or relationships that may or may not exist in the data to determine access.
+
+</CH.Section>
+
+Similarly to our first example, after writing an identity policy we can now transact user roles into our ledger, enabling us to query our newly permissioned data:
+
+```json
+{
+  "@context": "https://ns.flur.ee",
+  "ledger": "cookbook/base",
+  "insert": {
+    "@id": "did:fluree:Tf5M4L7SNkziB4Q5gC8Hjuqu9WQKCwKpU1Y",
+    "ex:user": { "@id": "ex:freddy" },
+    "f:role": {
+      "@id": "ex:yetiRole"
+    }
+  }
+}
+```
+
+For reference, here's an example query that would return limited results based on the provided role, `ex:yetiRole`.
+
+```json
+{
+  "from": "cookbook/base",
+  "where": {
+    "@id": "?s",
+    "schema:name": "?name"
+  },
+  "select": {
+    "?s": ["*"]
+  },
+  "opts": {
+    "did": "did:fluree:Tf5M4L7SNkziB4Q5gC8Hjuqu9WQKCwKpU1Y",
+    "role": "ex:yetiRole"
+  }
+}
+```

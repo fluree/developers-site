@@ -1,0 +1,202 @@
+---
+title: Introduction
+---
+
+# Sharing Secure, Trusted Data
+{/*
+import SandboxDrawer from "@site/src/components/sandbox_drawer/SandboxDrawer.jsx";
+import SandboxButton from "@site/src/components/sandbox_drawer/SandboxButton.jsx"; */}
+import { FlureeMermaid } from "@site/src/components/Mermaid/FlureeMermaid.jsx";
+
+import defaultContext from "@site/docs/examples/datasets/acd-sandbox-txs/defaultContext.json";
+import tx_profiles from "@site/docs/examples/datasets/acd-sandbox-txs/01_profiles.json";
+import tx_achievements from "@site/docs/examples/datasets/acd-sandbox-txs/02_achievements.json";
+import tx_credentials from "@site/docs/examples/datasets/acd-sandbox-txs/03_credentials.json";
+
+{/* <SandboxDrawer
+  defaultValue={""}
+  defaultContext={defaultContext}
+  seedTransactions={[...tx_profiles, ...tx_achievements, ...tx_credentials]}
+/> */}
+
+One major problem that Fluree solves is providing _secure_, _trusted_ data using only the database.
+
+_Secure_ means that users only access the data they're authorized to access. This kind of security is typically implemented by building an API layer in front of a data store, but Fluree provides a fine-grained security model that allows other systems to directly request data from the database without the risk of incorrectly exposing data.
+
+_Trusted_ means that a data consumer can verify that the data they've received is accurate and is being provided by a trustworthy real-world entity, like a bank or government institution. Fluree's designed to allow this verification to happen automatically and transparently as part of a query, without the need for additional offline verification.
+
+The [Academic Credentials Dataset](https://github.com/fluree/dataset-academic-credentials) (ACD) is a fictional dataset that represents an ecosystem of Academic Credentials (degrees, certificates, etc.) and the related Institutions, Learners, and Employers. It's modeled after a real world use case where stakeholders need security and trust:
+
+- Employers want to verify that Learners have earned the Academic Credentials they claim they have
+- Learners want to consent to Employers getting access to this data
+- Institutions want to provide this data on behalf of the Learners, and no other data - they don't want to leak information about other Learners
+
+This walkthrough demonstrates how to use Fluree to support this kind of secure, trusted data exchange among unaffiliated stakeholders.
+
+The walkthrough also demonstrates core concepts for working with Fluree and semantic data, including:
+
+- Modeling graph data with types and relationships
+- What vocabularies are, and how to make use of vocabularies published by third parties
+- Usage of `@context` to provide meaning to data
+- Specifying the shape of your query results using the `select` clause
+- Using the `where` and `union` clauses with logic variables to filter query results
+
+This walkthrough assumes that you've gone through [the tutorial](/docs/learn/tutorial/introduction).
+
+## Schema Overview
+
+This graph shows the relationships between the types of resources we'll be interacting with, and their relationships to each other:
+
+<FlureeMermaid
+  chart={`
+  graph LR
+as(Assertion) -->|recipient| r(Learner)
+as -->|achievement| ac(Achievement)
+ac -->|creator| inst(Institution)
+c(Credential) -->|credentialSubject| as
+c -->|issuer| inst
+`}
+/>
+
+Here's an example `Achievement` resource to illustrate the relationship between the schema and the JSON-LD objects you'll encounter:
+
+```json
+{
+  "@context": {
+    "id": "@id",
+    "type": "@type",
+    "schema": "http://schema.org/",
+    "vc": "https://w3.org/2018/credentials#",
+    "clr": "https://purl.imsglobal.org/spec/vc/ob/vocab.html#",
+    "acd": "https://academic-credential-dataset.net/ns/"
+  },
+  "clr:issuanceDate": "2013-08-10",
+  "id": "acd:credentials/1",
+  "type": [
+    "acd:Credential",
+    "clr:AchievementCredential",
+    "vc:VerifiableCredential"
+  ],
+  "clr:issuer": {
+    "schema:name": "Fluree University",
+    "acd:profileType": "Institution",
+    "id": "acd:institutions/fu",
+    "schema:url": "https://fluree.edu/",
+    "type": "clr:Profile"
+  },
+  "clr:name": "Recognition of Course Completion",
+  "clr:credentialSubject": {
+    "clr:activityEndDate": "2013-05-15",
+    "clr:activityStartDate": "2013-01-09",
+    "acd:recipient": {
+      "acd:profileType": "Learner",
+      "schema:email": "freddyyeti1@fluree.edu",
+      "id": "acd:learners/freddyyeti1",
+      "clr:dateOfBirth": "2016-11-24",
+      "schema:givenName": "Freddy",
+      "schema:familyName": "Yeti",
+      "type": "clr:Profile"
+    },
+    "id": "acd:assertions/1",
+    "clr:achievement": {
+      "clr:creator": {
+        "schema:name": "Fluree University",
+        "acd:profileType": "Institution",
+        "id": "acd:institutions/fu",
+        "schema:url": "https://fluree.edu/",
+        "type": "clr:Profile"
+      },
+      "clr:humanCode": "MAT 117",
+      "clr:creditsAvailable": 3,
+      "id": "acd:achievements/FU/MAT117",
+      "clr:achievementType": "Course",
+      "type": "clr:Achievement",
+      "clr:name": "College Algebra",
+      "clr:description": "Linear functions, quadratic functions, general polynomial functions, rational functions, systems of linear equations, logarithmic and exponential functions."
+    },
+    "clr:result": {
+      "id": "_:f211106232533083"
+    },
+    "clr:term": "Spring 2023",
+    "type": [
+      "acd:Assertion",
+      "clr:AchievementSubject",
+      "clr:CredentialSubject"
+    ],
+    "clr:creditsEarned": 3
+  }
+}
+```
+
+## Interacting with the ACD
+
+As with many choices in life there is an easy way to interact with the ACD and then there is an even easier one. We have, in fact, configured each of the ACD Article Series pages to use the _Fluree Sandbox_!
+The Sandbox is a handy interface for interacting with a transient instance of Fluree that is running right here in your browser!
+
+You can open the Sandbox at any time by clicking **Freddy** on the bottom-right of the page.
+
+![Wheres Freddy](/img/wheres-freddy.jpg)
+
+Each time you refresh or come back to this page, the Sandbox is populated anew with a fresh load of the Academic Credential Dataset.
+You can add or delete whatever data you like and just refresh the page to get back to Square One.
+As you read through the articles, try clicking the **Freddy Button** in the top-right of each code block to drop the code into the Sandbox for your querying convenience!
+
+The other option is to clone the [Academic Credential Dataset git repo](https://github.com/fluree/dataset-academic-credentials) and follow the instructions in the [Introduction](/docs/learn/tutorial/introduction/) tutorial to run the ledger on your machine.
+
+    { /*
+
+## Some Context on the @context
+
+There is only one drawback to using the pre-configured ledger sandbox setup. You miss out on the exhilaration of creating a ledger with a defaultContext!
+
+So, just to make sure no one is missing out, navigate to the [Academic Credential Dataset](https://github.com/fluree/dataset-academic-credentials) and check out the `resources` folder. Here you can find the `json-ld` files we transacted to make the ledger, and, if you look at the file `00_create_ledger.jsonld`, you will see this:
+
+```json
+{
+  "ledger": "academic-credentials-dataset",
+  "txn": {
+    "message": "New ledger created"
+  },
+  "defaultContext": {
+    "id": "@id",
+    "type": "@type",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+    "sh": "http://www.w3.org/ns/shacl#",
+    "schema": "http://schema.org/",
+    "skos": "http://www.w3.org/2008/05/skos#",
+    "wiki": "https://www.wikidata.org/wiki/",
+    "f": "https://ns.flur.ee/ledger#",
+    "vc": "https://w3.org/2018/credentials#",
+    "clr": "https://purl.imsglobal.org/spec/vc/ob/vocab.html#",
+    "acd": "https://academic-credential-dataset.net/ns/"
+  }
+}
+```
+
+The `defaultContext` is used whenever you don't include an `@context` in your query or if you opt in to merging it with your provided `@context`. Check out [this article on `@context`](/docs/learn/guides/working-with-context) if you wanna learn more.
+This `defaultContext` enables you to run a query like this:
+
+<SandboxButton />
+```json
+{
+  "where": {
+    "@id": "?credentials",
+    "@type": "acd:Credential"
+  },
+  "select": { "?credentials": ["*"] }
+}
+```
+
+The `defaultContext` includes the alias `"acd": "https://academic-credential-dataset.net/ns/"`, which gives meaning to the `type` property and the `acd:` prefix in the `where` clause above.
+
+\*/}
+
+## Summary
+
+Well folks, now you know what the "ACD" is. You know where to access it. You know what's inside of it and you know how the ledger is built!
+You are CRUSHING this! We hope you will use this knowledge wisely and enjoy the rest of the walkthrough.
+Please let us know if you have any questions or feedback by joining the Fluree [Discord](https://discord.gg/pgjsvPa9Nm) and remember, sometimes the best preparation is a calm nervous system.
+
+Stay safe out there.

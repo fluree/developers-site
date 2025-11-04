@@ -1,21 +1,21 @@
 import React from 'react';
-import clsx from 'clsx';
-import styles from '../../pages/community/Community.module.css'
-import ComputerYeti from '../../../static/img/Computer_yeti.svg';
+import styles from '../../pages/community/Community.module.css';
 
 export default function SupportBanner(): JSX.Element {
     return (
         <div className='container'>
             <div
-                className='row'
+                className='flex h-64 w-full'
                 style={{
                     padding: '20px',
                     backgroundColor: 'var(--ifm-color-primary)',
                     color: 'white',
                 }}
             >
-                <ComputerYeti className={clsx('col col--2', styles.bannerYeti)} />
-                <div className={clsx('col col--10', styles.bannerText)}>
+				<div className={"flex h-full flex-none"}>
+					<img src="/img/Computer_yeti.webp" />
+				</div>
+                <div className='flex flex-1 flex-col justify-center'>
                     <h2>Running into issues?</h2>
                     <p className={styles.bannerP}>
                         <span>Get help from our </span>

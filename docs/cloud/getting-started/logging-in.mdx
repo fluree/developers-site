@@ -1,0 +1,68 @@
+---
+title: Log In
+sidebar_position: 1
+---
+
+import Image from "@theme/IdealImage";
+import { FigureWithCaption } from "../../../src/components/FigureWithCaption";
+import login from "../../../src/assets/nexus/getting-started/login-page.png";
+import badLogin from "../../../src/assets/nexus/getting-started/login-page-with-validation.png";
+import oauthIcons from "../../../src/assets/nexus/getting-started/login-oauth-icons.png";
+import forgotPassword from "../../../src/assets/nexus/getting-started/forgot-password.png";
+
+Use the [Login page](https://data.flur.ee/login) to sign in to Fluree.
+
+<FigureWithCaption caption="Fluree Login page">
+  <div className="flex flex-row justify-around">
+    <Image
+      img={login}
+      alt="Fluree Login page"
+      className="w-full shadow-xl"
+    />
+  </div>
+</FigureWithCaption>
+
+## Login with Email and Password
+
+Enter your email and password in the login form to sign in to Fluree.
+If there is an issue with your login attempt, on-screen prompts will appear to help.
+
+<FigureWithCaption caption="Fluree login form with a validation error">
+  <div className="flex flex-row justify-around">
+    <Image
+      img={badLogin}
+      alt="Fluree login form with a validation error"
+      className="w-full shadow-xl"
+    />
+  </div>
+</FigureWithCaption>
+
+## Login with Google or GitHub
+
+<FigureWithCaption caption='Third-Party login options. Google is on the left, GitHub on the right.'>
+  <Image
+    className="shadow-lg"
+    img={oauthIcons}
+    alt="Third Party Login Options"
+  />
+</FigureWithCaption>
+
+Click the Google or GitHub logo at the bottom of the form to log in if you used one of these accounts to create your Fluree account.
+
+## Password Recovery
+
+If you've forgotten your password, use the [Forgot Password page](https://data.flur.ee/forgot) to begin the password reset process.
+Fill out the Reset Password form with the email address associated with your account. Then, click *Proceed to Next Step*.
+
+<FigureWithCaption caption="Forgotten password email input form">
+  <div className="flex flex-row justify-around">
+    <Image
+      img={forgotPassword}
+      alt="Forgotten password email input form"
+      className="w-full shadow-xl"
+    />
+  </div>
+</FigureWithCaption>
+
+Granted the provided email is in our records, you will receive an email containing a personalized link which will take you to the Password Reset page.
+Fill out and submit the form with your new password, and you'll be able to use the [Login page](https://data.flur.ee/login) again to sign into Fluree.

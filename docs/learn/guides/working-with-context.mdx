@@ -1,0 +1,879 @@
+import Admonition from "@theme/Admonition";
+
+# Working with Context
+
+<div class="overview">
+  This guide explains how to leverage `@context` to simplify your queries and
+  transactions and to make your data more readable and operational.
+</div>
+
+---
+
+## Overview
+{/* 
+<Admonition type="info">
+Hi there! 👋 As you read through this guide about the value of using `@context`, you'll get the most out of things by trying the various queries and transactions against a live Fluree db. We've made that really easy for you!
+
+Either at the bottom-right of your screen, or inside of each code snippet when you hover your cursor over them, you'll see a little yeti icon--that's our friend, Freddy the Yeti!
+
+Clicking on him, will open a live sandbox IDE that allows you to test various transactions and queries directly against an in-memory database! Finding him in individual code snippets will even directly load the code snippet into the sandbox for you!
+
+</Admonition> */}
+
+If you're not already familiar with the [JSON-LD `@context` keyword](https://www.w3.org/TR/json-ld11/#the-context), it effectively allows you to define a set of terms that can be used in place of full IRIs. For example, instead of using `http://www.w3.org/1999/02/22-rdf-syntax-ns#Property` you can use `rdf:Property` (where `rdf` is defined in your `@context`).
+
+In the world of linked or semantic data, we want to unlock data's potential by making it meaningful not simply to the closed-ecosystem of our database or a single application, but to an open-ecosystem of applications and databases -- a web of data. Using fully-qualified IRIs to identify both vocabulary terms and entity IDs empowers our data to share common meaning even as they travel across the web and are used across all sorts of different systems.
+
+However, this can make our data difficult to read and write. For example, the following query is valid, but it's not very readable:
+
+{/* <SandboxButton /> */}
+```json
+{
+  "select": {
+    "?s": ["*"]
+  },
+  "where": {
+    "@id": "?s",
+    "@type": "http://schema.org/Person",
+    "http://example.org/favNums": 7
+  }
+}
+```
+
+Using `@context`, we can define a set of terms that can be used in place of the full IRIs. For example, we could define a `@context` that sets prefixes for `schema` and `ex`, and then our query might look like this:
+
+{/* <SandboxButton /> */}
+```json
+{
+  "@context": {
+    "schema": "http://schema.org/",
+    "ex": "http://example.org/"
+  },
+  "select": {
+    "?s": ["*"]
+  },
+  "where": {
+    "@id": "?s",
+    "@type": "schema:Person",
+    "ex:favNums": 7
+  }
+}
+```
+
+In the following guide, we will explore how to use `@context` to simplify your queries and transactions and to make your data more readable and operational.
+
+## Defining a Context
+
+### Overview
+
+When thinking of JSON-LD data generally (which is to say, outside of the realm of databases, queries, and transactions) `@context` provides a shorthand for merely simplifying the way that data appears in a very particular JSON-LD document.
+
+For example, if we think of the following JSON-LD data--not as a query or as a transaction--but simply as a set of facts about an entity, the terms defined in `@context` simply make the data in this document more readable, while also allowing any consumer (be they machine or human) to understand how the data could expand to fully-qualified IRIs for all vocabulary terms or entity identifiers:
+
+```json
+{
+  "@context": {
+    "schema": "http://schema.org/",
+    "ex": "http://example.org/"
+  },
+  "@id": "ex:Person/1",
+  "@type": "schema:Person",
+  "schema:name": "Jane Doe",
+  "schema:email": "jdoe@gmail.com"
+}
+```
+
+In this example, `schema:name` is more cleanly readable as a property, `name`, of the `schema` vocabulary. But thanks to our term definitions in `@context`, a machine trying to interpret this data could still expand `schema:name` to `http://schema.org/name`, allowing any consumer to globally disambiguate the meaning of `name` no matter where this data is created, used, or stored.
+
+### Defining a Context in Fluree
+
+When considering the utility of `@context` in Fluree specifically, the shorthand terms that we define not only simplify the way that data appears in a particular JSON-LD document, but they also simplify how we write queries & transactions, and even simplify and help shape how our query results are returned to us.
+
+For example, if we issue a query with an `@context` that defines prefixes for `"http://example.org/"` and `http://schema.org/`, then we not only simplify the structure of our query, but our query results will also compact any fully-qualified IRIs that we prefixed in our `@context` map:
+
+{/* <SandboxButton /> */}
+```json
+{
+  "@context": {
+    "ex": "http://example.org/",
+    "schema": "http://schema.org/"
+  },
+  "select": {
+    "?s": ["*"]
+  },
+  "where": {
+    "@id": "?s",
+    "schema:name": "Jane Doe"
+  }
+}
+```
+
+We are even able to provide entirely arbitrary aliases for terms. For example, in the following query, we define `schema` as a prefix for `http://schema.org/`, but we also alias `schema:name` as, simply, `name`:
+
+{/* <SandboxButton /> */}
+```json
+{
+  "@context": {
+    "ex": "http://example.org/",
+    "schema": "http://schema.org/",
+    "name": "schema:name"
+  },
+  "select": {
+    "?s": ["*"]
+  },
+  "where": {
+    "@id": "?s",
+    "name": "Jane Doe"
+  }
+}
+```
+
+<Admonition type="info">
+
+If you're using the Fluree Sandbox (by clicking the Freddy the Yeti icon in the code snippets above), you may have noticed that part of our query results included an expanded IRI for the property `http://xmlns.com/foaf/0.1/homepage`. This is because we did not define a prefix for `http://xmlns.com/foaf/0.1/` in our `@context` map.
+
+If we had defined a prefix such as `foaf` for `http://xmlns.com/foaf/0.1/` in our `@context` map, then our query results would have been compacted to use that prefix instead of the fully-qualified IRI (e.g. `foaf:homepage`).
+
+</Admonition>
+
+When using `@context` in queries and transactions, the terms that we define are specific to the individual instance of that single query or transaction. In other words, the terms that we define in `@context` are not persisted in the database, and they are not available to other queries or transactions by default.
+
+    { /*
+
+## Defining a Default Context
+
+While it is nice to be able to set an `@context` for a single query or transaction, we might often want to define a set of terms that are available to all queries and transactions that we issue against a particular database. For example, if we are working with a database that uses the `http://schema.org/` vocabulary, we might want to define a default context that sets a prefix for `http://schema.org/` so that we can repeatedly use shorthand terms for all of the properties in that vocabulary.
+
+Fluree provides our own keyword for doing this: `f:defaultContext`.
+
+Whether creating a new database or updating an existing database, we can set a default context for that database by including a `f:defaultContext` keyword in our transaction:
+
+```json
+{
+  "f:ledger": "docs/example",
+  "f:defaultContext": {
+    "schema": "http://schema.org/"
+  },
+  "@graph": [
+    {
+      "@id": "http://example.org/Person/1",
+      "@type": "http://schema.org/Person",
+      "http://schema.org/name": "Jane Doe"
+    }
+  ]
+}
+```
+
+A few important notes about the example above:
+
+You may notice that, although we are setting a default context for our database in this transaction, the data inside of `@graph` is still using expanded IRIs for entities like `http://example.org/Person/1` and `http://schema.org/name`. This is because, at the time of evaluating this transaction, the database may already have a default context in place. Our new default context will replace it as of the moment when this transaction is validated & committed, but at the time of evaluation, the database will still use the existing default context to evaluate the data in our payload.
+
+If we wanted to use shorthand terms in our transaction payload, we would need to include the `@context` keyword in our transaction payload, like so:
+
+```json
+{
+  "f:ledger": "docs/example",
+  "f:defaultContext": {
+    "schema": "http://schema.org/"
+  },
+  "@context": {
+    "ex": "http://example.org/",
+    "schema": "http://schema.org/"
+  },
+  "@graph": [
+    {
+      "@id": "ex:Person/1",
+      "@type": "schema:Person",
+      "schema:name": "Jane Doe"
+    }
+  ]
+}
+```
+
+<Admonition type="info">
+  You may also notice that, although we have not yet defined the prefix, `f`, we
+  are using it in the example above. This is because Fluree, by default,
+  reserves `f` as a prefix term for `https://ns.flur.ee/ledger#`. If you are
+  running your own standalone instance of Fluree, you can override this
+  configuration by setting a default context for your entire Fluree instance (as
+  opposed to for an individual database). See [Default Contexts for All
+  Databases on a Fluree
+  Instance](#default-contexts-for-all-databases-on-a-fluree-instance) for more
+  information.
+</Admonition>
+
+Once our default context has been set, we can issue transactions and queries (and see query results) that all use our default context terms, without needing to re-specify them. For example, after the transaction above where our default context defines the term, `schema`, we can issue the following query with our `schema` shorthand, and also see our results using that same prefix term -- all without having to specify a particular `@context` map for those interactions:
+
+{/* <SandboxButton /> */}
+```json
+{
+  "select": {
+    "?s": ["*"]
+  },
+  "where": {
+    "@id": "?s",
+    "schema:name": "Jane Doe"
+  }
+}
+```
+
+### Combining `@context` with a Default Context
+
+We will often encounter scenarios where we have defined a default context, however we also want to provide an ad-hoc, temporary context for a particular query or transaction. In the last example of the section above, our default context defined a term, `schema`, but did not provide a prefix to shorten `http://example.org/Person/1` from its fully qualified IRI.
+
+If we wanted to provide a temporary prefix for that IRI, while still leveraging our default context, we could do so like this:
+
+{/* <SandboxButton /> */}
+```json
+{
+  "@context": ["", { "foobar": "http://schema.org/" }],
+  "select": {
+    "?s": ["*"]
+  },
+  "select": {
+    "@id": "?s",
+    "foobar:name": "Jane Doe"
+  }
+}
+```
+
+Let's walk through what's happening in the example above:
+
+1. We have seen how `@context` can take as its value a map (or JSON object) of defined prefix terms. The W3C JSON-LD specification also allows `@context` to take as its value an array of maps (or IRI strings that can be dereferenced as maps). If we think of the empty string, `""`, as a relative path to the current database's default context location, then we can understand the first item in the array above as a reference to the current database's default context.
+2. The second item in the array above is a map that defines a single prefix term, `foobar`, for `http://schema.org/`. This map is merged with the default context, so that the resulting context is a combination of the default context and the temporary context that we have defined in this query.
+
+This allows us to understand how `foobar`, which is defined in our temporary `@context` map, can be used in our query to shorten the fully-qualified IRIs in our query and how `ex`, which is defined in our default context, can still be used to compact results returned from that query.
+
+### Overriding a Default Context
+
+In other scenarios, we may want to ignore the default context entirely, replacing it with a temporary context that we define for a specific query or transaction. Where previously we merged a temporary context into our default context, we now want to ignore the default context entirely and replace it with our temporary context. Here's how we'd do that:
+
+{/* <SandboxButton /> */}
+```json
+{
+  "@context": { "ex": "http://example.org/" },
+  "select": {
+    "?s": ["*"]
+  },
+  "where": {
+    "@id": "?s",
+    "http://schema.org/name": "Jane Doe"
+  }
+}
+```
+
+Let's walk through what's happening in the example above:
+
+1. Where previously we merged our temporary context into our default context (e.g. `["", { "foobar": "http://schema.org/" }]`), we now simply replace our default context with our temporary context (e.g. `{ "ex": "http://example.org/" }`).
+2. Where previously we would have expected our default context to compact `http://schema.org/` to `schema:` in our query results, we now see that the fully-qualified IRIs are returned in our query results. This is because we have replaced the default context with our temporary context, and our temporary context does not define a prefix for `http://schema.org/`.
+
+There is one final scenario where we may both
+
+1. want to ignore the default context entirely, and
+2. not necessarily replace that default context with a temporary context.
+
+Another way of describing this scenario is, despite possibly having a default context for our ledger, we want to describe a query and see query results where all terms are expanded as their fully-qualified IRIs.
+
+To do this, we use `@context: null`, both overriding the default context and opting not to replace it with any temporary context terms.
+
+{/* <SandboxButton /> */}
+```json
+{
+  "@context": null,
+  "select": {
+    "?s": ["*"]
+  },
+  "where": {
+    "@id": "?s",
+    "http://schema.org/name": "Jane Doe"
+  }
+}
+```
+
+### Updating a Default Context
+
+Updating a default context is simple. Just like when we set our default context using `f:defaultContext`, we can also update the default context by using `f:defaultContext` in any subsequent transactions to the same database.
+
+If our default context had been...
+
+```json
+{
+  "ex": "http://example.org/",
+  "schema": "http://schema.org/"
+}
+```
+
+And if we issued a transaction like the following:
+
+```json
+{
+  "f:ledger": "docs/example",
+  "f:defaultContext": {
+    "newEx": "http://example.org/",
+    "newSchema": "http://schema.org/"
+  },
+  "@graph": [ ... ]
+}
+```
+
+Then our previous default context would be entirely replaced with the new default context specified above.
+
+<Admonition type="info">
+It is important to understand that, like most data state changes in Fluree, **default context is technically immutable with regard to the commit-time of when it was asserted**. In other words, if we issue a query against the data as it existed 10 minutes ago, and the default context had changed since that time, the query results would still leverage the default context for the ledger **as it existed 10 minutes ago, and not as it exists now**.
+
+It is important to understand why this is the case. Effectively, if previous data state is to be immutable and tamper-proof, then queries against previous data state must be identical regardless of when that query is issued. If we were to allow the use of a current default context for a query against previous data state, it would make it possible to reproduce very different looking query results and data state than what were actually true at the time of the original data.
+
+The following section will help explain how we can understand the default context for a particular query or transaction, and how we can understand the default context for a particular database at a particular point in time.
+
+</Admonition>
+
+### Retrieving your Default Context
+
+Given the sections above, where we learned how to set and update the default context for our database, we might also want to know how to retrieve the default context for our database, and specifically how to retrieve the default context for that database at a particular moment in time.
+
+<Admonition type="tip">
+  Where the sections above simply issued queries to `/query` and transactions to
+  `/transact`, retrieving the default context for a database requires issuing a
+  `GET` request to `/defaultContext`.
+</Admonition>
+
+To retrieve the current default context for our database, `docs/example`, we would issue the following message to `/defaultContext`:
+
+```json
+{
+  "ledger": "docs/example"
+}
+```
+
+Which would return something like the following:
+
+```json
+{
+  "ex": "http://example.org/",
+  "schema": "http://schema.org/"
+}
+```
+
+Given what was discussed in the section above, we know that default contexts can be updated over time, but that for any particular commit-time on our database, the default context is always immutable.
+
+If we wanted to retrieve the default context as of a particular commit number or commit-time, we can use either the integer commit number or the ISO string for a particular commit-time:
+
+```json
+{
+  "ledger": "docs/example",
+  "t": "2023-10-18T14:52:17.653Z" // or, a commit number (i.e. 30)
+}
+```
+
+### Default Contexts for All Databases on a Fluree Instance
+
+<Admonition type="info">
+  This section is only relevant if you are running your own standalone instance
+  of Fluree and are able to set the default connection that governs each
+  database on your Fluree instance.
+</Admonition>
+
+In the sections above, we learned how to set a default context for a particular database. However, we may also want to set a default context for all databases on our Fluree instance. This is possible by setting a default context when starting up your Fluree instance (_this is applicable not only on a brand new Fluree instance, but on each occasion that Fluree is started_).
+
+Whether running Fluree via Docker or directly from the source code repo, you can set a default context for all databases on your Fluree instance by setting the `FLUREE_DEFAULT_CONTEXT` environment variable.
+
+An example of this using `docker run` might look like the following:
+
+```bash
+docker run \
+   -e FLUREE_DEFAULT_CONTEXT='{:ex "http://example.org/" :schema "http://schema.org/"}' \
+   -p 8090:8090 \
+   fluree/http-api-gateway:latest
+```
+
+<Admonition type="caution">
+Be very careful when updating the default context for all databases on a Fluree instance.
+
+In particular, Fluree tends to use the instance default context to reserve `f` as a prefix for `https://ns.flur.ee/ledger#`. If you override this default context, you will lose the ability to use `f` as a prefix for `https://ns.flur.ee/ledger#` when using properties and Classes like `f:ledger`, `f:defaultContext`, `f:Policy`, etc.
+
+</Admonition>
+
+## Using Context in Queries
+
+We've already provided some examples above how to generally use `@context` or a database's default context to simplify both queries and the results returned by those queries.
+
+Specifically, when we define prefix terms either in `@context` or via `f:defaultContext`, we are able to establish a shorthand for fully-qualified IRIs that we can use in our queries.
+
+For example, if we define a prefix term, `schema`, for `http://schema.org/`, then we can use `schema:name` in our queries instead of `http://schema.org/name`.
+
+Similarly, if `schema` is defined as a prefix for `http://schema.org/`, then our query results that use `http://schema.org/name` will be compacted to use `schema:name` instead:
+
+An example query:
+
+{/* <SandboxButton /> */}
+```json
+{
+  "@context": {
+    "schema": "http://schema.org/",
+    "ex": "http://example.org/"
+  },
+  "select": {
+    "?s": ["*"]
+  },
+  "where": {
+    "@id": "?s",
+    "schema:name": "Jane Doe"
+  }
+}
+```
+
+\*/}
+
+## Using Context in Transactions
+
+Leveraging either `@context` maps in transactions is much the same as it is for queries, except that our transactions do not return JSON-LD data results. The value, then, is predominantly for allowing us to use shorthand terms in our transactions themselves.
+
+Take, for example, the preference for allowing application code to more easily compose JSON-shaped transactions without having to fully qualify IRIs for each property, entity, etc.
+
+Here is a transaction that has been simplified by using `@context` to shorthand our longer IRIs:
+
+{/* <SandboxButton /> */}
+```json
+{
+  "@context": {
+    "schema": "http://schema.org/",
+    "ex": "http://example.org/"
+  },
+  "ledger": "working-with-context-dataset",
+  "insert": [
+    {
+      "@id": "ex:Person/1",
+      "@type": "schema:Person",
+      "schema:name": "Jane Doe"
+    }
+  ]
+}
+```
+
+It is very important to remember that one of the goals of semantic / linked data and JSON-LD in particular is to describe data in a way that it is commonly meaningful across systems of data. The use of globally unique IRIs for properties, classes, and entities makes this possible.
+
+With that in mind, it is important that any machine (and Fluree in particular) would be able to expand any shorthand terms used in a transaction to their fully-qualified IRIs. For example, if we were to issue the transaction above, Fluree must expand `schema:name` to `http://schema.org/name` and `ex:Person/1` to `http://example.org/Person/1` before validating and committing that transaction. That is exactly what `@context` allows us to do.
+
+As a result, while `@context` is a useful shorthand to simplify transactions themselves, all data will (and should be) stored according to their expanded, fully-qualified IRIs.
+
+What does this mean in terms of actual use? In the example above, my transaction would have been expanded and committed like so:
+
+```json
+{
+  "@id": "http://example.org/Person/1",
+  "@type": "http://schema.org/Person",
+  "http://schema.org/name": "Jane Doe"
+}
+```
+
+I could retrieve them as query results in the exact shape I transacted them, simply by using the same `@context`. That is, if I queried for that data with `schema` and `ex` defined for `http://schema.org/` and `http://example.org/`, respectively, then I would see the following results:
+
+```json
+{
+  "@id": "ex:Person/1",
+  "@type": "schema:Person",
+  "schema:name": "Jane Doe"
+}
+```
+
+However I could also retrieve that data without defining any `@context` at all, and I would see the following results:
+
+```json
+{
+  "@id": "http://example.org/Person/1",
+  "@type": "http://schema.org/Person",
+  "http://schema.org/name": "Jane Doe"
+}
+```
+
+And similarly, if I was retrieving this data for use in an application where `foobar:name` was equivalent to `schema:name` and where the application only understood `foobar:name`, I could use `@context` to return this data in a shape different from either my original transaction or the fully expanded version that I persisted:
+
+{/* <SandboxButton /> */}
+```json
+{
+    "@context": {
+        "ex": "http://example.org/",
+        "foobar": "http://schema.org/"
+    },
+    "select": {
+        "?s": ["*"]
+    },
+    "where": {
+        "@id": "?s",
+        "foobar:name": "Jane Doe"
+    }
+}
+```
+
+## Context-Specific JSON-LD Keywords
+
+In the sections above, we have discussed how to use `@context` to define prefix terms for fully-qualified IRIs. However, the use of `@context` allows us to qualify more than simply prefixes for IRIs. We can also use several JSON-LD keywords that are specific to `@context` to further shape the way that our data is interpreted and returned.
+
+The following table gives a brief overview of those keywords and how they provide meaningful value to our data:
+
+| Keyword                    | Example                                           | Description                                                                                                                                                                 |
+| -------------------------- | ------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [`@base`](#base)           | `"@base": "http://example.org/"`                  | Defines a base IRI that is used to resolve relative IRIs.                                                                                                                   |
+| [`@vocab`](#vocab)         | `"@vocab": "http://schema.org/"`                  | Defines a base IRI that is used to resolve relative IRIs, and also defines a default prefix for all properties and classes.                                                 |
+| [`@type`](#type)           | `"ex:friend": { "@type": "@id" }`                 | Qualifies that a particular property in the query/transaction takes a particular datatype or references a particular node by an IRI                                         |
+| [`@container`](#container) | `"ex:recipeSteps": { "@container": "@list" }`     | Qualifies whether multi-cardinality properties should treat their values (e.g. as an ordered `list` of possibly-duplicate values or as an unordered `set` of unique values) |
+| [`@reverse`](#reverse)     | `"ex:employees": { "@reverse": "ex:employedBy" }` | Qualifies that a particular property in the query/transaction is a reverse property, meaning that the subject and object of the property are reversed.                      |
+
+### `@base`
+
+In the examples above, we have seen how we can use `@context` to define prefix terms for IRIs. For example, `ex` for `http://example.org/` allows us to use `ex:Person/1` instead of `http://example.org/Person/1`.
+
+But we may want to define vocabulary terms and entity IRI identifiers without any prefix term at all. Leveraging `@base` and [@vocab](#vocab) allows us to do this.
+
+In particular, `@base` allows us to define a base IRI that is used to resolve all entity IRI identifiers. For example, if we define `@base` as `http://example.org/`, then we can use `Person/1` instead of either `http://example.org/Person/1` or `ex:Person/1`.
+
+```json
+// Query
+{
+  "@context": {
+    "@base": "http://example.org/"
+  },
+  "select": {
+    "Person/1": ["*"] // note that this has been compacted from http://example.org/Person/1
+  }
+}
+
+// Result
+[
+  {
+    "@id": "Person/1", // note that this has been compacted from http://example.org/Person/1
+    "@type": "http://schema.org/Person",
+    "http://schema.org/name": "Jane Doe",
+    ...
+  }
+]
+```
+
+This is true not only for subject identifiers (e.g. `@id` on a particular entity) but for object values that refer to another entity as well.
+
+Imagine that we have a property, `http://example.org/friend`, that refers to another entity. If we define `@base` as `http://example.org/`, then our query and our query results can simplify the IRI of that entity as well:
+
+```json
+// Query
+{
+  "@context": {
+    "@base": "http://example.org/"
+  },
+  "select": {
+    "?s": ["*"]
+  },
+  "where": {
+    "@id": "?s",
+    "http://example.org/friend": { "@id": "Person/2" }
+  },
+  "values": ["?s", ["Person/1"]]
+}
+
+// Results
+[
+  {
+    "@id": "Person/1",
+    "@type": "http://schema.org/Person",
+    "http://example.org/friend": { "@id": "Person/2" },
+    ...
+  }
+]
+```
+
+<Admonition type="info">
+Note that in the example above, we have simplified the IRIs for all data entities entirely, to the point that we do not even need a prefix such as `ex:Person/1`. **However**, although the vocabulary terms (i.e. `http://example.org/friend`) still share the same root IRI that is defined for `@base`, they are not compacted whatsoever.
+
+This is because `@base` is only used to resolve entity IRI identifiers, and not to compact vocabulary terms. For that, we would need to use [`@vocab`](#vocab).
+
+</Admonition>
+
+`@base` and [`@vocab`](#vocab) can be used together, but they are not interchangeable. Using both is very common and provides the simplest path towards working with vanilla JSON data but enriching it with semantic meaning.
+
+### `@vocab`
+
+In the examples above, we have seen how we can use `@context` to define prefix terms for IRIs. For example, `schema` for `http://schema.org/` allows us to use `schema:name` instead of `http://schema.org/name`.
+
+But we may want to define vocabulary terms and entity IRI identifiers without any prefix term at all. Leveraging `@vocab` and [@base](#base) allows us to do this.
+
+In particular, `@vocab` allows us to define a root IRI that is used to expand all vocabulary terms (e.g. properties and classes). For example, if we define `@vocab` as `http://schema.org/`, then we can use `name` instead of either `http://schema.org/name` or `schema:name`.
+
+```json
+// Query
+{
+  "@context": {
+    "@vocab": "http://example.org/"
+  },
+  "select": {
+    "?s": ["*"]
+  },
+  "where": {
+    "@id": "?s",
+    "name": "Jane Doe"
+  }
+}
+
+// Result
+[
+  {
+    "@id": "http://example.org/Person/1",
+    "@type": "Person", // note that this has been compacted from http://schema.org/Person
+    "name": "Jane Doe", // note that this has been compacted from http://schema.org/name,
+    "email": "jdoe@gmail.com" // note that this has been compacted from http://schema.org/email
+    ...
+  }
+]
+```
+
+<Admonition type="info">
+Note that in the example above, we have simplified the IRIs for all vocabulary terms entirely, to the point that we do not even need a prefix such as `schema:name`. **However**, entity IRI identifiers (such as `http://example.org/Person/1`) are not compacted whatsoever.
+
+This is because `@vocab` is only used to compact vocabulary terms, and not to compact entity IRI identifiers. For that, we would need to use [`@base`](#base).
+
+</Admonition>
+
+`@vocab` and [`@base`](#base) can be used together, but they are not interchangeable. Using both is very common and provides the simplest path towards working with vanilla JSON data but enriching it with semantic meaning.
+
+### `@type`
+
+<Admonition type="info">
+We will often see `@type` used to set the type of a node (e.g. `"@type": "schema:Person"`). However, `@type` can also be used to set the type of a property or to set the data type of a value for a particular property. To learn more about the data types supported by Fluree, check out our reference documentation on the subject [here](/docs/reference/data-types/)
+
+We will explore this particular usage of `@type` in the section below.
+
+</Admonition>
+
+When we use `@type` in our `@context` maps, it is to express one of a two possible data scenarios:
+
+1. The value of a particular property may be a string literal, but it describes a reference to another entity IRI
+
+```json
+{
+    "@context": {
+        "ex:friend": { "@type": "@id" },
+        ...
+    },
+    "f:insert": [
+        {
+            "@id": "ex:Person/1",
+            "ex:friend": "ex:Person/2"
+        },
+        {
+            "@id": "ex:Person/2",
+            "ex:friend": "ex:Person/1"
+        }
+    ]
+}
+```
+
+2. The value of a particular property may be one data type in the JSON, but it represents--and should be coerced to--a different data type (e.g. an ISO string that represents a datetime value)
+
+```json
+{
+  "@context": {
+    "ex:birthDate": { "@type": "xsd:dateTime" },
+    ...
+  },
+  "f:insert": [
+    {
+      "@id": "ex:Person/1",
+      "ex:birthDate": "2021-10-18T14:52:17.653Z"
+    },
+    {
+      "@id": "ex:Person/2",
+      "ex:birthDate": "2020-10-18T14:52:17.653Z"
+    }
+  ]
+}
+```
+
+It is important to understand that in these scenarios, `@type` provides a shorthand convenience that allows our actual document JSON to avoid having to express these data types in a more verbose way. We can, however, express both of these scenarios without `@context` and `@type`. For example, the following is equivalent to the two scenarios above:
+
+```json
+{
+  "f:insert": [
+    {
+      "@id": "ex:Person/1",
+      "ex:friend": { "@id": "ex:Person/2" },
+      "ex:birthDate": {
+        "@type": "xsd:dateTime",
+        "@value": "2021-10-18T14:52:17.653Z"
+      }
+    },
+    {
+      "@id": "ex:Person/2",
+      "ex:friend": { "@id": "ex:Person/1" },
+      "ex:birthDate": {
+        "@type": "xsd:dateTime",
+        "@value": "2020-10-18T14:52:17.653Z"
+      }
+    }
+  ]
+}
+```
+
+We can easily imagine scenarios, however, where we would be reusing properties like `ex:friend` or `ex:birthDate` dozens or hundreds of times within a single transaction. Expressing the data types for those properties in a `@context` map allows us to forego having to express those data types for each individual instance where those properties are used in our data payload.
+
+<Admonition type="info">
+  For a full list of the data types that can be used with `@type` and that are
+  supported by Fluree, see [Data Types in Fluree](/docs/reference/data-types).
+</Admonition>
+
+### `@container`
+
+Unless otherwise specified, when we provide an "array" of values for a property, we are instructing Fluree to treat the multi-cardinality nature of this "array" as an unordered **set** (i.e. where order is not preserved and where duplicate values are dropped).
+
+Although this is the default behavior, if we were to be explicit about this (e.g. on a property such as `ex:favoriteNumbers`), we would use `@container` to specify that the property should be treated as a `@set`:
+
+```json
+{
+  "@context": {
+    "ex:favoriteNumbers": { "@container": "@set" },
+    ...
+  },
+  "f:insert": [
+    {
+      "@id": "ex:Person/1",
+      "ex:favoriteNumbers": [13, 7, 99]
+    }
+  ]
+}
+```
+
+If it is important that a multi-cardinality property preserve order in its values and allow for duplicate values at different index positions within the described list, we can use `@container: @list` to qualify that.
+
+```json
+{
+  "@context": {
+    "ex:recipeSteps": { "@container": "@list" },
+    ...
+  },
+  "f:insert": [
+    {
+      "@id": "ex:Recipe/1",
+      "ex:recipeSteps": ["Wash Hands", "Mix Ingredients", "Wash Hands", "Cook"]
+    }
+  ]
+}
+```
+
+<Admonition type="info">
+
+We used scare quotes around **"array"**, because even though JSON-LD uses JSON
+arrays to describe values on multi-cardinality properties, this is just a JSON
+serialization of a set of RDF facts.
+
+For more information on how JSON-LD
+represents RDF facts, see [Understanding
+RDF](/docs/learn/tutorial/fluree-data-model#understanding-json-ld-flurees-data-model)
+in our docs, or [Value
+Ordering](https://www.w3.org/TR/json-ld11/#sets-and-lists) in the W3C JSON-LD
+specification.
+
+</Admonition>
+
+### `@reverse`
+
+In the [Defining a Context in Fluree](#defining-a-context-in-fluree) section above, we discussed how we can use `@context` to introduce arbitrary property names as **_aliases_** for other properties.
+
+This is similar to the use case for `@reverse`, except in this scenario, we want to introduce an arbitrary term as a **_reverse property_** of a property that already exists. Let's explain a bit what we mean by that.
+
+In JSON-LD / RDF, a relationship between two entities is a directed edge, which means that if `ex:Person/1` relates to `ex:Person/2` via a property, `ex:friend`, then `ex:Person/1` is the **subject of that relationship** and `ex:Person/2` is the **object of that relationship**.
+
+It is easy to query for `ex:Person/1` as an entity that is friends with `ex:Person/2`. That query would look something like this:
+
+{/* <SandboxButton /> */}
+```json
+{
+  "select": {
+    "?s": ["*"]
+  },
+  "where": {
+    "@id": "?s",
+    "ex:friend": { "@id": "ex:Person/2" }
+  }
+}
+```
+
+But because this friend relationship is a directed edge via the property `ex:friend` and because that property-object relationship **_exists specifically on the entity, `ex:Person/1`_**, it is not possible to query for the same relationship **_from `ex:Person/2`_** without expressing a reverse property.
+
+A reverse property, then, is simply the same relationship, but expressed in the opposite direction. In the following example, we are inventing an arbitrary property `friendOf`, and declaring it in the `@context` as the reverse property of `ex:friend`.
+
+We use `@reverse` to accomplish this:
+
+```json
+{
+  "@context": {
+    "friendOf": { "@reverse": "ex:friend" },
+    ...
+  },
+  "select": {
+    "?s": ["*"]
+  },
+  "where": {
+    "@id": "?s",
+    "friendOf": { "@id": "ex:Person/1" }
+  }
+}
+```
+
+<Admonition type="info">
+
+If the explanation above did not already make this clear, there is not
+actually any property on `ex:Person/2` that directly points at `ex:Person/1`.
+
+Without a reverse property definition in `@context`, we would not be able to
+find `ex:Person/2` by querying for an `ex:friend` value of `ex:Person/1`
+because it is, in fact, `ex:Person/1` who has a property of `ex:friend` that
+points at `ex:Person/2`.
+
+</Admonition>
+
+{/* <SandboxDrawer 
+  defaultValue={""}
+  defaultContext={{
+        "xsd": "http://www.w3.org/2001/XMLSchema#",
+        "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+        "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+        "skos": "http://www.w3.org/2008/05/skos#",
+        "wiki": "https://www.wikidata.org/wiki/",
+        "f": "https://ns.flur.ee/ledger#",
+        "ex": "http://example.org/",
+        "schema": "http://schema.org/"
+    }}
+  seedTransactions={[
+    {
+        "@id": "working-with-context-dataset",
+        "@context": {
+            "ex": "http://example.org/",
+            "schema": "http://schema.org/"
+        },
+        "@graph": [
+            {
+                "@id": "ex:Person/1",
+                "@type": "schema:Person",
+                "schema:name": "Jane Doe",
+                "schema:email": "jdoe@gmail.com",
+                "ex:favNums": [2, 3, 5, 7, 11],
+                "http://xmlns.com/foaf/0.1/homepage": "http://jane-doe.com",
+                "schema:address": { "@id": "ex:Address/1" },
+                "ex:friend": { "@id": "ex:Person/2" }
+            },
+            {
+                "@id": "ex:Person/2",
+                "@type": "schema:Person",
+                "schema:name": "John Doe",
+                "schema:email": "johndoe@gmail.com"
+            },
+            {
+                "@id": "ex:Address/1",
+                "@type": "schema:PostalAddress",
+                "schema:streetAddress": "123 Main St.",
+                "schema:addressLocality": "Anytown",
+                "schema:addressRegion": "NY",
+                "schema:postalCode": "12345"
+            }
+        ]
+    }
+
+]}
+/> */}

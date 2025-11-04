@@ -1,0 +1,459 @@
+---
+title: Quickstart Guide
+description: Get started quickly with Fluree + GenAI
+---
+
+import { FigureWithCaption } from "@site/src/components/FigureWithCaption.tsx";
+import Image from "@theme/IdealImage";
+import Admonition from "@theme/Admonition";
+import { Button } from "@site/src/components/Button";
+import { ArrowDownTrayIcon } from "@heroicons/react/24/outline";
+import DataModelImage from "@site/src/assets/nexus/data-model.png";
+import FilesImage from "@site/src/assets/nexus/files-ui.png";
+import ViewInstanceImage from "@site/src/assets/nexus/view-instance-ui.png";
+import ChatExampleImage from "@site/src/assets/nexus/chat-example.png";
+
+<div className="overview">
+  This guide will walk you through setting up and using Fluree's GenAI
+  capabilities with your dataset, enabling powerful question-answering through
+  GraphRAG data retrieval.
+</div>
+
+---
+
+## Prerequisites
+
+{/* <Admonition type="info">
+  This guide assumes you have already created a Fluree account and are familiar
+  with the core functionality of Fluree as a data-centric, JSON-LD / semantic
+  graph database.
+</Admonition> */}
+
+{/* Using the below Info block for user testing */}
+<Admonition type="info">
+  This guide assumes you have already created a Fluree account.  
+  Please see the [Account Registration](../../getting-started/account-registration.mdx) guide, if you need help with this.
+</Admonition>
+
+## Introduction
+
+Fluree's built-in support for GenAI transforms how you interact with your structured data. While traditional AI approaches often struggle with analytical questions and can produce hallucinated or unreliable answers, Fluree's GraphRAG approach combines the best of both worlds: the intuitive interface of natural language with the precision and reliability of database queries.
+
+### What is GraphRAG and Why Does It Matter?
+
+GraphRAG (Graph-based Retrieval Augmented Generation) represents a significant advancement over traditional RAG systems:
+
+- **Traditional RAG** relies on vector similarity to find relevant chunks of text, which works well for document retrieval but struggles with analytical questions that require understanding relationships and performing calculations.
+- **GraphRAG** leverages the power of semantic graph databases to understand not just the content of your data, but its structure, relationships, and meaning. This allows it to answer complex questions involving filters, aggregations, comparisons, and multi-entity relationships with precision.
+
+What makes Fluree's implementation special is how it eliminates the typical barriers to entry:
+
+- **No complex setup**: Other GraphRAG implementations require extensive engineering work to connect your data, LLMs, and query engines.
+- **No hallucinations**: Fluree's approach generates actual database queries that run against your real data, providing verifiable, accurate results every time.
+- **Built-in security**: Access policies are enforced at the data level, ensuring that AI interactions respect your security boundaries.
+
+This guide focuses on one of the most immediately available and powerful patterns: native support for GraphRAG data retrieval. In just minutes, you'll transform arbitrary source data into an AI-enabled knowledge system that can answer complex analytical questions about your data concerns.
+
+{/* <Admonition type="tip">
+  There is a companion Jupyter notebook to this guide that demonstrates the same
+  goals programmatically through APIs rather than through the UI-managed flow
+  we'll focus on here.
+
+You can find this companion notebook here: _**TODO: FILL THIS IN**_
+
+</Admonition> */}
+
+## Why Semantic Graphs for GenAI?
+
+If you're not yet familiar with semantic graphs and their importance for RAG (Retrieval-Augmented Generation) approaches to GenAI knowledge consumption, here's why they matter:
+
+- Traditional vector similarity approaches face diminishing returns with analytical questions
+- Semantic graphs excel at answering questions involving filters, aggregations, entity relationships, comparators, and set grouping
+- Fluree's semantic graph approach provides provable, hallucination-free LLM query generation
+
+<Admonition type="note">
+  Standing up GenAI utility around knowledge in structured data can be a
+  significant and often expensive challenge. Fluree provides out-of-the-box
+  enablement with minimal setup.
+</Admonition>
+
+## What You'll Accomplish
+
+Within minutes, this guide will walk you through:
+
+1. Automated migration to semantic graph data (model & instance data) from Excel & CSV files
+2. Immediate support for GenAI Q&A (answering analytical, domain-specific questions via hallucination-free LLM query generation)
+3. Seamless access policy management, allowing safe collaboration with guarantees against data leaks or AI-Agent injection threats
+
+Let's get started!
+
+## Data Loading
+
+Fluree supports multiple pathways for loading data into a dataset—whether for new data production or migration from structured, semi-structured, and unstructured sources.
+
+In this guide, we'll import data from Excel & CSV files, though Fluree supports many other data onboarding methods.
+
+{/* <Admonition type="info">
+
+For more information on loading data from multiple sources & formats, check
+out the **_[TODO: FILL THIS IN](/docs/cloud/how-to/chat/intro)_**
+
+</Admonition> */}
+
+### Importing Your Data
+
+For this guide, we'll use a Hardware Supply Chain dataset that includes information about products, materials, manufacturers, and inventory.
+
+##### Data Model
+
+First, download the Excel model file that defines the structure of the data:
+
+<div className="flex justify-center my-6">
+  <Button
+    href="/downloads/HardwareSupplyChain/HardwareSupplyChainModel.xlsx"
+    download
+    variant="primary"
+    size="lg"
+    className="shadow-md"
+  >
+    <ArrowDownTrayIcon className="w-5 h-5" />
+    <span>Hardware Supply Chain Model</span>
+  </Button>
+</div>
+
+##### Instance Data
+
+Next, download the CSV files containing the instance data:
+
+<div className="flex flex-wrap justify-center gap-4 my-6">
+  <Button
+    href="/downloads/HardwareSupplyChain/BillOfMaterials.csv"
+    download
+    variant="secondary"
+    className="shadow-md"
+  >
+    <ArrowDownTrayIcon className="w-4 h-4" />
+    <span>Bill of Materials</span>
+  </Button>
+
+{" "}
+
+<Button
+  href="/downloads/HardwareSupplyChain/BillOfMaterialsItem.csv"
+  download
+  variant="secondary"
+  className="shadow-md"
+>
+  <ArrowDownTrayIcon className="w-4 h-4" />
+  <span>BOM Items</span>
+</Button>
+
+{" "}
+
+<Button
+  href="/downloads/HardwareSupplyChain/Manufacturer.csv"
+  download
+  variant="secondary"
+  className="shadow-md"
+>
+  <ArrowDownTrayIcon className="w-4 h-4" />
+  <span>Manufacturers</span>
+</Button>
+
+{" "}
+
+<Button
+  href="/downloads/HardwareSupplyChain/Material.csv"
+  download
+  variant="secondary"
+  className="shadow-md"
+>
+  <ArrowDownTrayIcon className="w-4 h-4" />
+  <span>Materials</span>
+</Button>
+
+{" "}
+
+<Button
+  href="/downloads/HardwareSupplyChain/MaterialClass.csv"
+  download
+  variant="secondary"
+  className="shadow-md"
+>
+  <ArrowDownTrayIcon className="w-4 h-4" />
+  <span>Material Classes</span>
+</Button>
+
+{" "}
+
+<Button
+  href="/downloads/HardwareSupplyChain/Product.csv"
+  download
+  variant="secondary"
+  className="shadow-md"
+>
+  <ArrowDownTrayIcon className="w-4 h-4" />
+  <span>Products</span>
+</Button>
+
+  <Button
+    href="/downloads/HardwareSupplyChain/WarehouseInventory.csv"
+    download
+    variant="secondary"
+    className="shadow-md"
+  >
+    <ArrowDownTrayIcon className="w-4 h-4" />
+    <span>Warehouse Inventory</span>
+  </Button>
+</div>
+
+#### Import Steps
+
+Once you've downloaded the files, follow these steps to import them into Fluree:
+1. Create a new dataset by clicking the "+" button at the top-right of the screen, then "New Dataset".  
+See [this guide](../../getting-started/create-new-dataset.mdx) for more details on creating a new dataset.
+2. After creating the dataset, you should automatically be taken to the Dataset page for your new dataset. Otherwise, you can navigate to your Dataset page by selecting it on [your homepage](https://data.flur.ee/home).
+2. On the Dataset page, select the "Files" tab from the menu on the left side of the screen.
+
+<Admonition type="note">
+  The "Files" tab allows us to import table-shaped or unstructured data to be
+  transformed into well-modeled RDF graph data. We will be using it here to
+  import our data model and process CSV instances.
+</Admonition>
+
+3. Drag the `HardwareSupplyChainModel.xlsx` file into the upload area (or, click the "Select Files" button and choose the file)
+4. After the file uploads, click "Process" to start the import
+
+<Admonition type="tip">
+  You may also toggle on the "Automatically Process & Transact" option so that,
+  after selecting files to upload, they will be processed without having to
+  click the "Process" button each time.
+</Admonition>
+
+5. Wait for the processing to complete. If you have not toggled automatic processing on, click "Transact" when the processing is complete.
+6. Drag each of the CSV files into the upload area (or, click the "Select Files" button and choose the files)
+
+<Admonition type="caution">
+  It is important to upload, process, and transact the Excel / Model file first,
+  as the CSV instance data can only be processed correctly if the model has been
+  established to organize the data. The data import process will fail with
+  errors if you attempt to upload the CSV files before having introduced the
+  model data.
+</Admonition>
+
+7. Process & transact each CSV file in the same way as the model file
+
+<FigureWithCaption caption="A view of the Files UI after having uploaded & processed each file">
+  <div className="flex flex-row justify-around">
+    <Image
+      img={FilesImage}
+      alt="A view of the Files UI after having uploaded & processed each file"
+      className="shadow-xl"
+    />
+  </div>
+</FigureWithCaption>
+
+## Understanding Your Data Model
+
+After importing your data, Fluree automatically creates a semantic data model. To explore this model:
+
+1. Navigate to the "Models" tab
+2. You'll be able to use the model explorer tree to view the classes and properties of our Hardware Supply Chain data model.
+3. Clicking on a class or a property will show you its details, including any labels, comments, data types, and relationships to other classes.
+4. After having selected a class or property, you can also click "View Instances" to see the instance data that corresponds to that class or property.
+
+<FigureWithCaption caption="A view of the hasManufacturer property in the Hardware Supply Chain data model">
+  <div className="flex flex-row justify-around">
+    <Image
+      img={DataModelImage}
+      alt="A view of the Data Model UI for your dataset"
+      className="shadow-xl"
+    />
+  </div>
+</FigureWithCaption>
+
+<Admonition type="tip">
+  While the data model is useful to humans for understanding the conceptual
+  shape of our data, it is also of critical value to the LLM when we task it
+  with generating SPARQL queries based on the question we ask it in our GenAI
+  Chat.
+
+A significant advantage of using Fluree's semantic graph technology for GraphRAG is that the model is machine-readable and its structure is natively intelligible to the LLM. The SPARQL query language is designed to represent queries in exact accordance with that model, so the LLM can seamlessly generate model-accurate queries without syntactical errors or hallucinations.
+
+</Admonition>
+
+## Exploring Your Instance Data
+
+If you haven't already clicked "View Instances" in the "Data Model" UI, you can also explore your instance data by navigating to the "Data" tab.
+
+1. Navigate to the "Data" tab
+2. The tab will default to a "Class"-oriented view, where you can select a class and either all of its known properties, or you can use the checkboxes to select specific properties to view.
+3. Selecting classes & properties in this way will populate a grid-like view of your instance data according to your selections.
+4. Clicking on any identifier in the grid will navigate you to a wiki-style "Instance Data View", where you can see all of the properties and values for that instance, as well as any relationships to other instances.
+5. Try clicking on the "Material" class. Then clicking on one of the "@id" identifiers for a specific instance. You should see links to each associated entity, as well as the properties and values for that instance.
+
+<FigureWithCaption caption="A view of the Instance Data UI for your dataset">
+  <div className="flex flex-row justify-around">
+    <Image
+      img={ViewInstanceImage}
+      alt="A view of the Instance Data UI for your dataset"
+      className="shadow-xl"
+    />
+  </div>
+</FigureWithCaption>
+
+## Initial GenAI Chat
+
+Now for the exciting part: _**interacting with your data using natural language questions**_!
+
+1. On the "Chat" navigation item, click the "+" button to start a new chat session
+2. The GenAI Chat will immediately open with a summary of your dataset's model and some helpful context suggesting the kinds of knowledge the dataset may contain.
+3. Let's ask an initial question of the dataset, such as _**"Find the three products in the dataset that are performing the worst with regard to competitive products on the market. Please provide some summary data about each product, including the data relevant to answering this question."**_
+4. In the Chat window, you'll see the AI's natural language response, which will include a list of products with the details we asked for.
+5. Clicking either the "Toggle Explanation Focus" icon in the chat response card, or the "Show Explain Panel" in the upper-right corner of the Chat UI will show you the SPARQL query generated by the LLM to answer your question, as well as the exact data response that the LLM proceeded to summarize.
+
+<Admonition type="info">
+
+This is a great way to prove the value of Fluree's GraphRAG-based approach to
+GenAI knowledge production.
+
+Other GenAI approaches may produce natural
+language responses that seem accurate and correct. However, it is often
+impossible in those solutions to know how the LLM produced its answer from your data. If the answer was produced by vector search or only by the LLM with no data-retrieval, it is nearly impossible to answer questions involving analytical factors (e.g. in this question, we asked a question requiring a comparison of numerical values and an ordering based on that comparison. This is entirely beyond the capacities of vector-search or LLM Q/A on their own.)
+
+With
+GraphRAG, we answer questions by querying the dataset itself. The "Explain"
+panel shows you exactly how the LLM produced its answer, and the SPARQL query
+can be re-used to produce the exact same answer.
+
+</Admonition>
+
+<FigureWithCaption caption="A view of the Chat UI for your dataset">
+  <div className="flex flex-row justify-around">
+    <Image
+      img={ChatExampleImage}
+      alt="A view of the Chat UI for your dataset"
+      className="shadow-xl"
+    />
+  </div>
+</FigureWithCaption>
+
+None of this would be possible without the critical, machine-readable information expressed by our semantic data model or without the seamless expression of model-related questions via SPARQL query syntax.
+
+Try asking more complex analytical questions that might be typical for business analysts in the Hardware Supply Chain domain:
+
+- Of the materials used for assembling the 4-Bay Network-Attached Storage (NAS) product, which of these materials could be made significantly more affordable if we were to replace them in the BOM for this product with comparable materials? Please ensure you return results starting with the materials that could be the most drastically improved by replacing with an alternate material.
+- The material, INTERFACE SIEMENS CN 6ES71511AA060AB0, does seem very expensive. I want to know everything I can about any alternative material that could be used in its place. Please return the list of those materials with the lowest price material first.
+- Which 10 materials are at most risk of being out of stock? Tell me everything about those materials, including their inventory information.
+
+## Empowering GraphRAG with Access Policy
+
+One of Fluree's key advantages is its ability to enforce access policies at the data level. Let's introduce some basic policies to illustrate this.
+
+1. Go to the "Policies" link in the left navigation bar
+2. Click the "+" button to create a new "Policy Group". Let's call it "ProductAnalyst".
+3. Fill out the form to define this policy group. For now, you can leave the "Policies" section empty, as we have yet to add any relevant policies.
+4. Click the "Policies" tab to the right of the currently-highlighted "Policy Groups" tab.
+5. Click the "+" button to create a new policy.
+6. We'll start by adding a blanket "Read All" policy with the following information:
+
+   - **Policy Name**: Read All
+   - **Description**: Default read-all policy to be supplemented with more specific access denial policies.
+   - **Does this policy ALLOW or DENY visibility/access?**: Allow
+   - **What action does this policy affect?**: Read only
+   - **This policy will allow read access on...**: All data
+   - **Policy Groups**: ProductAnalyst
+
+7. You'll see a human summary of the policy and can proceed to click "Save Policy"
+8. Now, let's add a policy that denies access to reading data relating to inventory numbers or material unit pricing.
+
+   - **Policy Name**: Deny Inventory & Pricing
+   - **Description**: Deny access to inventory numbers and material unit pricing
+   - **Does this policy ALLOW or DENY visibility/access?**: Deny
+   - **What action does this policy affect?**: Read only
+   - **This policy will deny read access on...**: Select Properties...
+   - **Deny read access to the properties..."**: _type `quantityUnitsAvailable` and select the property from the dropdown. Do the same for `materialUnitPrice`_
+   - **Policy Groups**: ProductAnalyst
+
+9. Click "Save Policy" to save the policy
+
+<Admonition type="note">
+  This is really an arbitrary example, and you should feel free to create more
+  interesting or comprehensive policies by reading more on [Fluree's
+  Data-Centric Access Policy Management
+  here](/docs/cloud/datasets/policies/)
+</Admonition>
+
+10. Now, we should be able to view both our "ProductAnalyst" policy group and the
+    policies we created & associated with that group.
+
+Let's now return to the "Chat" UI. This time, let's ask the question...
+
+> What are all materials associated with the SAS Host Bus Adapter (HBA) product. Please return all data associated with each material, keeping in mind that entities may not have data on each associated property.
+
+The first time we ask it, because we have not asked the question as a particular "Policy Group", our response should include data related to material unit prices and units available for that material.
+
+Now, however, let's select "ProductAnalyst" from the "Run as policy group" dropdown near the top of the Chat UI, and then proceed to ask the same question once more.
+
+<Admonition type="info">
+  Now when you or collaborators use the dataset or its GenAI chat capabilities,
+  it is possible to ensure compliance with strict & arbitrarily-granular access
+  controls, while still seamlessly enabling powerful analytics and knowledge
+  consumption.
+</Admonition>
+
+{/*  Hiding this section due to feedback from user testing that the Quickstart guide is too long. 
+## Adding Collaborators
+
+Now that we've created a dataset and we know how to both govern its access & perform powerful GenAI-backed knowledge consumption against it, let's add some collaborators to understand how we can share this data value with others.
+
+<Admonition type="note">
+  Collaboration around a dataset can be configured for human users and for
+  machines vis-a-vis dataset-level or account-level API Keys.
+
+You can read more about this in the [Guide on Connecting Apps to Your Dataset](/docs/cloud/how-to/connecting-apps/) or in the [Reference Docs for Dataset Settings](/docs/cloud/datasets/settings/)
+
+</Admonition>
+
+To share your GenAI-enabled dataset with others:
+
+1. Navigate to the "Settings" link in the left navigation bar
+2. Select the "Collaborators" tab
+3. Click the "+" button next to "Collaborators" to add a new collaborator
+4. You can search for users by their Fluree account name or by their first & last names.
+5. After you've selected a user, you can optionally select a policy group (i.e. our `ProductAnalyst` group) to assign to the collaboration.
+
+<Admonition type="info">
+  If you do not select a policy group, the collaborator will effectively have root / admin access to the dataset. There is also a default "Read All Policy" that exists natively for all datasets.
+
+Take care to ensure that you are not inadvertently granting access to sensitive data.
+
+</Admonition>
+
+4. Once you click "Add Collaborator" this user will be able to find the dataset in their Datasets screen. They will also be able to access the dataset-specific APIs by using their account-wide API Keys, if they've set those up.
+*/}
+
+## Summary & Next Steps
+
+Congratulations! You've just unlocked powerful GenAI capabilities with your Fluree dataset. Let's recap what you've accomplished:
+
+- **Seamless Data Migration**: You've transformed ordinary Excel and CSV files into a rich, semantic graph database that machines and AI can truly understand.
+- **Instant AI-Powered Analytics**: You've enabled sophisticated question-answering capabilities that go far beyond simple keyword searches, allowing for complex analytical queries using natural language.
+- **Hallucination-Free Knowledge**: Unlike traditional GenAI approaches, your system now provides verifiable, accurate answers with transparent query generation you can inspect.
+- **Granular Access Control**: You've implemented data-centric security policies that protect sensitive information while still enabling powerful analytics.
+{/* Hiding this due to feedback from user testing that the Quickstart guide is too long. */}
+{/* - **Collaboration Framework**: You've set up a system for securely sharing these capabilities with team members while maintaining appropriate access controls. */}
+
+What makes this especially powerful is that you've accomplished all of this without writing a single line of code or spending weeks on complex integrations. The GraphRAG approach you've implemented represents the cutting edge of GenAI for structured data, combining the analytical power of graph databases with the intuitive interface of natural language.
+
+### Where to Go From Here
+
+Now that you have this foundation in place, consider these exciting next steps:
+
+- **Create Datasets from Your Own Data**: Use the same data import process and [this guide](/docs/cloud/how-to/chat/with-structured) to create datasets from your own data sources.
+- **Create Custom Policies**: Design more sophisticated access policies tailored to different roles in your organization with the help of [this guide](/docs/cloud/how-to/apply-policy).
+- **Integrate with Applications**: Use [Fluree's API capabilities](/docs/reference/cloud-http-api) to embed these GenAI features directly into your business applications.
+- **Explore Advanced Queries**: Challenge the system with increasingly complex analytical questions to discover the full extent of its capabilities.
+- **Build Automated Workflows**: Consider how you might use the query generation capabilities to automate regular business intelligence reporting.
+
+The system you've built isn't just a demo—it's a production-ready foundation for transforming how your organization interacts with data. By combining semantic graph technology with state-of-the-art AI, you've created a knowledge system that's greater than the sum of its parts.

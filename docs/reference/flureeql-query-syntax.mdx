@@ -1,0 +1,870 @@
+import Admonition from "@theme/Admonition";
+
+# FlureeQL Query Syntax
+
+<div class="overview">
+  FlureeQL is a JSON-based query language for retrieving Fluree data. It is
+  modeled as a JSON-representation of the W3C SPARQL standard.
+</div>
+
+---
+
+## Query Object
+
+FlureeQL queries are JSON with the following keys:
+
+| key                    | required? | type                  |
+| ---------------------- | --------- | --------------------- |
+| [`@context`](#context) | no        | `object`              |
+| [`from`](#from)        | yes       | `string` or `array`   |
+| [`where`](#where)      | no        | `array` or `object`   |
+| [`select`](#select)    | yes       | `array` or `object`   |
+| [`t`](#t)              | no        | `string` or `integer` |
+| [`groupBy`](#groupby)  | no        | `array` or `string`   |
+| [`having`](#having)    | no        | `array` or `string`   |
+| `orderBy`              | no        | `string`              |
+
+### Examples
+
+<details>
+<summary>Basic query example</summary>
+```json
+{
+  "from": "cookbook/base",
+  "where": {
+    "@id": "?s",
+    "bestFriend": "?friend"
+  },
+  "select": {
+    "?s": [
+      "*",
+      {
+        "bestFriend": [
+          "*"
+        ]
+      }
+    ]
+  },
+}
+```
+</details>
+
+## `@context`
+
+| required? | type     |
+| --------- | -------- |
+| no        | `object` |
+
+Understanding the use of `@context` within the W3C JSON-LD standard can be important for using it properly within queries. For an explanation of how to use `@context` in FlureeQL, consider first reading our [Guides page on Working with Context](/docs/learn/guides/working-with-context/).
+
+    {/*
+
+If you do not use the `@context` key within a query, Fluree will fall back to any `defaultContext` that has been set for the ledger. If no `defaultContext` has been set, then Fluree will expect the query to use fully-qualified IRIs for any entities, properties, or `@type` values.
+
+<Admonition type="info">
+  If you **do** have a `defaultContext` set for your ledger but you wish to use
+  fully-qualified IRIs in your query, you can do so by setting the `@context`
+  key to `null`
+</Admonition>
+
+You can either **replace** or **extend** the `defaultContext` by using the `@context` key in your query.
+
+The following use of `@context` will ignore a `defaultContext` and replace it with the provided map.
+
+```json
+{
+  "@context": { "schema": "http://schema.org/", "ex": "http://example.org/" },
+  ...
+}
+```
+
+Whereas this next use of `@context` will leverage a `defaultContext` and extend it with the provided map.
+
+```json
+{
+  "@context": ["", { "schema": "http://schema.org/", "ex": "http://example.org/" }],
+  ...
+}
+```
+
+<Admonition type="info">
+  Note that the first element of the array is an _empty string_. This is a
+  shorthand similar to a _relative path_ -- it indicates that there is a
+  `defaultContext` local to the ledger that should be used as a base. The map
+  following the _empty string_ should then be used to extend the
+  `defaultContext`.
+</Admonition>
+
+\*/}
+
+### Examples
+
+<details>
+<summary>Example of a Query without `@context`</summary>
+
+```json
+{
+  "from": "cookbook/base",
+  "where": {
+    "@id": "?s",
+    "@type": "http://example.org/Person"
+  },
+  "select": {
+    "?s": ["http://schema.org/name"]
+  }
+}
+```
+
+</details>
+
+<details>
+<summary>Example of a Query with `@context`</summary>
+
+```json
+{
+  "@context": { "schema": "http://schema.org/", "ex": "http://example.org/" },
+  "from": "cookbook/base",
+  "where": {
+    "@id": "?s",
+    "@type": "ex:Person"
+  },
+  "select": {
+    "?s": ["schema:name"]
+  }
+}
+```
+
+</details>
+
+## `from`
+
+| required? | type     |
+| --------- | -------- |
+| yes       | `string` |
+
+The `from` clause specifies the ledger to query. It takes the same value that would have been supplied to the `/create` endpoint when the ledger was created.
+
+If I named a ledger `"cookbook/base"` when I created it, then when I queried it, I would use `"from": "cookbook/base"` to identify that this query should target that particular ledger.
+
+### Examples
+
+<details>
+<summary>Querying a ledger named `"cookbook/base"`</summary>
+
+```json
+{
+  "@context": { "schema": "http://schema.org/", "ex": "http://example.org/" },
+  "from": "cookbook/base",
+  "where": {
+    "@id": "?s",
+    "@type": "ex:Person"
+  },
+  "select": {
+    "?s": ["schema:name"]
+  }
+}
+```
+
+</details>
+
+## `select`
+
+| required? | type                |
+| --------- | ------------------- |
+| yes       | `array` or `object` |
+
+A select can be either a [_select object_](#select-object) or a [_select
+array_](#select-array).
+
+### Select Object
+
+With a select object, each key is a [_logic variable
+name_](#logic-variable-name) and the value is an array of [_select
+expressions_](#select-expression).
+
+The select clause determines what objects are returned in query results. Each
+logic variable corresponds to a set of subjects, and a JSON object gets
+constructed for each subject. The array of select expressions describes how to
+build these JSON objects by specifying what predicates to include.
+
+### Select Object Examples
+
+<details>
+<summary>Simple `select` example</summary>
+```json focus=2:7
+{
+  "select": {
+    "?s": [
+      "name",
+      { "bestFriend": ["*"] }
+    ]
+  },
+  "where": {
+    "@id": "?s",
+    "bestFriend": "?friend"
+  }
+}
+
+````
+</details>
+
+### Select Array
+
+With a select array, each element is a [_logic variable
+name_](#logic-variable-name) or a [_select
+object_](#select-object). When your select clause is a select array, each element of the query
+results is an array.
+
+### Select Array Examples
+
+<details>
+<summary>Logic variable</summary>
+```json focus=2
+{
+  "select": ["?s", "?name", "?friend"],
+  "where": {
+    "@id": "?s",
+    "bestFriend": "?friend",
+    "name": "?name"
+  }
+}
+
+````
+
+</details>
+
+<details>
+<summary>Logic variable and a select object</summary>
+```json focus=2:5
+{
+  "select": [
+    { "?s": ["*"] },
+    { "?friend": ["*"] }
+  ],
+  "where": {
+    "@id": "?s",
+    "bestFriend": "?friend",
+    "name": "?name"
+  }
+}
+```
+</details>
+
+## Logic variable name
+
+Logic variables are placeholders for sets of subjects. They are identified by
+_logic variable names_.
+
+Logic variable names are strings that begin with a question mark, `?`, followed
+by alphanumeric characters, hyphens, and underscores.
+
+See [the tutorial section on
+queries](/docs/learn/tutorial/working-with-graph-data#a-simple-query) for
+information about logic variables.
+
+### Examples
+
+```json
+"?firstname"
+"?first-name"
+"?first_name"
+"?address-1"
+```
+
+## Select expression
+
+Select clause objects map _logic variables_ to _select expressions_. In the
+select clause below, `"?s"` identifies a logic variable and `["name", {
+"bestFriend": ["*"] }]` is a select expression.
+
+```json focus=2:7
+{
+  "select": {
+    "?s": [
+      "name",
+      { "bestFriend": ["*"] }
+    ]
+  },
+  "where": { ... }
+}
+```
+
+Select expressions describe the shape of data to be returned for subjects. It
+specifies what predicates to include in the result object, and how to traverse
+predicates to return nested values.
+
+A select expression can be one of:
+
+- A predicate, like `"schema:name"`. When included, the corresponding value
+  is returned in the result object.
+- The wildcard symbol, `"*"`. When included, all of a subject's predicates are
+  included in its result object.
+- A [_node object template_](#node-object-template). This describes how to
+  traverse nested predicate values.
+
+### Examples
+
+```json
+// wildcard
+"*"
+
+// predicate
+"schema:name"
+
+// node object template; see below
+{
+   "schema:address": ["*"]
+}
+```
+
+## Node object template
+
+Node object templates are objects where the keys are predicates, and the values
+are arrays of select expressions. Node object templates express _for the given
+predicate, construct an object that contains the predicates described by the
+array of select expressions._
+
+```json
+{
+  predicate: [select-expression, select-expression, ...],
+  predicate: [select-expression, select-expression, ...],
+  ...
+}
+```
+
+### Examples
+
+<details>
+<summary>Return an object that has all predicates for the node that `"bestFriend"` refers to</summary>
+
+```json focus=2:6
+{
+  "select": {
+    "?s": [
+      { "bestFriend": ["*"] }
+    ]
+  },
+  "where": { ... }
+}
+```
+
+</details>
+
+<details>
+<summary>Multi-level nested object</summary>
+```json focus=4:12
+{
+  "select": {
+    "?s": [
+      {
+        "bestFriend": [
+          {
+            "address": [
+              "*"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "where": { ... }
+}
+```
+</details>
+
+## `where`
+
+| required? | type                |
+| --------- | ------------------- |
+| no        | `array` or `object` |
+
+You can think of a FlureeQL query executing in two phases: the `where` phase and
+the `select` phase. The `where` phase filters and returns sets of bound values that the `select`
+phase can use to construct JSON objects. The `where` clause may return node subject `?bindings` that we then use with `select` expressions like `"*"` to perform graph crawls from those subject nodes.
+
+The `where` clause may also retrieve all the bindings we need, and we simply instruct the `select` clause that we want those bindings returned directly as query results.
+
+In any case, in addition to establishing _logic variables_ for bound values, we use the `where` clause to establish various data constraints for the data we are interested in querying (e.g. filtering by a particular predicate value, or expressing optional and outer-join data conditions).
+
+When a `where` clause is an _array_, it can combine a series of [_where conditions_](#where-condition) and [_where
+operations_](#where-operations).
+
+## Where condition
+
+A where condition describes relationships between nodes that must be satisfied for
+the nodes to be included in result sets, and it names those sets.
+
+For example, in this where condition:
+
+```json
+{
+  "@id": "?s",
+  "schema:name": "Sheil"
+}
+```
+
+a set of subjects that have a `"schema:name"` equal to `"Sheil"` is bound
+to the logic variable named `"?s"`.
+
+In this where condition:
+
+```json
+{
+  "@id": "?s",
+  "schema:name": "?name"
+}
+```
+
+two sets become available to `select`:
+
+- `"?s"` is the set of nodes that have _**any**_ data on the predicate, `"schema:name"`
+- `"?name"` is the set of value nodes that the `"schema:name"` predicate
+  points to
+
+Multiple where conditions are implicitly joined with a logical **AND**. For example,
+given these two where conditions:
+
+```json
+{
+  "@id": "?s",
+  "schema:name": "Freddie",
+  "schema:familyName": "Mercury"
+}
+```
+
+the set `"?s"` would include all nodes that have _both_ a `"schema:name"`
+of `"Freddie"` _and_ a `"schema:familyName"` of `"Mercury"`.
+
+A node that satisfies **ONE** of those conditions but not **BOTH** would **NOT** be bound to `?s`
+
+### Successive `where` conditions
+
+A `where` clause can express multiple, successive `where` conditions as either an _array_ of objects or as nested, related objects.
+
+The following two examples are effectively equivalent:
+
+```json
+{
+  "where": [
+    {
+      "@id": "?s",
+      "bestFriend": "?friend"
+    },
+    {
+      "@id": "?friend",
+      "schema:name": "?name"
+    }
+  ]
+}
+```
+
+```json
+{
+  "where": {
+    "@id": "?s",
+    "bestFriend": {
+      "@id": "?friend",
+      "schema:name": "?name"
+    }
+  }
+}
+```
+
+<Admonition type="info">
+In the second example above, because the conditions on `?s` and `?friend` are nested in a single, hierarchical JSON object, we could even remove the `"@id": "?friend"` line, if we didn't need to use it in the `select` statement. We need it in the first example to relate the two nodes to one another, but in the second example, we could have just as easily used:
+```json
+{
+  "where": {
+    "@id": "?s",
+    "bestFriend": {
+      "schema:name": "?name"
+    }
+  }
+}
+```
+</Admonition>
+
+Finally, it is possible in _where conditions_ to express a _logic variable_ for a set of properties matching a particular condition. This is commonly done for one of two reasons:
+
+1. We have identified a subject IRI, and now want all the properties with object values on that entity, or
+2. We have an object value, and now we want all the properties that have that value.
+
+<details>
+<summary>Example of a <em>where condition</em> that uses a logic variable for a set of properties</summary>
+
+```json
+{
+  "where": {
+    "@id": "http://example.org/jack",
+    "?p": "?o"
+  }
+}
+```
+
+</details>
+
+## Where operations
+
+_Where operations_ allow you to express more complex behavior than _where
+conditions_. There are four such operations:
+
+- [`"union"`](#union)
+- [`"filter"`](#filter)
+- [`"bind"`](#bind)
+- [`"optional"`](#optional)
+
+Where operations are represented as arrays, where the first element is the name of the operation, and the subsequent elements are arguments to the operation, for example:
+
+```json
+...
+[
+  "optional",
+    { "@id": "?s", "schema:name": "?name" },
+    { "@id": "?s", "schema:age": "?age" }
+],
+...
+```
+
+### `filter`
+
+The `"filter"` operation lets you make comparisons beyond simple equality. For
+example, if you wanted to select all people older than 45 and younger than 50,
+you could write this:
+
+```json focus=4
+{
+  "where": [
+    { "@id": "?s", "schema/age": "?age" },
+    ["filter", "(> ?age 45)", "(< ?age 50)"]
+  ],
+  "select": { "?s": ["*"] }
+}
+```
+
+#### Filter expressions
+
+Filter expressions are strings that represent lisp-like expressions which can
+use your logic variables to return boolean values. When you have multiple filter
+expressions, an implicit `AND` is used to join them.
+
+Take this example:
+
+```json
+["filter", "(> ?age 45)", "(< ?age 50)"]
+```
+
+With lisp, expressions are enclosed in parentheses. You can think of the first
+element of the expression as a function, and the rest of the elements as
+arguments. In the first filter expression, `"(> ?age 45)"`, `>` (_greater than_)
+is the function, and the arguments are `?age` and `45`. In English this would
+read as _`?age` is greater than `45`_.
+
+Inside of each _filter expression_, you can refer to the logic variables that you've bound elsewhere in your `where`
+clause (i.e. the way that we use `?age` as a variable in the example above).
+
+[Click here](#valid-functions-for-use-in-filter-and-bind-expressions) for a list of valid functions you can use in `filter` expressions.
+
+### `union`
+
+The `"union"` operation allows you to express boolean **OR** logic (or in query terms, perform a _full outer join_). Take this query:
+
+```json
+{
+  "where": {
+    "@id": "?s",
+    "@type": "ex:Person",
+    "schema:email": "?email",
+    "ex:email": "?email"
+  },
+  ...
+}
+```
+
+In the query above, if an entity does not have **BOTH** a value on `schema:email` and a value on `ex:email` **AND** if those two values are not identical (because we express `?email` for both values), then that entity will not be bound to `?s`.
+
+But we can easily imagine a scenario where we know some entities have a value on `schema:email` and some have a value on `ex:email`, and regardless of which one they have, we want to return them in our query results.
+
+This is where we can use `union` to express a logical **OR** condition (aka perform a full outer join on values of those two properties):
+
+```json
+{
+  "@context": { "schema": "http://schema.org/", "ex": "http://example.org/" },
+  "where": [
+    { "@id": "?s", "@type": "ex:Person" },
+    [
+      "union",
+      { "@id": "?s", "schema:email": "?email" },
+      { "@id": "?s", "ex:email": "?email" }
+    ]
+  ],
+  "select": ["?s", "?email"]
+}
+```
+
+In English, this query reads:
+
+- Return all subjects `"?s"` such that:
+- the subject has an `@type` (i.e. `"rdf/type"`) of `"ex:Person"`
+- AND the subject
+  - **EITHER** has the property `"schema:email"` (bind its value to `"?email"`)
+  - **OR** has the property `"ex:email"` (also bind its value to
+    `"?email"`)
+  - **OR** has both properties
+
+### `bind`
+
+The `"bind"` operation allows you to bind a logic variable to a value. This can be useful if wanting to set a binding to the return value of a functional operation. We can use the same [functions that we used in our `filter` expressions above](#valid-functions-for-use-in-filter-and-bind-expressions).
+
+Like [`filter`](#filter) and [`union`](#union), `bind` is an array where the first element is the name of the operation. In the case of `bind`, the following pairs of elements are the logic variable to bind and the expression to evaluate.
+
+```json
+["bind", "?canVote", "(>= ?age 18)"]
+```
+
+<details>
+<summary>Example of a <em>where operation</em> that uses <code>bind</code></summary>
+
+```json
+{
+  "@context": { "schema": "http://schema.org/" },
+  "where": [
+    { "@id": "?s", "schema:age": "?age" },
+    ["bind", "?canVote", "(>= ?age 18)"]
+  ],
+  "select": ["?s", "?age", "?canVote"]
+}
+```
+
+</details>
+
+[Click here](#valid-functions-for-use-in-filter-and-bind-expressions) for a list of valid functions you can use in `bind` expressions.
+
+### `optional`
+
+The `"optional"` operation allows you to use logic variable bindings for values that may or may not exist. This is similar to a _left outer join_ in SQL.
+
+For example, if you wanted to select all people and their best friends, but _**if you didn't want the query results to implicitly filter out people who had no values on `bestFriend`**_ you could write this:
+
+```json focus=5
+{
+  "@context": { "ex": "http://example.org/" },
+  "where": [
+    { "@id": "?s", "@type": "ex:Person" },
+    ["optional", { "@id": "?s", "bestFriend": "?friend" }]
+  ],
+  "select": ["?s", "?friend"]
+}
+```
+
+When the `where` clause of the above query executes, `?s` will be bound to all entities of `@type`, `ex:Person`. If we had **NOT** used `optional` on the next line, then any `?s` entities with _no value on `bestFriend`_ would be implicitly dropped from the `?s` result set. But, **because we used `optional`**, those entities will be retained in the `?s` result set, and `?friend` will be bound to `null` for those entities.
+
+`optional`, like `filter`, `union`, and `bind`, is an array where the first element is the name of the operation. In the case of `optional`, the following elements are the where conditions to evaluate.
+
+> **NOTE**: There is a difference between the following two `optional` operations:
+>
+> 1. `["optional", { "@id": "?s", "bestFriend": "?friend"}, { "@id": "?s", "name": "?name"}]`
+> 2. `["optional", { "@id": "?s", "bestFriend": "?friend", "name": "?name"}]`
+>
+> In #1, an entity could have a value on **either** `bestFriend` or `name`, and that value would then be bound to `?friend` or `?name`, respectively (the other would be `null`).
+>
+> In #2, if an entity had **only a value on either `bestFriend` or `name`**, then **BOTH `?friend` and `?name`** would be bound to `null`.
+
+<Admonition type="info">
+  If you are used to SQL databases and queries, you might be confused why we call this operation `optional`. In SQL, it is possible to persist `null` values on a column for a particular row.
+
+It is important to remember that JSON-LD expresses a serialization of RDF triples. In the world of RDF triples, there **are not `null` values**. If a subject does not have a value on a particular predicate, then that subject simply does not have a triple with that predicate--or said differently, the triple simply does not exist.
+
+When we use `optional`, we are saying "if this triple exists, then bind the value to the logic variable, otherwise bind `null` to the logic variable."
+
+</Admonition>
+
+### Valid Functions for Use in Filter and Bind Expressions
+
+| function                  | description                                     | example                                         |
+| ------------------------- | ----------------------------------------------- | ----------------------------------------------- |
+| `and`                     | logical AND (same as `&&`)                      | `(and ?isRegistered ?canVote)`                  |
+| `&&`                      | logical AND (same as `and`)                     | `(&& ?isRegistered ?canVote)`                   |
+| <code>&#124;&#124;</code> | logical OR                                      | <code>(&#124;&#124; ?isAnAdult ?canVote)</code> |
+| `!`                       | logical NOT (same as `not`)                     | `(! (strStarts ?url \"http\"))`                 |
+| `not`                     | logical NOT (same as `!`)                       | `(not (strStarts ?url \"http\"))`               |
+| `=`                       | equal                                           | `(= ?age 45)`                                   |
+| `not=`                    | not equal                                       | `(not= ?age 45)`                                |
+| `>`                       | greater than                                    | `(> ?age 45)`                                   |
+| `>=`                      | greater than or equal                           | `(>= ?age 45)`                                  |
+| `<`                       | less than                                       | `(< ?age 45)`                                   |
+| `<=`                      | less than or equal                              | `(<= ?age 45)`                                  |
+| `+`                       | addition                                        | `(< (+ ?age 10) 45)`                            |
+| `-`                       | subtraction                                     | `(< (- ?age 10) 45)`                            |
+| `*`                       | multiplication                                  | `(< (* ?age 2) 45)`                             |
+| `/`                       | division                                        | `(< (/ ?age 2) 45)`                             |
+| `quot`                    | integer division                                | `(< (quot ?age 2) 45)`                          |
+| `abs`                     | absolute value                                  | `(> (abs ?age) 45)`                             |
+| `round`                   | round to nearest integer                        | `(> (round ?age) 45)`                           |
+| `ceil`                    | round up to nearest integer                     | `(> (ceil ?age) 45)`                            |
+| `floor`                   | round down to nearest integer                   | `(> (floor ?age) 45)`                           |
+| `bound`                   | returns true if logic variable is bound         | `(bound ?age)`                                  |
+| `coalesce`                | returns first non-null value                    | `(> (coalesce ?age ?defaultAge) 45)`            |
+| `nil?`                    | returns true if value is null                   | `(nil? ?age)`                                   |
+| `re-pattern`              | returns a regex pattern, for use with `re-find` | `(re-find (re-pattern \"^http\") ?url)`         |
+| `re-find`                 | returns true for regex matches                  | `(re-find (re-pattern \"^http\") ?url)`         |
+| `strStarts`               | returns true if string starts with substring    | `(strStarts ?url \"http\")`                     |
+| `strEnds`                 | returns true if string ends with substring      | `(strEnds ?url \".com\")`                       |
+| `strLen`                  | returns length of string                        | `(> (strLen ?name) 5)`                          |
+| `contains`                | returns true if string contains substring       | `(contains ?name \"fred\")`                     |
+| `now`                     | returns the current time                        | `(> ?date (now))`                               |
+| `if`                      | conditional                                     | `(if (> ?nums 30) (> ?age 100) true)`           |
+| `isNumeric`               | returns true if value is numeric                | `(isNumeric ?age)`                              |
+
+## `t`
+
+| required? | type                  |
+| --------- | --------------------- |
+| no        | `string` or `integer` |
+
+The `t` clause lets you specify a dateTime value or commit number to query against. We refer to this as a "time-traveling" query.
+
+The `t` clause can take two possible values, an **ISO 8601 dateTime string** (expressing a particular moment in time according to the database state), or a **commit integer** (expressing a particular relative commit number in the history of the ledger).
+
+<Admonition type="info">
+Note that, while a commit integer expresses an actual moment of data state change, an ISO dateTime string likely expresses a moment in-between commits. The use of an ISO dateTime string, then, expresses an interest in the data state as of that moment in time.
+
+That is, if commit #1 took place at `'2023-10-30T12:43:38.452Z'` and commit #2 took place 10 minutes later at `'2023-10-30T12:53:38.452Z'`, then a query for a dateTime moment in the middle of those two commits, e.g. `"t": '2023-10-30T12:48:38.452Z'`, would reflect the data state as of commit #1.
+
+</Admonition>
+
+```json focus=9
+{
+  "@context": { "schema": "http://schema.org/", "ex": "http://example.org/" },
+  "where": {
+    "@id": "?s",
+    "@type": "ex:Yeti",
+    "schema:age": "?age"
+  },
+  "select": ["?s", "?age"],
+  "t": "2023-10-30T12:38:45.389Z"
+}
+```
+
+Or the same query, but using a commit integer value for `t`:
+
+```json focus=9
+{
+  "@context": { "schema": "http://schema.org/", "ex": "http://example.org/" },
+  "where": {
+    "@id": "?s",
+    "@type": "ex:Yeti",
+    "schema:age": "?age"
+  },
+  "select": ["?s", "?age"],
+  "t": 4
+}
+```
+
+## `groupBy`
+
+| required? | type                |
+| --------- | ------------------- |
+| no        | `array` or `string` |
+
+The `groupBy` clause lets you group query results by a predicate and perform
+aggregate operations on the groups.
+
+For example, let's say you have a query that returns the name and company for
+all people in your database, and the results look like this:
+
+```json
+[
+  {
+    "ex:company": "Fluree",
+    "ex:name": "Letitia"
+  },
+  {
+    "ex:company": "Fluree",
+    "ex:name": "Freddy"
+  },
+  {
+    "ex:company": "Beep Boop",
+    "ex:name": "Daniel"
+  }
+]
+```
+
+You could group these results by `ex:company` to see who works for each company:
+
+```json
+{
+  "@context": { "ex": "http://example.org/" },
+  "select": ["?company", "?name"],
+  "where": {
+    "@id": "?s",
+    "ex:name": "?name",
+    "ex:company": "?company"
+  },
+  "groupBy": "?company"
+}
+```
+
+This would return:
+
+```json
+[
+  ["Fluree", ["Letitia", "Freddy"]],
+  ["Beep Boop", ["Daniel"]]
+]
+```
+
+You can also perform aggregate operations on the grouped data. These operations
+let you answers questions like, "how many people are employed at each company?"
+or "what is the lowest price that a product has sold for?"
+
+If you wanted to get a count of people per employer, you could write a query like this:
+
+```json
+{
+  "@context": { "ex": "http://example.org/" },
+  "select": ["?company", "(count ?s)"],
+  "where": {
+    "@id": "?s",
+    "ex:name": "?name",
+    "ex:company": "?company"
+  },
+  "groupBy": "?company"
+}
+```
+
+And you would get results like this:
+
+```json
+[
+  ["Fluree", 2],
+  ["Beep Boop", 1]
+]
+```
+
+## `having`
+
+| required? | type                |
+| --------- | ------------------- |
+| no        | `array` or `string` |
+
+Having lets you filter on grouped data using arbitrary expressions.
+
+> **NOTE**: `having` is only valid when used with `groupBy`.
+
+```json
+{
+  "@context": { "ex": "http://example.org/", "schema": "http://schema.org/" },
+  "select": ["?name", "?favNums"],
+  "where": {
+    "@id": "?s",
+    "schema:name": "?name",
+    "ex:favNums": "?favNums"
+  },
+  "groupBy": "?name",
+  "having": "(>= (avg ?favNums) 10)"
+}
+```
+
+As English, this query would read: _"Find all entities with names and favorite numbers. Group the results by name. Keep only results where the average of all `?favNums` for a `?name` is greater than or equal to `10`."_
+
+> If we had used a `filter` function without `groupBy`, then we would have been filtering on the average of **all `favNum` values across all entities**. By using, `groupBy` & `having`, we can filter on the average of only those values grouped to a particular `?name`.

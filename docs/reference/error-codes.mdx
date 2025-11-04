@@ -1,0 +1,41 @@
+# Error Codes
+
+## query-missing-select
+
+This error is caused by a missing `select` key, which is required for all FlureeQL queries. You can find out more information on required keys in [FlureeQL syntax](/docs/reference/flureeql-query-syntax/#query-object)
+
+## query-missing-where
+
+This error is caused by a missing `where` key, which is required for all FlureeQL queries. You can find out more information on required keys in [FlureeQL syntax](/docs/reference/flureeql-query-syntax/#query-object)
+
+## query-unknown-key
+
+This error is caused by an invalid or unknown key in your query. Try checking for spelling errors and confirm that each key in your query is one of the following listed in our docs on the [Query Object](/docs/reference/flureeql-query-syntax/#query-object)
+
+## query-invalid-history
+
+This error is caused by an invalid value is assigned to a history key in your query. You can look at our documentation on [history queries](/docs/reference/history-syntax/) here to ensure you are assigning an allowed data type that is properly formatted.
+
+## query-invalid-commit-details
+
+The most common reason for invalid-commit-details errors is that a value other than a `boolean` (`true`/`false`) was assigned to this key, which acts as a flag to either include or exclude details about commits in a history query. You can also refer to our documentation on [History syntax](/docs/reference/history-syntax/#including-commit-details) to confirm your query is formatted properly.
+
+## query-invalid-t
+
+This error is caused by an invalid value of `t` in your query. Check to be certain that the value for `t` is not out of range for your ledger and that it contains proper typing as explained [here](/docs/reference/flureeql-query-syntax/#t).
+
+## query-invalid-select
+
+This error is typically caused by an incorrect usage of the `select` key. Check out our [FlureeQL query syntax documentation](/docs/reference/flureeql-query-syntax/#select) on the `select` key to confirm you are using the proper options, syntax, and formatting.
+
+## query-invalid-where
+
+This error is typically caused by an incorrect usage of the `where` key. Check out our [FlureeQL query syntax documentation](/docs/reference/flureeql-query-syntax/#where) on the `where` key to confirm you are using the proper options, syntax, and formatting.
+
+## query-invalid-orderby
+
+Typically this error is caused by an invalid value for the `orderBy` key. Use of `orderBy` requires a value `?binding` generated from the `where` clause. For example, if your `where` clause includes a binding for values on `?age` (e.g. `"schema:age": "?age"`), then you could order all query results according to ascending sorted order for `?age` like so: `"orderBy": "?age"`
+
+## query-invalid-groupby
+
+This error is typically caused by an invalid value for the `groupBy` key that is neither recognized as a valid variable or vector of variables. `groupBy` must be assigned to either an array or a string. For more information and reference on this key, check out our documentation on `groupBy` [here](/docs/reference/flureeql-query-syntax/#groupby).

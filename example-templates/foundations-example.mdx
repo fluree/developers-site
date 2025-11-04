@@ -1,0 +1,54 @@
+# Page Title
+
+<div class="overview">
+  Subtitle for page (what information will the user discover on this page?)
+</div>
+
+---
+
+## Overview
+
+From the [Diataxis Whitepaper on Documentation Material](https://diataxis.fr/explanation/)
+
+> Explanation clarifies, deepens and broadens the reader’s understanding of a subject.
+
+> It’s not concerned with what the user might be doing, like tutorials and how-to guides. It’s not a close-up view of the machinery, like reference material. It’s documentation that approaches a topic from a higher perspective, and from different angles.
+
+> This allows explanation to become discussion, a more relaxed, freer way to consider something. Explanation joins things together. It’s documentation that it makes sense to read while away from the product itself.
+
+> Tutorials, how-to-guides and reference are all clearly defined in their scope by something that is also well-defined: by what you need the user to learn, what task the user needs to achieve, or just by the scope of the machine itself.
+
+> In the case of explanation, it’s useful to have a real or imagined why question to serve as a prompt
+
+Foundations Doc pages should provide the following purpose:
+
+### What Users Need to Know
+
+- Most questions that a Foundations Doc page answers can likely be abstracted from the actual use of Fluree (e.g. in the case of a foundations page on "Vocabularies & Ontologies", a Foundations page wouldn't explain _how_ to leverage an ontology in Fluree, but would discuss how ontologies establish data-relationships within a vocabulary itself)
+- Foundations Doc pages _can_ be written around Fluree technologies, but they wouldn't explain how to accomplish a use case or how to use an API. Instead, they would explain the technological concept(s) that enable or support the capabilities themselves (e.g. a Foundations page might explain the concept of immutable data commits and time-indexing, but wouldn't explain how to time-travel in a query)
+- Foundations Doc pages can grow over time to explain the "how things work under-the-hood", but they should, at the very least, explain the "why is this useful, valuable, and important" for the use cases and the capabilities that Fluree offers
+- For example, a Foundations Doc on "Vocabularies and Ontologies", it would be critical to explain a mental model of how an ontology is different from a schema: in an ontology, vocabulary elements themselves can relate to one another, making it possible to infer implied data characteristics and automate insight generationi -- "I might have inserted a record as with a Class of `Student`, but if `Student` itself is a `subClass` of `Person`, then when I query for entities that are `Person`, I will also get back entities that are `Student`"
+
+## Page Heading #1
+
+Page Headings are used to introduce each new section of content.
+
+Keep in mind that each "## Page Heading" and "### Page Sub-Heading" will be added to the Table of Contents that appears on the right-hand side nav for that page
+
+### Page Sub-Heading 1
+
+Page Sub-Headings are used to introduce sub-sections of content within each Page Heading. A Page Heading for "where" in a Query Syntax Page would likely have sub-headings like "Three-Tuple Query Conditions", "Filter Maps", "Optional Maps", etc
+
+<details>
+<summary>Collapsible Content</summary>
+```json
+{
+  "select": {
+    "?s": ["*]
+  },
+  "where": [
+    ["?s", "@type", "rdfs:Class"]
+  ]
+}
+```
+</details>

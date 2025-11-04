@@ -1,0 +1,118 @@
+[
+	{
+		"@id": "academic-credentials-dataset",
+		"@graph": [
+			{
+				"id": "acd:learners/freddyyeti1",
+				"type": "clr:Profile",
+				"schema:givenName": "Freddy",
+				"schema:familyName": "Yeti",
+				"schema:email": "freddyyeti1@fluree.edu",
+				"clr:dateOfBirth": "2016-11-24",
+				"acd:profileType": "Learner"
+			},
+			{
+				"id": "acd:learners/lucialong3",
+				"type": "clr:Profile",
+				"schema:givenName": "Lucia",
+				"schema:familyName": "Long",
+				"schema:email": "lucialong3@asu.edu",
+				"clr:dateOfBirth": "2023-01-30",
+				"acd:profileType": "Learner"
+			},
+			{
+				"id": "acd:learners/nessieelasmo1",
+				"type": "clr:Profile",
+				"schema:givenName": "Nessie",
+				"schema:familyName": "Elasmosauridae",
+				"schema:email": "nessieelasmo1@asu.edu",
+				"clr:dateOfBirth": "564-08-22",
+				"acd:profileType": "Learner"
+			},
+			{
+				"id": "acd:institutions/fu",
+				"type": "clr:Profile",
+				"schema:name": "Fluree University",
+				"schema:url": "https://fluree.edu/",
+				"acd:profileType": "Institution"
+			},
+			{
+				"id": "acd:institutions/wssu",
+				"type": "clr:Profile",
+				"schema:name": "Winston-Salem State University",
+				"schema:url": "https://wssu.edu/",
+				"acd:profileType": "Institution"
+			},
+			{
+				"id": "acd:institutions/wfu",
+				"type": "clr:Profile",
+				"schema:name": "Wake Forest University",
+				"schema:url": "https://www.wfu.edu/",
+				"acd:profileType": "Institution"
+			},
+			{
+				"id": "acd:institutions/ftcc",
+				"type": "clr:Profile",
+				"schema:name": "Forsyth Tech Community College",
+				"schema:url": "https://forsythtech.edu/",
+				"acd:profileType": "Institution"
+			},
+			{
+				"id": "acd:institutions/uncc",
+				"type": "clr:Profile",
+				"schema:name": "University of North Carolina Charlotte",
+				"schema:url": "https://www.charlotte.edu/",
+				"acd:profileType": "Institution"
+			},
+			{
+				"id": "acd:institutions/ncees",
+				"type": "clr:Profile",
+				"schema:name": "National Council of Examiners for Engineering and Surveying",
+				"schema:url": "https://ncees.org/",
+				"acd:profileType": "Institution"
+			},
+			{
+				"id": "acd:institutions/pearsonvue",
+				"type": "clr:Profile",
+				"schema:name": "Pearson VUE",
+				"schema:url": "https://home.pearsonvue.com/",
+				"acd:profileType": "Institution"
+			},
+			{
+				"id": "acd:institutions/ncsite",
+				"type": "clr:Profile",
+				"schema:name": "The North Carolina Section of the Institute of Transportation Engineers",
+				"schema:url": "https://ncsite.org/index.php",
+				"acd:profileType": "Institution"
+			},
+			{
+				"id": "acd:institutions/asce",
+				"type": "clr:Profile",
+				"schema:name": "The American Society of Civil Engineers",
+				"schema:url": "https://www.asce.org/",
+				"acd:profileType": "Institution"
+			},
+			{
+				"id": "acd:institutions/ascenc",
+				"type": "clr:Profile",
+				"schema:name": "North Carolina ASCE Section",
+				"schema:url": "https://www.ascenc.org/",
+				"acd:profileType": "Institution"
+			},
+			{
+				"id": "acd:employers/volvogroup",
+				"type": "clr:Profile",
+				"schema:name": "Volvo Group",
+				"schema:url": "https://www.volvogroup.com/",
+				"acd:profileType": "Employer"
+			},
+			{
+				"id": "acd:employers/hondajet",
+				"type": "clr:Profile",
+				"schema:name": "Honda Aircraft Company",
+				"schema:url": "https://www.hondajet.com/",
+				"acd:profileType": "Employer"
+			}
+		]
+	}
+]

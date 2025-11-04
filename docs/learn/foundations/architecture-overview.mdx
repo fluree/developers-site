@@ -1,0 +1,41 @@
+# Architecture Overview
+
+This article will give a brief overview of how Fluree ledgers compare to traditional database architecture. We will dive into the distinction between the terms _**database**_ and _**ledger**_, give an explanation of how Fluree's verifiable data enables data-centric security architecture, and compare this architecture against that of a traditional database.
+
+## Database v. Ledger
+
+What, if anything, is the difference between a database and a ledger? To unpack this question let's start with a working definition of a database: - A database is the entirety of queryable data. Whether in a relational database in reference to each of the residing tables and connections between them, or a graph database containing a complete set of queryable nodes and edges, this abstraction will remain true. Here is a nifty picture to drive the point home:
+
+![Picture of a Database](/img/architecture-overview1.png)
+
+So how would Fluree fit into this picture? Is it just another database? - NOT EVEN CLOSE - Because of Fluree's [immutable ledger structure and time-indexed commits](../verifiable-data/)--its ability to track not only the addition of new data but also the metadata about who added it and when--we can conceptualize a ledger as a series of verifiable commits, where _every single commit_ is actually a complete database all of its own.
+
+![Picture of a Ledger](/img/architecture-overview2.png)
+
+When we run Fluree on a single server we can create any number of ledgers, and each ledger implicitly provides immutable, immediately queryable databases for every single commit of data that ledger receives. - So are the terms ledger and database interchangeable? I'm embarrassed you even asked!
+
+## Data-Centric Security
+
+At Fluree we strongly believe that data is most valuable when it can be used in as many contexts as possible, whether that means having multiple contributors, consumers, applications, or connections to other databases around the world. We also believe that for data to fulfill that promise of collaboration and use-multiplicity, the data can't rely on typical APIs and perimeters that have, in the past, secured that data. Instead, the security needs to be built into the data itself. For data to have a broader utility-horizon than a single API and a single application, we need to move from application-centric security to data-centric security. _Data-Centric Security_ for us means that Access Policy can be articulated _as data_, which is then co-resident with all of our other data. What this means in practice is that a ledger can exist with public API interfaces because our data is empowered to defend itself.
+
+## Fluree's Architecture
+
+To understand Fluree's architecture, let's first review a traditional application-centric design. This will typically include an application, a firewall, a custom API layer, another firewall, and siloed database residing in a datalake.
+
+<img src="/img/architecture-overview3.png" width="600" height="600" />
+
+In contrast Fluree's architecture is streamlined and makes data more directly useful and valuable. When data can defend itself, it can be queried directly and support multiple producers and applications/consumers at once. This is because the identity access management and data access control we conventionally find in firewalls and APIs can be embedded in (and executed by) the data itself. The applications and ledger can interact directly because our data can be made to "defend itself" since policy data is co-resident with all our other data.
+
+As a result, the application can interact directly with the ledger via a public interface. Furthermore, we don't need an API to translate RESTful routes into SQL queries that then get re-serialized back into JSON. Applications can directly interact with a Ledger because our applications can write JSON queries and our ledgers return JSON results.
+
+<img src="/img/architecture-overview4.png" width="675" height="600" />
+
+A ledger isn't forced into a single application-specific stack. With Fluree, it is possible for one ledger to operationalize **multiple applications**
+
+<img src="/img/architecture-overview5.png" width="675" height="600" />
+
+We can also virtualize data across ledgers in a single query. One application could also leverage data from **multiple ledgers**
+
+<img src="/img/architecture-overview6.png" width="675" height="600" />
+
+By now you should feel confident explaining to a colleague the difference between a traditional database and a Fluree ledger, how Fluree's ledgers constitute any number of immutable, immediately-queryable databases at every moment of data state change, how a ledger enables data-centric security, and how this difference enables streamlined application design.

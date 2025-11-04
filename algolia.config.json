@@ -1,7 +1,7 @@
 {
   "index_name": "prod_dev_site",
   "start_urls": [
-    "http://developers.flur.ee/"
+    "https://developers.flur.ee/"
   ],
   "stop_urls": [],
   "use_anchors": true,

@@ -1,0 +1,104 @@
+---
+title: Policies
+---
+
+import Admonition from "@theme/Admonition";
+import Image from "@theme/IdealImage";
+import { FigureWithCaption } from "../../../src/components/FigureWithCaption";
+import policyGroupsImage from "@site/src/assets/nexus/dataset-management/policies-basic-group.png";
+import policiesImage from "@site/src/assets/nexus/dataset-management/policies-basic-policy.png";
+
+<div class="overview">
+  This guide provides a reference for using the Policies tab within the Dataset View to manage access control for your dataset.
+</div>
+
+---
+
+
+## Overview
+Policies are used by Fluree to determine who can access what data in your dataset. 
+They are defined using a specific syntax and are typically stored in the dataset they're protecting, right alongside the data.  
+The Policies tab in the Dataset View provides a builder interface that allows you to create and manage policies and policy groups for your dataset.
+Using [Fluree's Policy Syntax](../../reference/policy-syntax.mdx) for fine-grained access control, this tool provides both a *no-code* and a *low-code* interface for policy management, as you'll see below.
+
+The Policies tab is divided into two sections: **Policy Groups** and **Policies**.  
+The vertical menu on the left side of the Policies tab allows you to toggle between the two sections.
+The menu is also where you can click the plus icon to create a new policy or policy group.
+
+## Policy Groups
+Policy groups are a way to group multiple policies together and they facilitate the enforcement of policies on users (humans and machines) for your Fluree Cloud dataset.
+When managing access control for a user or API Key, you'll pick from a list of policy groups you can create and manage here.
+
+The image below shows the Policies tab with the Policy Groups menu showing. 
+The menu shows a list of your existing policy groups. 
+Clicking on the vertical ellipsis on the right side of each policy group will expose a submenu where you can choose to inspect, edit, or delete the policy group.
+
+The image also indicates, with red arrows:
+- the `plus icon` you can click to create a new policy group, and
+- the `Save Policy Group` button at the bottom of the Policy Group editor, which must be clicked to save your changes to the policy group.
+
+<FigureWithCaption caption="Policies tab with the Policy Groups menu and Policy Group Editor showing">
+  <div className="flex flex-row justify-around">
+    <Image
+      img={policyGroupsImage}
+      alt="A view of the Policies tab with the Policy Groups menu and Policy Group Editorshowing"
+      className="shadow-xl"
+    />
+  </div>
+</FigureWithCaption>
+
+In the Policy Group editor, you can add existing policies to the policy group with the `Policies` input, which allows you to select from, or type to filter, a list of the policies in your dataset.
+If you'd like to add a policy that does not yet exist, simply save the policy group you're editing and click on the Policies header in the left-side menu to create the new Policy. 
+The Policy editor also has a Policy Groups input you can use to achieve the same effect.
+
+## Policies
+Policies are the building blocks of access control in Fluree. Create and assign as many policies as you need to your policy groups to achieve the desired access control for your dataset.
+For information on the syntax and structure of policies, see the [Fluree Policy Syntax](../../reference/policy-syntax.mdx) documentation.
+
+You can create and manage policies for your dataset by selecting the Policies section in the left-side menu of the Policies tab (indicated by the left-most red arrow in the image below).
+
+The image below shows the Policies tab with the Policies section selected, which shows a list of your existing policies.
+Clicking on the vertical ellipsis on the right side of each policy will expose a submenu where you can choose to inspect, edit, or delete the policy.
+The image also indicates, with the right-most red arrow, the `plus icon` which you can click to call up the New Policy editor for creating a new policy.
+
+<FigureWithCaption caption="Policies tab with the Policies menu and Policy Editor showing">
+  <div className="flex flex-row justify-around">
+    <Image
+      img={policiesImage}
+      alt="A view of the Policies tab with the Policies menu and Policy Editor showing"
+      className="shadow-xl"
+    />
+  </div>
+</FigureWithCaption>
+
+There are several fields in the Policy editor:
+- **Name**: The name of the policy. 
+- **Description**: A description of the policy. *This is an optional field*.
+- **Allow or Deny**: Determines whether the policy acts to allow or deny access to the target data. 
+- **Action**: The action that the policy applies to.   
+The possible values are:
+  - `Read & Write`: The policy applies to both queries and transactions to the dataset.
+  - `Read Only`: The policy applies only to queries to the dataset.
+  - `Write Only`: The policy applies only to transactions to the dataset.
+- **Target**: The target of the policy.   
+Depending on the action selected above, the possible values for this field could be:
+  - `All Data`: The policy applies to all data in the dataset and will be run for each flake.
+  - `Select Subjects...`: The policy applies to a specific subject or set of subjects in the dataset. 
+  - `Select Properties...`: The policy applies to a specific property or set of properties in the dataset.
+  - `Select Properties on Subjects...`: The policy applies to a specific property or set of properties for a specific subject or set of subjects in the dataset.  
+<Admonition type="info">
+Selecting one of the options that end in an ellipsis (`...`) will cause a related field, the `Where` field, to appear below the `Target` field, allowing you to select the specific subjects or properties you want to target with the policy. 
+</Admonition>
+- **Where...**: This field appears when the `Target` field is set to `Select Subjects...`, `Select Properties...`, or `Select Properties on Subjects...`.  
+The `Where` field allows you to specify a `JSON-LD Query` that will be used by the policy to determine which data to apply the policy to.
+There are two views for this field which can be toggled using the switch in the top right corner of the field.
+  - **JSON-LD Query View**: The JSON-LD Query view allows you to enter a JSON-LD Query directly.
+  - **Builder View**: The Builder view provides a no-code interface for building the JSON-LD Query.  
+  This allows you to build the query without having to write any code while still being specific about the target(s) of the policy.  
+The `Where` field also displays the number of targets in your dataset that will be targeted by the policy given the current value of the `Where` field. This is to help you understand the scope of the policy you're creating. 
+Do keep in mind that, as data is added, updated, and deleted in your dataset, the set of targets for a policy will appropriately change.
+- **Policy Groups**: The Policy Groups field allows you to select one or more policy groups that this policy should be attached to. If you'd like to create a new policy group, simply save the policy you're editing and click on the Policy Groups header in the left-side menu to create the new Policy Group. The Policy Group editor also has a Policies input you can use to attach this policy.
+- **Summary**: The final field in the Policy editor is a read-only field that conveniently displays a readable summary of the policy defined in the editor. Use this as a final check to confirm the policy you are creating is what you intended.  
+
+Finally, the `Save Policy` button at the bottom of the Policy editor must be clicked to save your changes to the policy.
+

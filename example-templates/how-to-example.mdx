@@ -1,0 +1,59 @@
+# Page Title
+
+<div class="overview">
+  Subtitle for page (what information will the user discover on this page?)
+</div>
+
+---
+
+## Overview
+
+From the [Diataxis Whitepaper on Documentation Material](https://diataxis.fr/how-to-guides/)
+
+> How-to guides can be thought of as recipes, directions that guide the reader through the steps to achieve a specific end.
+
+> Examples could be: how to calibrate the radar array; how to use fixtures in pytest; how to configure reconnection back-off policies. On the other hand, how to build a web application is not - that’s not addressing a specific goal or problem, it’s a vastly open-ended sphere of skill.
+
+> How-to guides matter not just because users need to be able to accomplish things: the list of how-to guides in your documentation helps frame the picture of what your product can actually do. A rich list of how-to guides is an encouraging suggestion of a product’s capabilities.
+
+> If they’re well-written and address the right subjects, you’re likely to find that how-to guides are the most-read sections of your documentation.
+
+How-To / Guide Doc pages should provide the following purpose:
+
+### What Users Need to Know
+
+- If you are trying to do a particular thing (e.g. "Using Fluree to Time-Travel") then a How-To page should explain to a user how they can use Fluree capabilities to accomplish it
+- How-To pages could link to Reference pages to direct users there for specific API/syntax details, but the How-To page itself doesn't need to provide that level of detail in its information
+- How-To pages could link to Foundation pages to direct users to more conceptual information about _why_ something might work (e.g. "Time-Travel Queries are possible because Fluree data stores time indexes based on commit times/numbers), but the How-To page itself doesn't need to provide that level of detail in its information
+- How-To pages should be specific to the use cases that Fluree capabilities enable. If a use case begins to include other frameworks or technologies, it should be considered a "Play/Examples" page instead of a How-To page (e.g. "How to Build a React App with Fluree" would be a Play/Examples page)
+
+## Page Heading #1
+
+Page Headings are used to introduce each new section of content. A How-To Page on Using Fluree to Time-Travel would reasonably have page headings for "Querying Data State at a Particular Time", "Auditing Data State Changes Over Time", "Auditing Metadata for Particular Commits", etc
+
+Keep in mind that each "## Page Heading" and "### Page Sub-Heading" will be added to the Table of Contents that appears on the right-hand side nav for that page
+
+You can add tables to a page using table markdown syntax
+
+| API Endpoints | Useful Syntax                      | Use Cases                                                                                             |
+| ------------- | ---------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| `/query`      | `t`                                | Querying data as of a particular ISO time or a particular commit number                               |
+| `/history`    | `t`, `from`, `to`, `commitDetails` | Auditing data state changes (either generally or focused on particular data entities/characteristics) |
+
+### Page Sub-Heading 1
+
+Page Sub-Headings are used to introduce sub-sections of content within each Page Heading. A Page Heading for "where" in a Query Syntax Page would likely have sub-headings like "Three-Tuple Query Conditions", "Filter Maps", "Optional Maps", etc
+
+<details>
+<summary>Collapsible Content</summary>
+```json
+{
+  "select": {
+    "?s": ["*]
+  },
+  "where": [
+    ["?s", "@type", "rdfs:Class"]
+  ]
+}
+```
+</details>

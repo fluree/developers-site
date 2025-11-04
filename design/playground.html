@@ -1,0 +1,82 @@
+<!doctype html>
+<html class="no-js" lang="">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Untitled</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <!-- Place favicon.ico in the root directory -->
+
+  </head>
+  <body>
+    <div class="m-8">
+      <div class="">
+        <div class="grid grid-cols-2 gap-2 m-2">
+
+          <!-- input -->
+          <div class="rounded border border-gray-200">
+            <div class="bg-gray-100 p-2 flex">
+              <div class="flex-none">
+                <span class="uppercase text-sm font-bold">input</span>
+                <span class="text-sm">a JSON object to stage or commit</span>
+              </div>
+            </div>
+            <div class="h-64 bg-white">
+
+            </div>
+            <div class="bg-gray-100 p-2 flex">
+              <div class="flex">
+                <button class="rounded-md bg-sky-400 px-3 py-2 text-sm mr-1 font-semibold border-b-2 border-sky-600">stage</button>
+                <button class="rounded-md bg-sky-400 px-3 py-2 text-sm font-semibold border-b-2 border-sky-600">commit</button>
+              </div>
+              <div class="flex-1 px-3 py-2 italic text-sm">
+                DB status: 3 records staged, 4 committed
+              </div>
+            </div>
+          </div>
+
+
+          <!-- query -->
+
+          <div class="rounded border border-gray-200">
+            <div class="bg-gray-100 p-2 flex">
+              <div class="flex-none">
+                <span class="uppercase text-sm font-bold">query</span>
+                <span class="text-sm">retrieve staged or comitted data</span>
+              </div>
+            </div>
+            <div class="h-64 bg-white">
+            </div>
+            <div class="bg-gray-100 p-2">
+              <div>
+                <button class="rounded-md bg-sky-400 px-3 py-2 text-sm mr-1 font-semibold border-b-2 border-sky-600">query staged</button>
+                <button class="rounded-md bg-sky-400 px-3 py-2 text-sm font-semibold border-b-2 border-sky-600">query committed</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- <div class="rounded border border-gray-200">
+               <div class="bg-gray-100 p-2 flex">
+               <span class="uppercase text-sm font-bold">browse records</span>
+               <span class="text-sm">current contents of staging and committed</span>
+               </div>
+               <div class="h-64 bg-white">
+               </div>
+               </div> -->
+
+          <div class="rounded border border-gray-200 bg-gray-100 col-span-2">
+            <div class="bg-gray-100 p-2 flex">
+              <span class="uppercase text-sm font-bold">query results</span>
+            </div>
+            <div class="h-64 bg-gray-100 p-2">
+              <span class="italic">no query executed yet</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+  </body>
+</html>

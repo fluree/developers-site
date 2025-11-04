@@ -1,0 +1,448 @@
+# Querying: Lucia applies for a job
+
+import Admonition from "@theme/Admonition";
+
+{/*
+import SandboxDrawer from "@site/src/components/sandbox_drawer/SandboxDrawer.jsx";
+import SandboxButton from "@site/src/components/sandbox_drawer/SandboxButton.jsx";
+*/}
+import defaultContext from "@site/docs/examples/datasets/acd-sandbox-txs/defaultContext.json";
+import tx_profiles from "@site/docs/examples/datasets/acd-sandbox-txs/01_profiles.json";
+import tx_achievements from "@site/docs/examples/datasets/acd-sandbox-txs/02_achievements.json";
+import tx_credentials from "@site/docs/examples/datasets/acd-sandbox-txs/03_credentials.json";
+
+{/* <SandboxDrawer
+  defaultValue={""}
+  defaultContext={defaultContext}
+  seedTransactions={[...tx_profiles, ...tx_achievements, ...tx_credentials]}
+/> */}
+
+In this article, we will tackle an everyday scenario:
+
+> _A Learner who has earned achievements from multiple Institutions would like to collect and export them to a standard format in order to apply for a job._
+
+The current mechanism for a learner to accomplish this goal often resembles the same from half a century ago:
+The learner looks up and calls each institution that issues any of the applicable achievements and politely asks them be mailed to the requestor.
+
+This takes time and effort from everyone involved. With Fluree and a few open web standards, we can do better. By the time you finish reading this, you will know how to:
+
+- Specify how to _project_ your data using the `select` clause
+- Use `where` and `filter` clauses to filter results
+- Use the `union` clause
+- Work with a _vocabulary_
+
+## Lucia applies for a job
+
+The City of Winston-Salem is soliciting contractors for help with diverting a railroad track that currently runs through the middle of the city, terrorizing innocent and impatient city-folk.
+The contractors, as part of bidding on the contract, must prove their staff engineers have up-to-date credentials required for the job.
+Any additional staff experience that can be proven will help the contractor win the bid.
+
+Lucia Long is **stoked** for this project and is proud to present not only her engineering degree and certificates of specialization but also several merits and badges she's accumulated from her outstanding work on similar projects in the past.
+
+We'll help Lucia query the ACD to retrieve the requested credentials and ensure she's top choice, as she should be.
+
+The request from the city asked for records of the following:
+
+- Completed degree in Engineering
+- Passing grade on the Fundamentals of Engineering (FE) Exam
+- 4 years of supervised experience
+- Passing grade on the Professional Engineering (PE) Exam for Civil Engineering
+- Current Licensure with NCBELS, which is the relevant licensing board for Winston-Salem, NC
+
+Additionally, Lucia knows she has several accolades she's gathered over the past few years. There may be more, but she can name a few off the top of her head:
+
+- She worked on a team that received the _OCEA Award_. That was cool; dream team if there ever was one.
+- Oh and Lucia was named _Civil Engineer of the Year_ by her section of the ASCE.
+- And who could forget about the _Contribution to Transportation Award_ given by NCSITE for Lucia's work on that neat lightrail project.
+
+We need to gather all these up so Lucia can send them to her administrator who is handling the submission for this Winston-Salem project. Luckily Lucia has diligently stored all of her achievements in the _Academic Credential Dataset_ so this will be a piece of cake.
+
+### Querying the ACD for Credentials
+
+Buckle up, we're about to begin building a query for Lucia. You'll want to follow along either with your own instance of the dataset in Fluree or with the Sandbox already built into this page.
+If you need help getting this going, refer to [the intro article](../introduction).
+
+Okay, now that we're cooking with the ACD, let's start off by opening up our sandbox and taking a look at all of the stored credentials (_psst! copy and paste this into the left panel of the sandbox by clicking on Freddy in the top-right of the following code block) and then hit the "query" button in the sandbox to see the results on the right panel - OMG you're amazing!_):
+
+{/* <SandboxButton /> */}
+```json
+{
+  "@context": {
+     "acd": "https://academic-credential-dataset.net/ns/",
+     "clr": "https://purl.imsglobal.org/spec/vc/ob/vocab.html#",
+     "vc": "https://www.w3.org/2018/credentials/v1"
+  },
+  "select": {"?credentials": ["*"]},
+  "where": {
+    "@id": "?credentials",
+    "@type": "acd:Credential"
+  }
+}
+```
+
+And if everything has not gone horribly awry you should see a response with a bunch of JSON objects.
+Here's one of 'em:
+
+```json
+{
+  "clr:issuanceDate": "2023-01-01",
+  "clr:awardedDate": "2022-12-17",
+  "id": "acd:credentials/46",
+  "type": [
+    "acd:Credential",
+    "clr:AchievementCredential",
+    "vc:VerifiableCredential"
+  ],
+  "clr:issuer": {
+    "id": "acd:institutions/ascenc"
+  },
+  "clr:name": "Presentation of the Civil Engineer of the Year Award",
+  "clr:credentialSubject": {
+    "id": "acd:assertions/46"
+  }
+}
+```
+
+Congratulations! You just submitted your first query to the Academic Credential Dataset! Let's do a quick recap.
+
+- We are pulling everything the dataset has for every academic credential. This includes stuff like issuanceDate, awardedDate etc.
+  - A lot of these property names are prefixed with "clr" which, according to our `@context`, gets expanded to the URL for the Comprehensive Learner Record vocabulary.
+- Each object represents a distinct credential with a unique id.
+- Each credential has a type with three values, each with a different context prefix: `acd`, `clr`, and `vc`.
+  - This tells us that the credentials in the ACD are described by three vocabularies.
+- We've got a reference to the institution who issued it, via the `clr:issuer` property.
+- We've got the name of the credential, in this case "Presentation of the Civil Engineer of the Year Award".
+- And then a property named `clr:credentialSubject` that points to the assertion of the credential.
+
+<Admonition type="info">
+  This query only shows properties of the credential. But notice that
+  credentials also point to other nodes in the dataset, like the issuer and the
+  assertion. The value of these properties is currently just a small JSON object
+  with an `id`. To see more details of these related nodes, try adding `"depth":
+  2` to the top-level of the query object to ask Fluree to crawl these graph
+  relationships and expand these nodes as nested objects in the result set.
+</Admonition>
+
+Our last query returns **all** the subjects in the database that have a `type` of `acd:Credential`.
+We want to narrow that down to only pull credentials issued to Lucia:
+
+<CH.Section>
+{/* <SandboxButton /> */}
+```json
+{
+  "@context": {
+     "acd": "https://academic-credential-dataset.net/ns/",
+     "clr": "https://purl.imsglobal.org/spec/vc/ob/vocab.html#",
+     "vc": "https://www.w3.org/2018/credentials/v1"
+  },
+  "where": {
+    "@id": "?credentials",
+    "@type": "acd:Credential",
+    "clr:credentialSubject": {
+      "acd:recipient": {
+        "@id": "acd:learners/lucialong3"
+      }
+    }
+  },
+  "select": {"?credentials": ["*"]}
+}
+```
+This query adds two more `where` conditions:
+
+1. [`"clr:credentialSubject": { ... }`](focus://10[4:27]) constrains the set of credentials to just those that have a [`"clr:credentialSubject"`](focus://10[4:27]) property value.
+
+2. [`"acd:recipient": { "@id": "acd:learners/lucialong3" }`](focus://11:13) constrains the set of credentials to just those where the [`clr:credentialSubject`](focus://10[4:27]) referent has an [`acd:recipient`](focus://11[6:21]) and that recipient is [`acd:learners/lucialong3`](focus://12[8:40]) (aka, Lucia Long).
+
+By adding these clauses we constrain the set of credentials in the variable [`?credentials`](focus://8[11:25],16[14:27]) to just those that belong to Lucia.
+
+</CH.Section>
+
+My goodness Lucia's got a lot of achievements! The majority of them are named something like "Course Completion". That much coursework is probably fairly typical of engineers.
+
+As the individual courses aren't in the data request, let's narrow them down again to just the achievement types we're interested in.
+What are we interested in? We know we don't want Courses, but what achievement types should we include?
+Let's query to see what the distinct values of `achievementType` are in the dataset.
+
+{/* <SandboxButton /> */}
+```json
+{
+  "@context": {
+     "acd": "https://academic-credential-dataset.net/ns/",
+     "clr": "https://purl.imsglobal.org/spec/vc/ob/vocab.html#",
+     "vc": "https://www.w3.org/2018/credentials/v1"
+  },
+  "selectDistinct": "?achievementType",
+  "where": {
+    "clr:achievementType": "?achievementType"
+  }
+}
+```
+
+From that set, it looks like we want `"Assessment"`, `"Award"`, `"Degree"`, `"License"`, and `"Supervised Experience"`.
+This next query shows how you can specify a subset of the achievement types we care about based on the value of the `clr:achievementType` property.
+
+<CH.Section>
+{/* <SandboxButton /> */}
+```json
+{
+  "@context": {
+     "acd": "https://academic-credential-dataset.net/ns/",
+     "clr": "https://purl.imsglobal.org/spec/vc/ob/vocab.html#",
+     "vc": "https://www.w3.org/2018/credentials/v1"
+  },
+  "select": { "?credentials": ["*"] },
+  "where": {
+    "@id": "?credentials",
+    "@type": "acd:Credential",
+    "clr:credentialSubject": {
+      "acd:recipient": {
+        "@id": "acd:learners/lucialong3",
+        "clr:achievement": {
+          "clr:achievementType": "?achievementType"
+        }
+      }
+    },
+  },
+  "values": ["?achievementType", ["Assessment", "Award", "Degree", "License", "Supervised Experience"]]
+}
+```
+
+Okay, this query is getting longer. What did we add?
+
+- Another set of `where` constraints: [`"clr:achievement": { "clr:achievementType": "?achievementType" }`](focus://14:16) that enables us to crawl into _achievement_ nodes referenced by every _assertion_ and evaluate them for their [`clr:achievementType`](focus://15) property value.
+
+- A [`values`](focus://20[2:10]) keyword that lets us specify a range of [five possible `?achievementType` values that we're interested in](focus://20)
+
+</CH.Section>
+
+Alright! We have all the credentials Lucia needs to send along for the proposal.
+Oh wait, after showing this set of credentials to Lucia, she pointed out a couple she'd rather not include.
+Here are the `clr:name`s for those two records: `"Tiniest Mouse"` and `"Most Improved Sportsmanship"`.
+We'll go ahead and add a filter clause to remove those from the resultset:
+
+{/* <SandboxButton /> */}
+```json
+{
+  "@context": {
+     "acd": "https://academic-credential-dataset.net/ns/",
+     "clr": "https://purl.imsglobal.org/spec/vc/ob/vocab.html#",
+     "vc": "https://www.w3.org/2018/credentials/v1"
+  },
+  "select": { "?credentials": ["*"] },
+  "where": [
+    {
+      "@id": "?credentials",
+      "@type": "acd:Credential",
+      "clr:name": "?credName",
+      "clr:credentialSubject": {
+        "acd:recipient": {
+          "@id": "acd:learners/lucialong3",
+          "clr:achievement": {
+            "clr:achievementType": "?achievementType"
+          }
+        }
+      },
+    },
+    [
+      "filter",
+        "(not= ?credName \"Tiniest Mouse\")",
+        "(not= ?credName \"Most Improved Sportsmanship\")"
+    ]
+  ],
+  "values": ["?achievementType", ["Assessment", "Award", "Degree", "License", "Supervised Experience"]]
+}
+```
+
+Okay, now we have all of the required credentials and we're even filtering out the ones that aren't relevant (and a little embarrassing).
+There's another curveball, though. Lucia's admin also provided a data dictionary that describes the format of the data they're expecting.
+Luckily it's fairly basic and intuitive, as far as target schemas go. Check it out:
+
+```json
+{
+  "id": "Unique identifier for the credential",
+  "name": "The name of the credential",
+  "date_awarded": "The date the credential was awarded",
+  "date_issued": "The date the credential was issued",
+  "issuer": {
+    "id": "Unique identifier for the issuer of the credential",
+    "issuer_name": "The name of the issuer of the credential"
+  },
+  "assertion": {
+    "id": "Unique identifier for the assertion of this credential",
+    "narrative": "A descriptive explanation of the assertion of this credential",
+    "recipient": {
+      "id": "Unique identifier for the recipient of this credential",
+      "first_name": "First name of the recipient of this credential",
+      "last_name": "Last name of the recipient of this credential"
+    },
+    "achievement": {
+      "id": "Unique identifier for the achievement asserted by this credential",
+      "achievement_type": "The type of the achievement asserted by this credential (e.g. License, Award, etc.)",
+      "name": "The name of the achievement asserted by this credential",
+      "description": "The description of the achievement asserted by this credential",
+      "creator_id": "Unique identifier for the creator of the achievement that is asserted by this credential"
+    }
+  }
+}
+```
+
+If we compare this schema to what our credentials currently look like in our latest resultset, we can see we have a bit more work to do.
+To deliver on this data request, we need to shift our attention from selecting nodes with the `where` clause, to "projecting" them with the `select` clause. "Projection" in this case is just a fancy way of saying "describe which properties we want to see for which nodes in our resultset".
+If you're interested in projection and how to build Fluree queries, check out the [reference](/docs/reference/flureeql-query-syntax/)!
+
+We need to expand a few referenced nodes in order to include all of the required fields we're missing.  
+Here's what that looks like:
+
+<CH.Section>
+{/* <SandboxButton /> */}
+```json
+{
+  "@context": {
+     "acd": "https://academic-credential-dataset.net/ns/",
+     "clr": "https://purl.imsglobal.org/spec/vc/ob/vocab.html#",
+     "vc": "https://www.w3.org/2018/credentials/v1"
+  },
+  "select": {"?credentials": [
+    "*", 
+    { "clr:issuer": ["id", "schema:name"] },
+    { "clr:credentialSubject": [
+      "clr:narrative", 
+      { "acd:recipient": ["id", "schema:givenName", "schema:familyName"] }, 
+      { "clr:achievement": ["id", "clr:achievementType", "clr:name", "clr:description", "clr:creator"] }
+    ]}
+  ]},
+  "where": [
+    {
+      "@id": "?credentials",
+      "@type": "acd:Credential",
+      "clr:name": "?credName",
+      "clr:credentialSubject": {
+        "acd:recipient": {
+          "@id": "acd:learners/lucialong3",
+          "clr:achievement": {
+            "clr:achievementType": "?achievementType"
+          }
+        }
+      },
+    },
+    [
+      "filter",
+        "(not= ?credName \"Tiniest Mouse\")",
+        "(not= ?credName \"Most Improved Sportsmanship\")"
+    ]
+  ],
+  "values": ["?achievementType", ["Assessment", "Award", "Degree", "License", "Supervised Experience"]]
+}
+```
+
+We've added quite a bit to the [`select` clause](focus://7:15).
+We're still starting with the [`?credentials`](focus://7[15:26]) at the root and we're still asking Fluree for all of the properties on those nodes (that's the [`'*'` at the start of the array](focus://8[5:7])).
+We've also added [two JSON objects](focus://9:14) to the array behind the `'*'`.
+
+- The [first JSON object](focus://9) has the key [`"clr:issuer"`](focus://9[7:18]) which tells Fluree to traverse the `clr:issuer` edge to get to the `profile` node it's pointing to and supplies [an array](focus://9[21:41]) as the value in order to _project_ two properties, [`"id"`](focus://9[22:25]) and [`"schema:name"`](focus://9[28:40]).
+- The [second JSON object](focus://10:14) is a bit more complicated but starts out the same way: it's key, [`"clr:credentialSubject"`](focus://10[7:29]), tells Fluree to traverse that edge to the `assertion` node it's pointing to and also supplies [an array](focus://10[32:33],11:13,14[5:6]) to project specific properties of the `assertion` into the resultset.
+  In this array, we supply a [simple property name](focus://11), that will project the narrative, and we also supply [two additional objects](focus://12:13) which further "crawls the graph" by traversing both [`"acd:recipient"`](focus://12[9:23]) and [`"clr:achievement"`](focus://13[9:25]), in the same way, to project properties from each of those nodes into the resultset.
+
+</CH.Section>
+
+By expanding the `select` clause, we're able to access all of the data we need across 5 different, though related, node types: Credential, Issuer, Assertion, Recipient, and Achievement.
+
+I hear you thinking "Ok that's cool, but our property names still don't match the requestor's data dictionary. And they're kinda ugly."
+I'll let the rude opinion slide and skip straight to the answer: we'll add an `@context` to our query to use JSON-LD keyword aliasing to specify the exact fieldnames we want in our resultset!
+
+### Querying the ACD with @context
+
+I'm sure you, my very attentive reader, have already picked up on my use of `@context` earlier in this article and
+I'm further sure, my very diligent reader, that you've already [read about `@context`](/docs/learn/tutorial/collaborative-data/#json-ld-context-and-compact-iris) and so you know that you can use `@context` in a query to sprinkle some delicious alias sugar into your resultset.
+Take a look at the same query with an `@context` that translates the keys in our resultset to exactly match those expected by Lucia's administrator.
+
+{/* <SandboxButton /> */}
+```json
+{
+  "@context": {
+    "acd": "https://academic-credential-dataset.net/ns/",
+    "clr": "https://purl.imsglobal.org/spec/vc/ob/vocab.html#",
+    "vc": "https://www.w3.org/2018/credentials/v1", 
+    "name": "clr:name",
+    "date_awarded": "clr:awardedDate",
+    "date_issued": "clr:issuanceDate",
+    "issuer": "clr:issuer",
+    "issuer_name": "schema:name",
+    "assertion": "clr:credentialSubject",
+    "narrative": "clr:narrative",
+    "recipient": "acd:recipient",
+    "first_name": "schema:givenName",
+    "last_name": "schema:familyName",
+    "achievement": "clr:achievement",
+    "achievement_type": "clr:achievementType",
+    "description": "clr:description",
+    "creator_id": "clr:creator"
+  },
+  "select": {"?credentials": [
+    "*", 
+    { "issuer": ["id", "issuer_name"] },
+    { "assertion": [
+      "narrative", 
+      { "recipient": ["id", "first_name", "last_name"] }, 
+      { "achievement": ["id", "achievement_type", "name", "description", "creator_id"] }
+    ]}
+  ]},
+  "where": [
+    {
+      "@id": "?credentials",
+      "@type": "acd:Credential",
+      "clr:name": "?credName",
+      "clr:credentialSubject": {
+        "acd:recipient": {
+          "@id": "acd:learners/lucialong3",
+          "clr:achievement": {
+            "clr:achievementType": "?achievementType"
+          }
+        }
+      },
+    },
+    [
+      "filter",
+        "(not= ?credName \"Tiniest Mouse\")",
+        "(not= ?credName \"Most Improved Sportsmanship\")"
+    ]
+  ],
+  "values": ["?achievementType", ["Assessment", "Award", "Degree", "License", "Supervised Experience"]]
+}
+```
+
+Here's a final recap of our query build:
+
+- First we focused on defining our `where` clause to carefully select what nodes we wanted to target.
+- Then we worked on describing the projections of these nodes by specifying in the `select` clause what properties we wanted.
+- Finally, to abide by the fieldnames described by the data requestor, we added an `@context` to our query to make use of the JSON-LD keyword aliasing mechanism.
+
+This mechanism, in short, translates the fieldnames in our resultset based on the mapping we provide in the `@context` array.
+
+And now our query is all grown up and can go out and participate in the wide world
+of data. But, especially, it can satisfy the data request described by Lucia's administrator!
+Lucia can send the data retrieved with this query on to her admin and be confident
+that she and all of her hard-earned achievements are fully described and represented. She's got
+this job in the bag.
+
+In the next article we'll take a look at how this data will be validated by the requestor.
+We'll learn about Verifiable Credentials and Provenance and how they enable trust in our own data and the data we receive from others.
+
+### Summary
+
+In this article we used the Academic Credential Dataset to investigate some key features of Fluree, including basic querying and exploration.
+We also took a look at what makes data sharing challenging and how Fluree and a few web standards can make data sharing simple.
+
+<Admonition type="info">
+  In this and the following ACD articles, we see how open standards like RDF and
+  JSON-LD solve our data sharing problems. As we dig in to these, keep in mind
+  that these features are *open standards*. This means that Fluree is relying on
+  externally-defined mechanisms that have meaning *outside* of any Fluree
+  database or platform.
+  {"  "}
+  When Lucia shares or exports her data, or decides to store it in a datastore
+  that's not backed by Fluree, all the value these standards provide are baked
+  into the data itself. This makes Lucia's data portable. Fluree's values,
+  including data portability, come up a lot in our materials and we'll see more
+  of them later in this series.
+</Admonition>

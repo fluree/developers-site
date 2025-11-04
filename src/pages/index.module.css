@@ -1,36 +1,36 @@
 .heroBanner {
-  padding: 4rem 0;
-  text-align: center;
-  position: relative;
-  overflow: hidden;
+	padding: 4rem 0;
+	text-align: center;
+	position: relative;
+	overflow: hidden;
 }
 
 @media screen and (max-width: 966px) {
-  .heroBanner {
-    padding: 2rem;
-  }
+	.heroBanner {
+		padding: 2rem;
+	}
 }
 
 @media screen and (max-width: 996px) {
-  .bannerCard {
-    margin-bottom: 1rem;
-  }
+	.bannerCard {
+		margin-bottom: 1rem;
+	}
 }
 
 @media screen and (min-width: 997px) {
-  .bannerCard {
-    height: 275px;
-  }
+	.bannerCard {
+		height: 275px;
+	}
 }
 
 .bannerCard {
-  background-color: var(--ifm-color-gray-100);
+	background-color: var(--ifm-color-gray-100);
 }
 
 .cardHeader {
-  color: var(--ifm-color-gray-900);
+	color: var(--ifm-color-gray-900);
 }
 
 .cardBody {
-  color: var(--ifm-color-gray-700);
+	color: var(--ifm-color-gray-700);
 }

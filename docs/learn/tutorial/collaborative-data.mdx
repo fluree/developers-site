@@ -1,0 +1,370 @@
+import Admonition from "@theme/Admonition";
+
+# Collaborative Data
+
+As you know, cryptozoology is inherently a collaborative science. Enthusiasts
+the world over share their findings in order to gain shared insights into the
+behaviors of some of Earth's most-misunderstood and least-existing creatures.
+
+However, sharing findings can be a tricky and burdensome process. This is a
+specific instance of the general problem of working with _distributed data_ -
+data that is managed by different owners with different conventions for how to
+record information. The core issue is how we handle names - my system for naming
+things might not match yours, and that causes confusion and tears.
+
+This is a deep philosophical problem with a rich history. In this chapter, we're
+going to ignore philosophy and history and instead explore the problem from a
+practical standpoint, then look at how Fluree uses technologies that solve this
+problem for you.
+
+## Ambiguous Names
+
+If you and I are maintaining separate datasets about the same entities and want
+to combine our data, we need to know when our datasets are referring to the same
+things and when they're referring to different things. There are two ways that
+this can be ambiguous:
+
+1. In the _labels_ we choose for describing an entity
+2. In the _identifiers_ we choose to denote an entity
+
+In my cryptids database I might use the label `scientific_name` to record a
+cryptid's genus and species, while you might use the label `genus_species`.
+We might also use the same labels to record different information: I might use
+the label `coordinates` to record latitude and longitude, while you might use it
+to record UTM (Universal Transverse Mercator) coordinates.
+
+Then there's the identifiers for entities. How will we know when we're referring
+to the same real-life cryptid? I might use an auto-generated number as an
+identifier for the entities in my database, while you might use a UUID.
+
+Names become ambiguous outside their home context. When you're working with a
+single dataset, there's enough implicit information to tell you what names mean.
+That information might be the address of the database you're connecting to, or
+it might be the fact that the dataset was provided by your colleague Samantha.
+These pieces of information give you the context you need to determine the
+meaning of the names.
+
+While we as humans can work out these data ambiguities using our human brains
+and reasoning skills, computers can't. Human judgment is required to consolidate
+the different vocabularies used by the different contexts and produce a single,
+uniform dataset. Our data systems have no innate way of knowing that the label
+`scientific_name` in your system refers to the same kind of thing as
+`genus_species` in your colleague's. That's why we have to write _extract,
+transform, and load_ (_ETL_) programs to convert datasets from different sources
+into a single representation.
+
+Resolving these discrepancies across datasets is time-consuming and error-prone
+work. The need for this kind of work keeps people employed, which is good I
+guess, but this problem is never essential to the kind of work you're trying to
+get done. It's incidental complexity that soaks up time and resources.
+
+Thankfully, it doesn't have to be this way.
+
+## RDF and Universal Identifiers
+
+Those who want to collaborate on data can address this problem of managing names
+outside their local context by agreeing on a system for unambiguously
+representing names within a _global_ context. When all parties involved in
+working with distributed data have agreed on such a system, collaboration
+becomes infinitely easier. RDF gives us a way to do this.
+
+### Internationalized Resource Identifiers (IRIs) provide a global context
+
+How does this work? As it turns out, we already have a format for unambiguously
+naming things in a global context: URIs. The word _flights_ could mean different
+things in different contexts, but the URI `https://google.com/flights` will
+always be distinct from `https://kayak.com/flights`. The fact that these names
+might happen to refer to web pages is immaterial for our purposes; the point is
+that this naming system allows us to provide all the context we need to
+distinguish one instance of _flights_ from another.
+
+What does this look like with data? Instead of working with JSON data that looks
+like this:
+
+{/* <SandboxButton /> */}
+
+```javascript
+{
+  "familyName": "Worrel",
+  "givenName": "Ernest"
+}
+```
+
+We can use JSON-LD data that looks like this:
+
+{/* <SandboxButton /> */}
+
+```javascript
+{
+  "https://schema.org/familyName": "Worrel",
+  "https://schema.org/givenName": "Ernest"
+}
+```
+
+<Admonition type="note">schema.org is discussed below</Admonition>
+
+When it comes to JSON-LD, we say we're using _Internationalized Resource
+Identifiers_, or _IRIs_, for attribute names. IRIs serve the same function as
+URIs: they're strings that follow a specified format and they're used as
+unambiguous names. The only difference between IRIs and URIs is that IRIs allow
+for internationalized characters in a way that URIs do not, which is a nuance
+that I don't want us to get hung upon.
+
+In the same way that everyone across the globe uses URIs to unambiguously
+identify documents on the internet, we use IRIs to unambiguously name things --
+anything. The IRI `"https://schema.org/familyName"` is defined in a
+global context, and it does not depend on the local, ad-hoc, implicit context of
+any particular organization. If you and I are maintaining separate data sets and
+we both use the IRI `"https://schema.org/familyName"` as a key in a JSON
+object, we can know without even talking to each other that we're working with
+the same thing.
+
+By doing this, the problem of managing local names disappears because you're not
+using local names anymore, you're using global names. And with that, all sorts
+of possibilities are unlocked:
+
+- Your data becomes portable, not tied to any particular database vendor
+- You and other collaborators can seamlessly merge your datasets without having
+  to coordinate with each other.
+- You don't have to write ETLs to combine your data, and you don't have to have
+  all the conversations necessary to make sure you're getting the ETLs right.
+
+### Documenting IRIs
+
+IRIs have another advantage, in that you can typically use them as URLs to look
+up documents on the internet. This is intentional. In this way it's possible for
+us to provide descriptions for the names that we're referencing.
+
+[Schema.org](https://schema.org) is a repository of _schemas_ and it provides
+such descriptions. A schema is a higher-level organization of property names,
+along with the their expected and a description of the value. If you go to
+[https://schema.org/Person](https://schema.org/Person), for example, you'll see
+a schema description that includes the IRIs we've been using.
+
+IRIs do _not_ have to be associated with Schema.org, nor do they have to be
+associated with a functioning web site. It's just nice that it's trivial to
+provide documentation for the names you're using.
+
+### A common language makes collaboration easier
+
+The central, profound idea underlying this naming system is that collaboration
+is exponentially easier when collaborators speak the same language. A language
+consists not just of symbols, but of the context necessary to make sense of
+those symbols.
+
+It's like how the word _burro_ means _donkey_ in Spanish and _butter_ in
+Italian. If you ask someone to pass you the butter in Italian, you are unlikely
+to receive a donkey. The context makes the meaning clear. IRIs are a standard
+way for you to supply the context for data, removing the need for translation
+across contexts. With IRIs, data can be understood outside of its origin.
+
+## Using IRIs with Fluree
+
+The use of IRIs is deeply embedded in the RDF standard, and Fluree is an RDF
+database. Therefore, it's possible to use IRIs with Fluree. You can transact the
+example JSON above in Fluree:
+
+{/* <SandboxButton /> */}
+
+```javascript
+{
+  "https://schema.org/familyName": "Worrel",
+  "https://schema.org/givenName": "Ernest"
+}
+```
+
+And you can query it:
+
+{/* <SandboxButton /> */}
+
+```javascript
+{
+   "select":{
+      "?s":[
+         "*"
+      ]
+   },
+   "where": {
+    "@id": "?s",
+    "https://schema.org/familyName": "Worrel"
+   }
+}
+```
+
+Let's review what's happening here. We're transacting a JSON-LD object.
+Internally, this JSON object gets converted into a set of RDF triples. RDF
+triples consist of a subject, predicate, and object.
+
+What's new about the data we've transacted is that we are using IRIs for the
+predicates, `"https://schema.org/familyName"` and
+`"https://schema.org/givenName"`. From one perspective, these values
+aren't different from the strings we've been using for predicates up until now.
+You can transact them and query them just as you've been doing. Their value
+comes from how they can be used in a broader data ecosystem.
+
+It's worth noting that the RDF spec actually _requires_ predicates to be IRIs.
+That means that the predicates we've been using so far, like `"best_friend"` and
+`"favorite_food"` are _not_ valid RDF. Yet, Fluree still allows you to store
+these values.
+
+This is because Fluree is designed to be practical. Getting your data to fully
+conform with RDF can take a little work, and it shouldn't be required for you to
+use Fluree. If you were trying to, say, import data from an existing database,
+you shouldn't have to convert it be fully RDF-compliant before you can transact
+and query it with Fluree.
+
+RDF compliance is opt-in; when you're ready to reap the benefits of
+collaborative data, Fluree will support you, and in the mean time you can use it
+as a "mere" deeply cryptographically secure graph database. Fluree will function
+the same for you regardless of whether you are using IRIs.
+
+## JSON-LD, @context, and compact IRIs
+
+You may have noticed that IRIs are quite long. Using keys like
+`"https://schema.org/familyName"` is fine for machine consumption, but it
+can be taxing on human brains. JSON-LD defines a way to use [_compact
+IRIs_](https://www.w3.org/TR/json-ld11/#compact-iris), so that you can use
+shorter IRIs that mean the same thing. Here's an example:
+
+{/* <SandboxButton /> */}
+
+```javascript
+{
+  "@context": {
+    "schema": "http://schema.org/"
+  },
+  "schema:familyName": "Worrel",
+  "schema:givenName": "Ernest"
+}
+```
+
+This can be understood with the following rule:
+
+1. If a string has the form `namespace:identifier`, and `namespace` is a key
+   under `@context`
+2. Then replace `namespace:` with the corresponding value under `@context`
+
+In this example, instances of `"schema:"` are replaced with
+`"http://schema.org/"`. Applications that understand JSON-LD, like
+Fluree, will automatically expand namespaces into their full form. The
+`@context` is there to make JSON data a bit easier for humans to read.
+
+You can also include a context when querying:
+
+{/* <SandboxButton /> */}
+
+```javascript
+{
+  "@context": {
+    "schema": "http://schema.org/"
+  },
+  "select": {
+    "?s": [
+      "*"
+    ]
+  },
+  "where": {
+    "@id": "?s",
+    "schema:familyName": "Worrel"
+  }
+}
+```
+
+## Subjects, objects, blank nodes, and IRIs
+
+We've been focusing on using IRIs for predicates, but we haven't talked much
+about the other naming ambiguity that can arise, the ambiguity that arises
+around identifiers for _entities_. It turns out that IRIs can be used for this,
+too.
+
+IRIs can be used to designate anything at all in the world, including the
+entities you're trying to describe. With JSON-LD, you can use IRIs for `@id`
+values, making them the subjects for the corresponding triples. The JSON-LD:
+
+```javascript
+{
+  "@context": {
+    "schema": "http://schema.org/"
+  },
+  "@id": "http://example.org/people/ErnestWorrel",
+  "schema:familyName": "Worrel",
+  "schema:givenName": "Ernest"
+}
+```
+
+And the triples:
+
+```javascript
+[
+  [
+    "http://example.org/people/ErnestWorrel",
+    "http://schema.org/familyName",
+    "Worrel",
+  ],
+  [
+    "http://example.org/people/ErnestWorrel",
+    "http://schema.org/givenName",
+    "Ernest",
+  ],
+];
+```
+
+IRIs can thus be the subjects in RDF triples. This is the preferred way to
+identify the entities in your system.
+
+While IRIs are a standard format for unambiguously identifying entities, that
+still leaves the question of how exactly you should generate IRIs. Other
+databases have facilities for generating unique identifiers, but Fluree does
+not. It's up to you to figure out what kind of name generating system you want,
+and up to you to ensure that it generates IRIs without conflicts.
+
+We don't have any recommendations for how you generate IDs, but you can keep
+these concerns in mind:
+
+- Some entities have natural identifiers. This could be a SKU or a library of
+  congress control number. In this case, the entity already has some globally
+  unique identifier associated with it, managed by an institution. In this case,
+  the recommendation would be to use the natural identifier in an IRI.
+- For some entities we want to avoid natural identifiers. Consider user accounts
+  for a SAAS app. In this case, we might purposely want to generate an
+  identifier that has no relation to the entity's data to avoid accidentally
+  exposing info.
+- [Compact URIs (CURIEs)](https://www.w3.org/TR/2010/NOTE-curie-20101216/) are
+  often desirable
+
+You might have also noticed that IRIs don't fully solve the problem of naming
+ambiguity. In our cryptid field research, you and I might have come across the
+same _lemisch_ (a kind of jaguar and otter mix, but you knew that). We might
+have named it different things; you might refer to it as
+`"https://cryptidlover.com/subject/Loretta"` while I might refer to it as
+`"https://iheartweirdthings.com/specimen/Zadie"`. This isn't even necessarily a
+problem; it's unavoidable that two different groups might assign different names
+to the same thing. Even you as an individual might have reasons for using two
+different names for the same thing.
+
+There are tools for reconciling these discrepancies, but they are beyond the
+scope of this tutorial.
+
+## Additional Resources
+
+In this chapter we focused on the mechanics of IRIs and why you might want to
+use them, but we didn't go into how you might actually model the data in your
+application. For a great discussion of that topic, check out [_Semantic Web for
+the Working
+Ontologist_](https://dl.acm.org/doi/book/10.1145/3382097).
+
+The [JSON-LD spec](https://www.w3.org/TR/json-ld11/) covers how to work with
+IRIs, `@context`, and `@id`.
+
+## Summary
+
+Working with distributed data can be time-consuming and error prone if the data
+hasn't been encoded in a way that's globally unambiguous. IRIs allow us to use
+global names, and when we use them our data becomes portable and composable with
+a fraction of the effort required to build and maintain the ETLs responsible for
+translating local datasets into a common language.
+
+You can use IRIs for subjects, predicates, and objects. How you generate the
+IRIs for entities is up to you.
+
+{/* <SandboxDrawer /> */}

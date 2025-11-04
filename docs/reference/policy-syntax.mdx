@@ -1,0 +1,81 @@
+import Admonition from "@theme/Admonition";
+
+# Policy Syntax
+
+## Introduction
+
+In the context of Fluree, "Policy" is a term used to describe read/write or access controls enforced on the data in your ledger. However, unlike the limitations enforced in a simple SQL database, policy logic is transacted _as data_ into _the ledger itself_.
+
+Policy is therefore a self-defense measure implemented by the state of the data itself, limiting who can read, write, and access the contents of your ledger.
+
+## Operating Principles
+
+<Admonition type="note">
+The examples below use compact IRIs for the policy vocabulary - `https://ns.flur.ee/` is aliased to `f`.
+</Admonition>
+
+A Policy is used to decide which flakes can be viewed or modified. Here is the Fluree policy vocabulary:
+
+| key                               | required? | type                      | example values|
+| --------------------------------- | --------- | ------------------------- | ----------------------------|
+| `f:query`                         | yes       | `WhereClause`             | `{"type": "@json", "@value": {"where": [["filter" "(= ?$this ?$identity)"]]}}` |
+| `@context`                        | no        | `{[key: string]:TermDef}` | `{"f": "https://ns.flur.ee/"}`|
+| `@id`                             | no        | `IRI[]`                   | `"ex:MyPolicy"`|
+| `@type`                           | no        | `IRI[]`                   | `"ex:AdminPolicy"` |
+| `f:action`                        | no        | `IdMap[]`                 | `{"@id": "f:view"}`, `{"@id": "f:modify"}` |
+| `f:targetSubject`                 | no        | `(IdMap\|WhereClause)[]`  | `{"@id": "ex:subject1"}`, `{"@id": "ex:subject2"}`, `{"@type": "@json", "@value": {"where" [{"@id": "?$target", "@type": "ex:SecretData"}]}}` |
+| `f:targetProperty`                | no        | `(IdMap\|WhereClause)[]`  | `{"@id": "ex:name"}`, `{"@id": "ex:ssn"}`, `{"@type": "@json", "@value": {"where" [{"@id": "ex:secretSubject", "?$target": "?o"}]}}` |
+| `f:required`                      | no        | `boolean`                 | `true` |
+
+
+- `f:query`
+  This is a Fluree query that is used to determine if a policy allows access to a flake. It is the only required property on a policy. It is stored as an `@type` `@json` blob with its own @context that is separate from the query or transaction context.
+- `@id` (optional)
+  An identifier for the policy.
+- `@type` (optional)
+  A identifier for a group of policies.
+- `f:action` (optional)
+  Used to constrain when a policy is evaluated.
+    - `f:view`: only during queries
+    - `f:modify`: only during transactions  
+  If no `f:action` is specified then a policy is applied for both operations.
+- `f:targetSubject` (optional)
+  Either a list of subject ids or a `where` clause that binds the `?$target` variable to the subjects for which the policy should be evaluated.
+- `f:targetProperty` (optional)
+  Either a list of property ids or a `where` clause that binds the `?$target` variable to the properties for which the policy should be evaluated.
+- `f:required` (optional)
+  If true, all non-required policies will be ignored. All required policies must evaluate to true to permit access.
+- `f:exMessage` (optional)
+  A custom error message to return if a policy prevents modification during a transaction.
+
+## Policy Lifecycle
+
+Once a policy has been transacted, it can be enforced. A policy cannot apply to the transaction that inserts it.
+
+There are two phases to policy enforcement:
+1. policy targeting
+2. policy evaluation
+
+### Policy targeting
+Policies are first targeted, so that only policies that apply to the affected flakes are enforced. The affected flakes for a query are any flakes that are pulled out of an index during query execution. The affected flakes for a transaction are any new flakes created.
+
+Targeting is used to limit the number of times a policy `f:query` is evaluated. If no `f:targetSubject` or `f:targetProperty` are present on a policy, then it targets all flakes in the affected data.
+
+The two targeting properties, `f:targetSubject` and `f:targetProperty`, are similar in form: either static identifiers or a query where clause. If a where clause, it is inserted into a query and executed before the view or modify operation is executed. The result set forms either the target subject set or the target properties set. Likewise, static identifiers are used to form the target subject set or the target properties set but without executing any queries.
+
+If both `f:targetSubject` and `f:targetProperty` are present on a policy, then it targets flakes whose subject is in the target subjects set AND whose property is in the target properties set.
+
+### Policy evaluation
+
+Policies are processed for each flake that will be returned in this way:
+1. All `f:required` policies must evaluate to `true` to permit access the flake. Non required policies are ignored.
+2. If no policies are "required", then all the policies are checked in sequence. The first one to evaluate to `true` permits access. If no policy evaluates to true, access to the flake is denied.
+
+During policy evaluation, the `f:query` of each targeted policy is evaluated with certain variables bound:  
+`?$this` - the subject of the flake being tested  
+`?$identity` - the identity of the principal performing the action
+
+The query returns an authorization result:
+- 1+ results: flake is allowed
+- 0 results: flake is not allowed
+- error: operation is aborted

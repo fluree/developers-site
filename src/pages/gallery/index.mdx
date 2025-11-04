@@ -1,0 +1,148 @@
+import DocPaginator from "@theme/DocPaginator";
+import TOCInline from "@theme/TOCInline";
+import BrowserWindow from "@site/src/components/BrowserWindow";
+import Placeholder from "@site/src/components/placeholder_component";
+
+# Component Gallery
+
+This is a gallery listing of all the Components you have access to when writing content for this Docs site.
+Some of these components come directly from Nexus and therefore are brand-consistent.
+Others are wrapped Docusaurus components and so start as unbranded;
+the indicator should describe if the component has been branded/themed or not.
+
+## Markdown
+
+[CommonMark](https://commonmark.org/) and [MDX](https://mdxjs.com/docs/what-is-mdx/) are supported.
+There may be some overlap or extension of these below.
+
+## Nexus Components
+
+Coming Soon...
+
+## Docusaurus Components
+
+### Placeholder
+
+Use this in lieu of a component that has not yet been built.
+
+```jsx
+  <Placeholder label={"Here's some content"}>
+```
+
+<BrowserWindow>
+	<Placeholder label={"Here's some content"} />
+</BrowserWindow>
+
+---
+
+### Headings
+
+Markdown allows for tiered headings:
+
+```md
+## Level 2 title
+
+### Level 3 title
+
+#### Level 4 title
+```
+
+<BrowserWindow>
+	<h2>Level 2 title</h2>
+	<h3>Level 3 title</h3>
+	<h4>Level 4 title</h4>
+</BrowserWindow>
+
+---
+
+### Tabs
+
+[Reference](https://docusaurus.io/docs/markdown-features/tabs)
+
+```jsx
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+<Tabs>
+	<TabItem value="apple" label="Apple" default>
+		This is an apple 🍎
+	</TabItem>
+	<TabItem value="orange" label="Orange">
+		This is an orange 🍊
+	</TabItem>
+	<TabItem value="banana" label="Banana">
+		This is a banana 🍌
+	</TabItem>
+</Tabs>;
+```
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+<BrowserWindow>
+	<Tabs>
+		<TabItem value="apple" label="Apple" default>
+			This is an apple 🍎
+		</TabItem>
+		<TabItem value="orange" label="Orange">
+			This is an orange 🍊
+		</TabItem>
+		<TabItem value="banana" label="Banana">
+			This is a banana 🍌
+		</TabItem>
+	</Tabs>
+</BrowserWindow>
+
+---
+
+### Code Blocks
+
+[Reference](https://docusaurus.io/docs/markdown-features/code-blocks)
+
+````md
+```jsx title="/src/components/HelloCodeTitle.js" showLineNumbers
+function HelloCodeTitle(props) {
+	return <h1>Hello, {props.name}</h1>;
+}
+```
+````
+
+```mdx-code-block
+BrowserWindow
+```
+
+```jsx title="/src/components/HelloCodeTitle.js" showLineNumbers
+function HelloCodeTitle(props) {
+	return <h1>Hello, {props.name}</h1>;
+}
+```
+
+```mdx-code-block
+BrowserWindow
+```
+
+---
+
+### Table of Contents
+
+```jsx
+import TOCInline from "@theme/TOCInline";
+<TOCInline toc={toc} />;
+```
+
+<BrowserWindow>
+	<TOCInline toc={toc} />
+</BrowserWindow>
+
+---
+
+### Navigation Buttons
+
+```jsx
+import DocPaginator from '@theme/DocPaginator';
+<DocPaginator previous={{some: "prop"}} next={{another: "prop"}}} />
+```
+
+<BrowserWindow>
+	<DocPaginator previous={{ a: "b" }} next={{ b: "c" }} />
+</BrowserWindow>

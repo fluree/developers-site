@@ -1,0 +1,833 @@
+[
+	{
+		"@id": "academic-credentials-dataset",
+		"@graph": [
+			{
+				"id": "acd:achievements/FU/MAT117",
+				"type": "clr:Achievement",
+				"clr:creator": {
+					"id": "acd:institutions/fu"
+				},
+				"clr:achievementType": "Course",
+				"clr:creditsAvailable": 3,
+				"clr:humanCode": "MAT 117",
+				"clr:name": "College Algebra",
+				"clr:description": "Linear functions, quadratic functions, general polynomial functions, rational functions, systems of linear equations, logarithmic and exponential functions."
+			},
+			{
+				"id": "acd:achievements/FU/ENG101",
+				"type": "clr:Achievement",
+				"clr:creator": {
+					"id": "acd:institutions/fu"
+				},
+				"clr:achievementType": "Course",
+				"clr:creditsAvailable": 3,
+				"clr:humanCode": "ENG 101",
+				"clr:name": "First-Year Composition",
+				"clr:description": "Discovers, organizes and develops ideas in relation to the writer's purpose, subject and audience. Emphasizes modes of written discourse and effective use of rhetorical principles."
+			},
+			{
+				"id": "acd:achievements/FU/BIO100",
+				"type": "clr:Achievement",
+				"clr:creator": {
+					"id": "acd:institutions/fu"
+				},
+				"clr:achievementType": "Course",
+				"clr:creditsAvailable": 4,
+				"clr:humanCode": "BIO 100",
+				"clr:name": "The Living World",
+				"clr:description": "Principles of biology. Cannot be used for major credit in the biological sciences."
+			},
+			{
+				"id": "acd:achievements/FU/ECN211",
+				"type": "clr:Achievement",
+				"clr:creator": {
+					"id": "acd:institutions/fu"
+				},
+				"clr:achievementType": "Course",
+				"clr:creditsAvailable": 4,
+				"clr:humanCode": "ECN 211",
+				"clr:name": "Macroeconomic Principles",
+				"clr:description": "Introductory course in macroeconomics. Topics include the measurement and modeling of output, national income, inflation and unemployment; the determinants of cross-country differences in income; the functions of money and the banking system; the causes of and policy responses to recessions; the effect of monetary and fiscal policy on interest rates and national income."
+			},
+			{
+				"id": "acd:achievements/FU/SPA101",
+				"type": "clr:Achievement",
+				"clr:creator": {
+					"id": "acd:institutions/fu"
+				},
+				"clr:achievementType": "Course",
+				"clr:creditsAvailable": 4,
+				"clr:humanCode": "SPA 101",
+				"clr:name": "Elementary Spanish I",
+				"clr:description": "Fundamentals of the language. Emphasizes listening, speaking, reading, and writing."
+			},
+			{
+				"id": "acd:achievements/UNCC/CHEM1251",
+				"type": "clr:Achievement",
+				"clr:creator": {
+					"id": "acd:institutions/uncc"
+				},
+				"clr:achievementType": "Course",
+				"clr:creditsAvailable": 3,
+				"clr:humanCode": "CHEM 1251",
+				"clr:name": "General Chemistry I",
+				"clr:description": "This course provides an introduction to the fundamental principles and theories of chemistry."
+			},
+			{
+				"id": "acd:achievements/UNCC/CHEM1251L",
+				"type": "clr:Achievement",
+				"clr:creator": {
+					"id": "acd:institutions/uncc"
+				},
+				"clr:achievementType": "Course",
+				"clr:creditsAvailable": 1,
+				"clr:humanCode": "CHEM 1251L",
+				"clr:name": "General Chemistry I Laboratory",
+				"clr:description": "This laboratory course complements the concepts learned in General Chemistry I with hands-on experiments and practical applications."
+			},
+			{
+				"id": "acd:achievements/UNCC/MATH1241",
+				"type": "clr:Achievement",
+				"clr:creator": {
+					"id": "acd:institutions/uncc"
+				},
+				"clr:achievementType": "Course",
+				"clr:creditsAvailable": 3,
+				"clr:humanCode": "MATH 1241",
+				"clr:name": "Calculus I",
+				"clr:description": "Calculus I introduces the basic principles and techniques of calculus, including limits, derivatives, and integrals."
+			},
+			{
+				"id": "acd:achievements/UNCC/MATH1242",
+				"type": "clr:Achievement",
+				"clr:creator": {
+					"id": "acd:institutions/uncc"
+				},
+				"clr:achievementType": "Course",
+				"clr:creditsAvailable": 3,
+				"clr:humanCode": "MATH 1242",
+				"clr:name": "Calculus II",
+				"clr:description": "Calculus II builds upon the concepts learned in Calculus I, covering topics such as integration techniques, applications of integration, and infinite series."
+			},
+			{
+				"id": "acd:achievements/UNCC/MATH2171",
+				"type": "clr:Achievement",
+				"clr:creator": {
+					"id": "acd:institutions/uncc"
+				},
+				"clr:achievementType": "Course",
+				"clr:creditsAvailable": 3,
+				"clr:humanCode": "MATH 2171",
+				"clr:name": "Differential Equations",
+				"clr:description": "Differential Equations explores the methods and techniques for solving ordinary differential equations and their applications."
+			},
+			{
+				"id": "acd:achievements/UNCC/MATH2241",
+				"type": "clr:Achievement",
+				"clr:creator": {
+					"id": "acd:institutions/uncc"
+				},
+				"clr:achievementType": "Course",
+				"clr:creditsAvailable": 3,
+				"clr:humanCode": "MATH 2241",
+				"clr:name": "Calculus III",
+				"clr:description": "Calculus III extends the concepts of calculus to higher dimensions, including multivariable calculus, vector calculus, and partial derivatives."
+			},
+			{
+				"id": "acd:achievements/UNCC/PHYS2101",
+				"type": "clr:Achievement",
+				"clr:creator": {
+					"id": "acd:institutions/uncc"
+				},
+				"clr:achievementType": "Course",
+				"clr:creditsAvailable": 3,
+				"clr:humanCode": "PHYS 2101",
+				"clr:name": "Physics for Science and Engineering I",
+				"clr:description": "Physics for Science and Engineering I covers the principles of classical mechanics, including kinematics, dynamics, and energy."
+			},
+			{
+				"id": "acd:achievements/UNCC/PHYS2101L",
+				"type": "clr:Achievement",
+				"clr:creator": {
+					"id": "acd:institutions/uncc"
+				},
+				"clr:achievementType": "Course",
+				"clr:creditsAvailable": 1,
+				"clr:humanCode": "PHYS 2101L",
+				"clr:name": "Physics for Science and Engineering I Laboratory",
+				"clr:description": "The laboratory component of Physics for Science and Engineering I focuses on experimental techniques and data analysis in classical mechanics."
+			},
+			{
+				"id": "acd:achievements/UNCC/PHYS2102",
+				"type": "clr:Achievement",
+				"clr:creator": {
+					"id": "acd:institutions/uncc"
+				},
+				"clr:achievementType": "Course",
+				"clr:creditsAvailable": 3,
+				"clr:humanCode": "PHYS 2102",
+				"clr:name": "Physics for Science and Engineering II",
+				"clr:description": "Physics for Science and Engineering II continues the study of classical physics, covering topics such as electromagnetism, optics, and modern physics."
+			},
+			{
+				"id": "acd:achievements/UNCC/PHYS2102L",
+				"type": "clr:Achievement",
+				"clr:creator": {
+					"id": "acd:institutions/uncc"
+				},
+				"clr:achievementType": "Course",
+				"clr:creditsAvailable": 1,
+				"clr:humanCode": "PHYS 2102L",
+				"clr:name": "Physics for Science and Engineering II Laboratory",
+				"clr:description": "The laboratory component of Physics for Science and Engineering II focuses on hands-on experiments and data analysis in electromagnetism, optics, and modern physics."
+			},
+			{
+				"id": "acd:achievements/UNCC/STAT3128",
+				"type": "clr:Achievement",
+				"clr:creator": {
+					"id": "acd:institutions/uncc"
+				},
+				"clr:achievementType": "Course",
+				"clr:creditsAvailable": 3,
+				"clr:humanCode": "STAT 3128",
+				"clr:name": "Probability and Statistics for Engineers",
+				"clr:description": "Probability and Statistics for Engineers introduces the fundamental concepts and techniques for analyzing and interpreting data in engineering applications."
+			},
+			{
+				"id": "acd:achievements/UNCC/GEOL1200",
+				"type": "clr:Achievement",
+				"clr:creator": {
+					"id": "acd:institutions/uncc"
+				},
+				"clr:achievementType": "Course",
+				"clr:creditsAvailable": 3,
+				"clr:humanCode": "GEOL 1200",
+				"clr:name": "Physical Geology",
+				"clr:description": "Physical Geology provides an introduction to the study of Earth's materials, processes, and structures, including rocks, minerals, plate tectonics, and geological hazards."
+			},
+			{
+				"id": "acd:achievements/UNCC/ENGR1201",
+				"type": "clr:Achievement",
+				"clr:creator": {
+					"id": "acd:institutions/uncc"
+				},
+				"clr:achievementType": "Course",
+				"clr:creditsAvailable": 2,
+				"clr:humanCode": "ENGR 1201",
+				"clr:name": "Introduction to Engineering Practices and Principles I",
+				"clr:description": "This course provides an introduction to the fundamental principles and practices of engineering, covering topics such as problem-solving techniques, engineering ethics, teamwork, and communication skills."
+			},
+			{
+				"id": "acd:achievements/UNCC/ENGR1202",
+				"type": "clr:Achievement",
+				"clr:creator": {
+					"id": "acd:institutions/uncc"
+				},
+				"clr:achievementType": "Course",
+				"clr:creditsAvailable": 2,
+				"clr:humanCode": "ENGR 1202",
+				"clr:name": "Introduction to Engineering Practices and Principles II",
+				"clr:description": "Building upon the concepts covered in Introduction to Engineering Practices and Principles I, this course focuses on advanced engineering principles, design processes, and professional practices."
+			},
+			{
+				"id": "acd:achievements/UNCC/CEGR2102",
+				"type": "clr:Achievement",
+				"clr:creator": {
+					"id": "acd:institutions/uncc"
+				},
+				"clr:achievementType": "Course",
+				"clr:creditsAvailable": 3,
+				"clr:humanCode": "CEGR 2102",
+				"clr:name": "Engineering Economic Analysis",
+				"clr:description": "This course introduces the principles of engineering economics, including methods for analyzing costs, benefits, and decision-making in engineering projects and investments."
+			},
+			{
+				"id": "acd:achievements/UNCC/CEGR2103",
+				"type": "clr:Achievement",
+				"clr:creator": {
+					"id": "acd:institutions/uncc"
+				},
+				"clr:achievementType": "Course",
+				"clr:creditsAvailable": 3,
+				"clr:humanCode": "CEGR 2103",
+				"clr:name": "Surveying and Technical Drawing",
+				"clr:description": "Surveying and Technical Drawing course covers the principles and techniques of land surveying, including measurement methods, equipment usage, and drafting skills for engineering applications."
+			},
+			{
+				"id": "acd:achievements/UNCC/CEGR2154",
+				"type": "clr:Achievement",
+				"clr:creator": {
+					"id": "acd:institutions/uncc"
+				},
+				"clr:achievementType": "Course",
+				"clr:creditsAvailable": 2,
+				"clr:humanCode": "CEGR 2154",
+				"clr:name": "Design Project Lab",
+				"clr:description": "In this lab-based course, students work on engineering design projects to gain practical experience in problem-solving, teamwork, project management, and technical communication."
+			},
+			{
+				"id": "acd:achievements/UNCC/CEGR3111",
+				"type": "clr:Achievement",
+				"clr:creator": {
+					"id": "acd:institutions/uncc"
+				},
+				"clr:achievementType": "Course",
+				"clr:creditsAvailable": 3,
+				"clr:humanCode": "CEGR 3111",
+				"clr:name": "Construction Engineering",
+				"clr:description": "This course focuses on the principles and practices of construction engineering, including project planning, cost estimation, construction methods, and safety considerations."
+			},
+			{
+				"id": "acd:achievements/UNCC/CEGR3122",
+				"type": "clr:Achievement",
+				"clr:creator": {
+					"id": "acd:institutions/uncc"
+				},
+				"clr:achievementType": "Course",
+				"clr:creditsAvailable": 3,
+				"clr:humanCode": "CEGR 3122",
+				"clr:name": "Structural Analysis",
+				"clr:description": "Structural Analysis course covers the principles of analyzing and designing structures, including structural loads, determinacy, structural systems, and analysis methods."
+			},
+			{
+				"id": "acd:achievements/UNCC/CEGR3141",
+				"type": "clr:Achievement",
+				"clr:creator": {
+					"id": "acd:institutions/uncc"
+				},
+				"clr:achievementType": "Course",
+				"clr:creditsAvailable": 3,
+				"clr:humanCode": "CEGR 3141",
+				"clr:name": "Introduction to Environmental Engineering",
+				"clr:description": "This course provides an introduction to environmental engineering principles, including water and air pollution, waste management, environmental regulations, and sustainable practices."
+			},
+			{
+				"id": "acd:achievements/UNCC/CEGR3143",
+				"type": "clr:Achievement",
+				"clr:creator": {
+					"id": "acd:institutions/uncc"
+				},
+				"clr:achievementType": "Course",
+				"clr:creditsAvailable": 3,
+				"clr:humanCode": "CEGR 3143",
+				"clr:name": "Hydraulics and Hydrology",
+				"clr:description": "Hydraulics and Hydrology course focuses on the principles of fluid flow and water resources, including open channel flow, pipe flow, hydrologic cycle, and rainfall-runoff analysis."
+			},
+			{
+				"id": "acd:achievements/UNCC/CEGR3153",
+				"type": "clr:Achievement",
+				"clr:creator": {
+					"id": "acd:institutions/uncc"
+				},
+				"clr:achievementType": "Course",
+				"clr:creditsAvailable": 2,
+				"clr:humanCode": "CEGR 3153",
+				"clr:name": "Transportation Laboratory",
+				"clr:description": "Transportation Laboratory course provides hands-on experience in conducting experiments and analyzing data related to transportation engineering, including traffic flow, transportation systems, and safety analysis."
+			},
+			{
+				"id": "acd:achievements/UNCC/CEGR3155",
+				"type": "clr:Achievement",
+				"clr:creator": {
+					"id": "acd:institutions/uncc"
+				},
+				"clr:achievementType": "Course",
+				"clr:creditsAvailable": 2,
+				"clr:humanCode": "CEGR 3155",
+				"clr:name": "Environmental Laboratory",
+				"clr:description": "Environmental Laboratory course focuses on laboratory techniques and experiments related to environmental engineering, including water quality analysis, air pollution measurements, and environmental monitoring."
+			},
+			{
+				"id": "acd:achievements/UNCC/CEGR3161",
+				"type": "clr:Achievement",
+				"clr:creator": {
+					"id": "acd:institutions/uncc"
+				},
+				"clr:achievementType": "Course",
+				"clr:creditsAvailable": 3,
+				"clr:humanCode": "CEGR 3161",
+				"clr:name": "Transportation Engineering I",
+				"clr:description": "Transportation Engineering I course covers the principles and methods of transportation planning, design, and analysis, including traffic flow theory, capacity analysis, and transportation modeling."
+			},
+			{
+				"id": "acd:achievements/UNCC/CEGR3201",
+				"type": "clr:Achievement",
+				"clr:creator": {
+					"id": "acd:institutions/uncc"
+				},
+				"clr:achievementType": "Course",
+				"clr:creditsAvailable": 3,
+				"clr:humanCode": "CEGR 3201",
+				"clr:name": "Systems and Design",
+				"clr:description": "Systems and Design course introduces the concepts of engineering systems, including system modeling, optimization, decision-making, and design principles for complex engineering systems."
+			},
+			{
+				"id": "acd:achievements/UNCC/CEGR3255",
+				"type": "clr:Achievement",
+				"clr:creator": {
+					"id": "acd:institutions/uncc"
+				},
+				"clr:achievementType": "Course",
+				"clr:creditsAvailable": 2,
+				"clr:humanCode": "CEGR 3255",
+				"clr:name": "Structural Materials I Laboratory",
+				"clr:description": "Structural Materials I Laboratory provides hands-on experience in testing and evaluating structural materials, including concrete, steel, and timber, to understand their mechanical properties and behavior."
+			},
+			{
+				"id": "acd:achievements/UNCC/CEGR3258",
+				"type": "clr:Achievement",
+				"clr:creator": {
+					"id": "acd:institutions/uncc"
+				},
+				"clr:achievementType": "Course",
+				"clr:creditsAvailable": 2,
+				"clr:humanCode": "CEGR 3258",
+				"clr:name": "Geotechnical Laboratory",
+				"clr:description": "Geotechnical Laboratory course focuses on laboratory testing and analysis of soil and rock properties, including soil classification, compaction, permeability, and shear strength."
+			},
+			{
+				"id": "acd:achievements/UNCC/CEGR3278",
+				"type": "clr:Achievement",
+				"clr:creator": {
+					"id": "acd:institutions/uncc"
+				},
+				"clr:achievementType": "Course",
+				"clr:creditsAvailable": 3,
+				"clr:humanCode": "CEGR 3278",
+				"clr:name": "Geotechnical Engineering",
+				"clr:description": "Geotechnical Engineering course covers the principles of soil mechanics and foundation design, including soil properties, site investigation, bearing capacity, and slope stability analysis."
+			},
+			{
+				"id": "acd:achievements/UNCC/ENGR3295",
+				"type": "clr:Achievement",
+				"clr:creator": {
+					"id": "acd:institutions/uncc"
+				},
+				"clr:achievementType": "Course",
+				"clr:creditsAvailable": 1,
+				"clr:humanCode": "ENGR 3295",
+				"clr:name": "Multidisciplinary Professional Development",
+				"clr:description": "Multidisciplinary Professional Development course focuses on the development of professional skills, including teamwork, communication, project management, and ethical decision-making."
+			},
+			{
+				"id": "acd:achievements/UNCC/MEGR2141",
+				"type": "clr:Achievement",
+				"clr:creator": {
+					"id": "acd:institutions/uncc"
+				},
+				"clr:achievementType": "Course",
+				"clr:creditsAvailable": 3,
+				"clr:humanCode": "MEGR 2141",
+				"clr:name": "Engineering Mechanics I",
+				"clr:description": "Engineering Mechanics I course introduces the principles of statics and dynamics, including the analysis of forces, moments, equilibrium, and motion of particles and rigid bodies."
+			},
+			{
+				"id": "acd:achievements/UNCC/MEGR2144",
+				"type": "clr:Achievement",
+				"clr:creator": {
+					"id": "acd:institutions/uncc"
+				},
+				"clr:achievementType": "Course",
+				"clr:creditsAvailable": 3,
+				"clr:humanCode": "MEGR 2144",
+				"clr:name": "Introduction to Solid Mechanics",
+				"clr:description": "Introduction to Solid Mechanics course covers the principles of stress and strain analysis, axial loading, torsion, bending, and deflection of structural members and their applications in engineering design."
+			},
+			{
+				"id": "acd:achievements/UNCC/CEGR4161",
+				"type": "clr:Achievement",
+				"clr:creator": {
+					"id": "acd:institutions/uncc"
+				},
+				"clr:achievementType": "Course",
+				"clr:creditsAvailable": 3,
+				"clr:humanCode": "CEGR 4161",
+				"clr:name": "Advanced Traffic Engineering",
+				"clr:description": "Advanced Traffic Engineering course explores advanced topics in transportation engineering, including traffic flow modeling, traffic control systems, intelligent transportation systems, and transportation planning."
+			},
+			{
+				"id": "acd:achievements/UNCC/CEGR4270",
+				"type": "clr:Achievement",
+				"clr:creator": {
+					"id": "acd:institutions/uncc"
+				},
+				"clr:achievementType": "Course",
+				"clr:creditsAvailable": 3,
+				"clr:humanCode": "CEGR 4270",
+				"clr:name": "Earth Pressures and Retaining Structures",
+				"clr:description": "Earth Pressures and Retaining Structures course focuses on the analysis and design of retaining walls and other geotechnical structures, including soil mechanics, lateral earth pressure, and stability analysis."
+			},
+			{
+				"id": "acd:achievements/UNCC/MEGR3121",
+				"type": "clr:Achievement",
+				"clr:creator": {
+					"id": "acd:institutions/uncc"
+				},
+				"clr:achievementType": "Course",
+				"clr:creditsAvailable": 3,
+				"clr:humanCode": "MEGR 3121",
+				"clr:name": "Dynamics Systems I",
+				"clr:description": "Dynamics Systems I course covers the principles of dynamic systems, including kinematics, kinetics, and vibration analysis of mechanical systems, and their applications in engineering design and analysis."
+			},
+			{
+				"id": "acd:achievements/UNCC/CEGR3225",
+				"type": "clr:Achievement",
+				"clr:creator": {
+					"id": "acd:institutions/uncc"
+				},
+				"clr:achievementType": "Course",
+				"clr:creditsAvailable": 3,
+				"clr:humanCode": "CEGR 3225",
+				"clr:name": "Reinforced Concrete Design I",
+				"clr:description": "Reinforced Concrete Design I course focuses on the principles and design of reinforced concrete structures, including analysis of beams, columns, slabs, and footings using ACI (American Concrete Institute) codes and standards."
+			},
+			{
+				"id": "acd:achievements/UNCC/GEOL3130",
+				"type": "clr:Achievement",
+				"clr:creator": {
+					"id": "acd:institutions/uncc"
+				},
+				"clr:achievementType": "Course",
+				"clr:creditsAvailable": 4,
+				"clr:humanCode": "GEOL 3130",
+				"clr:name": "Structural Geology",
+				"clr:description": "Structural Geology course explores the deformation and structures of rocks, including faults, folds, and geological mapping techniques, to understand the tectonic processes and geological history of Earth's crust."
+			},
+			{
+				"id": "acd:achievements/UNCC/GEOG3115",
+				"type": "clr:Achievement",
+				"clr:creator": {
+					"id": "acd:institutions/uncc"
+				},
+				"clr:achievementType": "Course",
+				"clr:creditsAvailable": 3,
+				"clr:humanCode": "GEOG 3115",
+				"clr:name": "Urban Transportation Problems",
+				"clr:description": "Urban Transportation Problems course examines transportation issues and challenges in urban areas, including traffic congestion, public transportation systems, urban planning, and sustainable transportation solutions."
+			},
+			{
+				"id": "acd:achievements/UNCC/GEOG4160",
+				"type": "clr:Achievement",
+				"clr:creator": {
+					"id": "acd:institutions/uncc"
+				},
+				"clr:achievementType": "Course",
+				"clr:creditsAvailable": 3,
+				"clr:humanCode": "GEOG 4160",
+				"clr:name": "The Geography of Transportation Systems",
+				"clr:description": "The Geography of Transportation Systems course explores the relationship between geography and transportation, including spatial patterns of transportation networks, logistics, global supply chains, and the impact on the economy and society."
+			},
+			{
+				"id": "acd:achievements/UNCC/BSCE",
+				"type": "clr:Achievement",
+				"clr:creator": {
+					"id": "acd:institutions/uncc"
+				},
+				"clr:achievementType": "Degree",
+				"clr:name": "Civil Engineering",
+				"clr:description": "Bachelor of Science in Civil Engineering"
+			},
+			{
+				"id": "acd:achievements/NCEES/exams/FE",
+				"type": "clr:Achievement",
+				"clr:creator": {
+					"id": "acd:institutions/ncees"
+				},
+				"clr:achievementType": "Assessment",
+				"clr:name": "Fundementals of Engineering (FE) Exam",
+				"clr:description": "The FE exam is generally your first step in the process of becoming a licensed professional engineer (P.E.). It is designed for recent graduates and students who are close to finishing an undergraduate engineering degree from an EAC/ABET-accredited program. The FE exam includes 110 questions. The exam appointment time is 6 hours long."
+			},
+			{
+				"id": "acd:achievements/NCEES/exams/PE",
+				"type": "clr:Achievement",
+				"clr:creator": {
+					"id": "acd:institutions/ncees"
+				},
+				"clr:achievementType": "Assessment",
+				"clr:name": "Principles and Practice of Engineering (PE) Exam",
+				"clr:description": "The PE exam tests for a minimum level of competency in a particular engineering discipline. It is designed for engineers who have gained a minimum of four years post-college work experience in their chosen engineering discipline. The exam includes 80 questions. The exam appointment time is 9 hours."
+			},
+			{
+				"id": "acd:achievements/NCEES/licensure/Civil",
+				"type": "clr:Achievement",
+				"clr:creator": {
+					"id": "acd:institutions/ncees"
+				},
+				"clr:achievementType": "License",
+				"clr:name": "Civil Engineering License",
+				"clr:description": "Entitlement to practice Civil Engineering."
+			},
+			{
+				"id": "acd:achievements/NCEES/licensure/AgriculturalAndBiological",
+				"type": "clr:Achievement",
+				"clr:creator": {
+					"id": "acd:institutions/ncees"
+				},
+				"clr:achievementType": "License",
+				"clr:name": "Agricultural and Biological Engineering License",
+				"clr:description": "Entitlement to practice Agricultural and Biological Engineering."
+			},
+			{
+				"id": "acd:achievements/NCEES/licensure/Architectural",
+				"type": "clr:Achievement",
+				"clr:creator": {
+					"id": "acd:institutions/ncees"
+				},
+				"clr:achievementType": "License",
+				"clr:name": "Architectural Engineering License",
+				"clr:description": "Entitlement to practice Architectural Engineering."
+			},
+			{
+				"id": "acd:achievements/NCEES/licensure/Chemical",
+				"type": "clr:Achievement",
+				"clr:creator": {
+					"id": "acd:institutions/ncees"
+				},
+				"clr:achievementType": "License",
+				"clr:name": "Chemical Engineering License",
+				"clr:description": "Entitlement to practice Chemical Engineering."
+			},
+			{
+				"id": "acd:achievements/NCEES/licensure/ControlSystems",
+				"type": "clr:Achievement",
+				"clr:creator": {
+					"id": "acd:institutions/ncees"
+				},
+				"clr:achievementType": "License",
+				"clr:name": "Control Systems Engineering License",
+				"clr:description": "Entitlement to practice Control Systems Engineering."
+			},
+			{
+				"id": "acd:achievements/NCEES/licensure/ElectricalAndComputer",
+				"type": "clr:Achievement",
+				"clr:creator": {
+					"id": "acd:institutions/ncees"
+				},
+				"clr:achievementType": "License",
+				"clr:name": "Electrical and Computer Engineering License",
+				"clr:description": "Entitlement to practice Electrical and Computer Engineering."
+			},
+			{
+				"id": "acd:achievements/NCEES/licensure/Environmental",
+				"type": "clr:Achievement",
+				"clr:creator": {
+					"id": "acd:institutions/ncees"
+				},
+				"clr:achievementType": "License",
+				"clr:name": "Environmental Engineering License",
+				"clr:description": "Entitlement to practice Environmental Engineering."
+			},
+			{
+				"id": "acd:achievements/NCEES/licensure/FireProtection",
+				"type": "clr:Achievement",
+				"clr:creator": {
+					"id": "acd:institutions/ncees"
+				},
+				"clr:achievementType": "License",
+				"clr:name": "Fire Protection Engineering License",
+				"clr:description": "Entitlement to practice Fire Protection Engineering."
+			},
+			{
+				"id": "acd:achievements/NCEES/licensure/Industrial",
+				"type": "clr:Achievement",
+				"clr:creator": {
+					"id": "acd:institutions/ncees"
+				},
+				"clr:achievementType": "License",
+				"clr:name": "Industrial Engineering License",
+				"clr:description": "Entitlement to practice Industrial and Systems Engineering."
+			},
+			{
+				"id": "acd:achievements/NCEES/licensure/Mechanical",
+				"type": "clr:Achievement",
+				"clr:creator": {
+					"id": "acd:institutions/ncees"
+				},
+				"clr:achievementType": "License",
+				"clr:name": "Mechanical Engineering License",
+				"clr:description": "Entitlement to practice Mechanical Engineering."
+			},
+			{
+				"id": "acd:achievements/NCEES/licensure/Nuclear",
+				"type": "clr:Achievement",
+				"clr:creator": {
+					"id": "acd:institutions/ncees"
+				},
+				"clr:achievementType": "License",
+				"clr:name": "Nuclear Engineering License",
+				"clr:description": "Entitlement to practice Nuclear Engineering."
+			},
+			{
+				"id": "acd:achievements/NCEES/licensure/Structural",
+				"type": "clr:Achievement",
+				"clr:creator": {
+					"id": "acd:institutions/ncees"
+				},
+				"clr:achievementType": "License",
+				"clr:name": "Structural Engineering License",
+				"clr:description": "Entitlement to practice Structural Engineering."
+			},
+			{
+				"id": "acd:achievements/NCSITE/awards/contributiontotransportation",
+				"type": "clr:Achievement",
+				"clr:creator": {
+					"id": "acd:institutions/ncsite"
+				},
+				"clr:achievementType": "Award",
+				"clr:name": "Contribution to Transportation Award",
+				"clr:description": "The NCSITE (North Carolina Section of the Institute of Transportation Engineers) Contribution to Transportation Award recognizes individuals or organizations that have made significant and impactful contributions to the field of transportation in North Carolina. This prestigious award honors those who have demonstrated outstanding dedication, leadership, and innovation in improving the transportation infrastructure, safety, and mobility within the state, ultimately enhancing the quality of life for its residents."
+			},
+			{
+				"id": "acd:achievements/NCSITE/awards/professionalimage",
+				"type": "clr:Achievement",
+				"clr:creator": {
+					"id": "acd:institutions/ncsite"
+				},
+				"clr:achievementType": "Award",
+				"clr:name": "Robert J. Dodge Professional Image Award",
+				"clr:description": "The Robert J. Dodge Professional Image Award is presented to an individual who exemplifies the highest standards of professionalism within the field of transportation. This award recognizes those who consistently demonstrate integrity, ethics, and a commitment to promoting a positive image of the transportation industry."
+			},
+			{
+				"id": "acd:achievements/NCSITE/awards/lifetimeservice",
+				"type": "clr:Achievement",
+				"clr:creator": {
+					"id": "acd:institutions/ncsite"
+				},
+				"clr:achievementType": "Award",
+				"clr:name": "R.V. Moss Lifetime Service Award",
+				"clr:description": "The R.V. Moss Lifetime Service Award is bestowed upon an individual who has dedicated a significant portion of their career to the transportation profession. It acknowledges a lifetime of service, leadership, and contributions that have left a lasting impact on the transportation community in North Carolina."
+			},
+			{
+				"id": "acd:achievements/NCSITE/awards/trailblazer",
+				"type": "clr:Achievement",
+				"clr:creator": {
+					"id": "acd:institutions/ncsite"
+				},
+				"clr:achievementType": "Award",
+				"clr:name": "Emily Blount Trailblazer Award",
+				"clr:description": "The Emily Blount Trailblazer Award recognizes a visionary individual who has broken new ground and pioneered innovative solutions in the transportation industry. This award celebrates those who have boldly charted new paths and inspired positive change in the field."
+			},
+			{
+				"id": "acd:achievements/NCSITE/awards/technicalexcellence",
+				"type": "clr:Achievement",
+				"clr:creator": {
+					"id": "acd:institutions/ncsite"
+				},
+				"clr:achievementType": "Award",
+				"clr:name": "Jay Quinn Technical Excellence Award",
+				"clr:description": "The Jay Quinn Technical Excellence Award honors an individual or team that has exhibited exceptional technical prowess and expertise in transportation-related projects or initiatives. It highlights outstanding technical achievements that have advanced the field."
+			},
+			{
+				"id": "acd:achievements/NCSITE/awards/presidents",
+				"type": "clr:Achievement",
+				"clr:creator": {
+					"id": "acd:institutions/ncsite"
+				},
+				"clr:achievementType": "Award",
+				"clr:name": "President's Award",
+				"clr:description": "The President's Award is presented at the discretion of the NCSITE President to an individual or group who has made a significant impact on the organization during the President's term. It recognizes extraordinary contributions to the success and mission of NCSITE."
+			},
+			{
+				"id": "acd:achievements/NCSITE/awards/youngprofessional",
+				"type": "clr:Achievement",
+				"clr:creator": {
+					"id": "acd:institutions/ncsite"
+				},
+				"clr:achievementType": "Award",
+				"clr:name": "Todd Delk Young Professional Award",
+				"clr:description": "The Todd Delk Young Professional Award celebrates the accomplishments and potential of a young transportation professional who has shown exceptional promise and dedication early in their career. It highlights the next generation of leaders in the field."
+			},
+			{
+				"id": "acd:achievements/NCSITE/awards/newmember",
+				"type": "clr:Achievement",
+				"clr:creator": {
+					"id": "acd:institutions/ncsite"
+				},
+				"clr:achievementType": "Award",
+				"clr:name": "New Member Award",
+				"clr:description": "The New Member Award acknowledges and encourages the active involvement of new members within NCSITE. It recognizes the enthusiasm, participation, and contributions of individuals who have recently joined the organization."
+			},
+			{
+				"id": "acd:achievements/NCSITE/awards/outstandingproject",
+				"type": "clr:Achievement",
+				"clr:creator": {
+					"id": "acd:institutions/ncsite"
+				},
+				"clr:achievementType": "Award",
+				"clr:name": "Outstanding Project Award",
+				"clr:description": "The Outstanding Project Award is presented to a transportation-related project that stands out for its excellence, innovation, and positive impact on the community. This award highlights projects that have demonstrated exceptional planning, design, and execution."
+			},
+			{
+				"id": "acd:achievements/ASCE/awards/ocea",
+				"type": "clr:Achievement",
+				"clr:creator": {
+					"id": "acd:institutions/asce"
+				},
+				"clr:achievementType": "Award",
+				"clr:name": "Outstanding Civil Engineering Achievement",
+				"clr:description": "Established in 1960, this prestigious ASCE award honors the project that best illustrates superior civil engineering skills and represents a significant contribution to civil engineering progress and society. Honoring an overall project rather than an individual, the award celebrates the contributions of many engineers."
+			},
+			{
+				"id": "acd:achievements/ASCENC/awards/ceoftheyear",
+				"type": "clr:Achievement",
+				"clr:creator": {
+					"id": "acd:institutions/ascenc"
+				},
+				"clr:achievementType": "Award",
+				"clr:name": "Civil Engineer of the Year Award",
+				"clr:description": "The Civil Engineer of the Year Award recognizes those who showed excellence in civil engineering in the state of North Carolina."
+			},
+			{
+				"id": "acd:achievements/FU/BIDMMMMM",
+				"type": "clr:Achievement",
+				"clr:creator": {
+					"id": "acd:institutions/fu"
+				},
+				"clr:achievementType": "Supervised Experience",
+				"clr:name": "Bridge Inspection Drone Maintainer",
+				"clr:description": "Support the Maintainance Team for Bridges and Inspecting Drones in their responsibilites maintaining bridge inspection drones."
+			},
+			{
+				"id": "acd:achievements/FU/windmillspinnerII",
+				"type": "clr:Achievement",
+				"clr:creator": {
+					"id": "acd:institutions/fu"
+				},
+				"clr:achievementType": "Supervised Experience",
+				"clr:name": "Wind Mill Spinner",
+				"clr:description": "Responsibilites include repair and maintenance of legacy windmills off the coast of Bermuda."
+			},
+			{
+				"id": "acd:achievements/FU/bullfighting112",
+				"type": "clr:Achievement",
+				"clr:creator": {
+					"id": "acd:institutions/fu"
+				},
+				"clr:achievementType": "Supervised Experience",
+				"clr:name": "Bullfighting Lab Assistant",
+				"clr:description": "Design, service, and test mechanical bulls designed to promote a healthy sense of competition in disadvantaged middle schools."
+			},
+			{
+				"id": "acd:achievements/FU/awards/mostImprovedSportsmanship",
+				"type": "clr:Achievement",
+				"clr:creator": {
+					"id": "acd:institutions/fu"
+				},
+				"clr:achievementType": "Award",
+				"clr:name": "Most Improved Sportsmanship",
+				"clr:description": "The Most Improved Sportsmanship Award recognizes those who had such deplorably bad attitudes that by the end of the semester literally any positive energy was a HUGE improvement."
+			},
+			{
+				"id": "acd:achievements/FU/awards/tiniestMouse",
+				"type": "clr:Achievement",
+				"clr:creator": {
+					"id": "acd:institutions/fu"
+				},
+				"clr:achievementType": "Award",
+				"clr:name": "Tiniest Mouse",
+				"clr:description": "The Tiniest Mouse Award recognizes those who were like SOOOOOOO incredibly cute and tiny when they shape shifted into a mouse! Extra points are given for having large curious eyes and a cute curly little tail."
+			}
+		]
+	}
+]

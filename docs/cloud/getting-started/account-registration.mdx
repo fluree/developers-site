@@ -1,0 +1,50 @@
+---
+title: Account Registration
+sidebar_position: 0
+---
+
+import { FigureWithCaption } from "../../../src/components/FigureWithCaption.tsx";
+import createAccount from "../../../src/assets/nexus/getting-started/create-account.png";
+import oauthIcons from "../../../src/assets/nexus/getting-started/registration-oauth-icons.png";
+import Image from "@theme/IdealImage";
+import Admonition from "@theme/Admonition";
+
+
+If you don't yet have a Fluree account, make your way over to the [Account Registration page](https://data.flur.ee/signup) and follow the simple instructions below.
+
+<FigureWithCaption caption='The "Create an Account" Page'>
+  <Image
+    className="shadow-lg"
+    img={createAccount}
+    alt="Account Creation Page"
+  />
+</FigureWithCaption>
+
+<Admonition type="info">
+When selecting a username, keep in mind that this will become a public identifier for your account.
+
+In the future, if you make your datasets public or share them selectively with other individuals / organizations, this username will identify you (much like a GitHub username identifies you and your repositories on GitHub).
+</Admonition>
+
+## Email and Password
+
+If creating an account with an email and password, simply fill out the form entirely, and submit.
+Once your account is created, you will be authenticated and taken to the main dashboard.
+
+## Google or GitHub
+
+<Admonition type="info">
+If registering an account with Google or GitHub, keep in mind that subsequent login attempts will require you to use the same method.
+</Admonition>
+
+You can also register a new account using your Google or GitHub account by using the corresponding icons at the bottom of the form.
+
+<FigureWithCaption caption='Third-Party registration options. Google is on the left, GitHub on the right.'>
+  <Image
+    className="shadow-lg"
+    img={oauthIcons}
+    alt="Third Party Registration Options"
+  />
+</FigureWithCaption>
+
+After authenticating against either Google or GitHub, you will be prompted to supply a username for your account. After supplying a valid username, you will be taken to the main dashboard.

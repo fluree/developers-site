@@ -1,4 +1,13 @@
 {
-  "extends": "@tsconfig/docusaurus/tsconfig.json",
-  "include": ["src/", "static/scripts"]
+	"compilerOptions": {
+		"module": "ESNext",
+		"moduleResolution": "Node"
+	},
+	"extends": "./tsconfig/docusaurus.json",
+	"include": [
+		"./src/"
+	],
+	"exclude": [
+		"./static/scripts/**"
+	]
 }

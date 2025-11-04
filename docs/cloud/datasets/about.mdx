@@ -1,0 +1,73 @@
+---
+title: About
+---
+
+import { FigureWithCaption } from "../../../src/components/FigureWithCaption.tsx";
+import fullScreen from "@site/src/assets/nexus/dataset-management/about-screen-full.png";
+import tagsEdit from "@site/src/assets/nexus/dataset-management/about-screen-tags-1-edit.png";
+import tagsSaved from "@site/src/assets/nexus/dataset-management/about-screen-tags-2-saved.png";
+
+import Image from "@theme/IdealImage";
+import Admonition from "@theme/Admonition";
+
+<div class="overview">
+  The following is an overview of the `About` tab within the Dataset View.
+</div>
+
+---
+
+## Overview
+
+The `About` tab serves as a landing page for each individual dataset. It provides a high-level overview of the dataset, similar to how a `README` file in GitHub serves as a landing page for a repository.
+
+Because it is possible to share your dataset, either publicly or with particular collaborators, the `About` tab also serves as a place to provide information about the dataset to those who may not be familiar with it.
+
+Clicking on the `Edit` button will allow you to change the `Name`, `Description`, `Read Me`, and `Tags` fields.
+
+---
+
+<FigureWithCaption caption="A view of the About tab for an example dataset">
+  <div className="flex flex-row justify-around">
+    <Image
+      img={fullScreen}
+      alt="A view of the Dataset View with the About tab open"
+      className="shadow-xl"
+    />
+  </div>
+</FigureWithCaption>
+
+## Name, Description, & Read Me
+
+This is where you can edit the information associated with your dataset. The `Description` field is a simple text field, while the `Read Me` field allows Markdown.
+
+## Tags
+
+Tags can be used to help with dataset discovery.
+
+<FigureWithCaption>
+  <div className="flex flex-row justify-around">
+    <Image
+      img={tagsEdit}
+      alt="A view of the tags field in edit mode"
+      className="shadow-xl"
+    />
+  </div>
+</FigureWithCaption>
+
+Once you have typed in the text for your tag, press the Enter key to add it to the tag component. You will still need to click the `Save Changes` button to apply the change to the dataset.
+
+<FigureWithCaption>
+  <div className="flex flex-row justify-around">
+    <Image
+      img={tagsSaved}
+      alt="A view of the tags field in edit mode with a new tag added"
+      className="shadow-xl"
+    />
+  </div>
+</FigureWithCaption>
+
+## Collaborators
+
+The `Collaborators` section of the `About` tab provides a list of all of the users who have access to the dataset.
+
+Here the `Collaborators` section is read-only. To add or remove collaborators, you will need to use the [Settings](/docs/cloud/datasets/settings) tab.

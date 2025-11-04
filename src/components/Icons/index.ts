@@ -7,6 +7,7 @@ export * from "./CodeIcon";
 export * from "./SettingsIcon";
 export * from "./TableIcon";
 export * from "./ArrowTopRightOnBoxIcon";
+export * from "./ArrowIcon";
 
 export type IconProps = Pick<SVGProps<SVGSVGElement>, "height" | "width"> & {
   color?: string;

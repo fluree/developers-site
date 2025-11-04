@@ -1,0 +1,78 @@
+---
+title: View Data
+---
+
+import { FigureWithCaption } from "../../../src/components/FigureWithCaption.tsx";
+import ViewData0 from "../../../src/assets/nexus/view-data0.png";
+import ViewData1 from "../../../src/assets/nexus/view-data1.png";
+import ViewData2 from "../../../src/assets/nexus/view-data2.png";
+import ViewData3 from "../../../src/assets/nexus/view-data3.png";
+import Image from "@theme/IdealImage";
+import Admonition from "@theme/Admonition";
+
+<div class="overview">
+  The following is an overview of the View Data Screen within the Dataset
+  Management UI in Nexus.
+</div>
+
+---
+
+## Overview
+
+The _View Data Screen_ provides an interface to get high-level visibility into your dataset without having to write a single line of FlureeQL.
+
+To get started, select the `View Data` tab on the left panel of your dataset page (highlighted in red below).
+
+Utilize the widgets in the top panel (highlighted in purple) to explore time travel capabilities in Fluree. You can move forward, backward, track the date and time of your current view, and see the commit number on the right most side of the panel.
+
+You also have an option to view the Types or Properties of your dataset, the options for which are highlighted in green in the below screenshot.
+
+<FigureWithCaption caption="Select the Yeti option in the Types panel to see the data associated with your desired type.">
+  <div className="flex flex-row justify-around">
+    <Image
+      img={ViewData0}
+      alt="View data in your dataset"
+      className="w-8/9 shadow-xl"
+    />
+  </div>
+</FigureWithCaption>
+
+## Types
+
+On the left hand side of the View Data screen users will have the option to view the Types and Properties of their data. For example, by selecting the type `Yeti` (as shown in green below), you can see a tabular view of all data of type `Yeti` in your dataset.
+
+<FigureWithCaption caption="Select View Data icon on left panel to see the details of your current dataset">
+  <div className="flex flex-row justify-around">
+    <Image
+      img={ViewData1}
+      alt="View data in your dataset"
+      className="w-8/9 shadow-xl"
+    />
+  </div>
+</FigureWithCaption>
+
+As we can see in the top right most panel, the results displayed represent our dataset as of commit number 3. By fast forwarding to commit 4 (as shown below), we can see that our results are updated.
+
+<FigureWithCaption caption="As of commit number 4 we can see that the value associated with @id `andrew` has been added to our ledger as a @type Yeti">
+  <div className="flex flex-row justify-around">
+    <Image
+      img={ViewData2}
+      alt="View data in your dataset"
+      className="w-8/9 shadow-xl"
+    />
+  </div>
+</FigureWithCaption>
+
+## Properties
+
+You can view the Properties of your data in a similar way to the types, simply select the Properties tab in the left panel of the View Data screen to see your options. You can select multiple properties to display your data, and utilize the time travel widgets at the top of the screen to navigate the history of your dataset.
+
+<FigureWithCaption caption="The Properties selected on the left panel will display in the main section of the View Data screen (highlighted in yellow).">
+  <div className="flex flex-row justify-around">
+    <Image
+      img={ViewData3}
+      alt="View data in your dataset"
+      className="w-8/9 shadow-xl"
+    />
+  </div>
+</FigureWithCaption>

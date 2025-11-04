@@ -1,0 +1,791 @@
+import Admonition from "@theme/Admonition";
+import { FlureeMermaid } from "@site/src/components/Mermaid/FlureeMermaid.jsx";
+
+# Data Access Control
+
+Fluree's _data access control_ (DAC) system governs what data can be transacted
+and queried by users. It gives you very fine-grained control, down to policies
+like "admins can modify all values except other users' social security numbers"
+and "root users can modify all values, including social security number."
+
+For example, if your database contained a graph like this:
+
+<FlureeMermaid
+  chart={`graph TB
+  alice -->|ssn| ssn1(111-22-3333)
+  alice -->|givenName| Alice
+  alice -->|ex:role| admin
+  bob -->|ssn| 444-55-6666
+  bob -->|givenName| Bob
+  cara -->|ssn| 777-88-999
+  cara -->|givenName| Cara
+  classDef default ry:5,rx:5
+  `}
+/>
+
+`alice` would be able to update all values except the `ssn` of `bob` and `cara`.
+What `alice` can edit is highlighted in the graph below:
+
+<FlureeMermaid
+  chart={`graph TB
+  alice -->|ssn| ssn1(111-22-3333)
+  alice -->|givenName| Alice
+  alice -->|ex:role| admin
+  bob -->|ssn| 444-55-6666
+  bob -->|givenName| Bob
+  cara -->|ssn| 777-88-999
+  cara -->|givenName| Cara
+  
+  classDef default ry:5,rx:5
+  
+  classDef nodeAllowed fill:#f7ce39,stroke:#f7ce39
+  class ssn1,Alice,admin,Bob,Cara nodeAllowed
+  
+  linkStyle 0 stroke:#f7ce39
+  linkStyle 1 stroke:#f7ce39
+  linkStyle 2 stroke:#f7ce39
+  linkStyle 4 stroke:#f7ce39
+  linkStyle 6 stroke:#f7ce39
+`}
+/>
+
+This guide will show you how to make full use of the data access control system.
+By the end of this guide, you will understand:
+
+- How _data access policies_ specify the scope of operations that a user can
+  perform
+- The elements that compose a data access policy
+- How to create and modify policies
+
+## Data Access Control overview
+
+_Data access control_ is a general term for the methods data management systems
+uses to determine the allowed scope of a user's read and write operations.
+Different systems combine different tools and entities to define access. For
+example, with a file system you specify what user and group a file belongs to,
+along with read/write permissions at the user, group, and world levels.
+
+With Fluree, you define _data access policies_ (or just _data policies_) that
+specify role-based rules for what data can be transacted and what data can be
+returned by queries.
+
+This terminology might be familiar to you, and if it is, it might actually be
+misleading. This is because the systems that are usually associated with these
+terms have different internal models than Fluree, and those internal models give
+rise to interaction patterns that are different from the ones you'll be learning
+here. It's like the difference between gas and electric stoves: sure, they're
+both stoves, but you can't rely on the unconscious habits you've picked up for
+working with gas if you're working with electric. You'd end up with some burnt
+eggs or whatever.
+
+We're going to explore Fluree's internal model just enough for its interactions
+and behaviors to make sense. The internal model consists of two layers: the _DAC
+management layer_, and the _DAC processor_. The former governs how you create
+and update users, roles, and policies, and the latter governs the behavior that
+is produced when you apply policies to a query or transaction based on the user
+running that operation.
+
+The brief version of how these two work is that DAC management layer treats DAC
+data the same as any other data: it's all just RDF that you transact and query
+like anything else. It just happens that if the data you transact contains
+properties that the DAC processor "understands," then that data will be used to
+modify the behavior of the transactor and query engine.
+
+For example, if you transact a JSON-LD object that includes an `"f:role"`
+property, the DAC processor will treat it as a user with the given role when
+it's trying to figure out if that "user" has permission to modify some data. So
+when we say "the user `did:fluree:TfCzWTrXqF16hvKGjcYiLxRoYJ1B8a6UMH6` has the
+role `ex:moderatorRole`, it means that at some point the following JSON-LD got
+transacted:
+
+```json
+{
+  "@context": {
+    "id": "@id",
+    "f": "https://ns.flur.ee/ledger#",
+    "ex": "http://example.com/"
+  },
+  "id": "did:fluree:TfCzWTrXqF16hvKGjcYiLxRoYJ1B8a6UMH6",
+  "f:role": { "id": "ex:moderatorRole" }
+}
+```
+
+Let's explore DAC management and the DAC processor to fill out our understanding
+of how they work.
+
+## DAC management layer
+
+You create, read, update, and delete Fluree's DAC data the same way you perform
+these operations for the rest of your data, using the same transact and query
+APIs.
+
+You create a "user" by transacting a JSON-LD object that looks something like
+this:
+
+```json
+{
+  "@context": {
+    "id": "@id",
+    "f": "https://ns.flur.ee/ledger#",
+    "ex": "http://example.com/"
+  },
+  "id": "did:fluree:TfCzWTrXqF16hvKGjcYiLxRoYJ1B8a6UMH6",
+  "f:role": { "id": "ex:rootRole" }
+}
+```
+
+Or you could assign multiple roles to a user like this:
+
+```json
+{
+  "@context": {
+    "id": "@id",
+    "f": "https://ns.flur.ee/ledger#",
+    "ex": "http://example.com/"
+  },
+  "id": "did:fluree:TfCzWTrXqF16hvKGjcYiLxRoYJ1B8a6UMH6",
+  "f:role": [
+    {
+      "id": "ex:studentRole"
+    },
+    {
+      "id": "ex:teacherAssistantRole"
+    }
+  ]
+}
+```
+
+At this layer, it's all just data that's no more special than any other data.
+Fluree's transact and query APIs don't treat the `"f:role"` property any
+differently than any other property, and ids that are formatted like
+`did:fluree:xxxx` aren't special either. When you transact this JSON-LD object
+it gets stored as RDF triples alongside the rest of the data in your database.
+
+This differs from most other system. Other systems have distinct entity types for
+users, roles, and data access rules, along with entity-specific interfaces. For
+example, in postgres you have a `CREATE USER` command and a `CREATE ROLE`
+command as part of your toolkit for managing users and roles. By contrast, with
+Fluree data is data is data.
+
+Data policies are also defined using RDF data, and you add policies to Fluree by
+transacting JSON-LD just as you would with any other data. Here's an example of
+some JSON-LD that defines a data policy:
+
+```json
+{
+  "@context": {
+    "id": "@id",
+    "f": "https://ns.flur.ee/ledger#",
+    "ex": "http://example.com/"
+  },
+  "id": "ex:rootPolicy",
+  "type": ["f:Policy"],
+  "f:targetNode": {
+    "id": "f:allNodes"
+  },
+  "f:allow": [
+    {
+      "f:action": [
+        {
+          "id": "f:view"
+        },
+        {
+          "id": "f:modify"
+        }
+      ],
+      "f:targetRole": {
+        "id": "ex:rootRole"
+      },
+      "id": "ex:rootAccessAllow"
+    }
+  ]
+}
+```
+
+<Admonition type="note">
+  For now, ignore what this data actually means; we're just focusing on the fact
+  that this is just JSON-LD. Later we'll talk about how to interpret this data
+  and construct policies.
+</Admonition>
+
+Like other JSON-LD objects, this object has an `"id"` key. It also has a
+`"type"` key, which is aliased to `"rdf:type"`. But it's just data.
+
+Fluree's data access control implementation thus aligns with the spirit of RDF
+and the semantic web: pretty much everything, including access control policies,
+can be described using RDF. We don't need to establish some special kind of data
+entity to define access policies; we can use RDF like we do with everything
+else. It just happens that Fluree was written in such a way that its DAC
+processor can use this data to modify the behavior of the transactor and query
+engine.
+
+This is similar to how RDFS properties and SHACL rules can define behaviors for
+processing RDF data, while being implemented as RDF data. There's nothing
+inherently special about the `f:targetNode` predicate, just as there's nothing
+inherently special about the `rdf:type` predicate. It's the systems that
+interact with this data that give meaning to it by attaching behaviors to the
+data.
+
+## How the Data Access Control processor works
+
+Once you've added data that the DAC processor recognizes, it uses the data to
+drive the behavior of the transactor and the query engine. On the transactor
+side, it either allows or prevents users from modifying nodes and properties,
+and likewise on the query side it either allows or prevents users from reading
+nodes and properties. The rest of this guide explains how to define the behavior
+you want at a very fine-grained level.
+
+Fluree implements data access policies as subjects that have the following
+properties:
+
+- A `type` of `f:Policy`
+- One of `f:targetNode` or `f:targetClass`
+- One or both of `f:allow` and `f:property`
+
+(These properties are explained below.)
+
+A data access policy specifies the set of actions that users with a given role
+can perform on a given set of nodes. If you need finer-grained control, policies
+also let you specify the actions that roles can perform for node properties, and
+even the relationships that must hold between a user and a node's properties
+(for example, you can have a rule that states users can update a social security
+number for a node only if the IRI for the node is the same as the IRI for the
+user.)
+
+<Admonition type="note">
+  _Nodes_ are the subjects and objects in an RDF dataset. _Property_ is a
+  synonym for _predicate_.
+</Admonition>
+
+Let's use the example from earlier to get a high-level understanding of how the
+pieces fit together, then examine each piece in greater detail. Here's the
+JSON-LD for the data access policy:
+
+```json
+{
+  "@context": {
+    "id": "@id",
+    "f": "https://ns.flur.ee/ledger#",
+    "ex": "http://example.com/"
+  },
+  "id": "ex:rootPolicy",
+  "type": ["f:Policy"],
+  "f:targetNode": {
+    "id": "f:allNodes"
+  },
+  "f:allow": [
+    {
+      "f:action": [
+        {
+          "id": "f:view"
+        },
+        {
+          "id": "f:modify"
+        }
+      ],
+      "f:targetRole": {
+        "id": "ex:rootRole"
+      },
+      "id": "ex:rootAccessAllow"
+    }
+  ]
+}
+```
+
+`f:targetNode` specifies which nodes this policy applies to. In this case, its
+value is `{"id": "f:allNodes"}`, which is a value that Fluree ships with which
+means "all nodes in the database".
+
+`f:allow` specifies a set of roles, and the actions that users with those roles
+can take for the given set of nodes.
+
+The full meaning of this policy is, "users with the role `ex:rootRole` can view
+and modify all nodes."
+
+### How to specify users and roles for queries and transactions
+
+The DAC processor uses user and role data supplied under the `"opts"` key in
+your query or transaction to figure out how to apply policies. We'll use the
+term _Active Identity_ to refer to these values.
+
+If your `"opts"` key of your API call contains one or both of `"did"` and
+`"role"`, then that API call includes an Active Identity. If `"opts"` does not
+contain either of these values, then your API call does not include an Active
+Identity.
+
+Here's a query that specifies a role:
+
+```json
+{
+  "@context": {
+    "ex": "http://example.com/"
+  },
+  "select": {
+    "?s": ["*"]
+  },
+  "where": {
+    "@id": "?s",
+    "@type": "ex:Product"
+  },
+  "opts": {
+    "role": "ex:rootRole"
+  }
+}
+```
+
+When you specify a role like this, the DAC processor will use the associated
+policies to filter results so that they only contain nodes that that node is
+allowed to access. When there are no policies granting access to a node for the
+given role, then that node will be filtered out of the results.
+
+You can also specify a user for a query or transaction with the `"did"` key
+under `"opts"`:
+
+```json
+{
+  "@context": {
+    "ex": "http://example.com/"
+  },
+  "select": {
+    "?s": ["*"]
+  },
+  "where": {
+    "@id": "?s",
+    "@type": "ex:Product"
+  },
+  "opts": {
+    "did": "did:fluree:TfCzWTrXqF16hvKGjcYiLxRoYJ1B8a6UMH6",
+    "role": "ex:rootRole"
+  }
+}
+```
+
+This query specifies the role `"ex:rootRole"` as part of the Active Identity.
+When combined with the policy shown above, the DAC processor will allow the data
+selected by the query to be returned because the policy specifies that users
+with a role of `ex:rootRole` can view and modify all nodes.
+
+If you don't supply an Active Identity with your query or transaction, then
+Fluree doesn't apply any policies and defaults to granting full read and write
+access to your data.
+
+That's a broad outline of how policies and request data work together to produce
+behavior. Now let's look at each individual part.
+
+<Admonition type="note">
+Fluree makes it possible to specify identities and roles directly in a query
+or transaction under `"opts"`. However, you might not always want to directly
+expose this feature to the users submitting queries and transactions.
+
+Fluree Cloud, our hosted solution, strictly evaluates the identity of the active
+user through signature validation and/or API keys. You can configure your
+self-hosted deployment to use this pattern, but that's not covered in this
+document.
+
+</Admonition>
+
+## How to write a data access policy
+
+Every data policy must include the following:
+
+- Basic metadata (`id` and `type`)
+- What nodes to target (`targetNode` or `targetClass`)
+
+A data policy must include at least one of the following:
+
+- `f:allow` to specify node-level permissions (whether users can read or write
+  any properties for targeted nodes)
+- `f:property` to specify property-level permissions (whether users can read or
+  write specific properties for targeted nodes)
+
+### Basic metadata
+
+Every data policy JSON-LD object must include a `"id"` key and a `"type"` key,
+like this:
+
+```json
+{
+  "@context": {
+    "id": "@id",
+    "f": "https://ns.flur.ee/ledger#",
+    "ex": "http://example.com/"
+  },
+  "id": "ex:myPolicyName",
+  "type": "f:Policy"
+}
+```
+
+The `"id"` can be any valid IRI but `"type"` must be `"f:Policy"`. This is how
+Fluree knows that the node designated by `"id"` is a data access policy.
+
+### Targeting nodes
+
+You must tell the Data Access Control processor what nodes a policy applies to;
+these are _target nodes_. To do that, you include one of the following four
+properties in your policy:
+
+- `f:targetNode`
+- `f:targetClass`
+- `f:targetSubjectsOf` (not yet available)
+- `f:targetObjectsOf` (not yet available)
+
+#### `f:targetNode`
+
+Target just the node with the given IRI, or use the IRI `"f:allNodes"` to target
+all nodes.
+
+Examples:
+
+_Target the node with IRI `"ex:MaryOliver"`_
+
+```json
+{
+  "@context": {
+    "id": "@id",
+    "type": "@type",
+    "f": "https://ns.flur.ee/ledger#",
+    "ex": "http://example.com/"
+  },
+  "id": "ex:rootRole",
+  "type": "f:Policy",
+  "f:targetNode": "ex:MaryOliver"
+}
+```
+
+_Target all nodes in the database_
+
+```json
+{
+  "@context": {
+    "id": "@id",
+    "type": "@type",
+    "f": "https://ns.flur.ee/ledger#",
+    "ex": "http://example.com/"
+  },
+  "id": "ex:rootRole",
+  "type": "f:Policy",
+  "f:targetNode": "f:allNodes"
+}
+```
+
+#### `f:targetClass`
+
+Target nodes with an `rdfs:Class` value that's either equal to or a subclass of
+the given class.
+
+Examples:
+
+\_Target all nodes that have an `"rdfs:Class"` of either `"ex:User"` OR subclass
+of `"ex:User"`\_\_
+
+```json
+{
+  "@context": {
+    "id": "@id",
+    "type": "@type",
+    "f": "https://ns.flur.ee/ledger#",
+    "ex": "http://example.com/"
+  },
+  "id": "ex:rootRole",
+  "type": "f:Policy",
+  "f:targetClass": "ex:User"
+}
+```
+
+#### `f:targetSubjectsOf`
+
+(not yet available)
+
+#### `f:targetObjectsOf`
+
+(not yet available)
+
+### Node-level permissions
+
+The `f:allow` property is a set of node-level permissions for the targeted
+nodes. Permissions are "just data" in the same way that data access policies are
+just data, and pretty much everything in RDF land is just data. They are
+subjects that have the properties the DAC processor expects. The JSON-LD you
+write to define a permission should have the following keys:
+
+- `"id"`
+- `"f:action"`
+- `"f:targetRole"`
+
+Here's an example policy that includes `"f:allow"`:
+
+```json
+{
+  "@context": {
+    "id": "@id",
+    "type": "@type",
+    "f": "https://ns.flur.ee/ledger#",
+    "ex": "http://example.com/"
+  },
+  "id": "ex:rootPolicy",
+  "type": ["f:Policy"],
+  "f:targetNode": {
+    "id": "f:allNodes"
+  },
+  "f:allow": [
+    {
+      "id": "ex:rootAccessAllow",
+      "f:action": [
+        {
+          "id": "f:view"
+        },
+        {
+          "id": "f:modify"
+        }
+      ],
+      "f:targetRole": {
+        "id": "ex:rootRole"
+      }
+    }
+  ]
+}
+```
+
+#### `id`
+
+`id` should be any valid IRI. Note that you must be careful here not to create
+naming collisions; each separate permission _must_ have a unique IRI or you'll
+inadvertently overwrite values for an existing permission.
+
+#### `f:action`
+
+`f:action` should be a set containing one or both of the following:
+
+- `{"id": "f:view"}`
+- `{"id": "f:modify"}`
+
+#### `f:targetRole`
+
+`f:targetRole` specifies which user role this permission applies to. The
+permission is applied if one of the following are true:
+
+- The user specified in the Active Identity has a `f:role` property equal to
+  `f:targetRole`
+- The Active Identity includes a `role` equal to `f:targetRole`
+
+`f:targetRole` does not rely on `rdfs:subClassOf` or other kinds of inference.
+
+Take the following policy definition:
+
+```json focus=12:14,17,26:28
+{
+  "@context": {
+    "id": "@id",
+    "type": "@type",
+    "f": "https://ns.flur.ee/ledger#",
+    "ex": "http://example.com/"
+  },
+  "id": "ex:rootPolicy",
+  "type": ["f:Policy"],
+  "f:targetNode": {
+    "id": "f:allNodes"
+  },
+  "f:allow": [
+    {
+      "id": "ex:rootAccessAllow",
+      "f:action": [
+        {
+          "id": "f:view"
+        },
+        {
+          "id": "f:modify"
+        }
+      ],
+      "f:targetRole": {
+        "id": "ex:rootRole"
+      }
+    }
+  ]
+}
+```
+
+In this example, the `ex:rootAccessAllow` permission specifies that a user with
+the role `ex:rootRole` can view and modify the target nodes (which happens to be
+all nodes in this example because the `f:targetNode` is `{"id": "f:allNodes"}`).
+
+### Property-level permissions
+
+`f:property` refers to a set of property rules for the targeted nodes. The
+JSON-LD for a property rule should have the following keys:
+
+- `"f:path"`
+- `"f:allow"`
+
+Here's an example of a Data Access Control policy that includes a property rule:
+
+```json
+{
+  "@context": {
+    "id": "@id",
+    "type": "@type",
+    "f": "https://ns.flur.ee/ledger#",
+    "ex": "http://example.com/",
+    "schema": "http://schema.org/"
+  },
+  "id": "ex:UserPolicy",
+  "type": ["f:Policy"],
+  "f:targetClass": { "id": "ex:User" },
+  "f:property": [
+    {
+      "f:path": { "id": "schema:email" },
+      "f:allow": [
+        {
+          "id": "ex:emailViewRule",
+          "f:targetRole": { "id": "ex:userRole" },
+          "f:action": [{ "id": "f:view" }]
+        }
+      ]
+    },
+    {
+      "f:path": { "id": "schema:givenName" },
+      "f:allow": [
+        {
+          "id": "ex:givenNameViewChange",
+          "f:targetRole": { "id": "ex:userRole" },
+          "f:action": [{ "id": "f:view" }, { "id": "f:modify" }],
+          "f:equals": { "list": ["f:$identity", "ex:user"] }
+        }
+      ]
+    }
+  ]
+}
+```
+
+This policy says that a user with the role `ex:UserRole` can view the
+`schema:email` property for a node, but can't modify it. A user with that role
+can also view or modify the `schema:givenName` property for a node IF the node
+has the property `ex:user`, and the value of the property is the same as the
+Active Identity for the query or transaction.
+
+#### `f:path`
+
+`f:path` specifies which property is targeted. Its value should be an IRI, like
+`{"id": "schema:givenName"}` above.
+
+#### `f:allow`
+
+`f:allow` lets you specify permissions for a property similarly to how `f:allow`
+lets you specify-level permissions. In addition to the properties `id`,
+`f:targetRole`, and `f:action`, it has the optional property `f:equals`.
+
+`f:equals` gives you a way of comparing a property reachable from the `did` of
+the Active Identity to the node specified by `f:path` for this property rule.
+
+To illustrate this, we need to look at a combination of:
+
+- stored business data
+- property access policy
+- Active Identity
+
+For the business data, let's say that our database contains this graph:
+
+<FlureeMermaid
+  chart={`graph LR
+  did(did:Tf5M4) -->|ex:user| alice(ex:alice)
+  did -->|f:role| ex:userRole
+  
+  alice -->|type| ex:User
+  alice -->|schema:givenName| Alice
+  
+  bob(ex:bob) -->|type| ex:User
+  bob -->|schema:givenName| Bob
+  
+  product(ex:product) -->|schema:productName| Soap
+  product -->|type| ex:Product
+  `}
+/>
+
+Here's the relevant property policy:
+
+```json
+{
+  "@context": {
+    "id": "@id",
+    "type": "@type",
+    "f": "https://ns.flur.ee/ledger#",
+    "ex": "http://example.com/",
+    "schema": "http://schema.org/"
+  },
+  "f:path": { "id": "schema:givenName" },
+  "f:allow": [
+    {
+      "id": "ex:givenNameViewChange",
+      "f:targetRole": { "id": "ex:userRole" },
+      "f:action": [{ "id": "f:view" }, { "id": "f:modify" }],
+      "f:equals": { "list": ["f:$identity", "ex:user"] }
+    }
+  ]
+}
+```
+
+This policy means, "when the node pointed to by the `ex:user` property of the
+`"did"` in the Active Identity is equal to target node, then this policy applies
+to the `schema:givenName` property of the target node."
+
+That is a mouthful; assume that we're running a query where the `"did"` of the
+Active Identity is `did:Tf5M4`. The highlighted diagram below illustrates how
+the nodes and policies are being treated:
+
+<FlureeMermaid
+  chart={`graph LR
+  did(did:Tf5M4) -->|ex:user| alice(ex:alice)
+  did -->|f:role| ex:userRole
+  
+  alice -->|type| ex:User
+  alice -->|schema:givenName| Alice
+  
+  bob(ex:bob) -->|type| ex:User
+  bob -->|schema:givenName| Bob
+
+product(ex:product) -->|schema:productName| Soap
+product -->|type| ex:Product
+
+classDef targetNode fill:#f7ce39,stroke:#f7ce39
+class alice,bob targetNode
+
+style did fill:#ff983b,stroke:#ff983b
+
+style Alice fill:#57f57f,stroke:#57f57f
+style Bob fill:#ff5f43,stroke:#ff5f43
+
+linkStyle 0 stroke:#ff983b
+linkStyle 3 stroke:#f7ce39
+linkStyle 5 stroke:#f7ce39
+`}
+/>
+
+- The nodes in yellow, `ex:alice` and `ex:bob`, are the target nodes for the
+  policy as a whole
+- The paths in yellow, `schema:givenName`, are the target properties for the
+  property policy
+- In the `f:equals` path, the property `f:$identity` points to the node
+  `did:Tf5M4` (orange), and the property `ex:user` (orange) points to `ex:alice`
+- Since the `f:equals` path points to `ex:alice`, and the property policy's path
+  is `schema:givenName`, it's possible to view and modify the `schema:givenName`
+  for `ex:alice`
+- Therefore the node `Alice` (green) is accessible, and the node `Bob` (red) is
+  not
+- The subgraph that includes `ex:product` is not targeted by this policy
+
+## Naming permission nodes
+
+TODO explain the inclusion, or not, of `id` for `f:allow` permissions
+
+## Relationship-Based Access Control (RelBAC)
+
+Here at Fluree HQ we say that Fluree provides _relationship-based access
+control_. The section above shows what we mean by this. Property-based
+permissions can stipulate the relationships that must hold between properties of
+the Active Identity and properties of the target nodes in our access policies.
+
+This means that two users who have the same policies can still have different,
+user-specific access permissions to the same data. In the example in the last
+section, `ex:alice` and `ex:bob` could both have the role `ex:userRole`, but
+they would not be allowed to modify the same `schema:givenName` property for the
+same nodes. `ex:alice` can modify her own `schema:givenName` and `ex:bob` can
+modify his; they can't modify each other's.

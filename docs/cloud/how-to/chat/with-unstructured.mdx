@@ -1,0 +1,133 @@
+---
+title: Chat with Documents
+keywords:
+  - LLM
+  - Chat
+  - Ask
+  - Documents
+  - Text
+---
+
+
+import Admonition from "@theme/Admonition";
+import Image from "@theme/IdealImage";
+import { FigureWithCaption } from "../../../../src/components/FigureWithCaption.tsx";
+import fileTabImage from "../../../../src/assets/nexus/chat-agent/files-tab.png";
+import processFileImage from "../../../../src/assets/nexus/chat-agent/process-file.png";
+import transactFileImage from "../../../../src/assets/nexus/chat-agent/transact-file.png";
+import viewAndChatImage from "../../../../src/assets/nexus/chat-agent/view-and-chat.png";
+import chatImage from "../../../../src/assets/nexus/chat-agent/chat.png";
+
+
+---
+
+<Admonition type="info">
+Please see the [Introduction](./intro.mdx) for a list of requirements you'll need before you can chat with your data.
+</Admonition>
+
+
+## Path to your Chat-enabled Dataset
+Fluree Cloud is built to be your easiest path to working with your data. You have a few options for layering a *Fluree Data Model* into your dataset.
+Choose the path that matches your source data and follow the guide with the goal of defining a data model that's compatible with the <span className="text-ui-main-500 font-bold">Fluree Data Agent</span>.
+ 1. **Upload Documents (*this guide*)**  
+    You have unstructured documents like PDFs, Word docs, or text files.
+ 1. [Upload Tables](./with-structured.mdx)  
+    You have structured data from a relational database export or in a spreadsheet or set of CSV files.
+ {/* 1. [Bring your own Ontology](./with-ontology.mdx)  
+    You have a custom ontology or data model that you want to use. */}
+
+
+### Path: Upload Documents
+Choose this option if you have text documents in one of the following file formats: 
+- Plain Text or Markdown (`.txt`, `.md`)
+- Word (`.doc`, `.docx`)
+- PDF (`.pdf`)
+- HTML (`.htm`, `.html`).
+
+At a high level, Fluree Cloud uses custom ensembles of machine learning models to extract entities and relationships against a combination of widely-used general ontologies we refer to as the *General Knowledge Model*.
+This method is best at analyzing files concerned with people, places, and things and the relationships among them. Think Wikipedia articles, news articles, or academic papers.
+Files that contain images, tables, or other non-textual data won't produce the best results with our current ML models.
+
+Simply upload your text documents and our suite of automated data services will generate a localized "slice" of the *General Knowledge Model* that is specific to your data (this will become your *Fluree Data Model*) which will be used to extract structured data for you to transact to your dataset.
+
+Here's the step-by-step.
+1. **Navigate to your new dataset**  
+If you've just created your new dataset, you're already on your Dataset page. 
+If not, navigate to [your Datasets screen](https://data.flur.ee/datasets) and click on your new, empty dataset.
+
+2. **Call up the `Files` tab**  
+Click on the `Files` entry in the dataset menu on the left of the screen. This will open the `Files` tab for your dataset.
+
+<FigureWithCaption caption="Dataset View indicating the Files tab">
+  <div className="flex flex-row justify-around">
+    <Image
+      img={fileTabImage}
+      alt="A screen capture of the Dataset View that indicates the `Files` item in the left-hand dataset menu with a red arrow"
+      className="shadow-xl"
+    />
+  </div>
+</FigureWithCaption>
+
+3. **Upload your text files**  
+Either drag and drop one or more text files onto the window or click on the `Select Files` button in the top right of the `Files` tab.
+Only the following file extensions will be accepted at this time: `.txt`, `.md`, `.doc`, `.docx`, `.pdf`, `.htm`, `.html`.
+
+4. **Process your text files**  
+After your file has been uploaded, the Action button on the file's record will change to `Process`. 
+Click this button to kick off the automated extraction process. Depending on the size of this file, this process may take some time.
+Feel free to navigate away from this screen and return later to check on the progress.
+
+<FigureWithCaption caption="Files tab indicating the Process button">
+  <div className="flex flex-row justify-around">
+    <Image
+      img={processFileImage}
+      alt="A view of the Files UI that indicates the `Process` action button on the right side of the File table record"
+      className="shadow-xl"
+    />
+  </div>
+</FigureWithCaption>
+
+
+<Admonition type="info">
+The screenshot above also includes a light-blue arrow that indicates a switch you can use to automatically process and transact the data from uploaded files without having to manually take action to move the process along.
+</Admonition>
+
+5. **View and transact your extracted data**  
+When the processing of your file is complete, the Status column will indicate "Processed" and the Action button will change to `Transact`.
+You can click on the vertical ellipsis icon to the right of the `Transact` button to expose a submenu where you can `Download JSON` to see your extracted data.
+If everything looks good, click the `Transact` button to add the extracted data to your dataset.
+
+<FigureWithCaption caption="Files tab indicating the Transact button and File Submenu">
+  <div className="flex flex-row justify-around">
+    <Image
+      img={transactFileImage}
+      alt="A view of the Files UI that indicates the `Transact` action button and the File Submenu (vertical ellipsis) on the right side of the File table record"
+      className="shadow-xl"
+    />
+  </div>
+</FigureWithCaption>
+
+6. **Browse your data in `View Data` and chat with your data in `Chat`**  
+After you've transacted your data, you can navigate to the `View Data` tab to see your data in a tabular format by clicking on the `View Data` button on the file record or by clicking on the `View Data` menu item in the left-hand dataset menu.
+We recommend you browse the data in your dataset to get an idea of what concepts, terms, and relationships were extracted from your text files. This is the context the Data Agent will have when you chat with your data.
+When you're ready to chat with your data, click on the plus button on the `Chat` menu item in the left-hand dataset menu to create a new chat.
+
+<FigureWithCaption caption="Files tab indicating options for viewing data and opening a chat session">
+  <div className="flex flex-row justify-around">
+    <Image
+      img={viewAndChatImage}
+      alt="A view of the Files UI that indicates the `View Data` action button on the right side of the File table record, and the `View Data` and `Chat` menu items in the left-hand Dataset menu"
+      className="shadow-xl"
+    />
+  </div>
+</FigureWithCaption>
+
+<FigureWithCaption caption="Chat tab showing a sample question and answer with the Fluree Data Agent">
+  <div className="flex flex-row justify-around">
+    <Image
+      img={chatImage}
+      alt="A view of the Chat UI showing a sample question and answer with the Fluree Data Agent"
+      className="shadow-xl"
+    />
+  </div>
+</FigureWithCaption>

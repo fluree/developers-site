@@ -1,0 +1,443 @@
+import Admonition from "@theme/Admonition";
+
+# History Syntax
+
+<div class="overview">
+  The History API enables requests for provable audits of a ledger's data state
+  over time.
+</div>
+
+---
+
+## History API Overview
+
+The History API is available through the `/history` endpoint (i.e. `http://localhost:58090/fluree/history`).
+
+It can be used to retrieve the history of individual entities or the history of entities that match a given set of characteristics (e.g. all entities with a value on a particular property).
+
+When we say "_retrieve the history_" we mean that the History API provides an audit of each data state change to an entity or entities over time. This audit includes the following information:
+
+|    key    |                       example                       |                         description                         |
+| :-------: | :-------------------------------------------------: | :---------------------------------------------------------: |
+|    `t`    |                          1                          |       the commit number in which the change occurred        |
+| `retract` | `{ "@id": "ex:fluree", "ex:prodVersion": "2.0.3" }` |     the value of the entity _**prior**_ to this commit      |
+| `assert`  | `{ "@id": "ex:fluree", "ex:prodVersion": "3.0.0" }` | the value of the entity _**newly asserted**_ in this commit |
+| `commit`  |              _see JSON response below_              | the full details of the commit in which the change occurred |
+
+The following example response from the `/history` endpoint indicates that...
+
+- at commit #103, the entity with the ID `ex:fluree` was updated
+- it was, specifically, updated from a property-object value of `"ex:prodVersion": "2.0.3"` to a value of `"ex:prodVersion": "3.0.0"`
+- the full commit metadata for commit #103 are included in the response
+- the full data state changes accepted by the ledger in commit #103 are included in the response
+
+```json
+[
+  {
+    "f:t": 103,
+    "f:retract": [{ "@id": "ex:fluree", "ex:prodVersion": "2.0.3" }],
+    "f:assert": [{ "@id": "ex:fluree", "ex:prodVersion": "3.0.0" }],
+    "f:commit": {
+      "@id": "fluree:commit:sha256:btq2qozksdjacoxortldhvrnszyi7rjycuuio26l24ptfknyhk3l",
+      "f:time": 1698322580984,
+      "f:data": {
+        ... // the full db state changes accepted by the ledger
+      },
+      ... // additional metadata surrounding the commit
+    }
+  },
+  ...
+]
+```
+
+<Admonition type="info">
+  Because it is possible to constrain the entities or even the property-object
+  value pairs for which you want to audit history, it is important to note that
+  in the example above, commit #103 may have very possibly included other
+  assertions or retractions, even for the entity, `ex:fluree`. The History API
+  will only return the changes that match the constraints you specify.
+</Admonition>
+
+## Request Syntax
+
+The syntax of a request to the History API enables you to specify the following:
+
+- the entity or entities for which you want to retrieve history
+- the time range over which you want to retrieve history
+- a flag (i.e. `commit-details`) to indicate whether or not you want to include the full details for each commit in the response
+
+The following example request to the History API uses the request syntax to specify the following conditions:
+
+- **`"from": "cookbook/base"`**: specifies that the target ledger is `cookbook/base`
+- **`"history": "ex:andrew"`**: specifies that we want to retrieve the history of the entity with the ID `ex:andrew`
+- **`"t": { "from": 1 }`**: specifies that we want to retrieve the history of the entity from commit `1` onwards
+- **`"commit-details": true`**: specifies that we want to include the full details of each commit in the response
+
+```json
+{
+  "@context": {
+    "ex": "http://example.org/",
+    "schema": "http://schema.org/",
+    "f": "https://ns.flur.ee/ledger#"
+  },
+  "from": "cookbook/base",
+  "history": "ex:andrew",
+  "t": { "from": 1 },
+  "commit-details": true
+}
+```
+
+<details>
+<summary>**An example response for the above request**</summary>
+```json
+[
+	{
+		"f:t": 1,
+		"f:assert": [
+			{
+				"@id": "ex:andrew",
+				"@type": "schema:Person",
+				"schema:age": 35,
+				"schema:name": "Andrew Johnson",
+				"schema:follows": [
+					{
+						"@id": "ex:freddy"
+					},
+					{
+						"@id": "ex:letty"
+					},
+					{
+						"@id": "ex:betty"
+					}
+				],
+				"id": "ex:andrew"
+			}
+		],
+		"f:retract": [],
+		"f:commit": {
+			"@id": "fluree:commit:sha256:bbv2azfkuzqtrkq5tjph3dqtqob6l2wrll6obmizmgzgnublzaqfl",
+			"f:time": 1698432289460,
+			"f:v": 0,
+			"f:address": "fluree:file://cookbook/base/main/commit/307888d4a6c1d9c2a0fda851581ed610bd7aa69db346c464a085c2297f0b4c13.json",
+			"f:data": {
+				"f:address": "fluree:file://cookbook/base/main/commit/fdb80d2b6f363c9f8092dff9b2763113387bac9405b3ca6435ef385c8d8c6fed.json",
+				"f:flakes": 35,
+				"f:size": 2299,
+				"f:t": 1,
+				"f:assert": [
+					{
+						"@type": "schema:Person",
+						"schema:age": 35,
+						"schema:name": "Andrew Johnson",
+						"schema:follows": [
+							{
+								"@id": "ex:freddy"
+							},
+							{
+								"@id": "ex:letty"
+							},
+							{
+								"@id": "ex:betty"
+							}
+						],
+						"id": "ex:andrew"
+					},
+					{
+						"@type": "ex:Yeti",
+						"schema:age": 82,
+						"schema:name": "Betty",
+						"schema:follows": {
+							"@id": "ex:freddy"
+						},
+						"id": "ex:betty"
+					},
+					{
+						"@type": "ex:Yeti",
+						"schema:age": 2,
+						"schema:name": "Leticia",
+						"schema:follows": {
+							"@id": "ex:freddy"
+						},
+						"ex:nickname": "Letty",
+						"id": "ex:letty"
+					},
+					{
+						"@type": "ex:Yeti",
+						"schema:age": 4,
+						"schema:name": "Freddy",
+						"ex:verified": true,
+						"id": "ex:freddy"
+					}
+				],
+				"f:retract": []
+			},
+			"f:alias": "cookbook/base",
+			"f:branch": "main",
+			"f:defaultContext": {
+				"@id": "fluree:context:b16965119d05f836e6a1e221730adf5db0b7212c831a3f83aa52e449fe7ce6ef"
+			}
+		}
+	},
+	{
+		"f:t": 2,
+		"f:assert": [
+			{
+				"schema:name": "Just Andrew is Fine",
+				"id": "ex:andrew"
+			}
+		],
+		"f:retract": [
+			{
+				"schema:name": "Andrew Johnson",
+				"id": "ex:andrew"
+			}
+		],
+		"f:commit": {
+			"f:alias": "cookbook/base",
+			"@id": "fluree:commit:sha256:bp4rrhliqcprqvaxunwgrx6lca2nymvicbfjazy3ipeax2yga57u",
+			"f:time": 1698432334290,
+			"f:previous": {
+				"@id": "schema:Person"
+			},
+			"f:v": 0,
+			"f:branch": "main",
+			"f:address": "fluree:file://cookbook/base/main/commit/8bb4846370f671ed3ac69d5d7e5f223c041d73f1c9c56fd2d9f30b18c09c6459.json",
+			"f:data": {
+				"f:previous": {
+					"@id": "fluree:db:sha256:bbrylh7pwoqjapdfiy73brh5oja4ahjvyw6uwvpc2oy5ddoenkzai"
+				},
+				"f:address": "fluree:file://cookbook/base/main/commit/655fc066e2fb6c10e25eb4c41987473b7bb31392faeef20ee613f97ebac8e223.json",
+				"f:flakes": 65,
+				"f:size": 5643,
+				"f:t": 2,
+				"f:assert": [
+					{
+						"schema:name": "Just Andrew is Fine",
+						"id": "ex:andrew"
+					}
+				],
+				"f:retract": [
+					{
+						"schema:name": "Andrew Johnson",
+						"id": "ex:andrew"
+					}
+				]
+			},
+			"f:defaultContext": {
+				"@id": "fluree:context:b16965119d05f836e6a1e221730adf5db0b7212c831a3f83aa52e449fe7ce6ef"
+			}
+		}
+	}
+]
+```
+</details>
+
+## Constraints on Nodes
+
+When sending requests to the History API, we can vary the syntax of the `history` key to specify the exact set of nodes for which we want to retrieve history.
+
+Much like an RDF triple allows you to specify a series of constraints on the subject, predicate, and object of a triple, the History API allows you to specify a series of constraints on the subjects, predicates, and objects of the nodes for which you want to retrieve history.
+
+You can specify a node directly by its subject IRI (e.g. `ex:andrew`), or you can specify a node by a set of constraints on its properties (e.g. all nodes with a value of `"Andrew"` on the `schema:name` property).
+
+The `history` key can take values of the following shapes:
+
+- **`string`**: the `Subject` IRI of a node
+- **`two-tuple`**: a two-tuple of the form `[Subject, Property]`
+
+  > The `Subject` can be `null`, expressing a request for changes to **all nodes** with regard to values on that `Property`.
+
+- **`three-tuple`**: a three-tuple of the form `[Subject, Property, Object]`
+
+  > The `Subject` can be `null`, expressing a request for changes to **all nodes** with regard to values on that `Property` (relating to a specific `Object` value).
+
+The following table provides a few examples of the `history` syntax for specifying nodes:
+
+|                   `history` Syntax                   |     Type      |                                               Description                                               |
+| :--------------------------------------------------: | :-----------: | :-----------------------------------------------------------------------------------------------------: |
+|               `"history": "ex:andrew"`               |   `string`    |                             an audit of all changes to the `ex:andrew` node                             |
+|      `"history": ["ex:andrew", "schema:name"] `      |  `two-tuple`  |             an audit of changes just to the `schema:name` property of the `ex:andrew` node              |
+|          `"history": [null, "schema:name"]`          |  `two-tuple`  |                   an audit of changes to the `schema:name` property across all nodes                    |
+| `"history": ["ex:andrew", "schema:name", "Andrew"] ` | `three-tuple` | an audit of changes to the `schema:name` property of the `ex:andrew` node where the value is `"Andrew"` |
+|    `"history": [null, "schema:name", "Andrew"] `     | `three-tuple` |              an audit of changes to all nodes with a value of `"Andrew"` on `schema:name`               |
+
+## Constraints on Time
+
+When sending requests to the History API, we can vary the syntax of the `t` key to specify the exact time range over which we want to retrieve history.
+
+The `t` key can take values of the following shapes:
+
+|          `t` Syntax           |                              Description                              |
+| :---------------------------: | :-------------------------------------------------------------------: |
+|  `"t": { "at": "latest": }`   |     an audit of changes that took place within the latest commit      |
+|      `"t": { "at": 3 }`       |         an audit of changes that took place within commit `3`         |
+|     `"t": { "from": 1 }`      |      an audit of changes that took place from commit `1` onwards      |
+|      `"t": { "to": 1 }`       |       an audit of changes that took place up to commit `1` only       |
+| `"t": { "from": 1, "to": 3 }` | an audit of changes that took place between commit `1` and commit `3` |
+
+## Including Commit Details
+
+When sending requests to the History API, we can optionally flag whether to include the full details of each commit in the response.
+
+By including in our request, `"commit-details": true`, we are opting to receive those full commit details in the response.
+
+An example request that includes the `commit-details` flag is shown below:
+
+```json
+{
+  "@context": {
+    "ex": "http://example.org/",
+    "schema": "http://schema.org/",
+    "f": "https://ns.flur.ee/ledger#"
+  },
+  "from": "cookbook/base",
+  "history": "ex:andrew",
+  "t": { "from": 1 },
+  "commit-details": true
+}
+```
+
+<details>
+<summary>**An example response for the above request**</summary>
+```json
+[
+	{
+		"f:t": 1,
+		"f:assert": [
+			{
+				"@id": "ex:andrew",
+				"@type": "schema:Person",
+				"schema:age": 35,
+				"schema:name": "Andrew Johnson",
+				"schema:follows": [
+					{
+						"@id": "ex:freddy"
+					},
+					{
+						"@id": "ex:letty"
+					},
+					{
+						"@id": "ex:betty"
+					}
+				],
+				"id": "ex:andrew"
+			}
+		],
+		"f:retract": [],
+		"f:commit": {
+			"@id": "fluree:commit:sha256:bbv2azfkuzqtrkq5tjph3dqtqob6l2wrll6obmizmgzgnublzaqfl",
+			"f:time": 1698432289460,
+			"f:v": 0,
+			"f:address": "fluree:file://cookbook/base/main/commit/307888d4a6c1d9c2a0fda851581ed610bd7aa69db346c464a085c2297f0b4c13.json",
+			"f:data": {
+				"f:address": "fluree:file://cookbook/base/main/commit/fdb80d2b6f363c9f8092dff9b2763113387bac9405b3ca6435ef385c8d8c6fed.json",
+				"f:flakes": 35,
+				"f:size": 2299,
+				"f:t": 1,
+				"f:assert": [
+					{
+						"@type": "schema:Person",
+						"schema:age": 35,
+						"schema:name": "Andrew Johnson",
+						"schema:follows": [
+							{
+								"@id": "ex:freddy"
+							},
+							{
+								"@id": "ex:letty"
+							},
+							{
+								"@id": "ex:betty"
+							}
+						],
+						"id": "ex:andrew"
+					},
+					{
+						"@type": "ex:Yeti",
+						"schema:age": 82,
+						"schema:name": "Betty",
+						"schema:follows": {
+							"@id": "ex:freddy"
+						},
+						"id": "ex:betty"
+					},
+					{
+						"@type": "ex:Yeti",
+						"schema:age": 2,
+						"schema:name": "Leticia",
+						"schema:follows": {
+							"@id": "ex:freddy"
+						},
+						"ex:nickname": "Letty",
+						"id": "ex:letty"
+					},
+					{
+						"@type": "ex:Yeti",
+						"schema:age": 4,
+						"schema:name": "Freddy",
+						"ex:verified": true,
+						"id": "ex:freddy"
+					}
+				],
+				"f:retract": []
+			},
+			"f:alias": "cookbook/base",
+			"f:branch": "main",
+			"f:defaultContext": {
+				"@id": "fluree:context:b16965119d05f836e6a1e221730adf5db0b7212c831a3f83aa52e449fe7ce6ef"
+			}
+		}
+	},
+	{
+		"f:t": 2,
+		"f:assert": [
+			{
+				"schema:name": "Just Andrew is Fine",
+				"id": "ex:andrew"
+			}
+		],
+		"f:retract": [
+			{
+				"schema:name": "Andrew Johnson",
+				"id": "ex:andrew"
+			}
+		],
+		"f:commit": {
+			"f:alias": "cookbook/base",
+			"@id": "fluree:commit:sha256:bp4rrhliqcprqvaxunwgrx6lca2nymvicbfjazy3ipeax2yga57u",
+			"f:time": 1698432334290,
+			"f:previous": {
+				"@id": "schema:Person"
+			},
+			"f:v": 0,
+			"f:branch": "main",
+			"f:address": "fluree:file://cookbook/base/main/commit/8bb4846370f671ed3ac69d5d7e5f223c041d73f1c9c56fd2d9f30b18c09c6459.json",
+			"f:data": {
+				"f:previous": {
+					"@id": "fluree:db:sha256:bbrylh7pwoqjapdfiy73brh5oja4ahjvyw6uwvpc2oy5ddoenkzai"
+				},
+				"f:address": "fluree:file://cookbook/base/main/commit/655fc066e2fb6c10e25eb4c41987473b7bb31392faeef20ee613f97ebac8e223.json",
+				"f:flakes": 65,
+				"f:size": 5643,
+				"f:t": 2,
+				"f:assert": [
+					{
+						"schema:name": "Just Andrew is Fine",
+						"id": "ex:andrew"
+					}
+				],
+				"f:retract": [
+					{
+						"schema:name": "Andrew Johnson",
+						"id": "ex:andrew"
+					}
+				]
+			},
+			"f:defaultContext": {
+				"@id": "fluree:context:b16965119d05f836e6a1e221730adf5db0b7212c831a3f83aa52e449fe7ce6ef"
+			}
+		}
+	}
+]
+```
+</details>

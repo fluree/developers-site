@@ -1,0 +1,310 @@
+# Working with Ontologies
+
+import Admonition from "@theme/Admonition";
+
+In this article we will be walking you through a step-by-step tutorial of the Subclasses and Equivalent Property sections of the Fluree Cookbook. This is an ideal resource if you'd like to follow along with our Cookbook, and use this guide for some extra instruction. If you haven't already, [you can find the Cookbook here](/docs/reference/cookbook/).
+
+## Introduction
+
+In our [foundations document on Semantic Vocabularies](/docs/learn/foundations/semantic-vocabularies/) we gave an overview of how _semantic vocabularies_ differ from traditional schemas, highlighting that they are universal, consistent, and self-describing. And, in our final section, we alluded to a new kind of semantic vocabulary called an _ontology_, which is a semantic vocabulary that can be used to describe how vocabulary terms (inside or outside of a single vocabulary) relate to each other. In this guide you will be introduced to to the _RDFS (RDF Schema)_ and _OWL (Web Ontology Language)_ vocabularies in the context of hierarchical and equivalent relationships.
+
+## Classes and Subclasses
+
+One of the best metaphors for understanding ontological relationships in data is that of Russian dolls. These are hollow dolls where each is proportionally equivalent but bigger than the last, allowing you to fit all of the dolls into the largest.
+
+<img src="/img/russian-dolls1.png" width="650" height="300" />
+
+So why are we talking about dolls in the first place? Well, within semantic vocabularies it is common for there to be "parent" and "child" classes, and you can visualize these classes like those dolls. For example, let's transact a parent class called `Humanoid` and have subclasses such as `Yeti` and `Person`. To follow our metaphor, classes `Yeti` and `Person` would both "fit" inside the parent doll `Humanoid`.
+
+```json
+{
+  "@context": {
+    "ex": "https://example.com/",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+    "schema": "http://schema.org/"
+  },
+  "ledger": "cookbook/base",
+  "insert": [
+    {
+      "@id": "ex:Humanoid",
+      "@type": "rdfs:Class"
+    },
+    {
+      "@id": "ex:Yeti",
+      "@type": "rdfs:Class",
+      "rdfs:subClassOf": { "@id": "ex:Humanoid" }
+    },
+    {
+      "@id": "schema:Person",
+      "@type": "rdfs:Class",
+      "rdfs:subClassOf": { "@id": "ex:Humanoid" }
+    }
+  ]
+}
+```
+
+Now that we have transacted our hierarchical data, let's practice querying a parent class. Returning to our doll metaphor, you can imagine querying a parent is like selecting one doll in the chain, when you pick it up you are also holding each of the dolls that fit inside of it.
+
+Here is an example of how we would target our query for instances of the class, `Humanoid`. In the query response you should see that the results include subjects that were never _explicitly_ described as `Humanoid`, but are _inferentially_ understood to be instances of the `Humanoid` class, because they belong to classes that are sub-classes of `Humanoid`.
+
+```json
+{
+  "@context": {
+    "ex": "https://example.com/"
+  },
+  "from": "cookbook/base",
+  "where": {
+    "@id": "?s",
+    "@type": "ex:Humanoid"
+  },
+  "select": {
+    "?s": ["*"]
+  }
+}
+```
+
+"But wait", you might say, "Russian dolls do not have a one-to-many relationship between parents and subclasses the way semantic vocabularies often do." And I would say "Quite right!". A more accurate picture might have been to imagine a parent `Humanoid` doll with children `Person` and `Yeti` of equivalent sizes.
+
+<img src="/img/humanoid-yeti-person.png" width="350" height="600" />
+
+However this is not to say that `Person` and `Yeti` are **equivalent**.
+
+In the world of semantic data, _equivalence_ means that two terms are **synonyms**, either in a single semantic vocabulary or across semantic vocabularies, which is to say they are different terms with **identical meanings**.
+
+You can visualize this as two different sets of russian dolls, each representing a semantic vocabulary, with terms that we can use interchangeably, in this case a Person and Human. Both dolls could comfortably fit inside their parent classes, and conversely fit their children classes as well. This expresses the semantic idea of _equivalent classes_.
+
+<img src="/img/russian-dolls2.png" width="550" height="600" />
+
+Let's explore the idea of _equivalence_, now with the concept of **equivalent properties**.
+
+## Equivalent Properties
+
+Where previously we leveraged terms from _RDFS_ to express class hierarchy (e.g. `rdfs:subClassOf`), we will now be leveraging the `owl:equivalentProperty` term from _OWL_ (the _Web Ontology Language_). You can [read more about _OWL_ here](https://www.w3.org/TR/owl2-overview/).
+
+Let's start by first transacting the following test data into your ledger:
+
+```json
+{
+  "@context": {
+    "ex": "https://example.com/",
+    "schema": "http://schema.org/",
+    "foaf": "http://xmlns.com/foaf/0.1/"
+  },
+  "ledger": "cookbook/base",
+  "insert": [
+    {
+      "@id": "ex:andrew",
+      "schema:givenName": "Andrew"
+    },
+    {
+      "@id": "ex:freddy",
+      "foaf:name": "Freddy"
+    },
+    {
+      "@id": "ex:letty",
+      "ex:firstName": "Leticia"
+    },
+    {
+      "@id": "ex:betty",
+      "ex:firstName": "Betty"
+    }
+  ]
+}
+```
+
+This is, of course, totally valid data. But it appears as if many of the above properties express identical concepts. We're using property terms from three different vocabularies--`schema.org`, `Friend of a Friend`, and a third, example vocabulary. But each property seems to express the idea of a _first_ (or _given_) _name_.
+
+In the world of open data, different data publishers will use different vocabularies to express the same semantic concept, but it can be a major hassle to try to leverage that data if we have to constantly normalize that data or express queries from the vantage point of multiple vocabularies at once.
+
+By leveraging semantic terms like `owl:equivalentProperty`, we can establish relationships not just across data entities, but across vocabulary terms as well, making it possible to work with data _**as if it existed in a single vocabulary**_, even if it had been materially described across multiple, separate vocabularies.
+
+Let's start to do this in the transaction below:
+
+```json
+{
+  "@context": {
+    "ex": "https://example.com/",
+    "schema": "http://schema.org/",
+    "foaf": "http://xmlns.com/foaf/0.1/",
+    "owl": "http://www.w3.org/2002/07/owl#",
+    "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  },
+  "ledger": "cookbook/base",
+  "insert": [
+    {
+      "@id": "schema:givenName",
+      "@type": "rdf:Property"
+    },
+    {
+      "@id": "ex:firstName",
+      "@type": "rdf:Property",
+      "owl:equivalentProperty": { "@id": "schema:givenName" }
+    },
+    {
+      "@id": "foaf:name",
+      "@type": "rdf:Property",
+      "owl:equivalentProperty": { "@id": "ex:firstName" }
+    }
+  ]
+}
+```
+
+Take a second to look through our mapping of equivalent properties. You will notice we have three terms at play: `ex:firstName`, `schema:givenName` and `foaf:name`, mapped in the following ways, where an `equivalentProperty` is represented by each arrow.
+
+<img src="/img/russian-dolls3.png" width="550" height="400" />
+
+Let's first practice running a query on properties defined as equivalent, in this case we are going to search for subjects with the property `schema:givenName`:
+
+```json
+{
+  "@context": {
+    "schema": "http://schema.org/"
+  },
+  "from": "cookbook/base",
+  "where": {
+    "schema:givenName": "?name"
+  },
+  "selectDistinct": "?name"
+}
+```
+
+If we weren't able to express semantic relationships between our vocabulary elements, and if we considered the explicit facts of the data that we added above, then we would reasonably expect this query to only return the actual, material data values added via the property, `schema:givenName`.
+
+But, thanks to the ontology structure we added above (as well as to the fact that Fluree is capable of leveraging semantic rules to make _query-time inferences_ about our data), we are instead able to see results not only for each of our subjects with `schema:givenName` but also those with values assigned to `ex:firstname` and `foaf:name`, since we have established transitive equivalence across multiple properties.
+
+### Symmetric Properties
+
+When terms are directly connected via `equivalentProperty` we say they are symmetric to one another, because they are directly connected via a semantic relationship in our graph. In our tricolor Russian doll picture, symmetric properties are dolls that are connected via a single arrow. And you can query for them like this:
+
+```json
+{
+  "@context": {
+    "ex": "https://example.com/"
+  },
+  "from": "cookbook/base",
+  "where": {
+    "ex:firstName": "?name"
+  },
+  "selectDistinct": "?name"
+}
+```
+
+### Transitive Properties
+
+Transitive properties, on the other hand, are properties made equivalent through 2 or more `equivalentProperty` connections. Although `foaf:name` and `schema:givenName` are not _directly equivalent_, they are _transitively equivalent_ because each is equivalent to `ex:name`. The following query captures the relationship of the green and red dolls, showing that `foaf:name` and `schema:givenName` are also connected, albeit transitively.
+
+```json
+{
+  "@context": {
+    "foaf": "http://xmlns.com/foaf/0.1/"
+  },
+  "from": "cookbook/base",
+  "where": {
+    "foaf:name": "?name"
+  },
+  "selectDistinct": "?name"
+}
+```
+
+## Working with Equivalent Properties
+
+This is super cool! Fluree's inferencing capabilities let us query our data at a higher level, effectively treating similar data in the same way. This abstraction lets consumers of our data analyze and operationalize across differing data origins and contexts.
+Let's expand a previous query to take a closer look at the returned data objects. For this query, we'll pretend we're a developer building an application in a context with a `@base` vocab of the "https:/example.com/" (a stand-in for a specific business context) and also understands the `schema.org` vocabulary.
+
+```json
+{
+  "@context": {
+    "@base": "https://example.com",
+    "schema": "http://schema.org/"
+  },
+  "from": "cookbook/base",
+  "where": {
+    "@id": "?s",
+    "schema:givenName": "?name"
+  },
+  "select": { "?s": ["*"] }
+}
+```
+
+Here, we're asking for all data on nodes that have the `"schema:givenName"` defined. We know, though, that the `owl:equivalentProperty` rules we've set up enable us to also select all the data on nodes that equivalently have `"foaf:name"` or `"ex:firstName"` defined.
+The results, therefore, look like this:
+
+```json
+[
+  {
+    "@id": "freddy",
+    "http://xmlns.com/foaf/0.1/name": "Freddy"
+  },
+  {
+    "@id": "andrew",
+    "schema:givenName": "Andrew"
+  },
+  {
+    "@id": "betty",
+    "firstName": "Betty"
+  },
+  {
+    "@id": "letty",
+    "firstName": "Leticia"
+  }
+]
+```
+
+Note that using `@base` in the JSON-LD document `@context` means the prefix `"ex"` becomes the default and so gets expanded to an empty string.
+Another thing you'll notice, is that because our application (for the sake of this example) doesn't include the `foaf` vocabulary in the `@context`, the data property `"name"` is expanded to the full IRI.
+This scenario shows what you might see for data of other vocabularies that you're not familiar with.
+As a developer, it's a bit tedious to update my code to account for new property names whenever new data of different vocabularies gets added to the data source. One mitigation technique is to use the [aliasing feature of JSON-LD](https://www.w3.org/TR/json-ld11/#aliasing-keywords) to map one term to another.
+Here's the same query updated to show what aliasing looks like:
+
+```json
+{
+  "@context": {
+    "@base": "https://example.com",
+    "schema": "http://schema.org/",
+    "firstName": "http://xmlns.com/foaf/0.1/name"  // this line was added
+  },
+  "from": "cookbook/base",
+  "where": {
+    "@id": "?s",
+    "schema:givenName": "?name"
+  },
+  "select": { "?s": ["*"] }
+}
+```
+And now the results are much more manageable:
+```json
+[
+  {
+    "@id": "freddy",
+    "firstName": "Freddy"
+  },
+  {
+    "@id": "andrew",
+    "schema:givenName": "Andrew"
+  },
+  {
+    "@id": "betty",
+    "firstName": "Betty"
+  },
+  {
+    "@id": "letty",
+    "firstName": "Leticia"
+  }
+]
+```
+
+It is exciting that we can use _query-time inferencing_ via `owl:equivalentProperty` to retrieve equivalent data, but if the data is returned in terms we're unfamiliar with (`"http://xmlns.com/foaf/0.1/name"`), it might be useless to our application's business logic. 
+_Aliasing_ makes it possible to not only _find_ equivalent data, but return it in the terms that are useful to us.
+In our Russian doll metaphor, this happens when the blue doll, after learning everything it can about how the red doll operates, paints itself red too and operates with that new syntax.
+
+This powerful combination of features from different standards, `equivalentProperty` from OWL and `aliasing` from JSON-LD, demonstrates one of Fluree's core values of building on and participating in Open Standards.
+
+
+<Admonition type="info">
+  It's important to note that keyword aliasing is a feature of JSON-LD `@context`, which is only concerned with expanding and compacting JSON-LD documents. `@context` is definitely not concerned with shaping query results from a JSON-LD database. 
+  A consequence of this is that it's incorrect to map more than one term to an alias. This may be counterintuitive in the context of this article, but in reality asking the the JSON-LD expansion algorithm to expand `firstName` to `["http://schema.org/givenName","http://xmlns.com/foaf/0.1/name"]` doesn't make sense.
+</Admonition>
+
+## Conclusion
+
+By now you should feel comfortable not only explaining the functionality of ontologies, but using them as well! You can describe classes and subclasses, and how they are different from equivalent properties. And you know how to query different types of equivalent properties.

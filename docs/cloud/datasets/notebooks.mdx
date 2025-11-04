@@ -1,0 +1,204 @@
+---
+title: Notebooks
+---
+
+import Admonition from "@theme/Admonition";
+import Image from "@theme/IdealImage";
+import { FigureWithCaption } from "../../../src/components/FigureWithCaption";
+import NavigateToNotebooks from "../../../src/assets/nexus/navigate-to-notebooks.png";
+import RenameNotebook from "../../../src/assets/nexus/rename-notebook.png";
+import RenameNotebook1 from "../../../src/assets/nexus/rename-notebook1.png";
+import AddCell from "../../../src/assets/nexus/add-cell.png";
+import MarkdownOverview from "../../../src/assets/nexus/cell-markdown-overview.png";
+import FlureeQLOverview from "../../../src/assets/nexus/flureeql-overview.png";
+import FlureeQLResults from "../../../src/assets/nexus/flureeql-results.png";
+import MermaidVisual from "../../../src/assets/nexus/mermaid-visual.png";
+import SPARQLOverview from "../../../src/assets/nexus/sparql-overview.png";
+import { Add } from "../../../src/components/Icons/Add.tsx";
+import { Check } from "../../../src/components/Icons/Check.tsx";
+import { Cancel } from "../../../src/components/Icons/Cancel.tsx";
+import { Bolt } from "../../../src/components/Icons/Bolt.tsx";
+import { Mermaid } from "../../../src/components/Icons/Mermaid.tsx";
+import { Sparkles } from "../../../src/components/Icons/Sparkles.tsx";
+import { Clipboard } from "../../../src/components/Icons/Clipboard.tsx";
+import { Duplicate } from "../../../src/components/Icons/Duplicate.tsx";
+import { DocumentUp } from "../../../src/components/Icons/DocumentUp.tsx";
+import { DocumentDown } from "../../../src/components/Icons/DocumentDown.tsx";
+import { ArrowUp } from "../../../src/components/Icons/ArrowUp.tsx";
+import { ArrowDown } from "../../../src/components/Icons/ArrowDown.tsx";
+import { Delete } from "../../../src/components/Icons/Delete.tsx";
+
+<div class="overview">
+  The following is an overview of the Notebooks Screen within the Dataset View.
+</div>
+
+---
+
+## Overview
+
+_Notebooks_ are an organizational tool for users to capture our interactions with a dataset. Using a _Notebook_ you can run & save queries and transactions alongside accompanying markdown text, making it easy to document your own work and share it with others.
+
+## Create Notebook
+
+You can create a new Notebook by expanding the Notebook icon on the left panel of your Dataset page, and selecting the + icon, highlighted in yellow, to create a new notebook.
+
+<FigureWithCaption caption="Expand Notebook icon on left panel to see a list of existing notebooks or create a new one">
+  <div className="flex flex-row justify-around">
+    <Image
+      img={NavigateToNotebooks}
+      alt="A list of navigation items available to your dataset"
+      className="w-2/5 shadow-xl"
+    />
+  </div>
+</FigureWithCaption>
+
+## Rename Notebook
+
+To rename your notebook, select the Save button highlighted in red below:
+
+<FigureWithCaption caption="">
+  <div className="flex flex-row justify-around">
+    <Image
+      img={RenameNotebook}
+      alt="A list of navigation items available to your dataset"
+      className="w-2/5 shadow-xl"
+    />
+  </div>
+</FigureWithCaption>
+
+Type in the new name of your notebook. When you are finished, hit the Save button.
+
+<FigureWithCaption caption="">
+  <div className="flex flex-row justify-around">
+    <Image
+      img={RenameNotebook1}
+      alt="A list of navigation items available to your dataset"
+      className="w-2/5 shadow-xl"
+    />
+  </div>
+</FigureWithCaption>
+
+## Adding Cells
+
+Add a cell by selecting the blue **Add Cell** button (highlighted in red below):
+
+<FigureWithCaption caption="">
+  <div className="flex flex-row justify-around">
+    <Image
+      img={AddCell}
+      alt="A list of navigation items available to your dataset"
+      className="w-2/9 shadow-xl"
+    />
+  </div>
+</FigureWithCaption>
+
+Users will be prompted with three options for cell types: _Markdown_, _SPARQL_, and _FlureeQL_. The following is an overview of the specifics of each cell type. For a full list of options available in all cells, check out our section on [Cell Icons](/docs/cloud/datasets/notebooks/#cell-icons) below.
+
+### Markdown
+
+Markdown cells allow users to use the Markdown markup language to format text, images, code snippets, links and more. You can reference the [markdown documentation](https://www.markdownguide.org/) for additional reference on utilizing markdown in Notebook cells.
+
+Each Markdown cell contains a "done" button: <Check className="h-6 w-6 text-fluree-grey" /> and a "cancel" button: <Cancel className="h-6 w-6 text-fluree-grey" /> (_both highlighted in blue below_) which you can use to either save or discard changes to your cell.
+
+<FigureWithCaption caption="">
+  <div className="flex flex-row justify-around">
+    <Image
+      img={MarkdownOverview}
+      alt="A list of navigation items available to your dataset"
+      className="w-2/9 shadow-xl"
+    />
+  </div>
+</FigureWithCaption>
+
+### FlureeQL
+
+FlureeQL is a JSON-based query language for retrieving Fluree data. It is modeled as a JSON-representation of the W3C SPARQL standard. You can use FlureeQL cells to create ledgers, query, and transact data. For more information, check out our documentation on [FlureeQL Query Syntax](../../../reference/flureeql-query-syntax/).
+
+One of the NIFTIEST things about FlureeQL cells is that, based on the contents of your syntax, the Notebook can anticipate if you are attempting to query a ledger, highlighting the "play" icon:
+
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 24 24"
+  fill="currentColor"
+  class="w-6 h-6"
+>
+  <path
+    fill-rule="evenodd"
+    d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm14.024-.983a1.125 1.125 0 010 1.966l-5.603 3.113A1.125 1.125 0 019 15.113V8.887c0-.857.921-1.4 1.671-.983l5.603 3.113z"
+    clip-rule="evenodd"
+  />
+</svg>
+
+Or attempting a transaction, highlighting the "bolt" icon:
+
+<Bolt className="h-6 w-6 text-fluree-grey" />
+
+<FigureWithCaption caption="">
+  <div className="flex flex-row justify-around">
+    <Image
+      img={FlureeQLOverview}
+      alt="A list of navigation items available to your dataset"
+      className="w-2/9 shadow-xl"
+    />
+  </div>
+</FigureWithCaption>
+
+And by clicking your respective button, the results will be shown in an additional Results cell, highlighted in green, below.
+
+<FigureWithCaption caption="">
+  <div className="flex flex-row justify-around">
+    <Image
+      img={FlureeQLResults}
+      alt="A list of navigation items available to your dataset"
+      className="w-2/9 shadow-xl"
+    />
+  </div>
+</FigureWithCaption>
+
+The mermaid icon: <Mermaid className="h-6 w-6 text-fluree-grey" />, which is highlighted in the image above, also appears as an option to visualize your query results.
+
+<FigureWithCaption caption="">
+  <div className="flex flex-row justify-around">
+    <Image
+      img={MermaidVisual}
+      alt="A list of navigation items available to your dataset"
+      className="w-2/9 shadow-xl"
+    />
+  </div>
+</FigureWithCaption>
+
+### SPARQL
+
+Notebooks also give the option for SPARQL cells, currently we only support SPARQL **queries**, thus you will notice the only option is for the "play" icon:
+
+<FigureWithCaption caption="">
+  <div className="flex flex-row justify-around">
+    <Image
+      img={SPARQLOverview}
+      alt="A list of navigation items available to your dataset"
+      className="w-2/9 shadow-xl"
+    />
+  </div>
+</FigureWithCaption>
+
+## Cell Icons
+
+The following icons appear in each cell and enable the following functionality:
+
+<Sparkles className="h-10 w-10 text-fluree-grey" /> Will automatically format your
+cells contents.{" "}
+
+<Clipboard className="h-10 w-10 text-fluree-grey" /> Copies contents of your cell
+into a clipboard.{" "}
+
+<Duplicate className="h-10 w-10 text-fluree-grey" /> Duplicates current cell.{" "}
+
+<DocumentUp className="h-10 w-10 text-fluree-grey" /> Inserts new cell above.{" "}
+
+<DocumentDown className="h-10 w-10 text-fluree-grey" /> Inserts new cell below.{" "}
+
+<ArrowUp className="h-10 w-10 text-fluree-grey" /> Shifts cell up.
+
+<ArrowDown className="h-10 w-10 text-fluree-grey" /> Shifts cell down.
+
+<Delete className="h-10 w-10 text-fluree-grey" /> Delete cell.{" "}
