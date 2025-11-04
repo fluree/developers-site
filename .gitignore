@@ -2,3 +2,5 @@ node_modules
 build
 .docusaurus
 bin
+
+.DS_Store
