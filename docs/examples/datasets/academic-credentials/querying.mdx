@@ -2,9 +2,10 @@
 
 import Admonition from "@theme/Admonition";
 
+{/*
 import SandboxDrawer from "@site/src/components/sandbox_drawer/SandboxDrawer.jsx";
 import SandboxButton from "@site/src/components/sandbox_drawer/SandboxButton.jsx";
-
+*/}
 import defaultContext from "@site/docs/examples/datasets/acd-sandbox-txs/defaultContext.json";
 import tx_profiles from "@site/docs/examples/datasets/acd-sandbox-txs/01_profiles.json";
 import tx_achievements from "@site/docs/examples/datasets/acd-sandbox-txs/02_achievements.json";
@@ -63,7 +64,7 @@ If you need help getting this going, refer to [the intro article](../introductio
 
 Okay, now that we're cooking with the ACD, let's start off by opening up our sandbox and taking a look at all of the stored credentials (_psst! copy and paste this into the left panel of the sandbox by clicking on Freddy in the top-right of the following code block) and then hit the "query" button in the sandbox to see the results on the right panel - OMG you're amazing!_):
 
-<SandboxButton />
+{/* <SandboxButton /> */}
 ```json
 {
   "@context": {
@@ -126,7 +127,7 @@ Our last query returns **all** the subjects in the database that have a `type` o
 We want to narrow that down to only pull credentials issued to Lucia:
 
 <CH.Section>
-<SandboxButton />
+{/* <SandboxButton /> */}
 ```json
 {
   "@context": {
@@ -162,7 +163,7 @@ As the individual courses aren't in the data request, let's narrow them down aga
 What are we interested in? We know we don't want Courses, but what achievement types should we include?
 Let's query to see what the distinct values of `achievementType` are in the dataset.
 
-<SandboxButton />
+{/* <SandboxButton /> */}
 ```json
 {
   "@context": {
@@ -181,7 +182,7 @@ From that set, it looks like we want `"Assessment"`, `"Award"`, `"Degree"`, `"Li
 This next query shows how you can specify a subset of the achievement types we care about based on the value of the `clr:achievementType` property.
 
 <CH.Section>
-<SandboxButton />
+{/* <SandboxButton /> */}
 ```json
 {
   "@context": {
@@ -219,7 +220,7 @@ Oh wait, after showing this set of credentials to Lucia, she pointed out a coupl
 Here are the `clr:name`s for those two records: `"Tiniest Mouse"` and `"Most Improved Sportsmanship"`.
 We'll go ahead and add a filter clause to remove those from the resultset:
 
-<SandboxButton />
+{/* <SandboxButton /> */}
 ```json
 {
   "@context": {
@@ -293,7 +294,7 @@ We need to expand a few referenced nodes in order to include all of the required
 Here's what that looks like:
 
 <CH.Section>
-<SandboxButton />
+{/* <SandboxButton /> */}
 ```json
 {
   "@context": {
@@ -355,7 +356,7 @@ I'm sure you, my very attentive reader, have already picked up on my use of `@co
 I'm further sure, my very diligent reader, that you've already [read about `@context`](/docs/learn/tutorial/collaborative-data/#json-ld-context-and-compact-iris) and so you know that you can use `@context` in a query to sprinkle some delicious alias sugar into your resultset.
 Take a look at the same query with an `@context` that translates the keys in our resultset to exactly match those expected by Lucia's administrator.
 
-<SandboxButton />
+{/* <SandboxButton /> */}
 ```json
 {
   "@context": {

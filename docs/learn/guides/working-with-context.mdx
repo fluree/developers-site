@@ -1,6 +1,4 @@
 import Admonition from "@theme/Admonition";
-import SandboxDrawer from "@site/src/components/sandbox_drawer/SandboxDrawer.jsx";
-import SandboxButton from "@site/src/components/sandbox_drawer/SandboxButton.jsx";
 
 # Working with Context
 
@@ -28,7 +26,7 @@ In the world of linked or semantic data, we want to unlock data's potential by m
 
 However, this can make our data difficult to read and write. For example, the following query is valid, but it's not very readable:
 
-<SandboxButton />
+{/* <SandboxButton /> */}
 ```json
 {
   "select": {
@@ -44,7 +42,7 @@ However, this can make our data difficult to read and write. For example, the fo
 
 Using `@context`, we can define a set of terms that can be used in place of the full IRIs. For example, we could define a `@context` that sets prefixes for `schema` and `ex`, and then our query might look like this:
 
-<SandboxButton />
+{/* <SandboxButton /> */}
 ```json
 {
   "@context": {
@@ -93,7 +91,7 @@ When considering the utility of `@context` in Fluree specifically, the shorthand
 
 For example, if we issue a query with an `@context` that defines prefixes for `"http://example.org/"` and `http://schema.org/`, then we not only simplify the structure of our query, but our query results will also compact any fully-qualified IRIs that we prefixed in our `@context` map:
 
-<SandboxButton />
+{/* <SandboxButton /> */}
 ```json
 {
   "@context": {
@@ -112,7 +110,7 @@ For example, if we issue a query with an `@context` that defines prefixes for `"
 
 We are even able to provide entirely arbitrary aliases for terms. For example, in the following query, we define `schema` as a prefix for `http://schema.org/`, but we also alias `schema:name` as, simply, `name`:
 
-<SandboxButton />
+{/* <SandboxButton /> */}
 ```json
 {
   "@context": {
@@ -206,7 +204,7 @@ If we wanted to use shorthand terms in our transaction payload, we would need to
 
 Once our default context has been set, we can issue transactions and queries (and see query results) that all use our default context terms, without needing to re-specify them. For example, after the transaction above where our default context defines the term, `schema`, we can issue the following query with our `schema` shorthand, and also see our results using that same prefix term -- all without having to specify a particular `@context` map for those interactions:
 
-<SandboxButton />
+{/* <SandboxButton /> */}
 ```json
 {
   "select": {
@@ -225,7 +223,7 @@ We will often encounter scenarios where we have defined a default context, howev
 
 If we wanted to provide a temporary prefix for that IRI, while still leveraging our default context, we could do so like this:
 
-<SandboxButton />
+{/* <SandboxButton /> */}
 ```json
 {
   "@context": ["", { "foobar": "http://schema.org/" }],
@@ -250,7 +248,7 @@ This allows us to understand how `foobar`, which is defined in our temporary `@c
 
 In other scenarios, we may want to ignore the default context entirely, replacing it with a temporary context that we define for a specific query or transaction. Where previously we merged a temporary context into our default context, we now want to ignore the default context entirely and replace it with our temporary context. Here's how we'd do that:
 
-<SandboxButton />
+{/* <SandboxButton /> */}
 ```json
 {
   "@context": { "ex": "http://example.org/" },
@@ -278,7 +276,7 @@ Another way of describing this scenario is, despite possibly having a default co
 
 To do this, we use `@context: null`, both overriding the default context and opting not to replace it with any temporary context terms.
 
-<SandboxButton />
+{/* <SandboxButton /> */}
 ```json
 {
   "@context": null,
@@ -407,7 +405,7 @@ Similarly, if `schema` is defined as a prefix for `http://schema.org/`, then our
 
 An example query:
 
-<SandboxButton />
+{/* <SandboxButton /> */}
 ```json
 {
   "@context": {
@@ -434,7 +432,7 @@ Take, for example, the preference for allowing application code to more easily c
 
 Here is a transaction that has been simplified by using `@context` to shorthand our longer IRIs:
 
-<SandboxButton />
+{/* <SandboxButton /> */}
 ```json
 {
   "@context": {
@@ -490,7 +488,7 @@ However I could also retrieve that data without defining any `@context` at all, 
 
 And similarly, if I was retrieving this data for use in an application where `foobar:name` was equivalent to `schema:name` and where the application only understood `foobar:name`, I could use `@context` to return this data in a shape different from either my original transaction or the fully expanded version that I persisted:
 
-<SandboxButton />
+{/* <SandboxButton /> */}
 ```json
 {
     "@context": {
@@ -783,7 +781,7 @@ In JSON-LD / RDF, a relationship between two entities is a directed edge, which 
 
 It is easy to query for `ex:Person/1` as an entity that is friends with `ex:Person/2`. That query would look something like this:
 
-<SandboxButton />
+{/* <SandboxButton /> */}
 ```json
 {
   "select": {

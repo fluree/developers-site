@@ -6,8 +6,11 @@ import React from "react";
 import HomepageCards from "../components/home_card/HomepageCards";
 import styles from "./index.module.css";
 import RightArrowSvg from "../../static/img/RightArrow.svg";
-import SandboxDrawer from "../components/sandbox_drawer/SandboxDrawer";
 import { GlobalProvider } from "@site/src/hooks/useGlobal.jsx";
+
+{/*
+import SandboxDrawer from "../components/sandbox_drawer/SandboxDrawer";
+*/}
 
 import { AcademicCapIcon } from "@heroicons/react/24/outline";
 import { BeakerIcon } from "@heroicons/react/24/outline";

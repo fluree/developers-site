@@ -3,7 +3,7 @@
 		"module": "ESNext",
 		"moduleResolution": "Node"
 	},
-	"extends": "tsconfig/docusaurus.json",
+	"extends": "./tsconfig/docusaurus.json",
 	"include": [
 		"./src/"
 	],
