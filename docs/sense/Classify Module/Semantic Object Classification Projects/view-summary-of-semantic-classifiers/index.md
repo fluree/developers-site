@@ -1,5 +1,5 @@
 ---
-title: "Governance &amp; Summary for Classifiers"
+title: "Governance & Summary for Classifiers"
 date: 2024-07-11
 categories: 
   - "classify"

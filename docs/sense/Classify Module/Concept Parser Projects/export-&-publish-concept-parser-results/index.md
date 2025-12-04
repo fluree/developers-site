@@ -1,5 +1,5 @@
 ---
-title: "Export &amp; Publish Concept Parser Results"
+title: "Export & Publish Concept Parser Results"
 date: 2023-08-03
 categories: 
   - "classify"

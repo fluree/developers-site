@@ -1,5 +1,5 @@
 ---
-title: "Four Eyes Check &amp; Entitlements"
+title: "Four Eyes Check & Entitlements"
 date: 2023-08-03
 categories: 
   - "classify"

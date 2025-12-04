@@ -1,5 +1,5 @@
 ---
-title: "Refreshing &amp; Re-profiling Data"
+title: "Refreshing & Re-profiling Data"
 date: 2023-06-16
 categories: 
   - "classify"

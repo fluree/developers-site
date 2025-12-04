@@ -44,9 +44,21 @@ module.exports = {
 					type: "category",
 					label: "Tutorials & Walkthroughs",
 					items: [
-						"sense/Classify Module/Tutorials & Walkthroughs/setting-up-your-data/setting-up-your-data",
-						"sense/Classify Module/Tutorials & Walkthroughs/catalogs-&-classification-tutorial/creating-a-catalog-semantic-ontology",
-						"sense/Classify Module/Tutorials & Walkthroughs/classification-project-walkthrough/classification-project-walkthrough"
+						{
+							type: "doc",
+							id: "sense/Classify Module/Tutorials & Walkthroughs/setting-up-your-data/setting-up-your-data",
+							label: "Setting Up Your Data"
+						},
+						{
+							type: "doc",
+							id: "sense/Classify Module/Tutorials & Walkthroughs/catalogs-&-classification-tutorial/creating-a-catalog-semantic-ontology",
+							label: "Catalogs & Classification Tutorial"
+						},
+						{
+							type: "doc",
+							id: "sense/Classify Module/Tutorials & Walkthroughs/classification-project-walkthrough/classification-project-walkthrough",
+							label: "Classification Project Walkthrough"
+						}
 					]
 				},
 				{
@@ -79,7 +91,12 @@ module.exports = {
 						"sense/Classify Module/Data Sets/viewing-data-sets/index",
 						"sense/Classify Module/Data Sets/data-set-object-roles-&-entitlements/index",
 						"sense/Classify Module/Data Sets/creating-new Data Set/index",
-						"sense/Classify Module/Data Sets/map-data-set-schema/index",
+						{
+							type: "doc",
+							id: "sense/Classify Module/Data Sets/map-data-set-schema/index",
+							label: "Map Data Set Schema"
+							
+						},						
 						"sense/Classify Module/Data Sets/registering-profiling-a-data-set/index",
 						"sense/Classify Module/Data Sets/editing-a-data-set/index",
 						"sense/Classify Module/Data Sets/dataset-attributes/index",
@@ -184,9 +201,18 @@ module.exports = {
 						"sense/Classify Module/Semantic Object Classification Projects/editing-a-classification-project/index",
 						"sense/Classify Module/Semantic Object Classification Projects/training-a-classification-project/index",
 						"sense/Classify Module/Semantic Object Classification Projects/training-tasks-in-bulk-through-import/index",
-						"sense/Classify Module/Semantic Object Classification Projects/review-soc-project-prior-feedback/index",
+						{
+							type: "doc",
+							id: "sense/Classify Module/Semantic Object Classification Projects/review-soc-project-prior-feedback/index",
+							label: "Review SOC Project Prior Feedback"
+						},
+						
 						"sense/Classify Module/Semantic Object Classification Projects/cloning-and-deleting-a-classification-project/index",
-						"sense/Classify Module/Semantic Object Classification Projects/view-summary-of-semantic-classifiers/index"
+						{
+							type: "doc",
+							id: "sense/Classify Module/Semantic Object Classification Projects/view-summary-of-semantic-classifiers/index",
+							label: "View Summary of Semantic Classifiers"
+						}
 					]
 				},
 				{
@@ -194,15 +220,29 @@ module.exports = {
 					label: "Concept Parser Projects",
 					items: [
 						"sense/Classify Module/Concept Parser Projects/introduction-to-concept-parser-projects/index",
-						"sense/Classify Module/Concept Parser Projects/creating-a-project-initial-setup/index",
-						"sense/Classify Module/Concept Parser Projects/creating-a-project-training-&-project-data/index",
+						{
+							type: "doc",
+							id: "sense/Classify Module/Concept Parser Projects/creating-a-project-initial-setup/index",
+							label: "Creating a Concept Parser Proect - Initial Suetup"
+						},
+						{
+							type: "doc",
+							id: "sense/Classify Module/Concept Parser Projects/creating-a-project-training-&-project-data/index",
+							label: "Creating a Project - Training & Project Data"
+						},
+						
 						"sense/Classify Module/Concept Parser Projects/editing-a-concept-parser-project/index",
 						"sense/Classify Module/Concept Parser Projects/four-eyes-check-&-entitlements/index",
 						"sense/Classify Module/Concept Parser Projects/viewing-project-home-screen/index",
 						"sense/Classify Module/Concept Parser Projects/viewing-project-results/index",
 						"sense/Classify Module/Concept Parser Projects/training-a-concept-parser-project/index",
 						"sense/Classify Module/Concept Parser Projects/training-tasks-in-bulk-through-import/index",
-						"sense/Classify Module/Concept Parser Projects/cloning-&-deleting-a-project/index",
+						{
+							type: "doc",
+							id: "sense/Classify Module/Concept Parser Projects/cloning-&-deleting-a-project/index",
+							label: "Cloning & Deleting a Project"
+						},
+						
 						"sense/Classify Module/Concept Parser Projects/export-&-publish-concept-parser-results/index"
 					]
 				},
@@ -233,8 +273,18 @@ module.exports = {
 					type: "category",
 					label: "Tutorials & Walkthroughs",
 					items: [
-						"sense/Resolve Module/Tutorials & Walkthroughs/Setting Up Your Data/resolve-setting-up-your-data",
-						"sense/Resolve Module/Tutorials & Walkthroughs/Resolve Project Walkthrough/resolve-project-walkthrough"
+						{
+							type: "doc",
+							id: "sense/Resolve Module/Tutorials & Walkthroughs/Setting Up Your Data/resolve-setting-up-your-data",
+							label: "Setting up your Data"
+						},
+						{
+							type: "doc",
+							id: "sense/Resolve Module/Tutorials & Walkthroughs/Resolve Project Walkthrough/resolve-project-walkthrough",
+							label: "Resolve Project Walkthrough"
+						}
+						
+						
 					]
 				},
 				{
@@ -265,13 +315,23 @@ module.exports = {
 					items: [
 						"sense/Resolve Module/Data Sets/Viewing Data Sets/index",
 						"sense/Resolve Module/Data Sets/Creating New Data Set/index",
-						"sense/Resolve Module/Data Sets/Map Data Set Schema/index",
+						{
+							type: "doc",
+							id: "sense/Resolve Module/Data Sets/Map Data Set Schema/index",
+							label: "Map Data Set Schema"
+						},
+						
 						"sense/Resolve Module/Data Sets/Registering Profiling A Data Set/index",
 						"sense/Resolve Module/Data Sets/Editing A Data Set/index",
 						"sense/Resolve Module/Data Sets/Dataset Attributes/index",
 						"sense/Resolve Module/Data Sets/Data Set Sample/index",
 						"sense/Resolve Module/Data Sets/Data Set Relationships/index",
-						"sense/Resolve Module/Data Sets/Export Semantic Graph/index",
+						{
+							type: "doc",
+							id: "sense/Resolve Module/Data Sets/Export Semantic Graph/index",
+							label: "Export Semantic Graph"
+						},
+						
 						"sense/Resolve Module/Data Sets/Refreshing & Re-profiling Data/index",
 						"sense/Resolve Module/Data Sets/Editing Data Set Entitlements/index",
 						"sense/Resolve Module/Data Sets/Related Projects/index",
@@ -280,15 +340,23 @@ module.exports = {
 						"sense/Resolve Module/Data Sets/Classifying A Data Set/index",
 						"sense/Resolve Module/Data Sets/Deleting A Data Set/index",
 						"sense/Resolve Module/Data Sets/Exporting A Data Set/index",
-						"sense/Resolve Module/Data Sets/Data Set Object Roles & Entitlements/index"
+						"sense/Resolve Module/Data Sets/Data Set Object Roles & Entitlements/index",
 					]
 				},
 				{
 					type: "category",
 					label: "Entities",
 					items: [
+						"sense/Resolve Module/entities/Introduction to Entities/index",
+						"sense/Resolve Module/entities/Default Catalogs/index",
 						"sense/Resolve Module/entities/Creating An Entity/index",
-						"sense/Resolve Module/entities/Default Catalogs/index"
+						{
+							type: "doc",
+							id: "sense/Resolve Module/entities/Entity Attributes Explained In Depth/index",
+							label: "Entity Attributes Explained In-Depth"
+						},						
+						"sense/Resolve Module/entities/Editing Existing Entity/index",
+						"sense/Resolve Module/entities/Entity Attributes and Reference Data/index",
 					]
 				},
 				{
@@ -297,7 +365,11 @@ module.exports = {
 					items: [
 						"sense/Resolve Module/Resolution Projects/Introduction To Resolve Projects/index",
 						"sense/Resolve Module/Resolution Projects/Creating A Resolve Project/index",
-						"sense/Resolve Module/Resolution Projects/Import Resolve Project Mappings/index",
+						{
+							type: "doc",
+							id: "sense/Resolve Module/Resolution Projects/Import Resolve Project Mappings/index",
+							label: "Import Resolve Project Mappings"
+						},						
 						"sense/Resolve Module/Resolution Projects/Four Eyes Check & Entitlements/index",
 						"sense/Resolve Module/Resolution Projects/Training Matching Tasks/index",
 						"sense/Resolve Module/Resolution Projects/Training Merging Tasks/index",
@@ -308,8 +380,18 @@ module.exports = {
 						"sense/Resolve Module/Resolution Projects/Viewing Entities Mastered/index",
 						"sense/Resolve Module/Resolution Projects/Cloning A Resolve Project/index",
 						"sense/Resolve Module/Resolution Projects/Deleting A Project/index",
-						"sense/Resolve Module/Resolution Projects/Promote Resolve Project To Production/index",
-						"sense/Resolve Module/Resolution Projects/Production Golden Record Changes/index"
+						{
+							type: "doc",
+							id: "sense/Resolve Module/Resolution Projects/Promote Resolve Project To Production/index",
+							label: "Promote Resolve Project to Production",
+						},
+						{
+							type: "doc",
+							id: "sense/Resolve Module/Resolution Projects/Production Golden Record Changes/index",
+							label: "Production Golden Record Changes",
+						}
+						
+						
 					]
 				},
 				{
@@ -330,12 +412,12 @@ module.exports = {
 						"sense/Resolve Module/Data Quality Rules/Rule Applied Columns/index",
 						"sense/Resolve Module/Data Quality Rules/Rule Exceptions/index",
 						"sense/Resolve Module/Data Quality Rules/Importing Rules In Bulk/index",
+						"sense/Resolve Module/Data Quality Rules/Rule Validations & Error Handling/index",
 						"sense/Resolve Module/Data Quality Rules/Editing A Rule Definition/index",
 						"sense/Resolve Module/Data Quality Rules/Editing Rule Schedule(s)/index",
 						"sense/Resolve Module/Data Quality Rules/Editing Rule Entitlement(s)/index",
-						"sense/Resolve Module/Data Quality Rules/Rule Validations & Error Handling/index",
+						"sense/Resolve Module/Data Quality Rules/Deleting Rules/index",
 						"sense/Resolve Module/Data Quality Rules/Cloning A Rule/index",
-						"sense/Resolve Module/Data Quality Rules/Deleting Rules/index"
 					]
 				},
 				{
@@ -346,7 +428,11 @@ module.exports = {
 						"sense/Resolve Module/Golden Records/Data Quality Rules For Entities/index",
 						"sense/Resolve Module/Golden Records/Editing Golden Records Manually/index",
 						"sense/Resolve Module/Golden Records/Viewing Golden Records History/index",
-						"sense/Resolve Module/Golden Records/Golden Records Lineage & Relationships/index",
+						{
+							type: "doc",
+							id: "sense/Resolve Module/Golden Records/Golden Records Lineage & Relationships/index",
+							label: "Golden Records Lineage & Relationships"
+						},
 						"sense/Resolve Module/Golden Records/Viewing Resolve Project Confidence/index",
 						"sense/Resolve Module/Golden Records/Data Quality Of Golden Records/index",
 						"sense/Resolve Module/Golden Records/Data Quality Exceptions In Golden Records/index",
@@ -372,133 +458,134 @@ module.exports = {
 			]
 		}
 	],
-};
-learn: [
-	"learn/overview",
-	{
-		Tutorial: [
-			"learn/tutorial/introduction",
-			"learn/tutorial/fluree-data-model",
-			"learn/tutorial/working-with-graph-data",
-			"learn/tutorial/collaborative-data",
-		],
-	},
-	{
-		Guides: [
-			"learn/guides/working-with-context",
-			"learn/guides/working-with-ontologies",
-		],
-	},
-	{
-		Foundations: [
-			"learn/foundations/json-ld",
-			"learn/foundations/querying",
-			"learn/foundations/data-access-control",
-			"learn/foundations/verifiable-data",
-			"learn/foundations/semantic-vocabularies",
-			"learn/foundations/architecture-overview",
-			"learn/foundations/from-tables-to-graphs",
-		],
-	},
-];
+	learn: [
+		"learn/overview",
+		{
+			Tutorial: [
+				"learn/tutorial/introduction",
+				"learn/tutorial/fluree-data-model",
+				"learn/tutorial/working-with-graph-data",
+				"learn/tutorial/collaborative-data",
+			],
+		},
+		{
+			Guides: [
+				"learn/guides/working-with-context",
+				"learn/guides/working-with-ontologies",
+			],
+		},
+		{
+			Foundations: [
+				"learn/foundations/json-ld",
+				"learn/foundations/querying",
+				"learn/foundations/data-access-control",
+				"learn/foundations/verifiable-data",
+				"learn/foundations/semantic-vocabularies",
+				"learn/foundations/architecture-overview",
+				"learn/foundations/from-tables-to-graphs",
+			],
+		},
+	],
+	examples: [
+		{
+			"Sharing Secure, Trusted Data": [
+				"examples/datasets/academic-credentials/introduction",
+				"examples/datasets/academic-credentials/querying",
+			],
+		},
+	],
+	reference: [
+		"reference/cloud-http-api",
+		"reference/fluree-server-config",
+		"reference/flureeql-query-syntax",
+		"reference/history-syntax",
+		"reference/transaction-syntax",
+		"reference/cookbook",
+		"reference/error-codes",
+		"reference/policy-syntax",
+		"reference/data-types",
+		"reference/data-types",
+	],
+	cloud: [
+		"cloud/welcome",
+		{
+			type: "category",
+			label: "Getting Started",
+			items: [{ type: "autogenerated", dirName: "cloud/getting-started" }],
+		},
+		{
+			type: "category",
+			label: "Dataset View",
+			items: [
+				"cloud/datasets/overview",
+				"cloud/datasets/about",
+				"cloud/datasets/settings",
+				"cloud/datasets/notebooks",
+				"cloud/datasets/policies",
+				"cloud/datasets/view-data",
+				// {
+				// 	type: "category",
+				// 	label: "Data Management",
+				// 	items: [
+				// 		{
+				// 			type: "autogenerated",
+				// 			dirName: "cloud/datasets/data-management",
+				// 		},
+				// 	],
+				// },
+				// { type: "autogenerated", dirName: "cloud/datasets/dataset-pages" },
+			],
+		},
+		{
+			type: "category",
+			label: "How-To Guides",
+			items: [
+				"cloud/how-to/connect-apps",
+				// "cloud/how-to/apply-policy",
+				{
+					type: "category",
+					label: "Fluree + GenAI",
+					items: [
+						{
+							type: "doc",
+							id: "cloud/how-to/chat/quickstart",
+							label: "Quickstart Guide",
+						},
+						{
+							type: "category",
+							label: "Data Agent",
+							items: [
+								{
+									type: "doc",
+									id: "cloud/how-to/chat/intro",
+									label: "Introduction",
+								},
+								{
+									type: "doc",
+									id: "cloud/how-to/chat/with-unstructured",
+									label: "Chat with Documents",
+								},
+								{
+									type: "doc",
+									id: "cloud/how-to/chat/with-structured",
+									label: "Chat with Tables",
+								},
+								{
+									type: "doc",
+									id: "cloud/how-to/chat/local-mcp-server",
+									label: "LLM Client Integration (MCP)",
+								},
+								// {
+								// 	type: "doc",
+								// 	id: "cloud/how-to/chat/with-ontology",
+								// 	label: "Chat with Graph Data",
+								// },
+							],
+						},
+					],
+				},
+			],
+		},
+	]
 
-examples: [
-	{
-		"Sharing Secure, Trusted Data": [
-			"examples/datasets/academic-credentials/introduction",
-			"examples/datasets/academic-credentials/querying",
-		],
-	},
-];
-reference: [
-	"reference/cloud-http-api",
-	"reference/fluree-server-config",
-	"reference/flureeql-query-syntax",
-	"reference/history-syntax",
-	"reference/transaction-syntax",
-	"reference/cookbook",
-	"reference/error-codes",
-	"reference/policy-syntax",
-	"reference/data-types",
-	"reference/data-types",
-];
-cloud: [
-	{
-		type: "category",
-		label: "Getting Started",
-		items: [{ type: "autogenerated", dirName: "cloud/getting-started" }],
-	},
-	{
-		type: "category",
-		label: "Dataset View",
-		items: [
-			"cloud/datasets/overview",
-			"cloud/datasets/about",
-			"cloud/datasets/settings",
-			"cloud/datasets/notebooks",
-			"cloud/datasets/policies",
-			"cloud/datasets/view-data",
-			// {
-			// 	type: "category",
-			// 	label: "Data Management",
-			// 	items: [
-			// 		{
-			// 			type: "autogenerated",
-			// 			dirName: "cloud/datasets/data-management",
-			// 		},
-			// 	],
-			// },
-			// { type: "autogenerated", dirName: "cloud/datasets/dataset-pages" },
-		],
-	},
-	{
-		type: "category",
-		label: "How-To Guides",
-		items: [
-			"cloud/how-to/connect-apps",
-			// "cloud/how-to/apply-policy",
-			{
-				type: "category",
-				label: "Fluree + GenAI",
-				items: [
-					{
-						type: "doc",
-						id: "cloud/how-to/chat/quickstart",
-						label: "Quickstart Guide",
-					},
-					{
-						type: "category",
-						label: "Data Agent",
-						items: [
-							{
-								type: "doc",
-								id: "cloud/how-to/chat/intro",
-								label: "Introduction",
-							},
-							{
-								type: "doc",
-								id: "cloud/how-to/chat/with-unstructured",
-								label: "Chat with Documents",
-							},
-							{
-								type: "doc",
-								id: "cloud/how-to/chat/with-structured",
-								label: "Chat with Tables",
-							},
-							{
-								type: "doc",
-								id: "cloud/how-to/chat/local-mcp-server",
-								label: "LLM Client Integration (MCP)",
-							},
-							// {
-							// 	type: "doc",
-							// 	id: "cloud/how-to/chat/with-ontology",
-							// 	label: "Chat with Graph Data",
-							// },
-						],
-					},
-				],
-			},
-		],
-	},
-]
+};

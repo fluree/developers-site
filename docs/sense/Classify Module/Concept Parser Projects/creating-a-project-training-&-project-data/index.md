@@ -1,5 +1,5 @@
 ---
-title: "Creating a Concept Parser Project – Training &amp; Project Data"
+title: "Creating a Concept Parser Project – Training & Project Data"
 date: 2023-08-03
 categories: 
   - "classify"

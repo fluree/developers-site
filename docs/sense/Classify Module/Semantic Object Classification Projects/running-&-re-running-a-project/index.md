@@ -1,5 +1,5 @@
 ---
-title: "Running &amp; Re-running a Project"
+title: "Running & Re-running a Project"
 date: 2023-07-12
 categories: 
   - "classify"

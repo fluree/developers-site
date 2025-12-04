@@ -91,8 +91,11 @@ a:hover {
   margin-bottom: .5rem;
 }
 
-.hero__subtitle {
-  color: #656d76;
+p.hero__subtitle {
+  color: #ffffff;
+  font-size: 20px;
+  font-weight: 600;
+
 }
 
 .navbar {
@@ -297,6 +300,32 @@ code {
 .hero .hero-image {
   float: right;
   max-height: 15rem;
+}
+
+/* Two coloumns side by side in the row */
+.hero-banner .row.hero-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Left coloumn for title and subtitle */
+.hero-banner .hero-text {
+  flex: 1 1 0;
+  max-width: 480px;
+}
+
+/* Right coloumn for the yeti image */
+.hero-banner .hero-image {
+  flex: 0 0 auto;
+  display: flex;
+  justify-content: flex-end; 
+}
+
+.hero-banner .hero-image .hero__img {
+  max-width: 340px; /* Size of the image */ 
+  width: 100%;
+  height: auto;
 }
 
 .homepage-toc {

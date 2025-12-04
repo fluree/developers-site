@@ -1,5 +1,5 @@
 ---
-title: "Viewing Golden Records Lineage &amp; Relationships"
+title: "Viewing Golden Records Lineage & Relationships"
 date: 2023-05-19
 categories: 
   - "resolve"

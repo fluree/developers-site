@@ -9,7 +9,7 @@ tags:
   - "entity"
 ---
 
-You can access Tasks from the Project Home screen by clicking the Train Model icon in the _Entities Resolved_ section of the Project Home Screen. Please check the Section on [Viewing Project Home Screen](/viewing-project-home-screen/) to understand how the Project Home screen looks and works.
+You can access Tasks from the Project Home screen by clicking the Train Model icon in the _Entities Resolved_ section of the Project Home Screen. Please check the Section on [Viewing Project Home Screen](/docs/sense/Resolve%20Module/Resolution%20Projects/Viewing%20Project%20Home%20Screen/) to understand how the Project Home screen looks and works.
 
 Both the Project Admin OR the Project Reviewer/Approver can access the Train Model section.
 

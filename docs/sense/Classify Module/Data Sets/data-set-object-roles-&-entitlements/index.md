@@ -1,5 +1,5 @@
 ---
-title: "Data Set Object Roles &amp; Entitlements"
+title: "Data Set Object Roles & Entitlements"
 date: 2023-06-16
 categories: 
   - "role-entitlements-classify"

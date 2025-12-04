@@ -1,5 +1,5 @@
 ---
-title: "Rule Validations &amp; Error Handling"
+title: "Rule Validations & Error Handling"
 date: 2023-07-29
 categories: 
   - "classify"

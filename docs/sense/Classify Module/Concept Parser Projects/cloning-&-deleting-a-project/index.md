@@ -1,5 +1,5 @@
 ---
-title: "Cloning &amp; Deleting a Concept Parser Project"
+title: "Cloning & Deleting a Concept Parser Project"
 date: 2023-08-03
 categories: 
   - "classify"
