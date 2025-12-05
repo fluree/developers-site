@@ -95,8 +95,8 @@ module.exports = {
 							type: "doc",
 							id: "sense/Classify Module/Data Sets/map-data-set-schema/index",
 							label: "Map Data Set Schema"
-							
-						},						
+
+						},
 						"sense/Classify Module/Data Sets/registering-profiling-a-data-set/index",
 						"sense/Classify Module/Data Sets/editing-a-data-set/index",
 						"sense/Classify Module/Data Sets/dataset-attributes/index",
@@ -206,7 +206,7 @@ module.exports = {
 							id: "sense/Classify Module/Semantic Object Classification Projects/review-soc-project-prior-feedback/index",
 							label: "Review SOC Project Prior Feedback"
 						},
-						
+
 						"sense/Classify Module/Semantic Object Classification Projects/cloning-and-deleting-a-classification-project/index",
 						{
 							type: "doc",
@@ -230,7 +230,7 @@ module.exports = {
 							id: "sense/Classify Module/Concept Parser Projects/creating-a-project-training-&-project-data/index",
 							label: "Creating a Project - Training & Project Data"
 						},
-						
+
 						"sense/Classify Module/Concept Parser Projects/editing-a-concept-parser-project/index",
 						"sense/Classify Module/Concept Parser Projects/four-eyes-check-&-entitlements/index",
 						"sense/Classify Module/Concept Parser Projects/viewing-project-home-screen/index",
@@ -242,7 +242,7 @@ module.exports = {
 							id: "sense/Classify Module/Concept Parser Projects/cloning-&-deleting-a-project/index",
 							label: "Cloning & Deleting a Project"
 						},
-						
+
 						"sense/Classify Module/Concept Parser Projects/export-&-publish-concept-parser-results/index"
 					]
 				},
@@ -283,8 +283,8 @@ module.exports = {
 							id: "sense/Resolve Module/Tutorials & Walkthroughs/Resolve Project Walkthrough/resolve-project-walkthrough",
 							label: "Resolve Project Walkthrough"
 						}
-						
-						
+
+
 					]
 				},
 				{
@@ -320,7 +320,7 @@ module.exports = {
 							id: "sense/Resolve Module/Data Sets/Map Data Set Schema/index",
 							label: "Map Data Set Schema"
 						},
-						
+
 						"sense/Resolve Module/Data Sets/Registering Profiling A Data Set/index",
 						"sense/Resolve Module/Data Sets/Editing A Data Set/index",
 						"sense/Resolve Module/Data Sets/Dataset Attributes/index",
@@ -331,7 +331,7 @@ module.exports = {
 							id: "sense/Resolve Module/Data Sets/Export Semantic Graph/index",
 							label: "Export Semantic Graph"
 						},
-						
+
 						"sense/Resolve Module/Data Sets/Refreshing & Re-profiling Data/index",
 						"sense/Resolve Module/Data Sets/Editing Data Set Entitlements/index",
 						"sense/Resolve Module/Data Sets/Related Projects/index",
@@ -354,7 +354,7 @@ module.exports = {
 							type: "doc",
 							id: "sense/Resolve Module/entities/Entity Attributes Explained In Depth/index",
 							label: "Entity Attributes Explained In-Depth"
-						},						
+						},
 						"sense/Resolve Module/entities/Editing Existing Entity/index",
 						"sense/Resolve Module/entities/Entity Attributes and Reference Data/index",
 					]
@@ -369,7 +369,7 @@ module.exports = {
 							type: "doc",
 							id: "sense/Resolve Module/Resolution Projects/Import Resolve Project Mappings/index",
 							label: "Import Resolve Project Mappings"
-						},						
+						},
 						"sense/Resolve Module/Resolution Projects/Four Eyes Check & Entitlements/index",
 						"sense/Resolve Module/Resolution Projects/Training Matching Tasks/index",
 						"sense/Resolve Module/Resolution Projects/Training Merging Tasks/index",
@@ -390,8 +390,8 @@ module.exports = {
 							id: "sense/Resolve Module/Resolution Projects/Production Golden Record Changes/index",
 							label: "Production Golden Record Changes",
 						}
-						
-						
+
+
 					]
 				},
 				{
@@ -495,6 +495,7 @@ module.exports = {
 		},
 	],
 	reference: [
+		"reference/http-api",
 		"reference/cloud-http-api",
 		"reference/fluree-server-config",
 		"reference/flureeql-query-syntax",
@@ -503,7 +504,6 @@ module.exports = {
 		"reference/cookbook",
 		"reference/error-codes",
 		"reference/policy-syntax",
-		"reference/data-types",
 		"reference/data-types",
 	],
 	cloud: [
