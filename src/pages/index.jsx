@@ -254,7 +254,7 @@ const HomePage = () => {
 						</div> */}
 					</div>
 					<div className="col">
-						<div className="doc-section mb-4">
+						{/* <div className="doc-section mb-4">
 							<div className="flex items-center">
 								<BeakerIcon className="w-5 h-5 stroke-2 mr-2" />
 								<h3>Examples</h3>
@@ -268,7 +268,7 @@ const HomePage = () => {
 								<div className="description">
 									End-to-end examples showing real-world data and the workflows
 									for managing them
-								</div>
+								</div> */}
 								{/* <div className="doc-sub-group">
 									<h5>
 										<a href="/docs/examples/datasets/academic-credentials/introduction/">
@@ -280,8 +280,8 @@ const HomePage = () => {
 										<i>secure</i>, <i>trusted</i> data using only the database.
 									</div>
 								</div> */}
-							</div>
-						</div>
+							{/* </div>
+						</div> */}
 						<div className="doc-section mb-4">
 							<div className="flex items-center">
 								<NexusIcon className="w-5 h-5 stroke-2 mr-2" />
@@ -293,6 +293,22 @@ const HomePage = () => {
 								</h4>
 								<div className="description">
 									Introduction and Instructions for Fluree's Hosted Service.
+								</div>
+							</div>
+						</div>
+						<div className="doc-section mb-4">
+							<div className="flex items-center">
+								<BeakerIcon className="w-5 h-5 stroke-2 mr-2" />
+								<h3>Fluree Sense</h3>
+							</div>
+							<div className="doc-group">
+								<h4>
+									<a href="/docs/sense">
+										Welcome to Fluree Sense Documentation
+									</a>
+								</h4>
+								<div className="description">
+									Introduction and Instructions for Fluree's Data Management Solution.
 								</div>
 							</div>
 						</div>

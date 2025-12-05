@@ -9,7 +9,7 @@ const { remarkCodeHike } = require("@code-hike/mdx");
 module.exports = {
 	title: "Fluree Developers",
 	tagline: "Semantic graph data management system built with web3 tech",
-	url: "https://next.developers.flur.ee",
+	url: "https://developers.flur.ee",
 	baseUrl: "/",
 	trailingSlash: true,
 	onBrokenLinks: "throw",
@@ -83,6 +83,13 @@ module.exports = {
 					label: "Fluree Cloud",
 					to: "/cloud",
 					docId: "cloud/welcome",
+					type: "doc",
+					position: "left",
+				},
+				{
+					label: "Fluree Sense",
+					to: "/sense",
+					docId: "sense/index",
 					type: "doc",
 					position: "left",
 				},

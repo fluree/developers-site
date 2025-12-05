@@ -1,0 +1,319 @@
+---
+title: Welcome to Fluree Sense Documentation
+hide_title: true
+sidebar_position: 1
+---
+
+import Link from '@docusaurus/Link';
+
+<div className="hero-banner">
+  <div className="container">
+    <div className="row hero-row">
+      <div className="col col--6 hero-text">
+        <h1 className="hero__title">Welcome to Fluree Sense Documentation</h1>
+        <p className="hero__subtitle">
+          Guides and examples to help you master the Fluree Sense platform with confidence.
+        </p>
+      </div>
+
+      <div className="col col--6 hero-image">
+        <div className="hero__img-wrap">
+          <img
+            src="/img/Yeti_Pose_08-tv-ui.webp"
+            alt="Fluree Mascot"
+            className="hero__img"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div className="row margin-top--lg cards-row">
+  <div className="col col--4">
+    <div className="card">
+      <div className="card__header">
+        <div className="avatar">
+          <img
+            className="avatar__photo"
+            src="/img/favicon.ico"
+            alt="Getting Started"
+          />
+        </div>
+        <div className="avatar__intro">
+          <h3 className="avatar__name">Getting Started</h3>
+          <small className="avatar__subtitle">Help Docs</small>
+        </div>
+      </div>
+
+      <div className="card__body">
+        <p>
+          Step-by-step guides and examples to get you started quickly with Fluree Sense.
+        </p>
+      </div>
+
+      <div className="card__footer">
+        <Link
+          className="button button--primary button--block"
+          to="/docs/sense/Getting%20Started/Getting%20Started/Global%20Search/">
+          Get Started
+        </Link>
+      </div>
+    </div>
+  </div>
+
+  <div className="col col--4">
+    <div className="card">
+      <div className="card__header">
+        <div className="avatar">
+          <img
+            className="avatar__photo"
+            src="/img/favicon.ico"
+            alt="Classify Module"
+          />
+        </div>
+        <div className="avatar__intro">
+          <h3 className="avatar__name">Classify Module</h3>
+          <small className="avatar__subtitle">Help Docs</small>
+        </div>
+      </div>
+
+      <div className="card__body">
+        <p>
+          Learn how to use the Fluree Sense Classify module with guides and walkthroughs.
+        </p>
+      </div>
+
+      <div className="card__footer">
+        <Link
+          className="button button--primary button--block"
+          to="/docs/sense/Classify%20Module/Introduction/getting-started/">
+          Classify Docs
+        </Link>
+      </div>
+    </div>
+  </div>
+
+  <div className="col col--4">
+    <div className="card">
+      <div className="card__header">
+        <div className="avatar">
+          <img
+            className="avatar__photo"
+            src="/img/favicon.ico"
+            alt="Resolve Module"
+          />
+        </div>
+        <div className="avatar__intro">
+          <h3 className="avatar__name">Resolve Module</h3>
+          <small className="avatar__subtitle">Help Docs</small>
+        </div>
+      </div>
+
+      <div className="card__body">
+        <p>
+          Understand and explore the Resolve module with practical guides and examples.
+        </p>
+      </div>
+
+      <div className="card__footer">
+        <Link
+          className="button button--primary button--block"
+          to="/docs/sense/Resolve%20Module/Introduction/Key%20Terms%20&%20Concepts/">
+          Resolve Docs
+        </Link>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>{`
+  /* ========== HERO ========== */
+  .hero-banner {
+    background: linear-gradient(135deg, #1e2347 0%, #6b4c9a 50%, #4db8e8 100%);
+    padding: 1rem 1rem;
+    color: white;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+  }
+
+  .hero-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .hero-text {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .hero__title {
+    font-size: 2.25rem;
+    font-weight: 700;
+    line-height: 1.15;
+    margin: 0 0 0.6rem 0;
+  }
+
+  .hero__subtitle {
+    font-size: 1.05rem;
+    opacity: 0.95;
+    margin: 0;
+  }
+
+  /* IMAGE: medium size */
+  .hero-image {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .hero__img-wrap {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+  }
+
+  /* medium size -- adjust max-width to taste (260-320px) */
+  .hero__img {
+    max-width: 280px; /* MEDIUM size */
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 12px;
+    transition: transform 0.25s ease;
+  }
+
+  .hero__img:hover {
+    transform: translateY(-4px);
+  }
+
+  /* ========== CARDS ========== */
+  .cards-row {
+    margin-top: 1.5rem;
+  }
+
+  /* make column children stretch so cards are equal height */
+  .cards-row > .col {
+    display: flex;
+  }
+
+  .cards-row .card {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .cards-row .card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 8px 28px rgba(0,0,0,0.12);
+  }
+
+  /* header - avatar above name, centered (your original style) */
+  .card__header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1.25rem 1.25rem 0.5rem 1.25rem;
+  }
+
+  .avatar {
+    width: 86px;
+    height: 86px;
+    border-radius: 50%;
+    background: #4db8e8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0.75rem;
+  }
+
+  .avatar__photo {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .avatar__intro {
+    text-align: center;
+  }
+
+  .avatar__name {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin: 0;
+  }
+
+  .avatar__subtitle {
+    color: #6b6b6b;
+    font-size: 0.85rem;
+  }
+
+  .card__body {
+    flex: 1; /* push footer to bottom */
+    padding: 0.5rem 1.25rem 1rem 1.25rem;
+    text-align: center; /* centered text as before */
+  }
+
+  .card__body p {
+    margin: 0;
+    color: var(--ifm-font-color-base);
+    line-height: 1.5;
+  }
+
+  /* footer anchored to bottom; button full width */
+  .card__footer {
+    padding: 1rem 1.25rem 1.25rem 1.25rem;
+  }
+
+  .card__footer .button--block {
+    width: 100%;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    box-sizing: border-box;
+  }
+
+  /* ========== RESPONSIVE ========== */
+  @media (max-width: 996px) {
+    .hero-row {
+      flex-direction: column-reverse;
+      text-align: center;
+    }
+
+    .hero__title {
+      font-size: 2rem;
+    }
+
+    .hero__subtitle {
+      font-size: 1rem;
+    }
+
+    .hero__img {
+      max-width: 220px;
+      margin: 1rem auto;
+    }
+
+    .card__body {
+      text-align: center;
+    }
+
+    .card__header {
+      justify-content: center;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .hero__title { font-size: 1.6rem; }
+    .hero__subtitle { font-size: 0.95rem; }
+    .hero-banner { padding: 2rem 0.75rem; }
+  }
+`}</style>
