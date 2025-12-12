@@ -8,15 +8,15 @@ tags:
   - "data-set"
 ---
 
-Let us look at the Four Eyes and Entitlement aspect of Step 2 of [Project Creation](https://sensedocsdev.wpengine.com/creating-a-concept-parser-project-initial-setup/) in some more detail here.  
+Let us look at the Four Eyes and Entitlement aspect of Step 2 of [Project Creation](/docs/sense/Classify%20Module/Concept%20Parser%20Projects/creating-a-project-initial-setup/index.md) in some more detail here.  
   
 There are three types of roles in the system for any Project:
 
 1. **Project Admin:** Project Administrators can make any modification to a project. This includes changing the quantity of data sets to include in the project, changing project user entitlements, re-running models or even deleting the Project. By default, the person creating the Project is in the Project Admin role.
 
-3. **Reviewer:** This role provides 1st level feedback to a Training Task. It is mandatory to provide a Reviewer to a Resolve Project, and you can have more than one reviewer.
+2. **Reviewer:** This role provides 1st level feedback to a Training Task. It is mandatory to provide a Reviewer to a Resolve Project, and you can have more than one reviewer.
 
-5. **Approver:** This role validates the feedback provided by the Reviewer. The System Administrator can set a parameter to determine whether independent Approvals (i.e., mandatory four-eye checks) are required.
+3. **Approver:** This role validates the feedback provided by the Reviewer. The System Administrator can set a parameter to determine whether independent Approvals (i.e., mandatory four-eye checks) are required.
 
 A user can’t be assigned both Reviewer and Approver roles. The System will ensure that unique Reviewers and Approvers are assigned to individual tasks if the mandatory four-eye check option is enabled.
 

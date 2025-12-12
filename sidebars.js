@@ -88,7 +88,7 @@ module.exports = {
 						{
 							type: "doc",
 							id: "sense/Classify Module/Data Sets/map-data-set-schema/index",
-							label: "Map Data Set Schema"
+							label: "Map Data Set Schema to Existing Catalog"
 
 						},
 						"sense/Classify Module/Data Sets/registering-profiling-a-data-set/index",
@@ -116,7 +116,11 @@ module.exports = {
 						"sense/Classify Module/Catalogs/Viewing Catalogs/index",
 						"sense/Classify Module/Catalogs/Creating A New Catalog/index",
 						"sense/Classify Module/Catalogs/Importing Catalog Structure/index",
-						"sense/Classify Module/Catalogs/Import Semantic Files To Catalog/index",
+						{
+							type: "doc",
+							id: "sense/Classify Module/Catalogs/Import Semantic Files To Catalog/index",
+							label: "Import Semantic Files to Catalog"
+						},
 						"sense/Classify Module/Catalogs/Semantic Objects & Concepts/index",
 						"sense/Classify Module/Catalogs/Managing Catalogs/index",
 						"sense/Classify Module/Catalogs/Viewing Ad Hoc Mappings To Catalogs/index",
@@ -198,7 +202,7 @@ module.exports = {
 						{
 							type: "doc",
 							id: "sense/Classify Module/Semantic Object Classification Projects/review-soc-project-prior-feedback/index",
-							label: "Review SOC Project Prior Feedback"
+							label: "Review Prior Feedback for SOC Projects"
 						},
 
 						"sense/Classify Module/Semantic Object Classification Projects/cloning-and-deleting-a-classification-project/index",

@@ -38,7 +38,7 @@ Fluree Sense recognizes the need for fine-grained user roles for _Catalog_ manag
 
 5. _Catalog_ Approver
 
-The significance of these _Catalog_ roles and Entitlements has already been explained in the earlier [section.](#)
+The significance of these _Catalog_ roles and Entitlements has already been explained in the earlier [section](/docs/sense/Classify%20Module/Catalogs/Catalog%20Object%20Entitlements/index.md)
 
 ![](images/49_create_catalog_2.png)
 

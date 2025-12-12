@@ -8,8 +8,8 @@ categories:
   - "dq-catalog-views-resolve"
 tags: 
   - "catalog"
-  - "data-quality-rules"
   - "data-set"
+  - "data-quality-rules"
 ---
 
 Let us check out the Data Quality Rule Views at the Catalog Level. These include:
