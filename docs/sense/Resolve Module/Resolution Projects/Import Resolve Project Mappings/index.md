@@ -8,7 +8,7 @@ categories:
 
 This feature provides a user with Project Admin entitlement , the ability to add mappings in bulk to a Resolve Project through CSV upload. This is a useful feature and an alternate to the drag-and-drop method of adding mappings in the '_Map Data Sets to Entity Model_' screen.
 
-You can review the complete Resolve Project Creation process [here](https://sensedocsdev.wpengine.com/creating-a-resolve-project/?cid=40). The above screen will be a part of this flow as well as accessible when Editing the Project or from _'Manage Project Data'_ link from the project Home screen.
+You can review the complete Resolve Project Creation process [here](/docs/sense/Resolve%20Module/Resolution%20Projects/Creating%20A%20Resolve%20Project/index.md). The above screen will be a part of this flow as well as accessible when Editing the Project or from _'Manage Project Data'_ link from the project Home screen.
 
 Assuming the user is now in this screen, let us review the Steps and validations involved in Importing Mappings:
 
@@ -40,7 +40,7 @@ In this case, it is giving an error message in red that not all the rows mapping
 
 **Step 4**: Re-run the Model after any final adjustments
 
-The user can still do any final manual adjustments after which they just need to re-run the Model which should work the same way that it does in case of manual drag and drop mappings. The project will re-run and generate the results based on these mappings. This is explained further in detail in the [Create Resolve Project Flow](https://sensedocsdev.wpengine.com/creating-a-resolve-project/).
+The user can still do any final manual adjustments after which they just need to re-run the Model which should work the same way that it does in case of manual drag and drop mappings. The project will re-run and generate the results based on these mappings. This is explained further in detail in the [Create Resolve Project Flow](/docs/sense/Resolve%20Module/Resolution%20Projects/Creating%20A%20Resolve%20Project/index.md).
 
 Note the update to the mappings seen - all except one from the csv (which had error) got updated here.
 

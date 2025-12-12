@@ -14,7 +14,7 @@ To Edit a rule, you are provided with multiple tabs for easy editing of manageab
 
 If you recall, in an earlier section we had Created a New Business Rule. Now let us look at how the very same rule’s ‘Rule Definition’ can be edited. Rule Definition refers to the operational details of the rule such as Name, Description, Dimension and Exception condition(s). This is true for both types of rules.
 
-To edit a _Business or Technical Rule’_s Definition:
+To edit a Business or Technical Rule’s Definition:
 
 **Step 1:** Select the Rule from the left panel. The Rule opens on the right with the Rule Definition Tab opened as default.
 

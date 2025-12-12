@@ -88,7 +88,7 @@ In ‘Flag an Exception when’ section
 
 **System Validations**
 
-1. On pressing the _Next Step_, the basic details of the rule get created in the system even if all details are not yet filled and it is not ready for running. Thus a ‘draft’ of the rule gets created and even if you press Cancel in the next screen onwards, you can come back later and complete the rule details in [Editing of rules](https://sensedocsdev.wpengine.com/editing-a-rule-definition/) which we’ll take up separately.
+1. On pressing the _Next Step_, the basic details of the rule get created in the system even if all details are not yet filled and it is not ready for running. Thus a ‘draft’ of the rule gets created and even if you press Cancel in the next screen onwards, you can come back later and complete the rule details in [Editing of rules](/docs/sense/Resolve%20Module/Data%20Quality%20Rules/Editing%20A%20Rule%20Definition/index.md) which we’ll take up separately.
 
 3. Following are some of the validations required to be completed for Next Step to enable:
 
@@ -165,4 +165,4 @@ In this case, assume that the user chooses to Run the Rule just once and immedia
 
 **System Validations**
 
-1. Fields and validations are exactly the same as the ‘Schedule Run Execution’ step of [Technical Rule creation](https://sensedocsdev.wpengine.com/creating-technical-rule/) flow. Please check out the images and tabular listing of validations there.
+1. Fields and validations are exactly the same as the ‘Schedule Run Execution’ step of [Technical Rule creation](/docs/sense/Resolve%20Module/Data%20Quality%20Rules/Creating%20Technical%20Rule/index.md) flow. Please check out the images and tabular listing of validations there.

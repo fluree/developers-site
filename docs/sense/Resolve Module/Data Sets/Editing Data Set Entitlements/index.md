@@ -11,7 +11,7 @@ tags:
   - "data-source"
 ---
 
-In an earlier [section](https://sensedocsdev.wpengine.com/data-set-object-roles-entitlements/), we looked at how Data Set Entitlements are set when creating a Data Set. However, it is quite possible that you may wish to edit those existing rights. This can be done from the _‘Data Entitlements_’ tab in the Data Set detail view.  
+In an earlier [section](/docs/sense/Resolve%20Module/Data%20Sets/Data%20Set%20Object%20Roles%20&%20Entitlements/index.md), we looked at how Data Set Entitlements are set when creating a Data Set. However, it is quite possible that you may wish to edit those existing rights. This can be done from the _‘Data Entitlements_’ tab in the Data Set detail view.  
 This tab only gets enabled if the logged-in user has the _Data Set Admin_ role.
 
 To Edit Data Set Entitlements:

@@ -27,48 +27,38 @@ Follow the steps below to upload data into your Sandbox area:
 
 ![Define Data Sets Screen](https://sensedocsdev.wpengine.com/wp-content/uploads/2023/05/5_dataset_create_step6-1.png)
 
-**Step 7. Define Data Sets:** Enter the following details about your uploaded files, then click **Next Step** once it becomes active:
+**Step 7. Define Data Sets:** Enter the following details about the file[s] and select the Next Step button when activated.
 
 - **Name**  
-  Provide a meaningful display name for the Data Set.  
-  The system assigns a default name, but you can edit it.
+ Provide the Display Name of the Data Set. The system will assign default names to the file[s] or Data Set, but the user can change them to a more understandable display name.
 
 - **Description (Optional)**  
-  Briefly describe the contents of the file so others understand the data.
+  The user can briefly describe the file’s content so that others can understand what is in the data set.
 
 - **File Type**  
-  Select the appropriate type from the dropdown.  
-  In the Sandbox, only CSV is available.  
-  In full deployments, options like Parquet, Delta, or AVRO are supported.  
-  You can also use **Automatically Detect** to let the system infer schema and data type.
+  Select CSV from the drop-down (limited for Sandbox Trial Users). In the complete solution, the user can select from various options based on the type of file uploaded. The user can also click the Automatically Detect button and have the system scan a few sample rows from the file and detect the data type and schema.
 
 - **Delimiter**  
-  Defines the delimiter (defaults to comma for CSV).  
-  Not required for Parquet or Delta files.
+  Define the Delimiter associated with the file. If the file type Is CSV, it will default to Comma. If the file type Is Parquet or Delta, then specifying a delimiter is not needed.
 
 - **Header Row Included**  
-  Check this option if the file includes a header row.  
-  If not, manually define the schema in the **Schema** field.
+  It must be checked if the file has a header row. If the file does not have a header row, fill the Schema box to the right.
 
 - **Schema**  
-  Input JSON schema values here.  
-  (Note: Header row takes precedence if selected.)
-
-
-**Step 8. Add User Entitlements:** Here, you can define which users can access the data set.  
-By default, you can select a **Group** from your Tenant environment.
-Once a group is selected, click **View Users** to display all members in the right panel.  
-You can assign one of the following **roles**:
-
-- **Admin:** Full control, including data access and settings.  
-- **Read Only:** Can only view data samples and profiles.  
-- **Read/Write:** Can modify properties like name or profile sample size but cannot change entitlements.
-
-Click **Next Step** when done.
-
+  Put the JSON values in this text box (NOTE: if the Header Row is selected, it will take precedence)
+Once those values have been entered, the Next Step button will be activated.
 ![User Entitlements](https://sensedocsdev.wpengine.com/wp-content/uploads/2023/05/6_dataset_entitlements-1.png)
 
-**Step 9. Set the Refresh Schedule:** Here, users can configure the data refresh frequency or profile generation schedule. In a live deployment, users can pull live data at defined intervals.  
-However, in the trial version, scheduling is disabled. Once done, click Save and Close to register the Data Set and trigger profile creation.The registered information becomes available when creating a new project.
+**Step 8. Add User Entitlements:** The user can define which other users can access the data set from this screen. There will be a Default group which you can select from the Tenant environment.
+Once the user selects a group, they will click the View Users button. It will display all Users in the selected Group in the right panel. From there, the user can choose from one of three roles to control data access:
+
+- **Admin:** The admin has full rights to change data access control entitlements and any settings associated with the Data Set.  
+- **Read Only:** In this mode, one can only view data samples and profiles but does not have the right to change any Data Set properties.
+- **Read/Write:** Can change other data set properties, such as names and profile sample size, but cannot change data set entitlements.
+
+Once the permissions are updated, click on the Next Step button.
 
 ![Dataset Scheduler](https://sensedocsdev.wpengine.com/wp-content/uploads/2023/05/7_dataset_scheduler_step_final-1.png)
+
+**Step 9. Set the Refresh Schedule:** In this section, the user can configure the number of data sets to run a profile. If the Source was live (e.g., a live connection to a database or NoSQL source), the user could optionally schedule the frequency to refresh the data set by pulling live data from the Source. In the trial version, profile and data refresh scheduling will be disabled. Once the user clicks on the Save and Close button, the system will register the Data Set and trigger the creation of the data profile. This information will then be available when the user creates a new project.
+
