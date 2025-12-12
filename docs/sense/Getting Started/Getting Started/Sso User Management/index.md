@@ -8,7 +8,7 @@ categories:
 
 In the above sections, we’ve covered adding users from the UI or import. A user basically represents an identity and _Fluree Sense_ supports SSO based identification. This is configured during Tenant Setup by the System admin where the email is taken as the identity of the user as defined through Windows Active Directory.
 
-Once the Tenant has been configured to be the one which uses SSO, the new users are also added according to a slightly modified mechanism – which considers **their** SSO identities.
+Once the Tenant has been configured to be the one which uses SSO, the new users are also added according to a slightly modified mechanism – which considers their SSO identities.
 
 These modifications are seen during the following:
 

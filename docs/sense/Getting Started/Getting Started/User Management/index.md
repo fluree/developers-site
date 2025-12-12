@@ -63,7 +63,7 @@ A default group is also visible on the left. Unless a specific group is selected
 
 In the earlier section, we covered how to create new groups. Hence, in the case of multiple groups, the logged-in user needs to select the group from the left panel to which they want to add new users before moving on to Step 3.
 
-**Step 3.**Click on the _Add Users_ icon in the Groups and _Users screen_.  
+**Step 3.** Click on the _Add Users_ icon in the Groups and _Users screen_.  
 Clicking on the icon opens the _add user_ popup which contains the following fields and validations.
 
 | **Fields / Inputs** | **Usage / Examples** | **Validation** |

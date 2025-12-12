@@ -20,7 +20,9 @@ The below table shows an illustration of how raw data can be classified and pars
 
 | **Raw Data** | **Classification**  | **Concept Parser** |
 | --- | --- | --- |
-| A 4 feet long pipe with 3” diameter of red color is available. It is made of zinc ….          A ½-inch diameter wire with 3 Ampere rating in a 30 mts bundle of pure copper 12 gauge.         Grey-coloured hard glass beaker of 5 Litre capacity without spout. Certification ISO 3819. …. And more such Long Description in Data Set. | Derived Classes Pipe               Wire                Beaker | Sub-Concepts: Value after parsing:   Length: 4 feet   Diameter:  3 inch   Color:  Red   Material:  Zinc      Diameter:  ½ inch   Ampere Rating : 3   Gauge:  12   Length : 30 mts   Material : Copper      Colour : Grey   Capacity: 5 Litres   Spout:  No   Certification : ISO 3819   Material:  Hard Glass |
+| A 4 feet long pipe with 3” diameter of red color is available. It is made of zinc. | Derived Classes Pipe | Sub-Concepts: Value after parsing:<br/>Length: 4 feet<br/>Diameter: 3 inch<br/>Color: Red<br/>Material: Zinc
+A ½-inch diameter wire with 3 Ampere rating in a 30 mts bundle of pure copper 12 gauge. | Wire | Diameter:  ½ inch<br/>Ampere Rating : 3<br/>Gauge:  12<br/>Length : 30 mts<br/>Material : Copper
+Grey-coloured hard glass beaker of 5 Litre capacity without spout. Certification ISO 3819. <br/><br/> And more such Long Description in Data Set.  | Beaker | Colour : Grey<br/>Capacity: 5 Litres<br/>Spout:  No<br/>Certification : ISO 3819<br/>Material:  Hard Glass 
 
 As we see above, the data can be parsed to a set of key-value pairs, which may differ from each category or ‘_class._’  
   

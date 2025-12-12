@@ -16,13 +16,7 @@ module.exports = {
 			type: "category",
 			label: "Getting Started with Sense",
 			items: [
-				{
-					type: "category",
-					label: "System Glossary",
-					items: [
-						"sense/Getting Started/System Glossary/sense-glossary",
-					]
-				},
+				"sense/Getting Started/System Glossary/System Glossary",
 				{
 					type: "category",
 					label: "Getting Started",
@@ -223,7 +217,7 @@ module.exports = {
 						{
 							type: "doc",
 							id: "sense/Classify Module/Concept Parser Projects/creating-a-project-initial-setup/index",
-							label: "Creating a Concept Parser Proect - Initial Suetup"
+							label: "Creating a Concept Parser Project - Initial Setup"
 						},
 						{
 							type: "doc",

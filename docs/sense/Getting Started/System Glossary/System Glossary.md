@@ -1,28 +1,16 @@
 ---
-id: sense-glossary
-title: System Glossary
-sidebar_position: 1
+titel: "Fluree Sense Glossary in relation to Ontology Terms"
 ---
-
-# System Glossary
-
 ## Fluree Sense Glossary in relation to Ontology Terms
-
-You will find a number of terms used in **Fluree Sense** that are well known to the **Data community**.  
-We’ve described the key ones [here](https://sensedocsdev.wpengine.com/key-terms-and-concepts/) for **Classify** and [here](https://sensedocsdev.wpengine.com/key-terms-concepts/) for **Resolve**.  
-
-However, it is also useful to understand this glossary in relation to equivalent **Ontology terms**.  
+You will find a number of terms used in Fluree Sense that are well known to the Data community.  
+We’ve described the key ones [here](/docs/sense/Classify%20Module/Introduction/key-terms-and-concepts/index.md) for Classify and [here](/docs/sense/Resolve%20Module/Introduction/Key%20Terms%20&%20Concepts/index.md) for Resolve.  
+However, it is also useful to understand this glossary in relation to equivalent Ontology terms.  
 The table below provides a ready-reckoner.
 
 ---
 
-### Context…
-
 <details>
 <summary><strong>Read More →</strong></summary>
-
-You will find a number of terms used in Fluree Sense that are well known to the Data community. We've described the key ones [here](https://sensedocsdev.wpengine.com/key-terms-and-concepts/) for **Classify** and [here](https://sensedocsdev.wpengine.com/key-terms-concepts/) for **Resolve**.  
-However it is also useful to understand this glossary in relation to equivalent **Ontology terms**. The table below provides a ready-reckoner.
 
 <div style={{overflowX: "auto"}}>
 

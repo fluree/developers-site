@@ -1,5 +1,5 @@
 ---
-title: "Profile Management &amp; Header Controls"
+title: "Profile Management & Header Controls"
 date: 2023-07-24
 categories: 
   - "user-management"
