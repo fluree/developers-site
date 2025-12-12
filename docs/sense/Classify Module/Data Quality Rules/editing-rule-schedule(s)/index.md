@@ -48,4 +48,4 @@ To edit the rule schedule of multiple Business or Technical rules in bulk
 
 5. Save & Review Changes.
 
-Please refer to the [earlier section](https://sensedocsdev.wpengine.com/scheduling-rules/) where we covered this in detail earlier, to view the screens for individual and bulk schedule editing.
+Please refer to the [earlier section](/docs/sense/Classify%20Module/Data%20Quality%20Rules/scheduling-rules/index.md) where we covered this in detail earlier, to view the screens for individual and bulk schedule editing.

@@ -18,7 +18,7 @@ In the earlier section, we saw the actual process of _Training Tasks_ from the T
 
 As in the case of Catalog Tasks etc., the downloaded file will contain only the Tasks assigned to you on which you can provide feedback. However, even if you try to add a task for which feedback is complete or has not been assigned to you, the same will be ignored.
 
-As a Project Admin downloading the file, there are two scenarios: a) You've only been assigned the Project Admin role - In this case you will be able to download all Tasks b) You've been assigned Project Admin role and another role (either Reviewer or Approver) - In this case you'll be able to download only the Tasks assigned to you (\* as the Reviewer or Approver) . This makes it easier for the user to download and complete their relevant tasks if having multiple roles. _\[ Scenario b) has been implemented as feature enhancement in 2024\]_
+As a Project Admin downloading the file, there are two scenarios: a) You've only been assigned the Project Admin role - In this case you will be able to download all Tasks b) You've been assigned Project Admin role <u>and another role</u> (either Reviewer or Approver) - In this case you'll be able to download only the Tasks assigned to you (\* as the Reviewer or Approver) . This makes it easier for the user to download and complete their relevant tasks if having multiple roles. _\[ Scenario b) has been implemented as feature enhancement in 2024\]_
 
 **Step 3.** Edit the Template carefully providing feedback for your Tasks
 

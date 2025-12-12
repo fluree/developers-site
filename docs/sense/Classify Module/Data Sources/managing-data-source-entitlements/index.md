@@ -8,8 +8,8 @@ categories:
   - "managing-entitlements-resolve"
 tags: 
   - "catalog"
-  - "data-quality-rules"
   - "data-source"
+  - "data-quality-rules"
 ---
 
 We’ve seen in earlier sections that a user can only modify or access the details of a Data Source where they are the _Data Source Admin._

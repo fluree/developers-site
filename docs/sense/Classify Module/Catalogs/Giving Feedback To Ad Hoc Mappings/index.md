@@ -5,9 +5,9 @@ categories:
   - "classify"
   - "feedback-adhoc-mappings"
 tags: 
-  - "data-quality-rules"
   - "data-set"
   - "data-source"
+  - "data-quality-rules"
 ---
 
 Now that we have seen what ad-hoc mappings look like in the earlier section, let's check out how we can give feedback to these mappings. The process of feedback is almost the same at both the _Semantic Object_ and _Concept_ level. The only difference is that the feedback at _Semantic Object_ is being given to Data Set mappings whereas at Concept Level is being given to Data Set column mappings.  
@@ -32,9 +32,9 @@ As can be seen, we have some fairly accurate mappings, but the LNAME is known by
 
 1. Change their mind and keep the existing mapping.
 
-3. Downvote the current and suggest an alternative (which is counted as an up-vote)
+2. Downvote the current and suggest an alternative (which is counted as an up-vote)
 
-5. Just downvote the current when they are not sure of an alternative.
+3. Just downvote the current when they are not sure of an alternative.
 
 **Multi-User Feedback**
 

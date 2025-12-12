@@ -7,8 +7,8 @@ categories:
   - "rule-exceptions-classify"
   - "rule-exceptions-resolve"
 tags: 
-  - "data-quality-rules"
   - "data-source"
+  - "data-quality-rules"
 ---
 
 Exceptions are essentially the results of the rule. If the rule is broken for any record of the concerned Data Set, an exception record is generated. This is available for view once the Rule Run is complete and the Score appears in the Rules List grid, for that rule.
@@ -19,15 +19,15 @@ There are three possibilities when you do this:
 
 1. Rule executes (called a ‘run’) and there are exceptions.
 
-3. Rule executes (called a ‘run’) and there are no exceptions.
+2. Rule executes (called a ‘run’) and there are no exceptions.
 
-5. Rule is unable to complete its run due to some error.
+3. Rule is unable to complete its run due to some error.
 
 Let’s look at the screen below to see how the exceptions are shown in the main view in case of the first scenario.
 
 ![](images/135_dq_execution_results_2.png)
 
-In the second scenario, the main difference is that the lower part of the right panel will not show any exceptions and the Quality score will understandably be 100 %. Case 3 will also not show any exceptions but will have a different look as is detailed in [this section](https://sensedocsdev.wpengine.com/rule-validations-error-handling/).
+In the second scenario, the main difference is that the lower part of the right panel will not show any exceptions and the Quality score will understandably be 100 %. Case 3 will also not show any exceptions but will have a different look as is detailed in [this section](/docs/sense/Classify%20Module/Data%20Quality%20Rules/rule-validations-&-error-handling/index.md).
 
 When the user clicks the ‘Export Report’ button, a CSV with all the generated exceptions is shown looking the below snapshot:
 
