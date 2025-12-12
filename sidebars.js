@@ -165,8 +165,8 @@ module.exports = {
 						"sense/Classify Module/Data Quality Rules/rule-exceptions/index",
 						"sense/Classify Module/Data Quality Rules/importing-rules-in-bulk/index",
 						"sense/Classify Module/Data Quality Rules/editing-a-rule-definition/index",
-						"sense/Classify Module/Data Quality Rules/editing-rule-schedule(s)/index",
-						"sense/Classify Module/Data Quality Rules/editing-rule-entitlement(s)/index",
+						"sense/Classify Module/Data Quality Rules/editing-rule-schedules/index",
+						"sense/Classify Module/Data Quality Rules/editing-rule-entitlements/index",
 						"sense/Classify Module/Data Quality Rules/rule-validations-&-error-handling/index",
 						"sense/Classify Module/Data Quality Rules/cloning-a-rule/index",
 						"sense/Classify Module/Data Quality Rules/deleting-rules/index"
@@ -408,8 +408,8 @@ module.exports = {
 						"sense/Resolve Module/Data Quality Rules/Importing Rules In Bulk/index",
 						"sense/Resolve Module/Data Quality Rules/Rule Validations & Error Handling/index",
 						"sense/Resolve Module/Data Quality Rules/Editing A Rule Definition/index",
-						"sense/Resolve Module/Data Quality Rules/Editing Rule Schedule(s)/index",
-						"sense/Resolve Module/Data Quality Rules/Editing Rule Entitlement(s)/index",
+						"sense/Resolve Module/Data Quality Rules/Editing Rule Schedules/index",
+						"sense/Resolve Module/Data Quality Rules/Editing Rule Entitlements/index",
 						"sense/Resolve Module/Data Quality Rules/Deleting Rules/index",
 						"sense/Resolve Module/Data Quality Rules/Cloning A Rule/index",
 					]
