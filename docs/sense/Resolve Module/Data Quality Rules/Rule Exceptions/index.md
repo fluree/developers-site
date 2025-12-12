@@ -27,7 +27,7 @@ Let’s look at the screen below to see how the exceptions are shown in the main
 
 ![](images/135_dq_execution_results_2.png)
 
-In the second scenario, the main difference is that the lower part of the right panel will not show any exceptions and the Quality score will understandably be 100 %. Case 3 will also not show any exceptions but will have a different look as is detailed in [this section](https://sensedocsdev.wpengine.com/rule-validations-error-handling/).
+In the second scenario, the main difference is that the lower part of the right panel will not show any exceptions and the Quality score will understandably be 100 %. Case 3 will also not show any exceptions but will have a different look as is detailed in [this section](/docs/sense/Resolve%20Module/Data%20Quality%20Rules/Rule%20Validations%20&%20Error%20Handling/index.md).
 
 When the user clicks the ‘Export Report’ button, a CSV with all the generated exceptions is shown looking the below snapshot:
 

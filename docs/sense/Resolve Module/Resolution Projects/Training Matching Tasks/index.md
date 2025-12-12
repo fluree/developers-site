@@ -45,13 +45,13 @@ In this step, the user will be asked to confirm whether the records are properly
 
 ![](images/26_match_training_tasks_inner_1-1.png)
 
-If all the records belong together (i.e., they all Match), the task gets finished, and the "Finish Task" button is activated. However, if the user selects the ‘No Match’ radio button for any of the records, the "Next Step" button is activated, and we move to Step 3.
+If all the records belong together (i.e., they all <span style={{ color: "green", fontWeight: "bold" }}>Match</span>), the task gets finished, and the "Finish Task" button is activated. However, if the user selects the ‘No Match’ radio button for any of the records, the "Next Step" button is activated, and we move to Step 3.
 
 ![](images/27_match_training_tasks_inner_2-2.png)
 
 **Step 3. Match the orphaned record to a new Entity**:
 
-In this final step, one can search for other entities and find where the record belongs or if it represents its own standalone _Entity_. All the records identified as No Match from Step 2 will be carried over to this step.
+In this final step, one can search for other entities and find where the record belongs or if it represents its own standalone _Entity_. All the records identified as <span style={{ color: "red", fontWeight: "bold" }}>No Match</span>from Step 2 will be carried over to this step.
 
 ![](images/28_match_training_tasks_screen3_1-1.png)
 

@@ -31,7 +31,7 @@ Each ‘_Out of the Box_’ rule corresponds to an exception condition which the
 
 **_OOB Rules_ integration with Resolve**
 
-_OOB rules_ are integrated with the Resolve product , if that is licensed along with _Classify_. The rules that we set up on _Concepts_ (or _Entity Attributes_ as we call them in _Resolve_), appear there in the ‘_Define Data Quality Rules_’ screen for an Entity. This has been discussed in detail in [this section of Resolve](https://sensedocsdev.wpengine.com/data-quality-rules-for-entities/).  
+_OOB rules_ are integrated with the Resolve product , if that is licensed along with _Classify_. The rules that we set up on _Concepts_ (or _Entity Attributes_ as we call them in _Resolve_), appear there in the ‘_Define Data Quality Rules_’ screen for an Entity. This has been discussed in detail in [this section of Resolve](/docs/sense/Resolve%20Module/Golden%20Records/Data%20Quality%20Rules%20For%20Entities/index.md).  
   
 Let us also touch upon a special _Out of the Box rule_: ‘Must have a valid value from the Referenced Data list’.  
 

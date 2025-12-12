@@ -18,7 +18,7 @@ This is available in a) View Semantic Object Model screen as well as b) Relation
 
 ![](images/export_graph.png)
 
-As seen [here](https://sensedocsdev.wpengine.com/data-set-relationships/) , we have Data Set Relationships tab for every Data Set. A user with Read-Write or Admin rights, apart from seeing the Data Set Relationship diagram , will also be able to see the 'Export Graph' button in enabled state. Otherwise it shall be disabled. Since this feature is in a Data Set Screen, it is available in both Classify & Resolve.
+As seen [here](/docs/sense/Resolve%20Module/Data%20Sets/Data%20Set%20Relationships/index.md) , we have Data Set Relationships tab for every Data Set. A user with Read-Write or Admin rights, apart from seeing the Data Set Relationship diagram , will also be able to see the 'Export Graph' button in enabled state. Otherwise it shall be disabled. Since this feature is in a Data Set Screen, it is available in both Classify & Resolve.
 
 **Step 2**: Alternately initiate this process from _View Object Model_ screen for a specific Semantic Object
 
