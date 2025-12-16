@@ -6,9 +6,9 @@ categories:
   - "getting-started-introduction-classify"
 tags: 
   - "catalog"
-  - "data-quality-rules"
   - "data-set"
   - "data-source"
+  - "data-quality-rules"
 ---
 
 Login to your account by accessing the URL provided to you and enter the provisioned User ID and password as shown below.

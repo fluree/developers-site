@@ -7,8 +7,8 @@ categories:
   - "importing-rules-classify"
   - "importing-rules-resolve"
 tags: 
-  - "data-quality-rules"
   - "data-set"
+  - "data-quality-rules"
 ---
 
 Fluree Sense also provides an interface to create rules quickly and easily in bulk through import. You can import both _Technical_ and _Business_ _rules_ in Bulk.
@@ -55,9 +55,9 @@ To recap, using the CSV as per the image above, we were able to create 3 typical
 
 1. Technical Rules Single Column with Threshold
 
-3. Technical Rules - Multi-Column - compare columns with a Join condition.
+2. Technical Rules - Multi-Column - compare columns with a Join condition.
 
-5. Technical Rule with 2 exception conditions
+3. Technical Rule with 2 exception conditions
 
 Similarly, we can create many other types of rules by adding the operator, threshold, value type, etc. values in corresponding columns spelt correctly and exactly as appearing in the screen.
 

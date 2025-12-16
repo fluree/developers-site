@@ -1,5 +1,5 @@
 ---
-title: "Import Semantic Files to Catalog"
+title: "Import Semantic format (.owl, .ttl, .rdf) files as Catalog"
 date: 2024-02-13
 categories: 
   - "classify"
@@ -9,7 +9,6 @@ tags:
   - "import"
 ---
 
-**Import Semantic format (.owl, .ttl, .rdf) files as Catalog**
 
 Fluree Sense is continuously adding features to allow Data Teams to bring in Data in a variety of formats to solve complex problems requiring Machine Learning & AI. In this endeavor , we've added the ability to import Semantic graph format files to create a Data Catalog.
 

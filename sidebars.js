@@ -16,13 +16,7 @@ module.exports = {
 			type: "category",
 			label: "Getting Started with Sense",
 			items: [
-				{
-					type: "category",
-					label: "System Glossary",
-					items: [
-						"sense/Getting Started/System Glossary/sense-glossary",
-					]
-				},
+				"sense/Getting Started/System Glossary/System Glossary",
 				{
 					type: "category",
 					label: "Getting Started",
@@ -94,7 +88,7 @@ module.exports = {
 						{
 							type: "doc",
 							id: "sense/Classify Module/Data Sets/map-data-set-schema/index",
-							label: "Map Data Set Schema"
+							label: "Map Data Set Schema to Existing Catalog"
 
 						},
 						"sense/Classify Module/Data Sets/registering-profiling-a-data-set/index",
@@ -122,7 +116,11 @@ module.exports = {
 						"sense/Classify Module/Catalogs/Viewing Catalogs/index",
 						"sense/Classify Module/Catalogs/Creating A New Catalog/index",
 						"sense/Classify Module/Catalogs/Importing Catalog Structure/index",
-						"sense/Classify Module/Catalogs/Import Semantic Files To Catalog/index",
+						{
+							type: "doc",
+							id: "sense/Classify Module/Catalogs/Import Semantic Files To Catalog/index",
+							label: "Import Semantic Files to Catalog"
+						},
 						"sense/Classify Module/Catalogs/Semantic Objects & Concepts/index",
 						"sense/Classify Module/Catalogs/Managing Catalogs/index",
 						"sense/Classify Module/Catalogs/Viewing Ad Hoc Mappings To Catalogs/index",
@@ -171,8 +169,8 @@ module.exports = {
 						"sense/Classify Module/Data Quality Rules/rule-exceptions/index",
 						"sense/Classify Module/Data Quality Rules/importing-rules-in-bulk/index",
 						"sense/Classify Module/Data Quality Rules/editing-a-rule-definition/index",
-						"sense/Classify Module/Data Quality Rules/editing-rule-schedule(s)/index",
-						"sense/Classify Module/Data Quality Rules/editing-rule-entitlement(s)/index",
+						"sense/Classify Module/Data Quality Rules/editing-rule-schedules/index",
+						"sense/Classify Module/Data Quality Rules/editing-rule-entitlements/index",
 						"sense/Classify Module/Data Quality Rules/rule-validations-&-error-handling/index",
 						"sense/Classify Module/Data Quality Rules/cloning-a-rule/index",
 						"sense/Classify Module/Data Quality Rules/deleting-rules/index"
@@ -204,7 +202,7 @@ module.exports = {
 						{
 							type: "doc",
 							id: "sense/Classify Module/Semantic Object Classification Projects/review-soc-project-prior-feedback/index",
-							label: "Review SOC Project Prior Feedback"
+							label: "Review Prior Feedback for SOC Projects"
 						},
 
 						"sense/Classify Module/Semantic Object Classification Projects/cloning-and-deleting-a-classification-project/index",
@@ -223,7 +221,7 @@ module.exports = {
 						{
 							type: "doc",
 							id: "sense/Classify Module/Concept Parser Projects/creating-a-project-initial-setup/index",
-							label: "Creating a Concept Parser Proect - Initial Suetup"
+							label: "Creating a Concept Parser Project - Initial Setup"
 						},
 						{
 							type: "doc",
@@ -414,8 +412,8 @@ module.exports = {
 						"sense/Resolve Module/Data Quality Rules/Importing Rules In Bulk/index",
 						"sense/Resolve Module/Data Quality Rules/Rule Validations & Error Handling/index",
 						"sense/Resolve Module/Data Quality Rules/Editing A Rule Definition/index",
-						"sense/Resolve Module/Data Quality Rules/Editing Rule Schedule(s)/index",
-						"sense/Resolve Module/Data Quality Rules/Editing Rule Entitlement(s)/index",
+						"sense/Resolve Module/Data Quality Rules/Editing Rule Schedules/index",
+						"sense/Resolve Module/Data Quality Rules/Editing Rule Entitlements/index",
 						"sense/Resolve Module/Data Quality Rules/Deleting Rules/index",
 						"sense/Resolve Module/Data Quality Rules/Cloning A Rule/index",
 					]

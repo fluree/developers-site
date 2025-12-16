@@ -32,6 +32,6 @@ The image below shows what the final screen of the workflow would look like. Not
 
 ![](images/90.png)
 
-To summarize, these Steps are the same as in the case of workflow for _Semantic Objects_ in the [earlier section](https://sensedocsdev.wpengine.com/training-at-semantic-object-level/), except for the fact that in this case, we’re doing the mapping for a single _Concept_ instead of all the concepts of a Semantic Object.  
+To summarize, these Steps are the same as in the case of workflow for _Semantic Objects_ in the [earlier section](/docs/sense/Classify%20Module/Classification%20Model%20Training/Training%20At%20Semantic%20Object%20Level/index.md), except for the fact that in this case, we’re doing the mapping for a single _Concept_ instead of all the concepts of a Semantic Object.  
   
 Clicking on ‘Save & Close’ will take the user to the parent _Semantic Object_ screen, whereas ‘Save & Run’ will trigger the _Tenant_\-wide _Classification_ model.

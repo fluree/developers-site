@@ -7,8 +7,8 @@ categories:
   - "applied-columns-classify"
   - "applied-columns-resolve"
 tags: 
-  - "data-quality-rules"
   - "data-source"
+  - "data-quality-rules"
 ---
 
 Let’s circle back to the point when we were Creating a Business Rule. If you recall, in that flow we were able to review the existing Data Columns mapped to the primary _Concept_ of that rule. We could also add and remove mappings so as to re-adjust the _Concept_’s model before running or scheduling a Data Quality rule. This ability is provided as a flexible add-on feature for users.

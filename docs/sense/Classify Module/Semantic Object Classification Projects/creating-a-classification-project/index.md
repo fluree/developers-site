@@ -36,7 +36,7 @@ On clicking the button, the workflow modal opens. The user needs to:
 5. In the case of duplicate names, an error is shown, and the user needs to change the name.
 
 **Step 2. Add Users to the Project**  
-In this step, you can list the users which will have various roles for the _Project_. There are three roles- The Rule Admin, Reviewer, and Approver. Please check the section on ‘[Four Eyes Check and Entitlements](#)’ to understand them better.
+In this step, you can list the users which will have various roles for the _Project_. There are three roles- The Rule Admin, Reviewer, and Approver. Please check the section on ‘[Four Eyes Check and Entitlements](/docs/sense/Classify%20Module/Semantic%20Object%20Classification%20Projects/four-eyes-check-&-entitlements/index.md)’ to understand them better.
 
 ![](images/2_soc.png)
 
@@ -59,8 +59,8 @@ In the image below, we select the _Catalog_ from the drop-down and subsequently 
 ![](images/3_soc.png)
 
   
-**Step 4. Define the New Classifier & its Reference Data  
-**The _Classifier_ is the property which will contain the predicted values of the _Classification_. Continuing with the example of Step 3, if _Individual User_ is the _Semantic Object_ and we’re trying to predict/categorize by gender, we can name the new _Classifier_ as _Predicted Gender_. So, Predicted Gender becomes the _Classifier_ and is attached as property (we can call it ‘Concept’ as well) to that Semantic Object.
+**Step 4. Define the New Classifier & its Reference Data.** 
+The _Classifier_ is the property which will contain the predicted values of the _Classification_. Continuing with the example of Step 3, if _Individual User_ is the _Semantic Object_ and we’re trying to predict/categorize by gender, we can name the new _Classifier_ as _Predicted Gender_. So, Predicted Gender becomes the _Classifier_ and is attached as property (we can call it ‘Concept’ as well) to that Semantic Object.
 
 ![](images/4_soc.png)
 

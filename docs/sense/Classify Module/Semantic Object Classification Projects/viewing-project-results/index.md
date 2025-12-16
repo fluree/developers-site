@@ -8,7 +8,7 @@ tags:
   - "data-set"
 ---
 
-Click on the icon marked \[4\] in the [Project Home Screen](#) image to come to the Project Results screen. This screen shows all the results of the project which are really the model’s predicted values for the Classifier.
+Click on the icon marked \[4\] in the [Project Home Screen](/docs/sense/Classify%20Module/Semantic%20Object%20Classification%20Projects/viewing-project-home-screen/index.md) image to come to the Project Results screen. This screen shows all the results of the project which are really the model’s predicted values for the Classifier.
 
 ![](images/13_soc_results_1.png)
 

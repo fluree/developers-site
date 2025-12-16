@@ -11,7 +11,7 @@ tags:
   - "data-source"
 ---
 
-In an earlier [section](https://sensedocsdev.wpengine.com/data-set-object-roles-entitlements/), we looked at how Data Set Entitlements are set when creating a Data Set. However, it is quite possible that you may wish to edit those existing rights. This can be done from the _‘Data Entitlements_’ tab in the Data Set detail view.  
+In an earlier [section](/docs/sense/Classify%20Module/Data%20Sets/data-set-object-roles-&-entitlements/), we looked at how Data Set Entitlements are set when creating a Data Set. However, it is quite possible that you may wish to edit those existing rights. This can be done from the _‘Data Entitlements_’ tab in the Data Set detail view.  
 This tab only gets enabled if the logged-in user has the _Data Set Admin_ role.
 
 To Edit Data Set Entitlements:
@@ -36,6 +36,6 @@ Additionally, you can reset the New User Default Settings, which will apply to s
 
 1. The Data Entitlements tab can only be opened by a user with the Data Set Admin role associated with that Data Set.
 
-3. A change made to New User Default Settings will apply to any new user pertaining to the specific _Tenant_.
+2. A change made to New User Default Settings will apply to any new user pertaining to the specific _Tenant_.
 
-5. Press ‘Apply Changes’ to save your changes before exiting the page.
+3. Press ‘Apply Changes’ to save your changes before exiting the page.

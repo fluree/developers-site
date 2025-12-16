@@ -1,5 +1,5 @@
 ---
-title: "Editing Rule Entitlement(s)"
+title: "Editing Rule Entitlements"
 date: 2023-07-29
 categories: 
   - "classify"

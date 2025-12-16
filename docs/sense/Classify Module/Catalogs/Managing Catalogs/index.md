@@ -33,7 +33,7 @@ Here’s how you can manage or edit a Catalog:
 
 **Step 3:** Edit the users entitled to the _Catalog_ adding or removing any users. We’ve already discussed what roles are available for entitlements in an earlier section. You will need to press the Next button to save the changed users. The significance of specific entitlements has already been explained in the section on _Catalog_.
 
-**Step 4:** Edit the _Semantic Objects_ and/or Concepts as shown in the image from the ‘Define Semantic Objects’ and ‘Define Concepts’ screens. You can also edit by adding new concepts/ updating existing concepts in bulk through the Import method described in an earlier [section](https://sensedocsdev.wpengine.com/importing-catalog-structure/).
+**Step 4:** Edit the _Semantic Objects_ and/or Concepts as shown in the image from the ‘Define Semantic Objects’ and ‘Define Concepts’ screens. You can also edit by adding new concepts/ updating existing concepts in bulk through the Import method described in an earlier [section](/docs/sense/Classify%20Module/Catalogs/Importing%20Catalog%20Structure/index.md).
 
 ![](images/53_catalog_import1-1.png)
 

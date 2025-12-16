@@ -15,11 +15,11 @@ There are two types of Tagging we need to know about as a user:
       
     Tagging of a Data Set or Data Column is an indication (with a specific degree of confidence) that the Data Set or Data Column identifies with or represents a specific Business Object or Attribute.  
       
-    This is done automatically based on Machine Learning and has been explained in the section above on [Catalog Mappings](https://sensedocsdev.wpengine.com/viewing-ad-hoc-mappings-to-catalogs/). So, we will be focusing on the 2nd type of tagging in this section.  
+    This is done automatically based on Machine Learning and has been explained in the section above on [Catalog Mappings](/docs/sense/Classify%20Module/Catalogs/Viewing%20Ad%20Hoc%20Mappings%20To%20Catalogs/index.md). So, we will be focusing on the 2nd type of tagging in this section.  
       
     
 
-3. **Tagging of Concepts through User Defined Tags, including Privacy Tags**  
+2. **Tagging of Concepts through User Defined Tags, including Privacy Tags**  
       
     A user can also tag a _Concept_ with a custom tag which is NOT the same as mapping it to a Dataset Column etc., but marking it with important searchable terms such as “PII,” “PHI,” etc. PII is in fact a system-provided Tag which has the special purpose of masking any data mapped to that _Concept_ once the user tags it as such. Let us look at this in detail below.  
       

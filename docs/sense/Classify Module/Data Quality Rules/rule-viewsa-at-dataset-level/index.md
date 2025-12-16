@@ -7,8 +7,8 @@ categories:
   - "dq-dataset-views-classify"
   - "dq-dataset-views-resolve"
 tags: 
-  - "data-quality-rules"
   - "data-set"
+  - "data-quality-rules"
 ---
 
 A user can also analyze the Data Quality at the Dataset Level starting from the whole Dataset down to specific columns and then for each rule on that column.
@@ -19,7 +19,7 @@ Let us check out the Data Quality Rule Views at the Data Set level. These includ
 
 1. Data Quality Tab View for the Data Set
 
-3. Filtered view of Data Quality rules from their count at Data Set level
+2. Filtered view of Data Quality rules from their count at Data Set level
 
 The image below shows where these two can be accessed from:
 

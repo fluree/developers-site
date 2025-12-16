@@ -45,7 +45,7 @@ We will further provide details on three important attribute properties below:
 
 **1\.** **Selecting an Attribute’s Data Type**: The List of choices available can be seen in the image below. It's important to choose the right data type and ensure that the Data Type is spelt correctly and considered case sensitive when adding through Import file.
 
-![](images/image3.png)
+      ![](images/image3.png)
 
 A data type of an attribute can be used to identify 2 main things.
 
