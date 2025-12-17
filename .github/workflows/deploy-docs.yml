@@ -1,0 +1,49 @@
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy-docs:
+    name: Build and Deploy to s3
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        bun-version: [1.1.33]
+    
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: Use Bun ${{ matrix.bun-version }}
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: ${{ matrix.bun-version }}
+      
+      - name: Install dependencies
+        run: bun install
+      
+      - name: Build
+        run: bun run build
+      
+      - name: Configure Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: "us-east-1"
+      
+      - name: Deploy to s3 bucket
+        run: aws s3 sync ./build s3://json-ld.developers.flur.ee/ --delete
+      
+      - name: Invalidate Cloudfront
+        run: aws cloudfront create-invalidation --distribution-id E19JFM9ZCKG13R --paths "/*"
+      
+      - name: Invalidate Cloudfront Old
+        run: aws cloudfront create-invalidation --distribution-id EBV3H6NWNNWBE --paths "/*"
+      
+      - name: Algolia Crawler Automatic Crawl
+        uses: signcl/docsearch-scraper-action@master
+        env:
+          APPLICATION_ID: ${{ secrets.ALGOLIA_APP_ID }}
+          API_KEY: ${{ secrets.ALGOLIA_API_KEY }}
+          CONFIG: '{"index_name":"prod_dev_site","start_urls":["https://developers.flur.ee/"],"stop_urls":[],"use_anchors":true,"selectors":{"lvl0":{"selector":"(//ul[contains(@class,''menu__list'')]//a[contains(@class, ''menu__link menu__link--sublist menu__link--active'')]/text() | //nav[contains(@class, ''navbar'')]//a[contains(@class, ''navbar__link--active'')]/text())[last()]","type":"xpath","global":true,"default_value":"Documentation"},"lvl1":"header h1","lvl2":"article h2","lvl3":"article h3","lvl4":"article h4","lvl5":"article h5, article td:first-child","lvl6":"article h6","text":"article p, article li, article td:last-child"},"strip_chars":" .,;:#","custom_settings":{"separatorsToIndex":"_","attributesForFaceting":["language","version","type","docusaurus_tag"],"attributesToRetrieve":["hierarchy","content","anchor","url","url_without_anchor","type"]}}'
