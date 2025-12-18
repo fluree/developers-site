@@ -1,5 +1,4 @@
-import Admonition from "@theme/Admonition";
-import { FlureeMermaid } from "@site/src/components/Mermaid/FlureeMermaid.jsx";
+import Admonition from '@theme/Admonition';
 
 # Data Access Control
 
@@ -8,46 +7,129 @@ and queried by users. It gives you very fine-grained control, down to policies
 like "admins can modify all values except other users' social security numbers"
 and "root users can modify all values, including social security number."
 
-For example, if your database contained a graph like this:
+Let's walk through an example to see how this works.
 
-<FlureeMermaid
-  chart={`graph TB
-  alice -->|ssn| ssn1(111-22-3333)
-  alice -->|givenName| Alice
-  alice -->|ex:role| admin
-  bob -->|ssn| 444-55-6666
-  bob -->|givenName| Bob
-  cara -->|ssn| 777-88-999
-  cara -->|givenName| Cara
+### Step 1: The Data
+
+Imagine your database contains user records with sensitive information like
+social security numbers:
+
+```mermaid
+  graph LR
+  alice(ex:alice) -->|schema:ssn| ssn1(111-11-1111)
+  alice -->|schema:name| name1(Alice)
+  bob(ex:bob) -->|schema:ssn| ssn2(222-22-2222)
+  bob -->|schema:name| name2(Bob)
   classDef default ry:5,rx:5
-  `}
-/>
+```
 
-`alice` would be able to update all values except the `ssn` of `bob` and `cara`.
-What `alice` can edit is highlighted in the graph below:
+### Step 2: Identity Linkage
 
-<FlureeMermaid
-  chart={`graph TB
-  alice -->|ssn| ssn1(111-22-3333)
-  alice -->|givenName| Alice
-  alice -->|ex:role| admin
-  bob -->|ssn| 444-55-6666
-  bob -->|givenName| Bob
-  cara -->|ssn| 777-88-999
-  cara -->|givenName| Cara
-  
+Alice authenticates with a DID (Decentralized Identifier). In the database, her
+DID is linked to a policy class and to her user record:
+
+```mermaid
+  graph LR
+  did(did:key:z6Mk...) -->|f:policyClass| policy(ex:UserPolicy)
+  did -->|ex:user| alice(ex:alice)
+
+  classDef identity fill:#ff983b,stroke:#ff983b
+  classDef policy fill:#6ba5ed,stroke:#6ba5ed
+  class did identity
+  class policy policy
+```
+
+The policy class `ex:UserPolicy` contains rules that determine what Alice can
+access.
+
+### Step 3: Policy-Filtered View
+
+With a policy that says "users can only see their own SSN," here's what Alice
+sees when she queries for all users:
+
+```mermaid
+  graph LR
+  alice(ex:alice) -->|schema:ssn| ssn1(111-11-1111)
+  alice -->|schema:name| name1(Alice)
+  bob(ex:bob) -.->|schema:ssn| hidden(hidden)
+  bob -->|schema:name| name2(Bob)
+
   classDef default ry:5,rx:5
-  
-  classDef nodeAllowed fill:#f7ce39,stroke:#f7ce39
-  class ssn1,Alice,admin,Bob,Cara nodeAllowed
-  
-  linkStyle 0 stroke:#f7ce39
-  linkStyle 1 stroke:#f7ce39
-  linkStyle 2 stroke:#f7ce39
-  linkStyle 4 stroke:#f7ce39
-  linkStyle 6 stroke:#f7ce39
-`}
-/>
+  classDef allowed fill:#4ade80,stroke:#4ade80
+  classDef denied fill:#f87171,stroke:#f87171,stroke-dasharray: 5 5
+  class ssn1,name1,name2 allowed
+  class hidden denied
+```
+
+Alice can see all names, but Bob's SSN is filtered out (_**in the diagram above, it appears to be present but redacted--in reality, it would appear as if no data even existed for Bob on the `ssn` property**_). She can only see her own
+SSN because the policy checks for a relationship between her identity and the
+data.
+
+## Why Policy as Data Matters
+
+Fluree's access control model is fundamentally different from traditional
+systems. In Fluree, **policies are data** — they live alongside your domain data
+as RDF, subject to the same query and transact operations. This architectural
+choice enables two powerful capabilities:
+
+### Data-Centric Security
+
+Traditional security models rely on application perimeters: APIs, firewalls, and
+middleware that sit between users and data. If that perimeter is breached, the
+data is exposed. The data itself has no defenses.
+
+In Fluree, **the data defends itself**. Access policies are evaluated at the
+data layer, not the application layer. There is no perimeter to breach that
+would afford ungoverned access to the database.
+
+This has profound implications for how data can be shared and reused:
+
+- Data can move "closer" to applications that produce and consume it
+- Data can be safely shared across an open ecosystem of applications
+- You don't rely on app-centric APIs and application perimeters to enforce
+  security
+- Multiple applications can interact with the same data, each governed by the
+  same embedded policies
+
+### Real-Time, Context-Aware Enforcement
+
+Because policies can query the current state of the data, the conditions you can
+express become extraordinarily powerful. **Anything your data can express as a
+condition can be part of how you govern access.**
+
+Consider a policy that says "managers can see the SSN of anyone who reports to
+them":
+
+```json
+{
+  "f:query": {
+    "@type": "@json",
+    "@value": {
+      "where": {
+        "@id": "?$this",
+        "ex:reportsTo": { "@id": "?$identity" }
+      }
+    }
+  }
+}
+```
+
+This policy doesn't check a static role or permission table — it queries the
+live `ex:reportsTo` relationship in your data. If Bob reported to Alice five
+seconds ago, Alice could see Bob's SSN. If a transaction just changed Bob's
+reporting line to Carol, Alice _instantly_ loses access to Bob's SSN, and Carol
+gains it.
+
+This means:
+
+- **Relationships drive access**: Org charts, team memberships, project
+  assignments — any relationship in your data can govern access
+- **Aggregates and conditions**: Policies can check counts, dates, statuses, or
+  any queryable condition
+- **Instant consistency**: Access changes the moment the underlying data
+  changes, with no cache invalidation or sync delays
+
+---
 
 This guide will show you how to make full use of the data access control system.
 By the end of this guide, you will understand:
@@ -56,736 +138,800 @@ By the end of this guide, you will understand:
   perform
 - The elements that compose a data access policy
 - How to create and modify policies
+- How identities are linked to policies through _policy classes_
 
-## Data Access Control overview
+## Data Access Control Overview
 
 _Data access control_ is a general term for the methods data management systems
-uses to determine the allowed scope of a user's read and write operations.
+use to determine the allowed scope of a user's read and write operations.
 Different systems combine different tools and entities to define access. For
 example, with a file system you specify what user and group a file belongs to,
 along with read/write permissions at the user, group, and world levels.
 
-With Fluree, you define _data access policies_ (or just _data policies_) that
-specify role-based rules for what data can be transacted and what data can be
-returned by queries.
+With Fluree, you define _data access policies_ (or just _policies_) that specify
+rules for what data can be transacted and what data can be returned by queries.
+These policies are evaluated based on the _Request Identity_ — the authenticated
+user making the query or transaction.
 
-This terminology might be familiar to you, and if it is, it might actually be
-misleading. This is because the systems that are usually associated with these
-terms have different internal models than Fluree, and those internal models give
-rise to interaction patterns that are different from the ones you'll be learning
-here. It's like the difference between gas and electric stoves: sure, they're
-both stoves, but you can't rely on the unconscious habits you've picked up for
-working with gas if you're working with electric. You'd end up with some burnt
-eggs or whatever.
+### Key Concepts
 
-We're going to explore Fluree's internal model just enough for its interactions
-and behaviors to make sense. The internal model consists of two layers: the _DAC
-management layer_, and the _DAC processor_. The former governs how you create
-and update users, roles, and policies, and the latter governs the behavior that
-is produced when you apply policies to a query or transaction based on the user
-running that operation.
+Fluree's DAC system is built around these core concepts:
 
-The brief version of how these two work is that DAC management layer treats DAC
-data the same as any other data: it's all just RDF that you transact and query
-like anything else. It just happens that if the data you transact contains
-properties that the DAC processor "understands," then that data will be used to
-modify the behavior of the transactor and query engine.
+- **Access Policies**: RDF objects that define what actions can be performed on
+  what data
+- **Policy Classes**: A way to group related policies together (e.g.,
+  `ex:EmployeePolicy`, `ex:AdminPolicy`)
+- **Request Identity**: The DID (Decentralized Identifier) of the user making a
+  request
+- **Policy Queries**: Conditional logic that determines if access is granted
+  based on relationships in the data
 
-For example, if you transact a JSON-LD object that includes an `"f:role"`
-property, the DAC processor will treat it as a user with the given role when
-it's trying to figure out if that "user" has permission to modify some data. So
-when we say "the user `did:fluree:TfCzWTrXqF16hvKGjcYiLxRoYJ1B8a6UMH6` has the
-role `ex:moderatorRole`, it means that at some point the following JSON-LD got
-transacted:
+### How Policies Work
+
+Policies are "just data" — they're RDF objects that you transact into your
+ledger like any other data. Fluree's DAC processor recognizes policies by their
+`f:AccessPolicy` type and uses them to filter query results and authorize
+transactions.
+
+Here's a simple example of a policy that allows viewing all data:
 
 ```json
 {
   "@context": {
-    "id": "@id",
     "f": "https://ns.flur.ee/ledger#",
-    "ex": "http://example.com/"
+    "ex": "http://example.org/ns/"
   },
-  "id": "did:fluree:TfCzWTrXqF16hvKGjcYiLxRoYJ1B8a6UMH6",
-  "f:role": { "id": "ex:moderatorRole" }
+  "@id": "ex:openViewPolicy",
+  "@type": ["f:AccessPolicy", "ex:OpenPolicy"],
+  "f:action": { "@id": "f:view" },
+  "f:allow": true
 }
 ```
 
-Let's explore DAC management and the DAC processor to fill out our understanding
-of how they work.
+This policy:
 
-## DAC management layer
+- Has type `f:AccessPolicy` (required for all policies)
+- Belongs to the `ex:OpenPolicy` policy class
+- Applies to the `f:view` action (reading data)
+- Uses `f:allow: true` to unconditionally allow access
 
-You create, read, update, and delete Fluree's DAC data the same way you perform
-these operations for the rest of your data, using the same transact and query
-APIs.
+## How to Specify Request Identity
 
-You create a "user" by transacting a JSON-LD object that looks something like
-this:
+The DAC processor uses the Request Identity to determine which policies apply
+and how to evaluate them. There are several ways to specify identity:
 
-```json
-{
-  "@context": {
-    "id": "@id",
-    "f": "https://ns.flur.ee/ledger#",
-    "ex": "http://example.com/"
-  },
-  "id": "did:fluree:TfCzWTrXqF16hvKGjcYiLxRoYJ1B8a6UMH6",
-  "f:role": { "id": "ex:rootRole" }
-}
-```
+### Using `opts.did`
 
-Or you could assign multiple roles to a user like this:
+The simplest way to specify identity is by including a `did` in the `opts` of
+your query or transaction:
 
 ```json
 {
-  "@context": {
-    "id": "@id",
-    "f": "https://ns.flur.ee/ledger#",
-    "ex": "http://example.com/"
-  },
-  "id": "did:fluree:TfCzWTrXqF16hvKGjcYiLxRoYJ1B8a6UMH6",
-  "f:role": [
-    {
-      "id": "ex:studentRole"
-    },
-    {
-      "id": "ex:teacherAssistantRole"
-    }
-  ]
-}
-```
-
-At this layer, it's all just data that's no more special than any other data.
-Fluree's transact and query APIs don't treat the `"f:role"` property any
-differently than any other property, and ids that are formatted like
-`did:fluree:xxxx` aren't special either. When you transact this JSON-LD object
-it gets stored as RDF triples alongside the rest of the data in your database.
-
-This differs from most other system. Other systems have distinct entity types for
-users, roles, and data access rules, along with entity-specific interfaces. For
-example, in postgres you have a `CREATE USER` command and a `CREATE ROLE`
-command as part of your toolkit for managing users and roles. By contrast, with
-Fluree data is data is data.
-
-Data policies are also defined using RDF data, and you add policies to Fluree by
-transacting JSON-LD just as you would with any other data. Here's an example of
-some JSON-LD that defines a data policy:
-
-```json
-{
-  "@context": {
-    "id": "@id",
-    "f": "https://ns.flur.ee/ledger#",
-    "ex": "http://example.com/"
-  },
-  "id": "ex:rootPolicy",
-  "type": ["f:Policy"],
-  "f:targetNode": {
-    "id": "f:allNodes"
-  },
-  "f:allow": [
-    {
-      "f:action": [
-        {
-          "id": "f:view"
-        },
-        {
-          "id": "f:modify"
-        }
-      ],
-      "f:targetRole": {
-        "id": "ex:rootRole"
-      },
-      "id": "ex:rootAccessAllow"
-    }
-  ]
-}
-```
-
-<Admonition type="note">
-  For now, ignore what this data actually means; we're just focusing on the fact
-  that this is just JSON-LD. Later we'll talk about how to interpret this data
-  and construct policies.
-</Admonition>
-
-Like other JSON-LD objects, this object has an `"id"` key. It also has a
-`"type"` key, which is aliased to `"rdf:type"`. But it's just data.
-
-Fluree's data access control implementation thus aligns with the spirit of RDF
-and the semantic web: pretty much everything, including access control policies,
-can be described using RDF. We don't need to establish some special kind of data
-entity to define access policies; we can use RDF like we do with everything
-else. It just happens that Fluree was written in such a way that its DAC
-processor can use this data to modify the behavior of the transactor and query
-engine.
-
-This is similar to how RDFS properties and SHACL rules can define behaviors for
-processing RDF data, while being implemented as RDF data. There's nothing
-inherently special about the `f:targetNode` predicate, just as there's nothing
-inherently special about the `rdf:type` predicate. It's the systems that
-interact with this data that give meaning to it by attaching behaviors to the
-data.
-
-## How the Data Access Control processor works
-
-Once you've added data that the DAC processor recognizes, it uses the data to
-drive the behavior of the transactor and the query engine. On the transactor
-side, it either allows or prevents users from modifying nodes and properties,
-and likewise on the query side it either allows or prevents users from reading
-nodes and properties. The rest of this guide explains how to define the behavior
-you want at a very fine-grained level.
-
-Fluree implements data access policies as subjects that have the following
-properties:
-
-- A `type` of `f:Policy`
-- One of `f:targetNode` or `f:targetClass`
-- One or both of `f:allow` and `f:property`
-
-(These properties are explained below.)
-
-A data access policy specifies the set of actions that users with a given role
-can perform on a given set of nodes. If you need finer-grained control, policies
-also let you specify the actions that roles can perform for node properties, and
-even the relationships that must hold between a user and a node's properties
-(for example, you can have a rule that states users can update a social security
-number for a node only if the IRI for the node is the same as the IRI for the
-user.)
-
-<Admonition type="note">
-  _Nodes_ are the subjects and objects in an RDF dataset. _Property_ is a
-  synonym for _predicate_.
-</Admonition>
-
-Let's use the example from earlier to get a high-level understanding of how the
-pieces fit together, then examine each piece in greater detail. Here's the
-JSON-LD for the data access policy:
-
-```json
-{
-  "@context": {
-    "id": "@id",
-    "f": "https://ns.flur.ee/ledger#",
-    "ex": "http://example.com/"
-  },
-  "id": "ex:rootPolicy",
-  "type": ["f:Policy"],
-  "f:targetNode": {
-    "id": "f:allNodes"
-  },
-  "f:allow": [
-    {
-      "f:action": [
-        {
-          "id": "f:view"
-        },
-        {
-          "id": "f:modify"
-        }
-      ],
-      "f:targetRole": {
-        "id": "ex:rootRole"
-      },
-      "id": "ex:rootAccessAllow"
-    }
-  ]
-}
-```
-
-`f:targetNode` specifies which nodes this policy applies to. In this case, its
-value is `{"id": "f:allNodes"}`, which is a value that Fluree ships with which
-means "all nodes in the database".
-
-`f:allow` specifies a set of roles, and the actions that users with those roles
-can take for the given set of nodes.
-
-The full meaning of this policy is, "users with the role `ex:rootRole` can view
-and modify all nodes."
-
-### How to specify users and roles for queries and transactions
-
-The DAC processor uses user and role data supplied under the `"opts"` key in
-your query or transaction to figure out how to apply policies. We'll use the
-term _Active Identity_ to refer to these values.
-
-If your `"opts"` key of your API call contains one or both of `"did"` and
-`"role"`, then that API call includes an Active Identity. If `"opts"` does not
-contain either of these values, then your API call does not include an Active
-Identity.
-
-Here's a query that specifies a role:
-
-```json
-{
-  "@context": {
-    "ex": "http://example.com/"
-  },
-  "select": {
-    "?s": ["*"]
-  },
-  "where": {
-    "@id": "?s",
-    "@type": "ex:Product"
-  },
+  "@context": { "ex": "http://example.org/ns/" },
+  "from": "my-ledger",
+  "select": { "?s": ["*"] },
+  "where": { "@id": "?s", "@type": "ex:User" },
   "opts": {
-    "role": "ex:rootRole"
+    "did": "did:key:z6MkmbNqfM3ANYZnzDp9YDfa62pHggKosBkCyVdgQtgEKkGQ"
   }
 }
 ```
 
-When you specify a role like this, the DAC processor will use the associated
-policies to filter results so that they only contain nodes that that node is
-allowed to access. When there are no policies granting access to a node for the
-given role, then that node will be filtered out of the results.
+When you specify a DID, Fluree looks up that identity in the database to find
+its associated policy classes (via `f:policyClass`), then applies all policies
+belonging to those classes.
 
-You can also specify a user for a query or transaction with the `"did"` key
-under `"opts"`:
+### Using `opts.policyClass`
+
+You can directly specify which policy class(es) to apply without requiring a DID
+lookup:
 
 ```json
 {
-  "@context": {
-    "ex": "http://example.com/"
-  },
-  "select": {
-    "?s": ["*"]
-  },
-  "where": {
-    "@id": "?s",
-    "@type": "ex:Product"
-  },
+  "@context": { "ex": "http://example.org/ns/" },
+  "from": "my-ledger",
+  "select": { "?s": ["*"] },
+  "where": { "@id": "?s", "@type": "ex:User" },
   "opts": {
-    "did": "did:fluree:TfCzWTrXqF16hvKGjcYiLxRoYJ1B8a6UMH6",
-    "role": "ex:rootRole"
+    "policyClass": "ex:EmployeePolicy"
   }
 }
 ```
 
-This query specifies the role `"ex:rootRole"` as part of the Active Identity.
-When combined with the policy shown above, the DAC processor will allow the data
-selected by the query to be returned because the policy specifies that users
-with a role of `ex:rootRole` can view and modify all nodes.
+This applies all policies that have `ex:EmployeePolicy` in their `@type`, without
+looking up any identity in the database.
 
-If you don't supply an Active Identity with your query or transaction, then
-Fluree doesn't apply any policies and defaults to granting full read and write
-access to your data.
+When using `opts.policyClass`, you'll often need to provide `policyValues` to
+bind the `?$identity` variable for policies that check identity relationships:
 
-That's a broad outline of how policies and request data work together to produce
-behavior. Now let's look at each individual part.
+```json
+{
+  "@context": { "ex": "http://example.org/ns/" },
+  "from": "my-ledger",
+  "select": { "?s": ["*"] },
+  "where": { "@id": "?s", "@type": "ex:User" },
+  "opts": {
+    "policyClass": "ex:EmployeePolicy",
+    "policyValues": ["?$identity", [{ "@type": "@id", "@value": "ex:alice" }]]
+  }
+}
+```
 
-<Admonition type="note">
-Fluree makes it possible to specify identities and roles directly in a query
-or transaction under `"opts"`. However, you might not always want to directly
-expose this feature to the users submitting queries and transactions.
+**When to use `opts.policyClass`:**
 
-Fluree Cloud, our hosted solution, strictly evaluates the identity of the active
-user through signature validation and/or API keys. You can configure your
-self-hosted deployment to use this pattern, but that's not covered in this
-document.
+This approach is ideal when users don't sign their own queries/transactions, or
+when users don't have direct identities with associated policy classes stored in
+the ledger. In this architecture, an external application or service determines
+the correct policy class for a given user based on some external identity
+attribution (e.g., your existing auth system, SSO provider, or API gateway).
+The service then proxies the query or transaction on the user's behalf with the
+appropriate `opts.policyClass`.
 
+This pattern gives you the power of data-centric access control without
+requiring you to replicate or manage user identities within the dataset itself.
+
+### Using `opts.policy`
+
+You can also inject policy definitions directly into a request, bypassing any
+policy lookup entirely:
+
+```json
+{
+  "@context": { "ex": "http://example.org/ns/" },
+  "from": "my-ledger",
+  "select": { "?s": ["*"] },
+  "where": { "@id": "?s", "@type": "ex:User" },
+  "opts": {
+    "policy": {
+      "@id": "ex:injectedPolicy",
+      "@type": "f:AccessPolicy",
+      "f:action": { "@id": "f:view" },
+      "f:onProperty": [{ "@id": "schema:ssn" }],
+      "f:required": true,
+      "f:query": {
+        "@type": "@json",
+        "@value": {
+          "where": { "@id": "?$identity", "ex:user": { "@id": "?$this" } }
+        }
+      }
+    },
+    "policyValues": ["?$identity", [{ "@type": "@id", "@value": "ex:alice" }]]
+  }
+}
+```
+
+**When to use `opts.policy`:**
+
+This approach is useful when policies themselves live in an external ledger or
+dataset, designed for reuse across multiple ledgers. Like `opts.policyClass`,
+this pattern supports architectures where an external service proxies requests
+on behalf of users. However, in this case, the policies can't be referenced by
+their policy class names within the target ledger (because the policies don't
+exist there). Instead, the proxying service fetches the appropriate policies
+from wherever they're stored and injects them directly into each request.
+
+This enables centralized policy management across a fleet of ledgers while still
+getting data-centric access control at query time.
+
+### Signed Requests
+
+For production systems, you'll typically use cryptographically signed requests
+rather than plain `opts.did`. Fluree supports:
+
+- **JWS (JSON Web Signature)**: Compact signed format for requests
+- **Verifiable Credentials**: W3C standard for signed credential documents
+
+<Admonition type='note'>
+  A comprehensive guide to signed requests and credential verification is
+  forthcoming. For now, see the server integration tests for examples of signed
+  request patterns.
 </Admonition>
 
-## How to write a data access policy
+### Linking Identities to Policy Classes
 
-Every data policy must include the following:
-
-- Basic metadata (`id` and `type`)
-- What nodes to target (`targetNode` or `targetClass`)
-
-A data policy must include at least one of the following:
-
-- `f:allow` to specify node-level permissions (whether users can read or write
-  any properties for targeted nodes)
-- `f:property` to specify property-level permissions (whether users can read or
-  write specific properties for targeted nodes)
-
-### Basic metadata
-
-Every data policy JSON-LD object must include a `"id"` key and a `"type"` key,
-like this:
+For the DAC processor to know which policies apply to an identity, you must
+create a relationship between the DID and one or more policy classes using
+`f:policyClass`:
 
 ```json
 {
   "@context": {
-    "id": "@id",
     "f": "https://ns.flur.ee/ledger#",
-    "ex": "http://example.com/"
+    "ex": "http://example.org/ns/"
   },
-  "id": "ex:myPolicyName",
-  "type": "f:Policy"
+  "@id": "did:key:z6MkmbNqfM3ANYZnzDp9YDfa62pHggKosBkCyVdgQtgEKkGQ",
+  "f:policyClass": [{ "@id": "ex:EmployeePolicy" }],
+  "ex:user": { "@id": "ex:alice" }
 }
 ```
 
-The `"id"` can be any valid IRI but `"type"` must be `"f:Policy"`. This is how
-Fluree knows that the node designated by `"id"` is a data access policy.
+This transaction:
 
-### Targeting nodes
+1. Links the DID to the `ex:EmployeePolicy` policy class
+2. Creates an `ex:user` relationship to the `ex:alice` user record
 
-You must tell the Data Access Control processor what nodes a policy applies to;
-these are _target nodes_. To do that, you include one of the following four
-properties in your policy:
+When this identity makes a request, all policies with `@type` including
+`ex:EmployeePolicy` will be applied.
 
-- `f:targetNode`
-- `f:targetClass`
-- `f:targetSubjectsOf` (not yet available)
-- `f:targetObjectsOf` (not yet available)
+### Interactions without Identity
 
-#### `f:targetNode`
+When run in its default mode (we often refer to this as _Open Mode_ or _Dev Mode_), Fluree will accept queries or transactions that do not specify any Request Identity (e.g. the request is neither signed by a certain identity nor does it include an `opts.did` reference identity). Those unidentified requests will function effectively with root access--deliberately, to facilitate ease of development and testing.
 
-Target just the node with the given IRI, or use the IRI `"f:allNodes"` to target
-all nodes.
+In production environments, however, it is strongly recommended to either, (1) **configure the server to operate in _Closed Mode_** (wherein any unsigned requests are rejected outright), or (2) **ensure that the Fluree server is behind a conventional application perimeter**, within which you might have an identity service which aligns your external identities to policy classes or DIDs within your Fluree ledger.
 
-Examples:
+<Admonition type='note'>
+  For more information on Open vs Closed modes and configuring a server for
+  Closed Mode, see the Server Configuration guide (coming soon).
+</Admonition>
 
-_Target the node with IRI `"ex:MaryOliver"`_
+## How to Write a Data Access Policy
+
+Every data access policy must include:
+
+- **Basic metadata**: `@id` and `@type` (must include `f:AccessPolicy`)
+- **Action**: `f:action` specifying `f:view` and/or `f:modify`
+- **Permission logic**: Either `f:allow` (boolean) or `f:query` (conditional)
+
+Policies can optionally include:
+
+- **Targeting**: `f:onClass` or `f:onProperty` to restrict scope
+- **Error messages**: `f:exMessage` for custom denial messages
+- **Required flag**: `f:required` to short-circuit policy evaluation and elevate the policy's importance
+
+### Basic Metadata
+
+Every policy must have an `@id` and include `f:AccessPolicy` in its `@type`:
 
 ```json
 {
   "@context": {
-    "id": "@id",
-    "type": "@type",
     "f": "https://ns.flur.ee/ledger#",
-    "ex": "http://example.com/"
+    "ex": "http://example.org/ns/"
   },
-  "id": "ex:rootRole",
-  "type": "f:Policy",
-  "f:targetNode": "ex:MaryOliver"
+  "@id": "ex:myPolicy",
+  "@type": ["f:AccessPolicy", "ex:MyPolicyClass"]
 }
 ```
 
-_Target all nodes in the database_
+The `@type` array should include:
+
+- `f:AccessPolicy` (required — this is how Fluree identifies policies)
+- One or more policy class IRIs (e.g., `ex:MyPolicyClass`) to group related
+  policies
+
+### Actions
+
+The `f:action` property specifies what operations this policy governs:
+
+- `f:view` — Reading/querying data
+- `f:modify` — Creating, updating, or deleting data
+
+You can specify one or both:
 
 ```json
 {
-  "@context": {
-    "id": "@id",
-    "type": "@type",
-    "f": "https://ns.flur.ee/ledger#",
-    "ex": "http://example.com/"
-  },
-  "id": "ex:rootRole",
-  "type": "f:Policy",
-  "f:targetNode": "f:allNodes"
+  "f:action": { "@id": "f:view" }
 }
 ```
 
-#### `f:targetClass`
-
-Target nodes with an `rdfs:Class` value that's either equal to or a subclass of
-the given class.
-
-Examples:
-
-\_Target all nodes that have an `"rdfs:Class"` of either `"ex:User"` OR subclass
-of `"ex:User"`\_\_
-
 ```json
 {
-  "@context": {
-    "id": "@id",
-    "type": "@type",
-    "f": "https://ns.flur.ee/ledger#",
-    "ex": "http://example.com/"
-  },
-  "id": "ex:rootRole",
-  "type": "f:Policy",
-  "f:targetClass": "ex:User"
+  "f:action": [{ "@id": "f:view" }, { "@id": "f:modify" }]
 }
 ```
 
-#### `f:targetSubjectsOf`
+<Admonition type='info'>
+  When a policy is enforced (i.e. the evaluation does not pass and applies a
+  restriction), if the action is a _**query**_, then the targeted data will be
+  filtered out of the result set. If the action is a _**transaction**_, then the
+  transaction will be rejected with a policy-related error message.
+</Admonition>
 
-(not yet available)
+### Permission Logic
 
-#### `f:targetObjectsOf`
+There are two ways to define whether access is granted:
 
-(not yet available)
+#### `f:allow` (Boolean)
 
-### Node-level permissions
-
-The `f:allow` property is a set of node-level permissions for the targeted
-nodes. Permissions are "just data" in the same way that data access policies are
-just data, and pretty much everything in RDF land is just data. They are
-subjects that have the properties the DAC processor expects. The JSON-LD you
-write to define a permission should have the following keys:
-
-- `"id"`
-- `"f:action"`
-- `"f:targetRole"`
-
-Here's an example policy that includes `"f:allow"`:
+Use `f:allow` for unconditional allow or deny. This takes precedence over
+`f:query`:
 
 ```json
 {
-  "@context": {
-    "id": "@id",
-    "type": "@type",
-    "f": "https://ns.flur.ee/ledger#",
-    "ex": "http://example.com/"
-  },
-  "id": "ex:rootPolicy",
-  "type": ["f:Policy"],
-  "f:targetNode": {
-    "id": "f:allNodes"
-  },
-  "f:allow": [
-    {
-      "id": "ex:rootAccessAllow",
-      "f:action": [
-        {
-          "id": "f:view"
-        },
-        {
-          "id": "f:modify"
-        }
-      ],
-      "f:targetRole": {
-        "id": "ex:rootRole"
+  "@id": "ex:allowAllViews",
+  "@type": ["f:AccessPolicy", "ex:OpenPolicy"],
+  "f:action": { "@id": "f:view" },
+  "f:allow": true
+}
+```
+
+```json
+{
+  "@id": "ex:denyAllSSN",
+  "@type": ["f:AccessPolicy", "ex:RestrictedPolicy"],
+  "f:onProperty": { "@id": "schema:ssn" },
+  "f:action": { "@id": "f:view" },
+  "f:required": true,
+  "f:allow": false
+}
+```
+
+#### `f:query` (Conditional)
+
+Use `f:query` for conditional access based on relationships in the data. The
+query is a JSON-LD encoded query that returns true (access granted) or false
+(access denied):
+
+```json
+{
+  "@id": "ex:ownDataOnly",
+  "@type": ["f:AccessPolicy", "ex:UserPolicy"],
+  "f:action": [{ "@id": "f:view" }],
+  "f:onProperty": [{ "@id": "schema:ssn" }],
+  "f:query": {
+    "@type": "@json",
+    "@value": {
+      "where": {
+        "@id": "?$identity",
+        "ex:user": { "@id": "?$this" }
       }
     }
-  ]
+  }
 }
 ```
 
-#### `id`
+In the policy above, a user can view values on the `schema:ssn` only if the property exists on a subject related to the identity via the `ex:user` relationship. If Alice is querying, and we assume her identity record has `ex:user --> ex:alice`, then she can view the `schema:ssn` property on `ex:alice` but not on any other user.
 
-`id` should be any valid IRI. Note that you must be careful here not to create
-naming collisions; each separate permission _must_ have a unique IRI or you'll
-inadvertently overwrite values for an existing permission.
+<Admonition type='info'>
+  It is important that the value of `f:query` be `"@type": "@json"`, as that
+  specifies that the access policy query information is JSON data--namely, a
+  query object--and not intended to represent a series of related children
+  nodes.
+</Admonition>
 
-#### `f:action`
+### Targeting
 
-`f:action` should be a set containing one or both of the following:
+By default, a policy applies to all data. Use targeting properties to restrict
+scope:
 
-- `{"id": "f:view"}`
-- `{"id": "f:modify"}`
+#### `f:onClass`
 
-#### `f:targetRole`
+Restricts the policy to subjects of a specific class:
 
-`f:targetRole` specifies which user role this permission applies to. The
-permission is applied if one of the following are true:
-
-- The user specified in the Active Identity has a `f:role` property equal to
-  `f:targetRole`
-- The Active Identity includes a `role` equal to `f:targetRole`
-
-`f:targetRole` does not rely on `rdfs:subClassOf` or other kinds of inference.
-
-Take the following policy definition:
-
-```json focus=12:14,17,26:28
+```json
 {
-  "@context": {
-    "id": "@id",
-    "type": "@type",
-    "f": "https://ns.flur.ee/ledger#",
-    "ex": "http://example.com/"
-  },
-  "id": "ex:rootPolicy",
-  "type": ["f:Policy"],
-  "f:targetNode": {
-    "id": "f:allNodes"
-  },
-  "f:allow": [
-    {
-      "id": "ex:rootAccessAllow",
-      "f:action": [
-        {
-          "id": "f:view"
-        },
-        {
-          "id": "f:modify"
-        }
-      ],
-      "f:targetRole": {
-        "id": "ex:rootRole"
+  "@id": "ex:payrollRestriction",
+  "@type": ["f:AccessPolicy", "ex:RestrictedPolicy"],
+  "f:onClass": { "@id": "ex:PayrollEntry" },
+  "f:action": { "@id": "f:view" },
+  "f:allow": false,
+  "f:required": true
+}
+```
+
+This policy prevents any users of the `ex:RestrictedPolicy` policy group from viewing any subjects (or their triples) if those subjects are of type `ex:PayrollEntry`.
+
+```json
+{
+  "@id": "ex:userRestriction",
+  "@type": ["f:AccessPolicy", "ex:RestrictedPolicy"],
+  "f:onClass": { "@id": "ex:User" },
+  "f:action": { "@id": "f:view" },
+  "f:required": true,
+  "f:query": {
+    "@type": "@json",
+    "@value": {
+      "where": { "@id": "?$this", "ex:verified": true }
+    }
+  }
+}
+```
+
+This policy only allows viewing `ex:User` subjects (or their triples) if those subjects have `ex:verified: true`.
+
+#### `f:onProperty`
+
+Restricts the policy to specific properties:
+
+```json
+{
+  "@id": "ex:ssnRestriction",
+  "@type": ["f:AccessPolicy", "ex:EmployeePolicy"],
+  "f:onProperty": [{ "@id": "schema:ssn" }],
+  "f:action": [{ "@id": "f:view" }],
+  "f:required": true,
+  "f:query": {
+    "@type": "@json",
+    "@value": {
+      "where": {
+        "@id": "?$identity",
+        "ex:user": { "@id": "?$this" }
       }
     }
-  ]
+  }
 }
 ```
 
-In this example, the `ex:rootAccessAllow` permission specifies that a user with
-the role `ex:rootRole` can view and modify the target nodes (which happens to be
-all nodes in this example because the `f:targetNode` is `{"id": "f:allNodes"}`).
+This policy restricts access to `schema:ssn` — only allowing access when the
+identity's `ex:user` relationship points to the subject being accessed.
 
-### Property-level permissions
+<Admonition type='tip'>
+  `f:onProperty` can also accept a query to dynamically determine which
+  properties are restricted. See the advanced examples section.
+</Admonition>
 
-`f:property` refers to a set of property rules for the targeted nodes. The
-JSON-LD for a property rule should have the following keys:
+### The `f:required` Flag
 
-- `"f:path"`
-- `"f:allow"`
+When `f:required` is `true`, this policy MUST pass, even if other policies apply to the identity or to the target data and even if those policies pass as `true`.
 
-Here's an example of a Data Access Control policy that includes a property rule:
+```json
+{
+  "@id": "ex:ssnRestriction",
+  "@type": ["f:AccessPolicy", "ex:EmployeePolicy"],
+  "f:onProperty": [{ "@id": "schema:ssn" }],
+  "f:action": { "@id": "f:view" },
+  "f:required": true,
+  "f:query": { ... }
+}
+```
+
+You can think of this as a kind of _**OR**_ vs _**AND**_ logic: _without **`f:required: true`**, multiple policies may apply to a particular request, and even to the same data being accessed. In those scenarios, if even a single policy evaluates to `true` (i.e., allows access), then access is granted_.
+
+However, when `f:required: true` is set on a policy, that policy MUST evaluate to `true` in order for access to be granted, regardless of the results of any other applicable policies.
+
+If we imagine 3 policies applying to an attempt to query for Alice's SSN:
+
+1. Can see all data
+2. Can see all data of User class
+3. Can see own SSN only
+
+If the 3rd policy (`Can see own SSN only`) does NOT have `f:required: true`, then Alice would be able to see Bob's SSN, because one of the two other policies would allow access. You can think of this as
+
+```
+!!(Policy 1) || !!(Policy 2) || !!(Policy 3)
+```
+
+If instead we have the following (which we'd likely want for sensitive data like SSNs):
+
+1. Can see all data
+2. Can see all data of User class
+3. Can see own SSN only, **with `f:required: true`**
+
+Then Alice would NOT be able to see Bob's SSN, because the 3rd policy MUST pass for access to be granted. You can think of this as
+
+```
+(!!(Policy 1) || !!(Policy 2)) && !!(Policy 3)
+```
+
+which, in turn, can really be simplified to just the following, since the 3rd policy is the gatekeeper--it either passes, and the other `OR` policies need not be evaluated, or it fails, and access is denied outright:
+
+```
+!!(Policy 3)
+```
+
+### Custom Error Messages
+
+Use `f:exMessage` to provide a user-friendly error message when a policy denies
+access. `f:exMessage` error messages will only appear in error responses. Since queries simply silently filter out inaccessible data, `f:exMessage` is only relevant when used for `f:modify` (i.e. _**transactional**_) actions.
+
+```json
+{
+  "@id": "ex:wishlistCreatePolicy",
+  "@type": ["f:AccessPolicy", "ex:WishlistPolicy"],
+  "f:action": { "@id": "f:modify" },
+  "f:required": true,
+  "f:exMessage": "User can only create a wishlist linked to their own identity.",
+  "f:onProperty": [{ "@id": "ex:wishlist" }],
+  "f:query": {
+    "@type": "@json",
+    "@value": {
+      "where": [["filter", "(= ?$this ?$identity)"]]
+    }
+  }
+}
+```
+
+## Special Variables in Policy Queries
+
+Policy queries can use special variables that Fluree binds automatically:
+
+### `?$identity`
+
+The DID of the authenticated user making the request. Use this to check
+relationships between the user and the data:
+
+```json
+{
+  "where": {
+    "@id": "?$identity",
+    "ex:user": { "@id": "?$this" }
+  }
+}
+```
+
+This checks: "Does the identity of the querying/transacting user have an `ex:user` relationship to the subject
+being accessed?"
+
+### `?$this`
+
+The current subject being evaluated for access. In property-level
+policies, this is the subject that owns the property. You can also use it in
+filter expressions:
+
+```json
+{
+  "where": [["filter", "(= ?$this ?$identity)"]]
+}
+```
+
+This checks: "Is the subject being accessed the same as the identity?"
+
+### `?$target`
+
+Used with `f:targetSubject` for advanced subject-targeting queries (used to
+identify which subjects a policy applies to).
+
+## Policy Examples
+
+### Root/Admin Policy
+
+A policy that grants full access to all data:
 
 ```json
 {
   "@context": {
-    "id": "@id",
-    "type": "@type",
     "f": "https://ns.flur.ee/ledger#",
-    "ex": "http://example.com/",
-    "schema": "http://schema.org/"
+    "ex": "http://example.org/ns/"
   },
-  "id": "ex:UserPolicy",
-  "type": ["f:Policy"],
-  "f:targetClass": { "id": "ex:User" },
-  "f:property": [
-    {
-      "f:path": { "id": "schema:email" },
-      "f:allow": [
-        {
-          "id": "ex:emailViewRule",
-          "f:targetRole": { "id": "ex:userRole" },
-          "f:action": [{ "id": "f:view" }]
-        }
-      ]
-    },
-    {
-      "f:path": { "id": "schema:givenName" },
-      "f:allow": [
-        {
-          "id": "ex:givenNameViewChange",
-          "f:targetRole": { "id": "ex:userRole" },
-          "f:action": [{ "id": "f:view" }, { "id": "f:modify" }],
-          "f:equals": { "list": ["f:$identity", "ex:user"] }
-        }
-      ]
-    }
-  ]
+  "@id": "ex:rootPolicy",
+  "@type": ["f:AccessPolicy", "ex:AdminPolicy"],
+  "f:action": [{ "@id": "f:view" }, { "@id": "f:modify" }],
+  "f:allow": true
 }
 ```
 
-This policy says that a user with the role `ex:UserRole` can view the
-`schema:email` property for a node, but can't modify it. A user with that role
-can also view or modify the `schema:givenName` property for a node IF the node
-has the property `ex:user`, and the value of the property is the same as the
-Active Identity for the query or transaction.
+### Own-Data-Only Policy
 
-#### `f:path`
-
-`f:path` specifies which property is targeted. Its value should be an IRI, like
-`{"id": "schema:givenName"}` above.
-
-#### `f:allow`
-
-`f:allow` lets you specify permissions for a property similarly to how `f:allow`
-lets you specify-level permissions. In addition to the properties `id`,
-`f:targetRole`, and `f:action`, it has the optional property `f:equals`.
-
-`f:equals` gives you a way of comparing a property reachable from the `did` of
-the Active Identity to the node specified by `f:path` for this property rule.
-
-To illustrate this, we need to look at a combination of:
-
-- stored business data
-- property access policy
-- Active Identity
-
-For the business data, let's say that our database contains this graph:
-
-<FlureeMermaid
-  chart={`graph LR
-  did(did:Tf5M4) -->|ex:user| alice(ex:alice)
-  did -->|f:role| ex:userRole
-  
-  alice -->|type| ex:User
-  alice -->|schema:givenName| Alice
-  
-  bob(ex:bob) -->|type| ex:User
-  bob -->|schema:givenName| Bob
-  
-  product(ex:product) -->|schema:productName| Soap
-  product -->|type| ex:Product
-  `}
-/>
-
-Here's the relevant property policy:
+Users can only view and modify their own records:
 
 ```json
-{
-  "@context": {
-    "id": "@id",
-    "type": "@type",
-    "f": "https://ns.flur.ee/ledger#",
-    "ex": "http://example.com/",
-    "schema": "http://schema.org/"
-  },
-  "f:path": { "id": "schema:givenName" },
-  "f:allow": [
-    {
-      "id": "ex:givenNameViewChange",
-      "f:targetRole": { "id": "ex:userRole" },
-      "f:action": [{ "id": "f:view" }, { "id": "f:modify" }],
-      "f:equals": { "list": ["f:$identity", "ex:user"] }
+[
+  {
+    "@id": "ex:ownDataRestriction",
+    "@type": ["f:AccessPolicy", "ex:UserPolicy"],
+    "f:onClass": { "@id": "ex:User" },
+    "f:action": [{ "@id": "f:view" }, { "@id": "f:modify" }],
+    "f:required": true,
+    "f:query": {
+      "@type": "@json",
+      "@value": {
+        "where": {
+          "@id": "?$identity",
+          "ex:user": { "@id": "?$this" }
+        }
+      }
     }
-  ]
-}
+  },
+  {
+    "@id": "ex:defaultAllowView",
+    "@type": ["f:AccessPolicy", "ex:UserPolicy"],
+    "f:action": { "@id": "f:view" },
+    "f:query": { "@type": "@json", "@value": {} }
+  }
+]
 ```
 
-This policy means, "when the node pointed to by the `ex:user` property of the
-`"did"` in the Active Identity is equal to target node, then this policy applies
-to the `schema:givenName` property of the target node."
+### Property Restriction (SSN Example)
 
-That is a mouthful; assume that we're running a query where the `"did"` of the
-Active Identity is `did:Tf5M4`. The highlighted diagram below illustrates how
-the nodes and policies are being treated:
+Users can view all user data, but can only see their own SSN:
 
-<FlureeMermaid
-  chart={`graph LR
-  did(did:Tf5M4) -->|ex:user| alice(ex:alice)
-  did -->|f:role| ex:userRole
-  
-  alice -->|type| ex:User
-  alice -->|schema:givenName| Alice
-  
-  bob(ex:bob) -->|type| ex:User
-  bob -->|schema:givenName| Bob
+```json
+[
+  {
+    "@id": "ex:ssnRestriction",
+    "@type": ["f:AccessPolicy", "ex:EmployeePolicy"],
+    "f:onProperty": [{ "@id": "schema:ssn" }],
+    "f:action": [{ "@id": "f:view" }, { "@id": "f:modify" }],
+    "f:required": true,
+    "f:query": {
+      "@type": "@json",
+      "@value": {
+        "@context": { "ex": "http://example.org/ns/" },
+        "where": {
+          "@id": "?$identity",
+          "ex:user": { "@id": "?$this" }
+        }
+      }
+    }
+  },
+  {
+    "@id": "ex:defaultAllowView",
+    "@type": ["f:AccessPolicy", "ex:EmployeePolicy"],
+    "f:action": { "@id": "f:view" },
+    "f:query": { "@type": "@json", "@value": {} }
+  }
+]
+```
 
-product(ex:product) -->|schema:productName| Soap
-product -->|type| ex:Product
+### Class-Based Restriction
 
-classDef targetNode fill:#f7ce39,stroke:#f7ce39
-class alice,bob targetNode
+Hide all data of a certain class (e.g., internal users hidden from external portal):
 
-style did fill:#ff983b,stroke:#ff983b
-
-style Alice fill:#57f57f,stroke:#57f57f
-style Bob fill:#ff5f43,stroke:#ff5f43
-
-linkStyle 0 stroke:#ff983b
-linkStyle 3 stroke:#f7ce39
-linkStyle 5 stroke:#f7ce39
-`}
-/>
-
-- The nodes in yellow, `ex:alice` and `ex:bob`, are the target nodes for the
-  policy as a whole
-- The paths in yellow, `schema:givenName`, are the target properties for the
-  property policy
-- In the `f:equals` path, the property `f:$identity` points to the node
-  `did:Tf5M4` (orange), and the property `ex:user` (orange) points to `ex:alice`
-- Since the `f:equals` path points to `ex:alice`, and the property policy's path
-  is `schema:givenName`, it's possible to view and modify the `schema:givenName`
-  for `ex:alice`
-- Therefore the node `Alice` (green) is accessible, and the node `Bob` (red) is
-  not
-- The subgraph that includes `ex:product` is not targeted by this policy
-
-## Naming permission nodes
-
-TODO explain the inclusion, or not, of `id` for `f:allow` permissions
+```json
+[
+  {
+    "@id": "ex:denyInternalUsers",
+    "@type": ["f:AccessPolicy", "ex:ExternalPortalPolicy"],
+    "f:onClass": { "@id": "ex:InternalUser" },
+    "f:action": { "@id": "f:view" },
+    "f:required": true,
+    "f:allow": false
+  },
+  {
+    "@id": "ex:defaultAllow",
+    "@type": ["f:AccessPolicy", "ex:ExternalPortalPolicy"],
+    "f:action": { "@id": "f:view" },
+    "f:allow": true
+  }
+]
+```
 
 ## Relationship-Based Access Control (RelBAC)
 
 Here at Fluree HQ we say that Fluree provides _relationship-based access
-control_. The section above shows what we mean by this. Property-based
-permissions can stipulate the relationships that must hold between properties of
-the Active Identity and properties of the target nodes in our access policies.
+control_. Policy queries can stipulate the relationships that must hold between
+the Request Identity and target nodes.
 
-This means that two users who have the same policies can still have different,
-user-specific access permissions to the same data. In the example in the last
-section, `ex:alice` and `ex:bob` could both have the role `ex:userRole`, but
-they would not be allowed to modify the same `schema:givenName` property for the
-same nodes. `ex:alice` can modify her own `schema:givenName` and `ex:bob` can
-modify his; they can't modify each other's.
+This means that two users with the same policies can have different,
+user-specific access permissions to the same data. Consider this scenario:
+
+```mermaid
+  graph LR
+  did1(did:key:alice...) -->|ex:user| alice(ex:alice)
+  did1 -->|f:policyClass| ex:UserPolicy
+
+  did2(did:key:bob...) -->|ex:user| bob(ex:bob)
+  did2 -->|f:policyClass| ex:UserPolicy
+
+  alice -->|type| ex:User
+  alice -->|schema:ssn| ssn1(111-11-1111)
+
+  bob -->|type| ex:User
+  bob -->|schema:ssn| ssn2(222-22-2222)
+
+  classDef identity fill:#ff983b,stroke:#ff983b
+  class did1,did2 identity
+
+  classDef user fill:#f7ce39,stroke:#f7ce39
+  class alice,bob user
+```
+
+Both `did:key:alice...` and `did:key:bob...` have the `ex:UserPolicy` policy
+class. With the SSN restriction policy from earlier, each user can only see
+their own SSN:
+
+- Alice can see `111-11-1111` but not `222-22-2222`
+- Bob can see `222-22-2222` but not `111-11-1111`
+
+The policy query `{"@id": "?$identity", "ex:user": {"@id": "?$this"}}` creates
+this relationship-based restriction by checking if the authenticated identity
+has an `ex:user` relationship to the subject whose SSN is being accessed.
+
+## Advanced Topics
+
+### Policy Metadata Tracking
+
+You can get detailed information about policy execution by adding
+`"meta": true` to your request opts:
+
+```json
+{
+  "@context": { "ex": "http://example.org/ns/" },
+  "from": "my-ledger",
+  "select": { "?s": ["*"] },
+  "where": { "@id": "?s", "@type": "ex:User" },
+  "opts": {
+    "did": "did:key:z6Mk...",
+    "meta": true
+  }
+}
+```
+
+The response will include policy execution statistics:
+
+```json
+{
+  "result": [...],
+  "policy": {
+    "http://example.org/ns/ssnRestriction": { "executed": 2, "allowed": 1 },
+    "http://example.org/ns/defaultAllowView": { "executed": 5, "allowed": 5 }
+  },
+  "fuel": 8
+}
+```
+
+This shows:
+
+- **executed**: How many times the policy was evaluated
+- **allowed**: How many times the policy granted access
+- **fuel**: Total computational cost of policy evaluation
+
+### Dynamic Property Restriction
+
+`f:onProperty` can accept a query to dynamically determine which properties are
+restricted. This is useful when you want to mark certain properties as
+"sensitive" via metadata:
+
+```json
+{
+  "@id": "ex:sensitivePropertyPolicy",
+  "@type": ["f:AccessPolicy", "ex:SensitivePolicy"],
+  "f:action": { "@id": "f:view" },
+  "f:required": true,
+  "f:onProperty": {
+    "@type": "@json",
+    "@value": {
+      "@context": { "ex": "http://example.org/ns/" },
+      "where": { "@id": "?$this", "ex:isSensitive": true }
+    }
+  },
+  "f:allow": false
+}
+```
+
+With this policy, any property marked with `ex:isSensitive: true` will be
+hidden:
+
+```json
+{ "@id": "schema:ssn", "ex:isSensitive": true }
+{ "@id": "schema:email", "ex:isSensitive": true }
+```
+
+### Combining Multiple Policies
+
+Policies are evaluated in combination. The general pattern is:
+
+1. Use `f:required: true` with restrictive policies for sensitive data
+2. Use a "default allow" policy with an empty query for general access
+
+```json
+[
+  {
+    "@id": "ex:restrictive",
+    "@type": ["f:AccessPolicy", "ex:MyPolicy"],
+    "f:onProperty": [{ "@id": "schema:ssn" }],
+    "f:action": { "@id": "f:view" },
+    "f:required": true,
+    "f:query": { "..." }
+  },
+  {
+    "@id": "ex:defaultAllow",
+    "@type": ["f:AccessPolicy", "ex:MyPolicy"],
+    "f:action": { "@id": "f:view" },
+    "f:query": { "@type": "@json", "@value": {} }
+  }
+]
+```
+
+### Per-Ledger Policy Classes
+
+When querying across multiple ledgers, you can specify different policy classes
+for each ledger:
+
+```json
+{
+  "@context": { "ex": "https://example.com/" },
+  "from": ["ledger/personnel", "ledger/products"],
+  "select": ["?s", "?name"],
+  "where": { "@id": "?s", "ex:name": "?name" }
+}
+```
+
+With per-ledger policy configuration in the API call:
+
+```clojure
+{
+  "ledger/personnel" {:policy-class ["https://example.com/AuthenticatedPolicy"]}
+  "ledger/products"  {:policy-class ["https://example.com/PublicPolicy"]}
+}
+```
