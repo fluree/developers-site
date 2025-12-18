@@ -17,6 +17,10 @@ module.exports = {
 	favicon: "img/favicon.ico",
 	organizationName: "fluree", // GitHub org name.
 	projectName: "developers-site", // Repo name.
+	themes: ["@docusaurus/theme-mermaid"],
+	markdown: {
+		mermaid: true,
+	},
 	/** @type {import('@docusaurus/preset-classic').ThemeConfig} */
 	themeConfig: {
 		image: "img/FlureeDevsBanner.jpg",
@@ -205,15 +209,17 @@ module.exports = {
 		},
 		baseUrlIssueBanner: false, // Defaults to `true`,
 		mermaid: {
-			theme: "base",
-			themeVariables: {
-				primaryColor: "#c6d4ff",
-				primaryBorderColor: "#c6d4ff",
-				lineColor: "#c6d4ff",
-				secondaryColor: "#d5f5f6",
-				secondaryTextColor: "#fef4ff",
-				tertiaryColor: "#fff",
-			},
+			theme: { light: "base", dark: "base" }, // must be an object
+			options: {
+				themeVariables: {
+					primaryColor: "#c6d4ff",
+					primaryBorderColor: "#c6d4ff",
+					lineColor: "#c6d4ff",
+					secondaryColor: "#d5f5f6",
+					secondaryTextColor: "#fef4ff",
+					tertiaryColor: "#fff",
+				},
+			}
 		},
 	},
 	presets: [
