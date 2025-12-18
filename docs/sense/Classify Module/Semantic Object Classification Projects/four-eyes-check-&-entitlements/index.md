@@ -24,8 +24,9 @@ A user can’t be assigned both Reviewer and Approver roles. The System will ens
 
 1. If the four-eyes check is OFF (as shown in image), the approver column is disabled.
 
-3. If the four-eyes is ON then at least 1 reviewer and at least 1 approver are required whereas if four-eyes check is OFF then at least 1 reviewer is required for Next Step to get enabled.
+2. If the four-eyes is ON then at least 1 reviewer and at least 1 approver are required whereas if four-eyes check is OFF then at least 1 reviewer is required for *Next Step* to get enabled.
 
-5. The user with the Admin role can’t be an approver or reviewer for Next Step to get enabled.
+3. The user with the Admin role can’t be an approver or reviewer for *Next Step* to get enabled.
 
-7. Each Project needs at least 1 user as Project Admin. There must be another Admin assigned before the logged-on user can be removed as Admin from the project.
+4. Each Project needs at least 1 user as *Project Admin*. There must be another Admin assigned before the logged-on user can be removed as Admin from the project.
+5. Four-eye check toggle switch value can’t be changed after a project has been run (even once).

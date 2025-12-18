@@ -20,6 +20,9 @@ Let’s understand the various sections of the Home Screen, marked with the seri
 
 1. **Project Data:** This icon is enabled only for the *Project Admin*. Clicking on this icon allows the *Project Admin* to make changes to the *Training* and *Project Data* i.e. from Step 5 onwards of the Create Project flow.
 
+    Let us take a quick look at this one here itself.
+![](images/12_manage_project_data_1.png)
+
 2. **Project Users:** This icon is enabled only for the *Project Admin*. Clicking on this will allow the user to Edit the users and their entitlements for this Project.
 
 3. **Manage Project Tasks:** This allows the *Project Admin* to view the Tasks across all the reviewers and approvers (if 4-eyes is ON) associated with the Project, re-assign them and even provide feedback for any task if required.

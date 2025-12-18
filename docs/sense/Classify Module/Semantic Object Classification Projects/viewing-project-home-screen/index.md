@@ -16,15 +16,15 @@ Let’s understand the various sections of the Home Screen, marked with the seri
 
 1. Manage Project Data: Click the icon and use this screen to quickly make changes to Project / Training Data and re-run the model.
 
-3. Manage Project Users: Click the icon and use this screen to quickly make changes to the existing users and their assigned roles in the Project.
+2. Manage Project Users: Click the icon and use this screen to quickly make changes to the existing users and their assigned roles in the Project.
 
-5. Manage Project Tasks: Click the icon and use this screen to Re-assign Tasks or even complete them.
+3. Manage Project Tasks: Click the icon and use this screen to Re-assign Tasks or even complete them.
 
-7. View Results: Click the icon and use this screen to view all of the classification predictions of the model and even provide feedback.
+4. View Results: Click the icon and use this screen to view all of the classification predictions of the model and even provide feedback.
 
-9. Train Model: Click the icon and use this screen to Train the model with system generated targeted Tasks for maximum accuracy.
+5. Train Model: Click the icon and use this screen to Train the model with system generated targeted Tasks for maximum accuracy.
 
-11. Classification Summary: This area shows the summary of results, including the current and past model confidence.
+6. Classification Summary: This area shows the summary of results, including the current and past model confidence.
 
 Screens 1 to 3 are only available if the logged-on user has _Project Admin_ entitlements; otherwise, the icon is disabled.
 
