@@ -12,7 +12,7 @@ Like the <em>Semantic Object Classification</em> project, we can also Train Task
 
 In the earlier section, we saw the actual process of Training Tasks from the Task grid, one by one. But there is a quicker and better way if you want to provide feedback to the Tasks in bulk.
 
-**Step 1:** This Import Task button is available in the Train Model screen.
+**Step 1:** Click on the Import Tasks button or Icon to open the Import pop-up.
 
 This Import Task button is available in the Train Model screen.
 

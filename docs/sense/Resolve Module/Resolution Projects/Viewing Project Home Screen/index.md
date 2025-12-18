@@ -22,6 +22,8 @@ Once the “Unsupervised Model” has run, the Project Dashboard shown below wil
 - **Match Fixing:** These only appear once the System has reached a threshold where doing more training is not likely to improve results. Also, these are remediation tasks where the System requests users to manually fix the lowest confidence matching results.<br />
 - **Merge Fixing:** These only appear once the system has reached a threshold where doing more training is not likely to improve results. These are manual remediation tasks where the System will request that Users manually fix the lowest confidence merging results.<br/ >
 
+    Besides the count of tasks, one can see how many have the “Completed,” “In Review,” or “Pending Approval” status. This gives you an overall perspective of how much work is still required to move the project closer to completion.
+
 **2. Entities Resolved:** The results of the Entity Resolution (matching) model are displayed here. Here, one can view the confidence score stats, number of model runs, and summary stats on how much compression took place. Compression represents the ratio of original records to unique entities. For example, 500 unique entities found from a set of 1,000 records. In that case, the Compression Ratio is 2:1. From here, the Project’s users (Admin, Reviewer, Approver) can directly access the “Match Training” tasks by clicking the “Train Model” icon or the “Match Fixing” tasks by clicking “Fix Issues.”
 Besides the count of tasks, one can see how many have the “Completed,” “In Review,” or “Pending Approval” status. This gives you an overall perspective of how much work is still required to move the project closer to completion.
 

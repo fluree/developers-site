@@ -289,7 +289,7 @@ module.exports = {
 					type: "category",
 					label: "Adding & Managing Your Data",
 					items: [
-						"sense/Resolve Module/Adding & Managing Your Data/Loading your darta sets/index",
+						"sense/Resolve Module/Adding & Managing Your Data/Loading your data sets/index",
 						"sense/Resolve Module/Adding & Managing Your Data/getting-started/index"
 					]
 				},

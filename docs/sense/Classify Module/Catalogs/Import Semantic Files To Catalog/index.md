@@ -18,7 +18,7 @@ These adds on to the previous functionality where a Data Catalog could be import
 
 ![import semantic graph format schema](images/import_graph1.png)
 
-The Import popup can be opened from the Semantic Object list screen as well as from the Concept list screen by clicking the ‘Import File’ icon. These screens are available through Edit as well as the 'Create' flow for Catalogs. The Import pop-up has been modified to allow the user to upload a valid Semantic Graph format Catalog - without any need of download the csv Template. The user can now choose from a) CSV (and use the template as explained [here](https://sensedocsdev.wpengine.com/importing-catalog-structure/) ) or b) RDF, c) TTL and d) OWL format directly uploading the schema file. Note the changes reflected in the instruction text.
+The Import popup can be opened from the Semantic Object list screen as well as from the Concept list screen by clicking the ‘Import File’ icon. These screens are available through Edit as well as the 'Create' flow for Catalogs. The Import pop-up has been modified to allow the user to upload a valid Semantic Graph format Catalog - without any need of download the csv Template. The user can now choose from a) CSV (and use the template as explained [here](/docs/sense/Classify%20Module/Catalogs/Importing%20Catalog%20Structure/index.md) ) or b) RDF, c) TTL and d) OWL format directly uploading the schema file. Note the changes reflected in the instruction text.
 
 **Step 2**: Upload the Semantic Graph format schema file from your local directory.
 

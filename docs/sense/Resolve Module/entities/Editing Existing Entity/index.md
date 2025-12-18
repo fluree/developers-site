@@ -28,7 +28,7 @@ You can follow the workflow as shown above till the beginning of the third step.
 
 **System Validations**
 
-1. The same Validations as in the [Create Entity flow](https://sensedocsdev.wpengine.com/creating-an-entity/) for this workflow step also apply during Edit Entity flow.
+1. The same Validations as in the [Create Entity flow](/docs/sense/Resolve%20Module/entities/Creating%20An%20Entity/index.md) for this workflow step also apply during Edit Entity flow.
 
 **Changing the Sort Order of Attributes**
 

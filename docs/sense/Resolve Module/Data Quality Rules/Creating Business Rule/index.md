@@ -67,18 +67,18 @@ Of these, the Exception details are especially important as these are the actual
 | --- | --- | --- |
 | Rule Name | Name of the rule (example: Customer name cannot be null) | 1\. Required Field2. Checks if the same named rule already exists. |
 | Rule Description | Long text Description  | Optional |
-| Data Quality Dimension | Selection \| Completeness, Uniqueness, Validity, Timeliness | 1\. Mandatory   No Other validation as such but please try to select logically. Example: ‘T_wo users can’t have same Id’_  rule probably fits Uniqueness more than Completeness. |
+| Data Quality Dimension | Selection \| Completeness, Uniqueness, Validity, Timeliness | 1\. Mandatory   No Other validation as such but please try to select logically. Example: _‘Two users can’t have same Id’_  rule probably fits Uniqueness more than Completeness. |
 
 In ‘Flag an Exception when’ section
 
 | **Fields / Inputs** | **Usage / Examples & Validations** |
 | --- | --- |
-| Rule Type | 1\. Single Attribute - when rule condition is relevant to a single concept2. Multi Attribute - generally when comparing more than one concept      **Validations**   \-Based on the Rule Type chosen, the Value Type and other fields change - for example for Multi Attribute: the display automatically changes to provide for two sets of Concepts.   \-Mandatory |
-| Concept  | The difference between the Concept in the upper section (mentioned in Step one, aka _‘Primary Concept’_) of the screen and the Concept in the exception section is that the first one is the one against which the DQ score / stats will be counted whereas exceptions conditions may include multiple concepts.       **Validations**   \-At least one of the exception conditions needs to have the primary concept in it.   \-Defaults to the concept selected in the upper part of the screen (Step 1.).     Filters to the Concepts of the Semantic Object chosen in first screen |
-| Value Type | 1\. value            2\. length        3\. regex     4\. max   5\. min    6\. sum    7. average   8\. product   9\. Standard deviation, frequency, Precision   10\. sum between, difference between and product between   11\. custom calculation   12\. datatype     **\* Validations are listed in system validation section** |
-| Operator | 1\. equals / does not equal3. is greater than / is less than4. is null/ is not null5.  is greater than or equal to / is less than or equal to6. begins with / does not begin with7. ends with / does not end with 8. contains / does not contain9. between10. is Luhn / is not Luhn11. is within / is not within   **\* Validations are listed in System Validations section** |
-| Threshold | Appears only in some combinations of rule type, value type and operator =- - such as when operator is equal to, not equal to, contains, does not contain, begins with, does not begin with, is greater than, is less than etc.   **Validations**    \-This is mandatory in most cases when it appears, except in the ‘Multi Attribute’ rule.  |
-| Next Step (Button)  | Click ‘Next Step’ to save the inputs and move to the next step of workflow–    **Validations**   Next Step remains disabled till all validations, required fields are completed – in any screen. |
+| Rule Type | 1\. Single Attribute - when rule condition is relevant to a single concept2. Multi Attribute - generally when comparing more than one concept <br />**Validations**   \-Based on the Rule Type chosen, the Value Type and other fields change - for example for Multi Attribute: the display automatically changes to provide for two sets of Concepts.   \-Mandatory |
+| Concept  | The difference between the Concept in the upper section (mentioned in Step one, aka _‘Primary Concept’_) of the screen and the Concept in the exception section is that the first one is the one against which the DQ score / stats will be counted whereas exceptions conditions may include multiple concepts. <br />**Validations**   \-At least one of the exception conditions needs to have the primary concept in it.   \-Defaults to the concept selected in the upper part of the screen (Step 1.).     Filters to the Concepts of the Semantic Object chosen in first screen |
+| Value Type | 1\. value <br />2\. length <br />3\. regex <br />4\. max <br />5\. min <br />6\. sum <br />7. average <br />8\. product <br />9\. Standard deviation, frequency, Precision <br />10\. sum between, difference between and product between <br />11\. custom calculation <br />12\. datatype <br />**Validations are listed in system validation section** |
+| Operator | 1\. equals / does not equal3. is greater than / is less than4. is null/ is not null5.  is greater than or equal to / is less than or equal to6. begins with / does not begin with7. ends with / does not end with 8. contains / does not contain9. between10. is Luhn / is not Luhn11. is within / is not within <br />**Validations are listed in System Validations section** |
+| Threshold | Appears only in some combinations of rule type, value type and operator =- - such as when operator is equal to, not equal to, contains, does not contain, begins with, does not begin with, is greater than, is less than etc. <br />**Validations**    \-This is mandatory in most cases when it appears, except in the ‘Multi Attribute’ rule.  |
+| Next Step (Button)  | Click ‘Next Step’ to save the inputs and move to the next step of workflow– <br />**Validations**   Next Step remains disabled till all validations, required fields are completed – in any screen. |
 
 **Useful Note:** It is a useful practice to name the rule in an understandable, brief and standardized way. It should also be noted that the condition which is being applied in the ‘_Flag an exception when_’ should be the reverse of what the correct data expectation is (which is why it is the ‘exception’ section).
 
@@ -150,7 +150,9 @@ Existing mappings between that Data Set and concept will be shown as well.
 
 5. Existing mappings of the Data Sets which the user chose from the last screen will also be visible here for ready reference and to avoid duplication.
 
-Step 7. Add Users: As we’ve seen with other Objects / Elements of the system, it is important to define the entitlements for specific users in terms of data quality rules.  
+**Step 7. Add Users** 
+
+As we’ve seen with other Objects / Elements of the system, it is important to define the entitlements for specific users in terms of data quality rules.  
 For rules, there are two types of entitlements: _Rule_ _Admin_ and _Rule_ _Executor_
 
 ![](images/116_dq_rules_9.png)

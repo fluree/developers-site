@@ -20,7 +20,7 @@ On Clicking the plus icon (marked 2 in the image in the earlier section) in the 
 | --- | --- | --- |
 | Rule Name | Name of the rule (example: Customer name cannot be null) | 1\. Required Field2. Checks if a rule with the same name already exists |
 | Rule Description | Long text Description  | Optional |
-| Data Quality Dimension | Selection \| Completeness, Uniqueness, Validity, Timeliness | 1\. Required. No Other validation as such but please try to select logically. Example: ‘T_wo users can’t have same Id’_  rule probably fits Uniqueness more than Completeness |
+| Data Quality Dimension | Selection \| Completeness, Uniqueness, Validity, Timeliness | 1\. Required. No Other validation as such but please try to select logically. Example: ‘_Two users can’t have same Id_’  rule probably fits Uniqueness more than Completeness |
 | Data Set | The Data Set on whose column the rule is considered | 1.  Required2. Only displays Active Data Sets to which user has at-least read rights |
 | Column | The Data Set column from that Data Set against which the exceptions or quality will be measured. (aka _‘Primary Column’_) | 1\. Required2. Filters to the columns of the Data Set. |
 
@@ -40,12 +40,12 @@ Each exception condition can have the following possible input/ field combinatio
 
 | **Fields / Inputs** | **Usage / Examples  & Validations** |
 | --- | --- |
-| Rule Type | 1\. Single Column - used when rule condition is relevant to a single column2. Multi-Column - used when comparing more than one column3. Single Column Lookup   **Validations**. Based on the Rule Type chosen, the Value Type and other fields change - for example for Multi-column: the display automatically changes to provide for 2 sets of Data Set & Columns. |
-| Column (upper area above Exception conditions) | The difference between the Column in the upper section (mentioned in Step 1, aka _‘Primary Column’_) of the screen and the Column in the exception section is that the first is the one against which the DQ score / stats will be counted whereas exceptions conditions may include multiple columns.    **Validations**. At least, one of the exception conditions needs to have the primary column in it.Defaults to the column selected in the upper part of the screen (Step 1.) but can be changed. Filters to the Columns of the Data Set |
-| Value Type | 1\. value 2. length 3. regex 4. max 5. min 6. sum 7. average 8. product 9. Standard deviation, frequency, Precision 10. sum between, difference between and product between 11. custom calculation 12. datatype     **\* Validations are listed in system validation section** |
-| Operator | 1\. equals / does not equal3. is greater than / is less than4. is null/ is not null5.  is greater than or equal to / is less than or equal to6. begins with / does not begin with7. ends with / does not end with 8. contains / does not contain9. between10. is Luhn / is not Luhn11. is within / is not within   **\* Validations are listed in System Validations section** |
-| Threshold | Appears only in some combinations of rule type, value type and operator.   **Validations** This is mandatory in most cases except in multi-column rule.  |
-| Next Step (Button)  | Click ‘Next Step’ to save the inputs and move to the next step of workflow. –    **Validations** Next Step remains disabled till all validations, required fields are completed - in any screen. |
+| Rule Type | 1\. Single Column - used when rule condition is relevant to a single column2. Multi-Column - used when comparing more than one column3. Single Column Lookup <br />**Validations**. Based on the Rule Type chosen, the Value Type and other fields change - for example for Multi-column: the display automatically changes to provide for 2 sets of Data Set & Columns. |
+| Column (upper area above Exception conditions) | The difference between the Column in the upper section (mentioned in Step 1, aka _‘Primary Column’_) of the screen and the Column in the exception section is that the first is the one against which the DQ score / stats will be counted whereas exceptions conditions may include multiple columns. <br />**Validations**. At least, one of the exception conditions needs to have the primary column in it.Defaults to the column selected in the upper part of the screen (Step 1.) but can be changed. Filters to the Columns of the Data Set |
+| Value Type | 1\. value 2. length 3. regex 4. max 5. min 6. sum 7. average 8. product 9. Standard deviation, frequency, Precision 10. sum between, difference between and product between 11. custom calculation 12. datatype <br />**Validations are listed in system validation section** |
+| Operator | 1\. equals / does not equal3. is greater than / is less than4. is null/ is not null5.  is greater than or equal to / is less than or equal to6. begins with / does not begin with7. ends with / does not end with 8. contains / does not contain9. between10. is Luhn / is not Luhn11. is within / is not within <br />**Validations are listed in System Validations section** |
+| Threshold | Appears only in some combinations of rule type, value type and operator. <br />**Validations** This is mandatory in most cases except in multi-column rule.  |
+| Next Step (Button)  | Click ‘Next Step’ to save the inputs and move to the next step of workflow. – <br />**Validations** Next Step remains disabled till all validations, required fields are completed - in any screen. |
 
 Other than the input specific validations mentioned in the table above, the following needs to be considered:
 

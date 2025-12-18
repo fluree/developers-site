@@ -44,7 +44,7 @@ In this screen, the person creating the _Entity_ is able to assign other _Entity
 
 **Step 4.  Add Attributes for the Entity:**
 
-This is the most important step, where the user can define the attributes of the _Entity_ and some key aspects as well. If you also have a _Classify License_, the first thing to note is that the _Entity_ is the same as a _Semantic Objec_t in _Classify_, and an Entity’s attribute is the same as the _Concept_.
+This is the most important step, where the user can define the attributes of the _Entity_ and some key aspects as well. If you also have a _Classify License_, the first thing to note is that the _Entity_ is the same as a _Semantic Object_ in _Classify_, and an Entity’s attribute is the same as the _Concept_.
 
 ![](images/8_3_add_entity_real.png)
 
