@@ -1,0 +1,147 @@
+# Updating & Deleting Data
+
+This guide covers how to modify and remove data in your Fluree ledger.
+
+## Understanding Updates in Fluree
+
+Fluree is append-only—data is never overwritten. An "update" actually means:
+1. **Retract** the old value
+2. **Assert** the new value
+
+This preserves history while changing the current state.
+
+## The Update Pattern
+
+Use `where` to match entities, `delete` to retract old values, and `insert` to assert new ones:
+
+```json
+{
+  "ledger": "my-app/data",
+  "where": {
+    "@id": "?person",
+    "name": "Alice"
+  },
+  "delete": {
+    "@id": "?person",
+    "email": "?oldEmail"
+  },
+  "insert": {
+    "@id": "?person",
+    "email": "alice.new@example.com"
+  }
+}
+```
+
+This finds any entity named "Alice", removes their current email, and sets a new one.
+
+## Updating a Specific Entity
+
+To update a known entity directly:
+
+```json
+{
+  "ledger": "my-app/data",
+  "delete": {
+    "@id": "ex:alice",
+    "department": "Sales"
+  },
+  "insert": {
+    "@id": "ex:alice",
+    "department": "Engineering"
+  }
+}
+```
+
+## Adding Properties
+
+To add a property without removing anything, just use `insert`:
+
+```json
+{
+  "ledger": "my-app/data",
+  "insert": {
+    "@id": "ex:alice",
+    "phone": "555-1234"
+  }
+}
+```
+
+## Removing Properties
+
+To remove a property, use `delete` with the current value:
+
+```json
+{
+  "ledger": "my-app/data",
+  "delete": {
+    "@id": "ex:alice",
+    "phone": "555-1234"
+  }
+}
+```
+
+Or use a variable if you don't know the value:
+
+```json
+{
+  "ledger": "my-app/data",
+  "where": {
+    "@id": "ex:alice",
+    "phone": "?phone"
+  },
+  "delete": {
+    "@id": "ex:alice",
+    "phone": "?phone"
+  }
+}
+```
+
+## Deleting Entities
+
+To remove all data about an entity:
+
+```json
+{
+  "ledger": "my-app/data",
+  "where": {
+    "@id": "ex:alice",
+    "?p": "?o"
+  },
+  "delete": {
+    "@id": "ex:alice",
+    "?p": "?o"
+  }
+}
+```
+
+This matches all properties (`?p`) and values (`?o`) for Alice and retracts them.
+
+## Bulk Updates
+
+Use `where` patterns to update multiple entities:
+
+```json
+{
+  "ledger": "my-app/data",
+  "where": {
+    "@id": "?person",
+    "department": "Sales"
+  },
+  "delete": {
+    "@id": "?person",
+    "department": "Sales"
+  },
+  "insert": {
+    "@id": "?person",
+    "department": "Revenue"
+  }
+}
+```
+
+This renames the department for everyone in Sales.
+
+## Next Steps
+
+- [Querying Basics](./querying-basics.mdx) — Retrieve your data
+- [Time Travel & History](./time-travel-and-history.mdx) — See previous states
+- [Transaction Syntax Reference](/docs/reference/transaction-syntax) — Complete syntax details

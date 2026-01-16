@@ -1,0 +1,351 @@
+# Classes and Properties
+
+Classes and properties are the building blocks of your data model. A **class** defines a type of thing, while a **property** defines an attribute that things can have. Together, they describe the shape of your data.
+
+## Defining a Class
+
+A class represents a category of things in your domain. In RDF terminology, classes are defined using `rdfs:Class`:
+
+```json
+{
+  "@context": {
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+    "ex": "https://example.com/ns/"
+  },
+  "ledger": "my-ledger",
+  "insert": {
+    "@id": "ex:Person",
+    "@type": "rdfs:Class",
+    "rdfs:label": "Person",
+    "rdfs:comment": "A human being"
+  }
+}
+```
+
+This creates a class called `ex:Person`. The `rdfs:label` and `rdfs:comment` properties are optional but recommended—they make your data model self-documenting.
+
+Once you've defined a class, you can create instances of it:
+
+```json
+{
+  "@context": {
+    "ex": "https://example.com/ns/"
+  },
+  "ledger": "my-ledger",
+  "insert": {
+    "@id": "ex:jane",
+    "@type": "ex:Person"
+  }
+}
+```
+
+## Defining Properties
+
+Properties describe attributes that entities can have. Use `rdf:Property` to define them:
+
+```json
+{
+  "@context": {
+    "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+    "ex": "https://example.com/ns/"
+  },
+  "ledger": "my-ledger",
+  "insert": [
+    {
+      "@id": "ex:name",
+      "@type": "rdf:Property",
+      "rdfs:label": "name",
+      "rdfs:comment": "The name of a person"
+    },
+    {
+      "@id": "ex:email",
+      "@type": "rdf:Property",
+      "rdfs:label": "email address",
+      "rdfs:comment": "An email address for contacting a person"
+    }
+  ]
+}
+```
+
+Now you can use these properties on your instances:
+
+```json
+{
+  "@context": {
+    "ex": "https://example.com/ns/"
+  },
+  "ledger": "my-ledger",
+  "insert": {
+    "@id": "ex:jane",
+    "@type": "ex:Person",
+    "ex:name": "Jane Doe",
+    "ex:email": "jane@example.com"
+  }
+}
+```
+
+## Domain: Which Classes Use a Property
+
+The `rdfs:domain` property specifies which class(es) a property is intended for. When you assert that a property has a certain domain, you're saying "this property is used by things of this type."
+
+```json
+{
+  "@context": {
+    "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+    "ex": "https://example.com/ns/"
+  },
+  "ledger": "my-ledger",
+  "insert": {
+    "@id": "ex:employeeId",
+    "@type": "rdf:Property",
+    "rdfs:domain": { "@id": "ex:Employee" },
+    "rdfs:label": "employee ID",
+    "rdfs:comment": "A unique identifier for an employee"
+  }
+}
+```
+
+With reasoning enabled, using `ex:employeeId` on an entity will **infer** that the entity is an `ex:Employee`:
+
+```json
+{
+  "ledger": "my-ledger",
+  "insert": {
+    "@id": "ex:bob",
+    "ex:employeeId": "E-12345"
+  }
+}
+```
+
+When you query with `owl2rl` reasoning:
+
+```json
+{
+  "@context": { "ex": "https://example.com/ns/" },
+  "from": "my-ledger",
+  "where": { "@id": "ex:bob", "@type": "?type" },
+  "select": "?type",
+  "opts": { "reasoner": ["owl2rl"] }
+}
+```
+
+The result includes `ex:Employee`—even though you never explicitly stated Bob's type.
+
+> **NOTE**: Domain assertions enable inference but don't enforce constraints. If you want to reject data that doesn't match expected patterns, use [SHACL validation](/docs/learn/modeling/shacl-validation/).
+
+## Range: What Values a Property Can Have
+
+The `rdfs:range` property specifies the type of values a property can have. This can be either a class (for relationships) or a datatype (for literal values).
+
+### Range with Datatypes
+
+Use XSD datatypes to specify that a property holds strings, numbers, dates, etc.:
+
+```json
+{
+  "@context": {
+    "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "ex": "https://example.com/ns/"
+  },
+  "ledger": "my-ledger",
+  "insert": [
+    {
+      "@id": "ex:name",
+      "@type": "rdf:Property",
+      "rdfs:range": { "@id": "xsd:string" }
+    },
+    {
+      "@id": "ex:age",
+      "@type": "rdf:Property",
+      "rdfs:range": { "@id": "xsd:integer" }
+    },
+    {
+      "@id": "ex:birthDate",
+      "@type": "rdf:Property",
+      "rdfs:range": { "@id": "xsd:date" }
+    }
+  ]
+}
+```
+
+Common XSD datatypes:
+
+| Datatype | Description | Example |
+|----------|-------------|---------|
+| `xsd:string` | Text | `"Hello"` |
+| `xsd:integer` | Whole numbers | `42` |
+| `xsd:decimal` | Decimal numbers | `3.14` |
+| `xsd:boolean` | True/false | `true` |
+| `xsd:date` | Calendar date | `"2024-01-15"` |
+| `xsd:dateTime` | Date and time | `"2024-01-15T10:30:00Z"` |
+| `xsd:anyURI` | URI/IRI values | `"https://example.com"` |
+
+See the [Data Types](/docs/reference/data-types) reference for the complete list of supported types.
+
+### Range with Classes
+
+When a property's range is a class, the property represents a relationship between entities:
+
+```json
+{
+  "@context": {
+    "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+    "ex": "https://example.com/ns/"
+  },
+  "ledger": "my-ledger",
+  "insert": [
+    {
+      "@id": "ex:Organization",
+      "@type": "rdfs:Class"
+    },
+    {
+      "@id": "ex:worksFor",
+      "@type": "rdf:Property",
+      "rdfs:domain": { "@id": "ex:Person" },
+      "rdfs:range": { "@id": "ex:Organization" }
+    }
+  ]
+}
+```
+
+Now when you use `ex:worksFor`:
+
+```json
+{
+  "ledger": "my-ledger",
+  "insert": {
+    "@id": "ex:jane",
+    "ex:worksFor": { "@id": "ex:acme-corp" }
+  }
+}
+```
+
+With reasoning enabled, Fluree can infer:
+- `ex:jane` is a `ex:Person` (from the domain)
+- `ex:acme-corp` is an `ex:Organization` (from the range)
+
+## Putting It All Together
+
+Here's a complete example that defines a small data model and populates it with data:
+
+```json
+{
+  "@context": {
+    "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "ex": "https://example.com/ns/"
+  },
+  "ledger": "company-data",
+  "insert": [
+    {
+      "@id": "ex:Person",
+      "@type": "rdfs:Class",
+      "rdfs:label": "Person"
+    },
+    {
+      "@id": "ex:Organization",
+      "@type": "rdfs:Class",
+      "rdfs:label": "Organization"
+    },
+    {
+      "@id": "ex:name",
+      "@type": "rdf:Property",
+      "rdfs:range": { "@id": "xsd:string" }
+    },
+    {
+      "@id": "ex:email",
+      "@type": "rdf:Property",
+      "rdfs:domain": { "@id": "ex:Person" },
+      "rdfs:range": { "@id": "xsd:string" }
+    },
+    {
+      "@id": "ex:foundedYear",
+      "@type": "rdf:Property",
+      "rdfs:domain": { "@id": "ex:Organization" },
+      "rdfs:range": { "@id": "xsd:integer" }
+    },
+    {
+      "@id": "ex:worksFor",
+      "@type": "rdf:Property",
+      "rdfs:domain": { "@id": "ex:Person" },
+      "rdfs:range": { "@id": "ex:Organization" }
+    }
+  ]
+}
+```
+
+Now add some instance data:
+
+```json
+{
+  "@context": {
+    "ex": "https://example.com/ns/"
+  },
+  "ledger": "company-data",
+  "insert": [
+    {
+      "@id": "ex:acme",
+      "@type": "ex:Organization",
+      "ex:name": "Acme Corporation",
+      "ex:foundedYear": 1985
+    },
+    {
+      "@id": "ex:jane",
+      "@type": "ex:Person",
+      "ex:name": "Jane Doe",
+      "ex:email": "jane@acme.com",
+      "ex:worksFor": { "@id": "ex:acme" }
+    },
+    {
+      "@id": "ex:bob",
+      "@type": "ex:Person",
+      "ex:name": "Bob Smith",
+      "ex:email": "bob@acme.com",
+      "ex:worksFor": { "@id": "ex:acme" }
+    }
+  ]
+}
+```
+
+Query all people and their employers:
+
+```json
+{
+  "@context": { "ex": "https://example.com/ns/" },
+  "from": "company-data",
+  "where": {
+    "@id": "?person",
+    "@type": "ex:Person",
+    "ex:name": "?name",
+    "ex:worksFor": {
+      "@id": "?org",
+      "ex:name": "?orgName"
+    }
+  },
+  "select": ["?name", "?orgName"]
+}
+```
+
+## Open World vs. Closed World
+
+One important difference from relational databases: RDF follows the **open world assumption**. This means:
+
+- You can add properties to any entity at any time
+- Properties don't need to be declared before use
+- Missing data means "unknown," not "null"
+
+In contrast, relational databases use a **closed world assumption** where everything must be declared upfront and missing values are explicitly null.
+
+This flexibility is powerful but requires a different mindset. If you need strict validation, use [SHACL](/docs/learn/modeling/shacl-validation/) to enforce constraints on your data.
+
+## Next Steps
+
+- Learn about [class and property hierarchies](/docs/learn/modeling/building-ontologies/) with `rdfs:subClassOf` and `rdfs:subPropertyOf`
+- Enforce data quality with [SHACL validation](/docs/learn/modeling/shacl-validation/)
+- See how domain and range enable [reasoning and inference](/docs/reference/reasoning)

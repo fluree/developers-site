@@ -1,0 +1,77 @@
+# Understanding Context
+
+The `@context` is a fundamental JSON-LD concept that gives meaning to your data. Understanding it will help you write cleaner transactions and queries.
+
+## What is @context?
+
+In JSON-LD, `@context` maps short property names to full URIs. It's like a dictionary that defines what your terms mean.
+
+Without context:
+```json
+{
+  "@id": "http://example.org/alice",
+  "http://schema.org/name": "Alice",
+  "http://schema.org/email": "alice@example.com"
+}
+```
+
+With context:
+```json
+{
+  "@context": {
+    "schema": "http://schema.org/"
+  },
+  "@id": "ex:alice",
+  "schema:name": "Alice",
+  "schema:email": "alice@example.com"
+}
+```
+
+## Why Context Matters
+
+### Universal Meaning
+
+When you use `schema:name`, you're using a term defined by Schema.org—a vocabulary understood by search engines, other databases, and tools worldwide. Your data becomes interoperable.
+
+### Avoiding Ambiguity
+
+Without context, `name` could mean anything. With context, `schema:name` specifically means "the name of something" as defined by Schema.org.
+
+### Cleaner Data
+
+Context lets you write concise JSON while maintaining precise, universal meaning.
+
+## Default Context
+
+Fluree provides a default context, so you can write:
+
+```json
+{
+  "@id": "ex:alice",
+  "name": "Alice"
+}
+```
+
+And Fluree knows what `name` means.
+
+## Custom Context
+
+You can define your own terms:
+
+```json
+{
+  "@context": {
+    "ex": "http://example.org/",
+    "worksAt": {"@id": "ex:worksAt", "@type": "@id"}
+  }
+}
+```
+
+This defines:
+- `ex` as a prefix for `http://example.org/`
+- `worksAt` as a property that references other entities
+
+## Next Steps
+
+- [Context Patterns & Best Practices](../working-with-data/context-patterns.mdx) — Practical usage patterns
+- [JSON-LD Essentials](./json-ld.mdx) — Deeper dive into JSON-LD

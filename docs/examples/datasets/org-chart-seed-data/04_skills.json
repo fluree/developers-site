@@ -1,0 +1,254 @@
+[
+  {
+    "@id": "acme-corp",
+    "@graph": [
+      {
+        "id": "org:skills/javascript",
+        "type": "org:Skill",
+        "schema:name": "JavaScript",
+        "org:category": "Programming"
+      },
+      {
+        "id": "org:skills/python",
+        "type": "org:Skill",
+        "schema:name": "Python",
+        "org:category": "Programming"
+      },
+      {
+        "id": "org:skills/clojure",
+        "type": "org:Skill",
+        "schema:name": "Clojure",
+        "org:category": "Programming"
+      },
+      {
+        "id": "org:skills/sql",
+        "type": "org:Skill",
+        "schema:name": "SQL",
+        "org:category": "Database"
+      },
+      {
+        "id": "org:skills/graphql",
+        "type": "org:Skill",
+        "schema:name": "GraphQL",
+        "org:category": "API"
+      },
+      {
+        "id": "org:skills/aws",
+        "type": "org:Skill",
+        "schema:name": "AWS",
+        "org:category": "Cloud"
+      },
+      {
+        "id": "org:skills/kubernetes",
+        "type": "org:Skill",
+        "schema:name": "Kubernetes",
+        "org:category": "DevOps"
+      },
+      {
+        "id": "org:skills/react",
+        "type": "org:Skill",
+        "schema:name": "React",
+        "org:category": "Frontend"
+      },
+      {
+        "id": "org:skills/leadership",
+        "type": "org:Skill",
+        "schema:name": "Leadership",
+        "org:category": "Soft Skills"
+      },
+      {
+        "id": "org:skills/communication",
+        "type": "org:Skill",
+        "schema:name": "Communication",
+        "org:category": "Soft Skills"
+      },
+      {
+        "id": "org:skills/negotiation",
+        "type": "org:Skill",
+        "schema:name": "Negotiation",
+        "org:category": "Sales"
+      },
+      {
+        "id": "org:skills/content-strategy",
+        "type": "org:Skill",
+        "schema:name": "Content Strategy",
+        "org:category": "Marketing"
+      },
+      {
+        "id": "org:person-skills/alex-js",
+        "type": "org:PersonSkill",
+        "org:person": { "id": "org:people/alex-rivera" },
+        "org:skill": { "id": "org:skills/javascript" },
+        "org:proficiency": "expert"
+      },
+      {
+        "id": "org:person-skills/alex-python",
+        "type": "org:PersonSkill",
+        "org:person": { "id": "org:people/alex-rivera" },
+        "org:skill": { "id": "org:skills/python" },
+        "org:proficiency": "advanced"
+      },
+      {
+        "id": "org:person-skills/alex-aws",
+        "type": "org:PersonSkill",
+        "org:person": { "id": "org:people/alex-rivera" },
+        "org:skill": { "id": "org:skills/aws" },
+        "org:proficiency": "expert"
+      },
+      {
+        "id": "org:person-skills/alex-k8s",
+        "type": "org:PersonSkill",
+        "org:person": { "id": "org:people/alex-rivera" },
+        "org:skill": { "id": "org:skills/kubernetes" },
+        "org:proficiency": "expert"
+      },
+      {
+        "id": "org:person-skills/emma-clojure",
+        "type": "org:PersonSkill",
+        "org:person": { "id": "org:people/emma-wilson" },
+        "org:skill": { "id": "org:skills/clojure" },
+        "org:proficiency": "expert"
+      },
+      {
+        "id": "org:person-skills/emma-sql",
+        "type": "org:PersonSkill",
+        "org:person": { "id": "org:people/emma-wilson" },
+        "org:skill": { "id": "org:skills/sql" },
+        "org:proficiency": "advanced"
+      },
+      {
+        "id": "org:person-skills/emma-aws",
+        "type": "org:PersonSkill",
+        "org:person": { "id": "org:people/emma-wilson" },
+        "org:skill": { "id": "org:skills/aws" },
+        "org:proficiency": "advanced"
+      },
+      {
+        "id": "org:person-skills/michael-python",
+        "type": "org:PersonSkill",
+        "org:person": { "id": "org:people/michael-brown" },
+        "org:skill": { "id": "org:skills/python" },
+        "org:proficiency": "advanced"
+      },
+      {
+        "id": "org:person-skills/michael-k8s",
+        "type": "org:PersonSkill",
+        "org:person": { "id": "org:people/michael-brown" },
+        "org:skill": { "id": "org:skills/kubernetes" },
+        "org:proficiency": "intermediate"
+      },
+      {
+        "id": "org:person-skills/sophia-js",
+        "type": "org:PersonSkill",
+        "org:person": { "id": "org:people/sophia-martinez" },
+        "org:skill": { "id": "org:skills/javascript" },
+        "org:proficiency": "advanced"
+      },
+      {
+        "id": "org:person-skills/sophia-graphql",
+        "type": "org:PersonSkill",
+        "org:person": { "id": "org:people/sophia-martinez" },
+        "org:skill": { "id": "org:skills/graphql" },
+        "org:proficiency": "expert"
+      },
+      {
+        "id": "org:person-skills/jordan-react",
+        "type": "org:PersonSkill",
+        "org:person": { "id": "org:people/jordan-patel" },
+        "org:skill": { "id": "org:skills/react" },
+        "org:proficiency": "expert"
+      },
+      {
+        "id": "org:person-skills/jordan-leadership",
+        "type": "org:PersonSkill",
+        "org:person": { "id": "org:people/jordan-patel" },
+        "org:skill": { "id": "org:skills/leadership" },
+        "org:proficiency": "advanced"
+      },
+      {
+        "id": "org:person-skills/james-react",
+        "type": "org:PersonSkill",
+        "org:person": { "id": "org:people/james-taylor" },
+        "org:skill": { "id": "org:skills/react" },
+        "org:proficiency": "expert"
+      },
+      {
+        "id": "org:person-skills/james-js",
+        "type": "org:PersonSkill",
+        "org:person": { "id": "org:people/james-taylor" },
+        "org:skill": { "id": "org:skills/javascript" },
+        "org:proficiency": "expert"
+      },
+      {
+        "id": "org:person-skills/olivia-react",
+        "type": "org:PersonSkill",
+        "org:person": { "id": "org:people/olivia-garcia" },
+        "org:skill": { "id": "org:skills/react" },
+        "org:proficiency": "intermediate"
+      },
+      {
+        "id": "org:person-skills/william-js",
+        "type": "org:PersonSkill",
+        "org:person": { "id": "org:people/william-anderson" },
+        "org:skill": { "id": "org:skills/javascript" },
+        "org:proficiency": "intermediate"
+      },
+      {
+        "id": "org:person-skills/lisa-negotiation",
+        "type": "org:PersonSkill",
+        "org:person": { "id": "org:people/lisa-wong" },
+        "org:skill": { "id": "org:skills/negotiation" },
+        "org:proficiency": "expert"
+      },
+      {
+        "id": "org:person-skills/lisa-leadership",
+        "type": "org:PersonSkill",
+        "org:person": { "id": "org:people/lisa-wong" },
+        "org:skill": { "id": "org:skills/leadership" },
+        "org:proficiency": "expert"
+      },
+      {
+        "id": "org:person-skills/ava-negotiation",
+        "type": "org:PersonSkill",
+        "org:person": { "id": "org:people/ava-thomas" },
+        "org:skill": { "id": "org:skills/negotiation" },
+        "org:proficiency": "advanced"
+      },
+      {
+        "id": "org:person-skills/noah-content",
+        "type": "org:PersonSkill",
+        "org:person": { "id": "org:people/noah-harris" },
+        "org:skill": { "id": "org:skills/content-strategy" },
+        "org:proficiency": "expert"
+      },
+      {
+        "id": "org:person-skills/marcus-leadership",
+        "type": "org:PersonSkill",
+        "org:person": { "id": "org:people/marcus-johnson" },
+        "org:skill": { "id": "org:skills/leadership" },
+        "org:proficiency": "expert"
+      },
+      {
+        "id": "org:person-skills/marcus-clojure",
+        "type": "org:PersonSkill",
+        "org:person": { "id": "org:people/marcus-johnson" },
+        "org:skill": { "id": "org:skills/clojure" },
+        "org:proficiency": "expert"
+      },
+      {
+        "id": "org:person-skills/sarah-leadership",
+        "type": "org:PersonSkill",
+        "org:person": { "id": "org:people/sarah-chen" },
+        "org:skill": { "id": "org:skills/leadership" },
+        "org:proficiency": "expert"
+      },
+      {
+        "id": "org:person-skills/sarah-communication",
+        "type": "org:PersonSkill",
+        "org:person": { "id": "org:people/sarah-chen" },
+        "org:skill": { "id": "org:skills/communication" },
+        "org:proficiency": "expert"
+      }
+    ]
+  }
+]

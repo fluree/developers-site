@@ -1,0 +1,62 @@
+---
+title: CRUD Operations
+---
+
+# CRUD Operations
+
+## Create (Insert)
+
+```sh
+curl -X POST http://localhost:58090/fluree/transact \
+  -H "Content-Type: application/json" \
+  -d '{
+    "ledger": "my/ledger",
+    "insert": {
+      "id": "ex:users/1",
+      "type": "ex:User",
+      "schema:name": "Alice",
+      "schema:email": "alice@example.com"
+    }
+  }'
+```
+
+## Read (Query)
+
+```sh
+curl -X POST http://localhost:58090/fluree/query \
+  -H "Content-Type: application/json" \
+  -d '{
+    "ledger": "my/ledger",
+    "select": { "?user": ["*"] },
+    "where": { "@id": "?user", "@type": "ex:User" }
+  }'
+```
+
+## Update
+
+```sh
+curl -X POST http://localhost:58090/fluree/transact \
+  -H "Content-Type: application/json" \
+  -d '{
+    "ledger": "my/ledger",
+    "delete": { "id": "ex:users/1", "schema:email": "alice@example.com" },
+    "insert": { "id": "ex:users/1", "schema:email": "alice.new@example.com" }
+  }'
+```
+
+## Delete
+
+```sh
+curl -X POST http://localhost:58090/fluree/transact \
+  -H "Content-Type: application/json" \
+  -d '{
+    "ledger": "my/ledger",
+    "delete": {
+      "id": "ex:users/1",
+      "schema:name": null,
+      "schema:email": null
+    }
+  }'
+```
+
+Using `null` deletes all values for that property.

@@ -1,0 +1,255 @@
+# Language Tags & Internationalization
+
+Fluree supports storing values in multiple languages using RDF language tags. This enables internationalized applications where the same property can have different values for different languages.
+
+---
+
+## What Are Language Tags?
+
+In RDF and JSON-LD, a **language tag** associates a string value with a specific language. This follows the [BCP 47](https://www.rfc-editor.org/info/bcp47) standard for language identification.
+
+Common language tags include:
+- `en` - English
+- `en-US` - American English
+- `en-GB` - British English
+- `es` - Spanish
+- `fr` - French
+- `de` - German
+- `zh` - Chinese
+- `ja` - Japanese
+
+## Storing Multilingual Values
+
+To store a value with a language tag, use the `@language` keyword in your transaction:
+
+```json
+{
+  "@context": {
+    "schema": "http://schema.org/",
+    "ex": "http://example.org/"
+  },
+  "ledger": "products",
+  "insert": {
+    "@id": "ex:product-123",
+    "@type": "schema:Product",
+    "schema:name": [
+      { "@value": "Wireless Headphones", "@language": "en" },
+      { "@value": "Auriculares inalámbricos", "@language": "es" },
+      { "@value": "Casque sans fil", "@language": "fr" },
+      { "@value": "Kabellose Kopfhörer", "@language": "de" }
+    ],
+    "schema:description": [
+      { "@value": "Premium noise-canceling headphones", "@language": "en" },
+      { "@value": "Auriculares premium con cancelación de ruido", "@language": "es" }
+    ]
+  }
+}
+```
+
+## Querying Multilingual Data
+
+### Retrieve All Language Variants
+
+When you query a property with multiple language-tagged values, all variants are returned:
+
+```json
+{
+  "@context": { "schema": "http://schema.org/", "ex": "http://example.org/" },
+  "from": "products",
+  "select": { "ex:product-123": ["schema:name"] }
+}
+```
+
+**Response:**
+```json
+[
+  {
+    "@id": "ex:product-123",
+    "schema:name": [
+      { "@value": "Wireless Headphones", "@language": "en" },
+      { "@value": "Auriculares inalámbricos", "@language": "es" },
+      { "@value": "Casque sans fil", "@language": "fr" },
+      { "@value": "Kabellose Kopfhörer", "@language": "de" }
+    ]
+  }
+]
+```
+
+### Filter by Language
+
+Use the `lang` function in a filter to select values in a specific language:
+
+```json
+{
+  "@context": { "schema": "http://schema.org/", "ex": "http://example.org/" },
+  "from": "products",
+  "where": [
+    { "@id": "?product", "schema:name": "?name" },
+    ["filter", "(= (lang ?name) \"es\")"]
+  ],
+  "select": ["?product", "?name"]
+}
+```
+
+This returns only Spanish language values.
+
+### Bind Language Information
+
+You can extract the language tag from a value using `bind`:
+
+```json
+{
+  "@context": { "schema": "http://schema.org/" },
+  "from": "products",
+  "where": [
+    { "@id": "?product", "schema:name": "?name" },
+    ["bind", "?lang", "(lang ?name)"]
+  ],
+  "select": ["?product", "?name", "?lang"]
+}
+```
+
+## Updating Language-Tagged Values
+
+To update a specific language variant, delete the old value and insert the new one:
+
+```json
+{
+  "@context": { "schema": "http://schema.org/", "ex": "http://example.org/" },
+  "ledger": "products",
+  "delete": {
+    "@id": "ex:product-123",
+    "schema:name": { "@value": "Wireless Headphones", "@language": "en" }
+  },
+  "insert": {
+    "@id": "ex:product-123",
+    "schema:name": { "@value": "Premium Wireless Headphones", "@language": "en" }
+  }
+}
+```
+
+To dynamically update based on language:
+
+```json
+{
+  "@context": { "schema": "http://schema.org/", "ex": "http://example.org/" },
+  "ledger": "products",
+  "where": [
+    { "@id": "ex:product-123", "schema:name": "?oldName" },
+    ["filter", "(= (lang ?oldName) \"en\")"]
+  ],
+  "delete": {
+    "@id": "ex:product-123",
+    "schema:name": "?oldName"
+  },
+  "insert": {
+    "@id": "ex:product-123",
+    "schema:name": { "@value": "Premium Wireless Headphones", "@language": "en" }
+  }
+}
+```
+
+## Context-Based Language Defaults
+
+You can set a default language in your `@context` to simplify transactions:
+
+```json
+{
+  "@context": {
+    "@language": "en",
+    "schema": "http://schema.org/",
+    "ex": "http://example.org/"
+  },
+  "ledger": "products",
+  "insert": {
+    "@id": "ex:product-456",
+    "schema:name": "Bluetooth Speaker"
+  }
+}
+```
+
+With `"@language": "en"` in the context, string values are automatically tagged as English.
+
+To override the default for specific values:
+
+```json
+{
+  "@context": {
+    "@language": "en",
+    "schema": "http://schema.org/",
+    "ex": "http://example.org/"
+  },
+  "ledger": "products",
+  "insert": {
+    "@id": "ex:product-456",
+    "schema:name": [
+      "Bluetooth Speaker",
+      { "@value": "Altavoz Bluetooth", "@language": "es" }
+    ]
+  }
+}
+```
+
+## RDF Annotations
+
+Beyond language tags, JSON-LD and RDF support **annotations** (also called reification) to add metadata to statements. While language tags annotate literal values, annotations can describe relationships between nodes.
+
+### Annotating Relationships
+
+Use `@annotation` to add metadata to a relationship:
+
+```json
+{
+  "@context": {
+    "ex": "http://example.org/",
+    "schema": "http://schema.org/"
+  },
+  "ledger": "people",
+  "insert": {
+    "@id": "ex:alice",
+    "ex:knows": {
+      "@id": "ex:bob",
+      "@annotation": {
+        "ex:since": "2020-01-15",
+        "ex:context": "work"
+      }
+    }
+  }
+}
+```
+
+This records not just that Alice knows Bob, but also metadata about that relationship.
+
+### Querying Annotations
+
+Annotations create additional triples that can be queried:
+
+```json
+{
+  "@context": { "ex": "http://example.org/" },
+  "from": "people",
+  "where": [
+    { "@id": "?person", "ex:knows": "?friend" },
+    { "@id": "?statement", "ex:since": "?since" }
+  ],
+  "select": ["?person", "?friend", "?since"]
+}
+```
+
+## Best Practices
+
+1. **Use standard language tags** - Stick to BCP 47 codes for maximum interoperability
+
+2. **Be consistent** - If you use `en-US` for one property, use it for all American English content
+
+3. **Provide fallbacks** - Consider providing a base language (e.g., `en`) alongside regional variants (`en-US`, `en-GB`)
+
+4. **Use context defaults** - Set `@language` in your context when most content is in one language
+
+5. **Index appropriately** - If you frequently filter by language, consider your query patterns for optimal performance
+
+## Related Resources
+
+- [Working with Context](/docs/learn/working-with-data/context-patterns/) - Learn more about JSON-LD context
+- [Transaction Syntax](/docs/reference/transaction-syntax) - Full transaction reference
+- [FlureeQL Query Syntax](/docs/reference/querying/) - Query language reference

@@ -4,3 +4,6 @@ build
 bin
 
 .DS_Store
+
+# Local environment variables (copy .env.local.example to .env.local)
+.env.local

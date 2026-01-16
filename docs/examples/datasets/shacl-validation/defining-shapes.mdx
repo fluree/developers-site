@@ -1,0 +1,73 @@
+---
+title: Defining Shapes
+---
+
+# Defining SHACL Shapes
+
+## Required Properties
+
+Require that a Person has a name:
+
+```json
+{
+  "sh:property": {
+    "sh:path": { "id": "schema:givenName" },
+    "sh:minCount": 1,
+    "sh:message": "Person must have a given name"
+  }
+}
+```
+
+## Cardinality Constraints
+
+Exactly one email:
+
+```json
+{
+  "sh:property": {
+    "sh:path": { "id": "schema:email" },
+    "sh:minCount": 1,
+    "sh:maxCount": 1
+  }
+}
+```
+
+## Value Ranges
+
+Age between 0 and 150:
+
+```json
+{
+  "sh:property": {
+    "sh:path": { "id": "ex:age" },
+    "sh:minInclusive": 0,
+    "sh:maxInclusive": 150
+  }
+}
+```
+
+## Pattern Matching
+
+Email format validation:
+
+```json
+{
+  "sh:property": {
+    "sh:path": { "id": "schema:email" },
+    "sh:pattern": "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"
+  }
+}
+```
+
+## Type Constraints
+
+Customer must be a Person:
+
+```json
+{
+  "sh:property": {
+    "sh:path": { "id": "ex:customer" },
+    "sh:class": { "id": "ex:Person" }
+  }
+}
+```

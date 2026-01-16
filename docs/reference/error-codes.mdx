@@ -1,41 +1,668 @@
 # Error Codes
 
-## query-missing-select
+This reference documents all error codes returned by Fluree. Errors include an error code keyword (e.g., `:db/invalid-query`), an HTTP status code, and a human-readable message.
 
-This error is caused by a missing `select` key, which is required for all FlureeQL queries. You can find out more information on required keys in [FlureeQL syntax](/docs/reference/flureeql-query-syntax/#query-object)
+## Error Response Format
 
-## query-missing-where
+Fluree returns errors in this structure:
 
-This error is caused by a missing `where` key, which is required for all FlureeQL queries. You can find out more information on required keys in [FlureeQL syntax](/docs/reference/flureeql-query-syntax/#query-object)
+```json
+{
+  "status": 400,
+  "error": ":db/invalid-query",
+  "message": "Human-readable description of the error"
+}
+```
 
-## query-unknown-key
+Some errors include additional context fields like `ledger`, `commit`, or validation reports.
 
-This error is caused by an invalid or unknown key in your query. Try checking for spelling errors and confirm that each key in your query is one of the following listed in our docs on the [Query Object](/docs/reference/flureeql-query-syntax/#query-object)
+---
 
-## query-invalid-history
+## Query Errors
 
-This error is caused by an invalid value is assigned to a history key in your query. You can look at our documentation on [history queries](/docs/reference/history-syntax/) here to ensure you are assigning an allowed data type that is properly formatted.
+Errors related to FlureeQL and SPARQL query syntax.
 
-## query-invalid-commit-details
+### `:db/invalid-query`
 
-The most common reason for invalid-commit-details errors is that a value other than a `boolean` (`true`/`false`) was assigned to this key, which acts as a flag to either include or exclude details about commits in a history query. You can also refer to our documentation on [History syntax](/docs/reference/history-syntax/#including-commit-details) to confirm your query is formatted properly.
+**Status:** 400
 
-## query-invalid-t
+Query syntax is invalid or malformed. This is a general query error that may have more specific variants below.
 
-This error is caused by an invalid value of `t` in your query. Check to be certain that the value for `t` is not out of range for your ledger and that it contains proper typing as explained [here](/docs/reference/flureeql-query-syntax/#t).
+### `query-missing-select`
 
-## query-invalid-select
+**Status:** 400
 
-This error is typically caused by an incorrect usage of the `select` key. Check out our [FlureeQL query syntax documentation](/docs/reference/flureeql-query-syntax/#select) on the `select` key to confirm you are using the proper options, syntax, and formatting.
+Missing `select` key, which is required for all FlureeQL queries. See [FlureeQL syntax](/docs/reference/querying/#query-object).
 
-## query-invalid-where
+### `query-missing-where`
 
-This error is typically caused by an incorrect usage of the `where` key. Check out our [FlureeQL query syntax documentation](/docs/reference/flureeql-query-syntax/#where) on the `where` key to confirm you are using the proper options, syntax, and formatting.
+**Status:** 400
 
-## query-invalid-orderby
+Missing `where` key, which is required for all FlureeQL queries. See [FlureeQL syntax](/docs/reference/querying/#query-object).
 
-Typically this error is caused by an invalid value for the `orderBy` key. Use of `orderBy` requires a value `?binding` generated from the `where` clause. For example, if your `where` clause includes a binding for values on `?age` (e.g. `"schema:age": "?age"`), then you could order all query results according to ascending sorted order for `?age` like so: `"orderBy": "?age"`
+### `query-unknown-key`
 
-## query-invalid-groupby
+**Status:** 400
 
-This error is typically caused by an invalid value for the `groupBy` key that is neither recognized as a valid variable or vector of variables. `groupBy` must be assigned to either an array or a string. For more information and reference on this key, check out our documentation on `groupBy` [here](/docs/reference/flureeql-query-syntax/#groupby).
+Invalid or unknown key in your query. Check for spelling errors and confirm each key is valid per the [Query Object](/docs/reference/querying/#query-object) documentation.
+
+### `query-invalid-select`
+
+**Status:** 400
+
+Incorrect usage of the `select` key. See [select syntax](/docs/reference/querying/select-clauses/).
+
+### `query-invalid-where`
+
+**Status:** 400
+
+Incorrect usage of the `where` key. See [where syntax](/docs/reference/querying/where-clauses/).
+
+### `query-invalid-orderby`
+
+**Status:** 400
+
+Invalid value for `orderBy`. Must reference a binding variable from the `where` clause (e.g., `"orderBy": "?age"`).
+
+### `query-invalid-groupby`
+
+**Status:** 400
+
+Invalid value for `groupBy`. Must be a string or array of binding variables. See [groupBy](/docs/reference/querying/aggregations/#groupby).
+
+### `query-invalid-t`
+
+**Status:** 400
+
+Invalid `t` (transaction) value. Ensure the value is within range for your ledger and properly typed. See [t parameter](/docs/reference/querying/modifiers/#t).
+
+### `:db/invalid-property-path`
+
+**Status:** 400
+
+Property path expression in query is malformed or unsupported.
+
+### `:db/invalid-predicate`
+
+**Status:** 400
+
+Predicate IRI in query is invalid or not found.
+
+### `:db/unsupported-transitive-path`
+
+**Status:** 400
+
+Transitive path syntax used is not supported.
+
+---
+
+## History Query Errors
+
+Errors specific to history queries.
+
+### `query-invalid-history`
+
+**Status:** 400
+
+Invalid value assigned to the `history` key. See [history queries](/docs/reference/history-syntax/).
+
+### `query-invalid-commit-details`
+
+**Status:** 400
+
+The `commit-details` key requires a boolean (`true`/`false`). See [commit details](/docs/reference/history-syntax/#including-commit-details).
+
+---
+
+## Transaction Errors
+
+Errors when creating, updating, or deleting data.
+
+### `:db/invalid-transaction`
+
+**Status:** 400
+
+Transaction format is malformed or contains invalid syntax.
+
+### `:db/invalid-txn`
+
+**Status:** 400
+
+Transaction parsing failed. Check JSON structure and required fields.
+
+### `:db/invalid-update`
+
+**Status:** 400
+
+Update operation is invalid. Verify the update syntax and target entities exist.
+
+### `:db/invalid-retraction`
+
+**Status:** 400
+
+Retraction in transaction is invalid. Ensure you're retracting existing data with correct syntax.
+
+### `:db/invalid-annotation`
+
+**Status:** 400
+
+Commit annotation is malformed. Annotations must be valid JSON-LD.
+
+---
+
+## Data Validation Errors
+
+Errors when data doesn't match expected types or constraints.
+
+### `:db/invalid-value`
+
+**Status:** 400
+
+Value cannot be coerced to the specified datatype. Check that the value matches the property's expected type.
+
+### `:db/value-coercion`
+
+**Status:** 400
+
+Automatic value coercion failed. The provided value is incompatible with the target datatype.
+
+### `:db/invalid-datatype`
+
+**Status:** 400
+
+Unsupported or unrecognized datatype specified.
+
+### `:db/invalid-time`
+
+**Status:** 400
+
+Time value is not ISO-8601 compliant. Use format like `"2024-01-15T10:30:00Z"`.
+
+### `:db/invalid-json`
+
+**Status:** 400
+
+JSON parsing or validation failed. Check for syntax errors in your JSON payload.
+
+### `:db/invalid-dense-vector`
+
+**Status:** 400
+
+Dense vector has invalid structure. Vectors must be arrays of numbers with consistent dimensions.
+
+---
+
+## SHACL Validation Errors
+
+Errors when data violates SHACL shape constraints.
+
+### `:shacl/violation`
+
+**Status:** 422
+
+Data violates one or more SHACL constraints. The response includes a detailed validation report:
+
+```json
+{
+  "status": 422,
+  "error": ":shacl/violation",
+  "message": "SHACL validation failed",
+  "report": {
+    "constraint": "sh:minCount",
+    "focusNode": "ex:Person1",
+    "path": "schema:name",
+    "value": null,
+    "expectedValue": 1
+  }
+}
+```
+
+See [SHACL validation](/docs/reference/shacl-validation) for constraint details.
+
+---
+
+## Ledger Errors
+
+Errors related to ledger creation and management.
+
+### `:db/ledger-exists`
+
+**Status:** 409
+
+Cannot create ledger because one with this name already exists.
+
+### `:db/ledger-not-exists`
+
+**Status:** 409
+
+Specified ledger does not exist. Check the ledger name and ensure it has been created.
+
+### `:db/invalid-ledger-name`
+
+**Status:** 400
+
+Ledger name contains invalid characters or format. Names should be alphanumeric with hyphens/underscores.
+
+### `:db/invalid-ledger-id`
+
+**Status:** 400
+
+Ledger ID is invalid or missing from request.
+
+### `:db/invalid-ledger-opts`
+
+**Status:** 400
+
+Invalid options provided during ledger creation.
+
+### `:db/unkown-ledger`
+
+**Status:** 400
+
+Referenced ledger is unknown or not accessible.
+
+---
+
+## Branch Errors
+
+Errors related to ledger branches.
+
+### `:db/invalid-branch-name`
+
+**Status:** 400
+
+Branch name contains invalid characters or format.
+
+### `:db/invalid-branch`
+
+**Status:** 400
+
+Specified branch does not exist on this ledger.
+
+---
+
+## Commit & Time Travel Errors
+
+Errors when working with commits and time travel queries.
+
+### `:db/invalid-commit`
+
+**Status:** 400
+
+Commit structure is malformed or missing required fields.
+
+### `:db/invalid-commit-sha`
+
+**Status:** 400
+
+Commit SHA prefix or format is invalid.
+
+### `:db/ambiguous-commit-sha`
+
+**Status:** 400
+
+SHA prefix matches multiple commits. Provide a longer, more specific prefix.
+
+### `:db/commit-not-found`
+
+**Status:** 404
+
+Specified commit was not found in the ledger history.
+
+### `:db/invalid-time-travel`
+
+**Status:** 400
+
+Time travel specification is invalid. Check the `t`, `at`, or commit reference.
+
+### `:db/missing-transaction`
+
+**Status:** 404
+
+Transaction not found for the specified address.
+
+---
+
+## Policy & Authorization Errors
+
+Errors related to data access policies.
+
+### `:db/policy-exception`
+
+**Status:** 403
+
+Policy rule enforcement failed. The current identity doesn't have permission for this operation.
+
+### `:db/policy-error`
+
+**Status:** 400
+
+Policy definition parsing or validation failed. Check your policy syntax.
+
+---
+
+## Credential & Authentication Errors
+
+Errors related to verifiable credentials and signatures.
+
+### `:db/invalid-credential`
+
+**Status:** 400
+
+Credential verification failed. The credential may be malformed, expired, or have an invalid signature.
+
+### `:db/missing-credentials`
+
+**Status:** 400
+
+Authentication credentials not provided. Include a signed credential with your request.
+
+### `:credential/invalid-signature`
+
+**Status:** 400
+
+Cryptographic signature verification failed. The signature doesn't match the credential content.
+
+### `:credential/unknown-signing-algorithm`
+
+**Status:** 400
+
+JWS header contains an unsupported signing algorithm. Supported algorithms include ES256K.
+
+---
+
+## Configuration Errors
+
+Errors related to Fluree configuration.
+
+### `:db/invalid-config`
+
+**Status:** 400
+
+Configuration structure is invalid.
+
+### `:db/invalid-config-json`
+
+**Status:** 400
+
+Configuration JSON parsing failed.
+
+### `:db/invalid-configuration`
+
+**Status:** 400
+
+Configuration validation failed. Check required fields and value types.
+
+### `:db/missing-config-val`
+
+**Status:** 400
+
+Required configuration value is missing.
+
+### `:db/unsupported-config`
+
+**Status:** 400
+
+Configuration option is not supported in this version.
+
+### `:server/missing-config`
+
+**Status:** 400
+
+Server configuration file or resource not found.
+
+---
+
+## Connection Errors
+
+Errors related to database connections.
+
+### `:db/invalid-connection`
+
+**Status:** 400
+
+Connection object is invalid or has been closed.
+
+### `:db/connection-error`
+
+**Status:** 500
+
+Failed to establish database connection.
+
+### `:db/invalid-address`
+
+**Status:** 400
+
+Ledger address format is invalid.
+
+### `:db/invalid-server-address`
+
+**Status:** 400
+
+Server address format is invalid. Check the host and port.
+
+---
+
+## Storage Errors
+
+Errors related to data storage operations.
+
+### `:db/storage-error`
+
+**Status:** 500
+
+Underlying storage system error. This may indicate disk issues, permissions problems, or encryption failures.
+
+### `:db/file-unavailable`
+
+**Status:** 400
+
+Required file cannot be accessed. Check file permissions and path.
+
+---
+
+## IPFS & Nameservice Errors
+
+Errors when using IPFS or nameservice features.
+
+### `:db/ipfs-failure`
+
+**Status:** 500
+
+IPFS operation failed. Check IPFS daemon connectivity.
+
+### `:db/ipns`
+
+**Status:** 500
+
+IPNS resolution error.
+
+### `:db/push-ipfs`
+
+**Status:** 500
+
+Failed to push data to IPFS.
+
+### `:db/missing-ipns-key`
+
+**Status:** 400
+
+IPNS key not configured. Set up an IPNS key before publishing.
+
+### `:db/no-nameservice`
+
+**Status:** 400
+
+No nameservice available for this operation.
+
+---
+
+## Server & Consensus Errors
+
+Errors from the Fluree server layer (when running fluree/server).
+
+### `:server/invalid-header`
+
+**Status:** 400
+
+Invalid HTTP header format. Boolean or JSON headers may be malformed.
+
+### `:server/unrecognized-transaction`
+
+**Status:** 400
+
+Transaction format not recognized by the server.
+
+### `:consensus/not-leader`
+
+**Status:** 400
+
+Server is not the current leader in a Raft cluster. Retry the request or redirect to the leader.
+
+### `:consensus/response-timeout`
+
+**Status:** 408
+
+Timeout waiting for consensus response. The cluster may be experiencing network issues.
+
+### `:consensus/no-response`
+
+**Status:** 500
+
+Missing event result from consensus layer.
+
+### `:consensus/unexpected-event`
+
+**Status:** 500
+
+Unrecognized consensus event type received.
+
+### `:consensus/config`
+
+**Status:** 500
+
+Configuration error in consensus setup.
+
+### `:db/leader-timeout`
+
+**Status:** 400
+
+Leader election timed out. The cluster may not have quorum.
+
+---
+
+## Capacity & Rate Limiting Errors
+
+Errors when system resources are constrained.
+
+### `:db/queue-full`
+
+**Status:** 429
+
+Transaction queue is full. The server is under heavy load; retry after a delay.
+
+### `:db/pending-transaction-limit`
+
+**Status:** 503
+
+Too many pending transactions. Wait for current transactions to complete.
+
+### `:db/max-novelty-exceeded`
+
+**Status:** 503
+
+Novelty index exceeded maximum size. Reindexing is required before accepting new transactions.
+
+### `:db/unavailable`
+
+**Status:** 503
+
+Service temporarily unavailable. The server may be starting up or performing maintenance.
+
+---
+
+## Index Errors
+
+Errors related to database indexing.
+
+### `:db/indexing`
+
+**Status:** 503
+
+Indexing operation is in progress. Retry after indexing completes.
+
+### `:db/index-invariant-failure`
+
+**Status:** 500
+
+Index tree structure invariant violated. This indicates a potential data integrity issue.
+
+### `:db/invalid-index`
+
+**Status:** 400
+
+Invalid index specification.
+
+---
+
+## System Errors
+
+General system-level errors.
+
+### `:db/unexpected-error`
+
+**Status:** 500
+
+An unexpected error occurred. Check server logs for details.
+
+### `:db/optimization-failure`
+
+**Status:** 500
+
+Query optimization failed. Try simplifying the query.
+
+### `:db/timeout`
+
+**Status:** 408
+
+Operation exceeded time limit.
+
+### `:db/system`
+
+**Status:** 500
+
+System-level error. Check server logs.
+
+### `:db/migration`
+
+**Status:** 500
+
+Error during data migration or upgrade.
+
+### `:node/consensus`
+
+**Status:** 500
+
+Unexpected exception in consensus event handler.
+
+### `:db/websocket-error`
+
+**Status:** 500
+
+WebSocket communication error.
+
+---
+
+## HTTP Status Code Reference
+
+| Status | Meaning | Common Causes |
+|--------|---------|---------------|
+| 400 | Bad Request | Invalid syntax, missing required fields, malformed data |
+| 403 | Forbidden | Policy violation, insufficient permissions |
+| 404 | Not Found | Missing ledger, commit, or transaction |
+| 408 | Timeout | Operation took too long, consensus timeout |
+| 409 | Conflict | Ledger already exists, concurrent modification |
+| 422 | Unprocessable Entity | SHACL validation failure |
+| 429 | Too Many Requests | Rate limiting, queue full |
+| 500 | Internal Server Error | Unexpected errors, system issues |
+| 503 | Service Unavailable | Server overloaded, indexing in progress |

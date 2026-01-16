@@ -1,0 +1,271 @@
+---
+title: Defining Policies
+---
+
+import Admonition from "@theme/Admonition";
+
+# Defining Access Control Policies
+
+This page walks through creating policies step by step, explaining each component of Fluree's policy model.
+
+## Policy Structure
+
+Every policy has these key components:
+
+```json
+{
+  "@id": "policy-id",
+  "type": ["f:Policy"],
+  "f:targetClass": { "@id": "TargetType" },
+  "f:allow": [
+    {
+      "f:targetRole": { "@id": "role" },
+      "f:action": [{ "@id": "f:view" }],
+      "f:property": [{ "@id": "f:allProperties" }],
+      "f:where": { "@list": [...] }
+    }
+  ]
+}
+```
+
+| Component | Purpose |
+|-----------|---------|
+| `f:targetClass` | Which entity type this policy applies to |
+| `f:targetRole` | Which users (by role) this rule affects |
+| `f:action` | Allowed operations: `f:view`, `f:modify`, `f:delete` |
+| `f:property` | Which properties can be accessed |
+| `f:where` | Conditions that must be true |
+
+## Policy 1: Tenant Isolation
+
+The foundational policy ensures users can only see their own organization's data.
+
+```json
+{
+  "@id": "app:policies/tenant-isolation",
+  "type": ["f:Policy"],
+  "f:targetClass": { "@id": "app:Document" },
+  "f:allow": [
+    {
+      "@id": "app:policies/tenant-isolation/rule",
+      "f:targetRole": { "@id": "app:roles/viewer" },
+      "f:action": [{ "@id": "f:view" }],
+      "f:property": [{ "@id": "f:allProperties" }],
+      "f:where": {
+        "@list": [
+          { "@list": ["?$this", "app:organization", "?org"] },
+          { "@list": ["?$identity", "app:organization", "?org"] }
+        ]
+      }
+    }
+  ]
+}
+```
+
+**How it works:**
+
+1. `?$this` is a special variable representing the document being accessed
+2. `?$identity` represents the current user
+3. Both must have the same `?org` value—if not, the policy doesn't allow access
+
+<Admonition type="info">
+  The Viewer role is the base permission level. Higher roles (Editor, Admin) typically include all Viewer permissions plus additional capabilities.
+</Admonition>
+
+## Policy 2: Editor Permissions
+
+Editors can view and modify documents, but not confidential ones:
+
+```json
+{
+  "@id": "app:policies/editor-create",
+  "type": ["f:Policy"],
+  "f:targetClass": { "@id": "app:Document" },
+  "f:allow": [
+    {
+      "@id": "app:policies/editor-create/rule",
+      "f:targetRole": { "@id": "app:roles/editor" },
+      "f:action": [{ "@id": "f:view" }, { "@id": "f:modify" }],
+      "f:property": [{ "@id": "f:allProperties" }],
+      "f:where": {
+        "@list": [
+          { "@list": ["?$this", "app:organization", "?org"] },
+          { "@list": ["?$identity", "app:organization", "?org"] },
+          { "@list": ["?$this", "app:visibility", "?vis"] },
+          { "filter": ["!=", "?vis", "confidential"] }
+        ]
+      }
+    }
+  ]
+}
+```
+
+**Key additions:**
+
+- Two actions: `f:view` and `f:modify`
+- Filter excludes confidential documents: `["!=", "?vis", "confidential"]`
+
+## Policy 3: Admin Full Access
+
+Admins have unrestricted access within their organization:
+
+```json
+{
+  "@id": "app:policies/admin-full",
+  "type": ["f:Policy"],
+  "f:targetClass": { "@id": "app:Document" },
+  "f:allow": [
+    {
+      "@id": "app:policies/admin-full/rule",
+      "f:targetRole": { "@id": "app:roles/admin" },
+      "f:action": [
+        { "@id": "f:view" },
+        { "@id": "f:modify" },
+        { "@id": "f:delete" }
+      ],
+      "f:property": [{ "@id": "f:allProperties" }],
+      "f:where": {
+        "@list": [
+          { "@list": ["?$this", "app:organization", "?org"] },
+          { "@list": ["?$identity", "app:organization", "?org"] }
+        ]
+      }
+    }
+  ]
+}
+```
+
+**Key points:**
+
+- All three actions allowed
+- No visibility filter—admins see everything in their org
+- Still restricted to their own organization (tenant isolation)
+
+## Policy 4: Department-Based Confidential Access
+
+Confidential documents are visible to editors in the same department:
+
+```json
+{
+  "@id": "app:policies/department-confidential",
+  "type": ["f:Policy"],
+  "f:targetClass": { "@id": "app:Document" },
+  "f:allow": [
+    {
+      "@id": "app:policies/department-confidential/rule",
+      "f:targetRole": { "@id": "app:roles/editor" },
+      "f:action": [{ "@id": "f:view" }],
+      "f:property": [{ "@id": "f:allProperties" }],
+      "f:where": {
+        "@list": [
+          { "@list": ["?$this", "app:organization", "?org"] },
+          { "@list": ["?$identity", "app:organization", "?org"] },
+          { "@list": ["?$this", "app:visibility", "confidential"] },
+          { "@list": ["?$this", "app:department", "?dept"] },
+          { "@list": ["?$identity", "app:department", "?dept"] }
+        ]
+      }
+    }
+  ]
+}
+```
+
+**How it works:**
+
+1. Document must be confidential
+2. Document must have a department
+3. User must be in that same department
+4. Still requires same organization
+
+This allows Grace (HR Editor) to see HR confidential docs, but not Finance confidential docs.
+
+## Policy 5: Public Content
+
+Public documents are visible to everyone, even across organizations:
+
+```json
+{
+  "@id": "app:policies/public-read",
+  "type": ["f:Policy"],
+  "f:targetClass": { "@id": "app:Document" },
+  "f:allow": [
+    {
+      "@id": "app:policies/public-read/rule",
+      "f:targetRole": { "@id": "app:roles/viewer" },
+      "f:action": [{ "@id": "f:view" }],
+      "f:property": [{ "@id": "f:allProperties" }],
+      "f:where": {
+        "@list": [
+          { "@list": ["?$this", "app:visibility", "public"] }
+        ]
+      }
+    }
+  ]
+}
+```
+
+**Note:** No organization check—only requires `visibility = public`.
+
+## Property-Level Restrictions
+
+You can also restrict access to specific properties. For example, hiding salary information:
+
+```json
+{
+  "@id": "app:policies/hide-salary",
+  "type": ["f:Policy"],
+  "f:targetClass": { "@id": "app:Employee" },
+  "f:allow": [
+    {
+      "f:targetRole": { "@id": "app:roles/viewer" },
+      "f:action": [{ "@id": "f:view" }],
+      "f:property": [
+        { "@id": "schema:givenName" },
+        { "@id": "schema:familyName" },
+        { "@id": "schema:email" },
+        { "@id": "app:title" }
+      ]
+    }
+  ]
+}
+```
+
+Instead of `f:allProperties`, we list specific properties. The `app:salary` property is excluded, so viewers can't see it.
+
+## Adding Policies to the Ledger
+
+Policies are inserted like any other data:
+
+```json
+{
+  "@context": {
+    "f": "https://ns.flur.ee/ledger#",
+    "app": "https://app-example.com/ns/"
+  },
+  "insert": {
+    "@id": "app:policies/my-new-policy",
+    "type": ["f:Policy"],
+    "f:targetClass": { "@id": "app:Document" },
+    "f:allow": [...]
+  }
+}
+```
+
+<Admonition type="warning">
+  Policy changes take effect immediately. Test policies thoroughly in a development environment before applying to production.
+</Admonition>
+
+## Summary
+
+Policy design patterns:
+
+| Pattern | Use Case |
+|---------|----------|
+| **Match organization** | Tenant isolation |
+| **Match role** | Role-based access |
+| **Filter visibility** | Exclude sensitive content |
+| **Match department** | Department-scoped access |
+| **List properties** | Property-level restrictions |
+| **No org check** | Cross-tenant public content |
+
+Next, learn how to [test policies](../testing-policies/) by querying as different users.

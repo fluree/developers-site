@@ -1,0 +1,141 @@
+# Advanced Queries
+
+This guide covers advanced querying techniques in Fluree.
+
+## Aggregations
+
+Count, sum, and calculate across your data:
+
+```json
+{
+  "from": "my-ledger",
+  "where": {"@id": "?person", "@type": "Person"},
+  "select": "(count ?person)"
+}
+```
+
+Common aggregation functions:
+- `(count ?var)` — Number of matches
+- `(sum ?var)` — Total of numeric values
+- `(avg ?var)` — Average of numeric values
+- `(min ?var)` / `(max ?var)` — Minimum/maximum values
+
+## Grouping Results
+
+Group results by a property:
+
+```json
+{
+  "from": "my-ledger",
+  "where": {"@id": "?person", "department": "?dept"},
+  "select": ["?dept", "(count ?person)"],
+  "groupBy": "?dept"
+}
+```
+
+Returns count of people per department.
+
+## Having Clauses
+
+Filter groups after aggregation:
+
+```json
+{
+  "from": "my-ledger",
+  "where": {"@id": "?person", "department": "?dept"},
+  "select": ["?dept", "(count ?person)"],
+  "groupBy": "?dept",
+  "having": "(> (count ?person) 5)"
+}
+```
+
+Returns only departments with more than 5 people.
+
+## Ordering Results
+
+Sort your results:
+
+```json
+{
+  "from": "my-ledger",
+  "where": {"@id": "?person", "name": "?name", "age": "?age"},
+  "select": {"?person": ["name", "age"]},
+  "orderBy": "?age"
+}
+```
+
+Descending order:
+```json
+"orderBy": ["(desc ?age)"]
+```
+
+Multiple sort keys:
+```json
+"orderBy": ["?department", "(desc ?age)"]
+```
+
+## Pagination
+
+Use `limit` and `offset`:
+
+```json
+{
+  "from": "my-ledger",
+  "where": {"@id": "?person", "@type": "Person"},
+  "select": {"?person": ["name"]},
+  "limit": 10,
+  "offset": 20
+}
+```
+
+## Complex Where Patterns
+
+Match multiple conditions:
+
+```json
+{
+  "from": "my-ledger",
+  "where": [
+    {"@id": "?person", "department": "Engineering"},
+    {"@id": "?person", "level": "Senior"}
+  ],
+  "select": {"?person": ["name"]}
+}
+```
+
+## Optional Matches
+
+Include results even when some properties are missing:
+
+```json
+{
+  "from": "my-ledger",
+  "where": [
+    {"@id": "?person", "name": "?name"},
+    ["optional", {"@id": "?person", "phone": "?phone"}]
+  ],
+  "select": ["?name", "?phone"]
+}
+```
+
+## Union Queries
+
+Match either of multiple patterns:
+
+```json
+{
+  "from": "my-ledger",
+  "where": [
+    ["union",
+      {"@id": "?entity", "@type": "Person"},
+      {"@id": "?entity", "@type": "Organization"}
+    ]
+  ],
+  "select": {"?entity": ["name"]}
+}
+```
+
+## Next Steps
+
+- [Time Travel & History](./time-travel-and-history.mdx) — Query historical states
+- [FlureeQL Reference](/docs/reference/querying/) — Complete syntax details

@@ -1,0 +1,100 @@
+# Inserting Data
+
+This guide covers how to add data to your Fluree ledger.
+
+## Basic Insert
+
+The simplest way to add data is with the `insert` clause:
+
+```json
+{
+  "ledger": "my-app/data",
+  "insert": {
+    "@id": "ex:alice",
+    "@type": "Person",
+    "name": "Alice",
+    "email": "alice@example.com"
+  }
+}
+```
+
+Send this to the `/fluree/transact` endpoint:
+
+```sh
+curl --location 'http://localhost:58090/fluree/transact' \
+--header 'Content-Type: application/json' \
+--data '{
+  "ledger": "my-app/data",
+  "insert": {
+    "@id": "ex:alice",
+    "@type": "Person",
+    "name": "Alice",
+    "email": "alice@example.com"
+  }
+}'
+```
+
+## Inserting Multiple Entities
+
+Pass an array to insert multiple entities at once:
+
+```json
+{
+  "ledger": "my-app/data",
+  "insert": [
+    {"@id": "ex:alice", "name": "Alice"},
+    {"@id": "ex:bob", "name": "Bob"},
+    {"@id": "ex:carol", "name": "Carol"}
+  ]
+}
+```
+
+## Inserting JSON-LD Payloads
+
+Fluree accepts standard JSON-LD. If you have existing JSON-LD data, you can insert it directly:
+
+```json
+{
+  "ledger": "my-app/data",
+  "@context": {
+    "schema": "http://schema.org/"
+  },
+  "insert": {
+    "@id": "ex:product-1",
+    "@type": "schema:Product",
+    "schema:name": "Widget",
+    "schema:price": 29.99
+  }
+}
+```
+
+## Using Upsert
+
+`upsert` creates an entity if it doesn't exist, or merges with existing data if it does:
+
+```json
+{
+  "ledger": "my-app/data",
+  "upsert": {
+    "@id": "ex:alice",
+    "name": "Alice",
+    "department": "Engineering"
+  }
+}
+```
+
+If `ex:alice` exists, this adds/updates the `department` property. If not, it creates the entity.
+
+## Insert vs Upsert
+
+| Use Case | Operation |
+|----------|-----------|
+| Creating new entities | `insert` |
+| Loading data that might already exist | `upsert` |
+| Strict creation (fail if exists) | `insert` with unique constraint |
+| Merging updates | `upsert` |
+
+## Next Steps
+
+- [Updating & Deleting Data](./updating-and-deleting-data.mdx) — Modify existing data
+- [Transaction Syntax Reference](/docs/reference/transaction-syntax) — Complete syntax details

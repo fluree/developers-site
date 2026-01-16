@@ -1,0 +1,272 @@
+# Installation
+
+This guide covers different ways to install and run Fluree Server.
+
+## Docker (Recommended)
+
+Docker is the easiest way to get started with Fluree.
+
+### Basic Setup
+
+```sh
+docker run -p 8090:8090 fluree/server
+```
+
+This starts Fluree with in-memory storage (data is lost when the container stops).
+
+### Persistent Storage
+
+Mount a volume to persist data across restarts:
+
+```sh
+docker run -p 8090:8090 \
+  -v fluree-data:/opt/fluree-server/data \
+  fluree/server
+```
+
+### Custom Configuration
+
+Mount a custom configuration file:
+
+```sh
+docker run -p 8090:8090 \
+  -v /path/to/config.jsonld:/opt/fluree-server/resources/config.jsonld \
+  -v fluree-data:/opt/fluree-server/data \
+  fluree/server --config=./resources/config.jsonld
+```
+
+### Docker Compose
+
+Create a `docker-compose.yml`:
+
+```yaml
+version: '3.8'
+services:
+  fluree:
+    image: fluree/server:latest
+    ports:
+      - "8090:8090"
+    volumes:
+      - fluree-data:/opt/fluree-server/data
+    restart: unless-stopped
+
+volumes:
+  fluree-data:
+```
+
+Run with:
+
+```sh
+docker-compose up -d
+```
+
+---
+
+## JAR File
+
+Run Fluree directly with Java for more control.
+
+### Prerequisites
+
+- Java 11 or higher (Java 17+ recommended)
+
+### Download
+
+Download the latest JAR from the [Fluree releases page](https://github.com/fluree/server/releases).
+
+### Run
+
+```sh
+java -jar fluree-server.jar
+```
+
+### With Configuration
+
+```sh
+java -jar fluree-server.jar --config=./config.jsonld
+```
+
+### JVM Options
+
+For production, tune JVM settings:
+
+```sh
+java -Xmx4g -Xms2g \
+  -XX:+UseG1GC \
+  -jar fluree-server.jar \
+  --config=./config.jsonld
+```
+
+---
+
+## Configuration
+
+Fluree uses JSON-LD configuration files. Here's a minimal production configuration:
+
+### File Storage Configuration
+
+```json
+{
+  "@context": {
+    "@base": "https://ns.flur.ee/config/",
+    "@vocab": "https://ns.flur.ee/system#"
+  },
+  "@id": "productionServer",
+  "@graph": [
+    {
+      "@id": "diskStorage",
+      "@type": "Storage",
+      "filePath": "/var/fluree/data"
+    },
+    {
+      "@id": "connection",
+      "@type": "Connection",
+      "parallelism": 4,
+      "cacheMaxMb": 2000,
+      "commitStorage": { "@id": "diskStorage" },
+      "indexStorage": { "@id": "diskStorage" },
+      "primaryPublisher": {
+        "@type": "Publisher",
+        "storage": { "@id": "diskStorage" }
+      }
+    },
+    {
+      "@id": "consensus",
+      "@type": "Consensus",
+      "consensusProtocol": "standalone",
+      "maxPendingTxns": 512,
+      "connection": { "@id": "connection" }
+    },
+    {
+      "@id": "http",
+      "@type": "API",
+      "httpPort": 8090,
+      "maxTxnWaitMs": 120000
+    }
+  ]
+}
+```
+
+### Memory-Only Configuration (Development)
+
+```json
+{
+  "@context": {
+    "@base": "https://ns.flur.ee/config/",
+    "@vocab": "https://ns.flur.ee/system#"
+  },
+  "@id": "devServer",
+  "@graph": [
+    {
+      "@id": "memoryStorage",
+      "@type": "Storage"
+    },
+    {
+      "@id": "connection",
+      "@type": "Connection",
+      "parallelism": 2,
+      "cacheMaxMb": 500,
+      "commitStorage": { "@id": "memoryStorage" },
+      "indexStorage": { "@id": "memoryStorage" },
+      "primaryPublisher": {
+        "@type": "Publisher",
+        "storage": { "@id": "memoryStorage" }
+      }
+    },
+    {
+      "@id": "consensus",
+      "@type": "Consensus",
+      "consensusProtocol": "standalone",
+      "connection": { "@id": "connection" }
+    },
+    {
+      "@id": "http",
+      "@type": "API",
+      "httpPort": 8090
+    }
+  ]
+}
+```
+
+### Environment Variables
+
+Use `ConfigurationValue` to inject environment variables:
+
+```json
+{
+  "@id": "diskStorage",
+  "@type": "Storage",
+  "filePath": {
+    "@type": "ConfigurationValue",
+    "env": "FLUREE_DATA_PATH",
+    "default": "/var/fluree/data"
+  }
+}
+```
+
+For complete configuration options, see the [Server Configuration Reference](/docs/reference/fluree-server-config).
+
+---
+
+## Verify Installation
+
+After starting Fluree, verify it's running by creating a test ledger:
+
+```sh
+# Create a test ledger
+curl -X POST http://localhost:8090/fluree/create \
+  -H "Content-Type: application/json" \
+  -d '{"ledger": "test/install"}'
+
+# Check it exists
+curl -X POST http://localhost:8090/fluree/exists \
+  -H "Content-Type: application/json" \
+  -d '{"ledger": "test/install"}'
+```
+
+You should see JSON responses confirming the ledger was created and exists.
+
+---
+
+## Production Considerations
+
+### Resource Requirements
+
+| Deployment Size | RAM | CPU | Storage |
+|----------------|-----|-----|---------|
+| Development | 1GB | 1 core | 1GB |
+| Small (< 1M triples) | 4GB | 2 cores | 10GB |
+| Medium (1-10M triples) | 8GB | 4 cores | 50GB |
+| Large (10M+ triples) | 16GB+ | 8+ cores | 100GB+ |
+
+### Security
+
+For production deployments:
+
+1. **Enable Closed Mode** — Require authentication for all requests
+2. **Configure CORS** — Restrict allowed origins
+3. **Use TLS** — Put Fluree behind a reverse proxy with HTTPS
+4. **Set Root Identities** — Define trusted DIDs for administrative access
+
+```json
+{
+  "@id": "http",
+  "@type": "API",
+  "httpPort": 8090,
+  "closedMode": true,
+  "rootIdentities": ["did:key:z6Mkk7yqnGF3YwTrLpqrW6PGsKci7dNqh1CjnvMbzrMerSeL"],
+  "corsOrigins": ["https://app.example.com"]
+}
+```
+
+### High Availability
+
+For high availability, use Raft consensus with multiple nodes. See the [Server Configuration Reference](/docs/reference/fluree-server-config) for Raft cluster setup.
+
+---
+
+## Next Steps
+
+- **[Quick Start](/docs/getting-started/quick-start)** — Create your first ledger
+- **[Core Concepts](/docs/getting-started/core-concepts)** — Understand Fluree's data model
+- **[Server Configuration](/docs/reference/fluree-server-config)** — Complete configuration reference

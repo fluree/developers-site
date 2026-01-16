@@ -1,0 +1,255 @@
+---
+title: Querying the Org Chart
+---
+
+import Admonition from "@theme/Admonition";
+
+# Querying the Org Chart
+
+This walkthrough demonstrates common organizational queries—from simple lookups to complex graph traversals.
+
+## HR Reviews the Team Structure
+
+The HR team needs to answer various questions about the organization. Let's build queries for each.
+
+### List All Employees
+
+Start with a simple query to see everyone:
+
+```json
+{
+  "@context": {
+    "org": "https://org-example.com/ns/",
+    "schema": "http://schema.org/"
+  },
+  "select": {
+    "?person": ["schema:givenName", "schema:familyName", "org:title"]
+  },
+  "where": { "@id": "?person", "@type": "org:Person" },
+  "orderBy": "?person"
+}
+```
+
+### Find Direct Reports
+
+Who reports directly to the CTO?
+
+```json
+{
+  "@context": {
+    "org": "https://org-example.com/ns/",
+    "schema": "http://schema.org/"
+  },
+  "select": {
+    "?person": ["schema:givenName", "schema:familyName", "org:title"]
+  },
+  "where": { "@id": "?person", "@type": "org:Person", "org:reportsTo": {"@id": "org:people/marcus-johnson"} }
+}
+```
+
+Result: Alex Rivera (Platform Lead) and Jordan Patel (Product Lead).
+
+### Find a Person's Manager
+
+Who does Emma Wilson report to?
+
+```json
+{
+  "@context": {
+    "org": "https://org-example.com/ns/",
+    "schema": "http://schema.org/"
+  },
+  "select": {
+    "?manager": ["schema:givenName", "schema:familyName", "org:title"]
+  },
+  "where": { "@id": "org:people/emma-wilson", "org:reportsTo": "?manager" }
+}
+```
+
+Result: Alex Rivera (Platform Lead).
+
+### Team Members by Department
+
+Find everyone in the Platform Team:
+
+```json
+{
+  "@context": {
+    "org": "https://org-example.com/ns/",
+    "schema": "http://schema.org/"
+  },
+  "select": {
+    "?person": ["schema:givenName", "schema:familyName", "org:title"]
+  },
+  "where": { "@id": "?person", "@type": "org:Person", "org:department": {"@id": "org:departments/engineering/platform"} }
+}
+```
+
+Result: Alex Rivera, Emma Wilson, Michael Brown, Sophia Martinez.
+
+### Employees with Their Managers
+
+Show each person alongside their manager's name:
+
+```json
+{
+  "@context": {
+    "org": "https://org-example.com/ns/",
+    "schema": "http://schema.org/"
+  },
+  "select": ["?firstName", "?lastName", "?title", "?managerFirstName", "?managerLastName"],
+  "where": [
+    { "@id": "?person", "@type": "org:Person", "schema:givenName": "?firstName", "schema:familyName": "?lastName", "org:title": "?title", "org:reportsTo": "?manager" },
+    { "@id": "?manager", "schema:givenName": "?managerFirstName", "schema:familyName": "?managerLastName" }
+  ]
+}
+```
+
+<Admonition type="info">
+  Note that Sarah Chen (CEO) won't appear in results since she has no manager—there's no `reportsTo` relationship to match.
+</Admonition>
+
+### Find Project Members
+
+Who's working on the Mobile App project?
+
+```json
+{
+  "@context": {
+    "org": "https://org-example.com/ns/",
+    "schema": "http://schema.org/"
+  },
+  "select": {
+    "?person": ["schema:givenName", "schema:familyName", "org:title"]
+  },
+  "where": { "@id": "org:projects/mobile-app", "org:members": "?person" }
+}
+```
+
+Result: James Taylor, Olivia Garcia, William Anderson.
+
+### Projects a Person Works On
+
+What projects is Emma Wilson involved in?
+
+```json
+{
+  "@context": {
+    "org": "https://org-example.com/ns/",
+    "schema": "http://schema.org/"
+  },
+  "select": {
+    "?project": ["schema:name", "org:status"]
+  },
+  "where": [
+    { "@id": "?project", "@type": "org:Project" },
+    ["union",
+      [{ "@id": "?project", "org:members": {"@id": "org:people/emma-wilson"} }],
+      [{ "@id": "?project", "org:lead": {"@id": "org:people/emma-wilson"} }]
+    ]
+  ]
+}
+```
+
+The `union` clause finds projects where Emma is either a member or the lead.
+
+### Find Experts in a Skill
+
+Who are the JavaScript experts?
+
+```json
+{
+  "@context": {
+    "org": "https://org-example.com/ns/",
+    "schema": "http://schema.org/"
+  },
+  "select": {
+    "?person": ["schema:givenName", "schema:familyName", "org:title"]
+  },
+  "where": { "@id": "?ps", "@type": "org:PersonSkill", "org:skill": {"@id": "org:skills/javascript"}, "org:proficiency": "expert", "org:person": "?person" }
+}
+```
+
+Result: Alex Rivera, James Taylor.
+
+### Skills in a Department
+
+What skills exist on the Platform Team?
+
+```json
+{
+  "@context": {
+    "org": "https://org-example.com/ns/",
+    "schema": "http://schema.org/"
+  },
+  "select": ["?skillName", "(count ?person)"],
+  "where": [
+    { "@id": "?person", "org:department": {"@id": "org:departments/engineering/platform"} },
+    { "@id": "?ps", "org:person": "?person", "org:skill": "?skill" },
+    { "@id": "?skill", "schema:name": "?skillName" }
+  ],
+  "groupBy": "?skillName",
+  "orderBy": [{"desc": "(count ?person)"}]
+}
+```
+
+This groups by skill and counts how many people have each one.
+
+### Colleagues (Same Manager)
+
+Find Jordan Patel's colleagues—people with the same manager:
+
+```json
+{
+  "@context": {
+    "org": "https://org-example.com/ns/",
+    "schema": "http://schema.org/"
+  },
+  "select": {
+    "?colleague": ["schema:givenName", "schema:familyName", "org:title"]
+  },
+  "where": [
+    { "@id": "org:people/jordan-patel", "org:reportsTo": "?manager" },
+    { "@id": "?colleague", "org:reportsTo": "?manager" },
+    ["filter", "(!= ?colleague {\"@id\": \"org:people/jordan-patel\"})"]
+  ]
+}
+```
+
+Result: Alex Rivera (they both report to Marcus Johnson).
+
+### Recent Hires
+
+Find employees hired in the last year:
+
+```json
+{
+  "@context": {
+    "org": "https://org-example.com/ns/",
+    "schema": "http://schema.org/"
+  },
+  "select": {
+    "?person": ["schema:givenName", "schema:familyName", "org:title", "org:hireDate"]
+  },
+  "where": [
+    { "@id": "?person", "@type": "org:Person", "org:hireDate": "?hireDate" },
+    ["filter", "(>= ?hireDate \"2022-01-01\")"]
+  ],
+  "orderBy": [{"desc": "?hireDate"}]
+}
+```
+
+## Summary
+
+Key query patterns for organizational data:
+
+| Pattern | Use Case |
+|---------|----------|
+| **Direct relationship** | Find manager, find direct reports |
+| **Traverse via join** | Person → Department, PersonSkill → Skill |
+| **Union** | Match multiple conditions (member OR lead) |
+| **Filter with !=** | Exclude self from results |
+| **Group + Count** | Aggregate skills by department |
+| **Date filters** | Recent hires |
+
+Next, learn how to use [transitive queries](../reasoning/) to find everyone in a manager's entire reporting chain.

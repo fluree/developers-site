@@ -1,0 +1,131 @@
+[
+  {
+    "@id": "biology-taxonomy",
+    "@graph": [
+      {
+        "id": "bio:organisms/lion",
+        "type": ["bio:Organism", "bio:classes/Feline"],
+        "schema:name": "Lion",
+        "bio:scientificName": "Panthera leo",
+        "bio:habitat": { "id": "bio:habitats/Grassland" },
+        "bio:conservationStatus": "Vulnerable",
+        "bio:averageLifespan": 15
+      },
+      {
+        "id": "bio:organisms/tiger",
+        "type": ["bio:Organism", "bio:classes/Feline"],
+        "schema:name": "Tiger",
+        "bio:scientificName": "Panthera tigris",
+        "bio:habitat": { "id": "bio:habitats/Forest" },
+        "bio:conservationStatus": "Endangered",
+        "bio:averageLifespan": 15
+      },
+      {
+        "id": "bio:organisms/domestic-cat",
+        "type": ["bio:Organism", "bio:classes/Feline"],
+        "schema:name": "Domestic Cat",
+        "bio:scientificName": "Felis catus",
+        "bio:conservationStatus": "Least Concern",
+        "bio:averageLifespan": 15
+      },
+      {
+        "id": "bio:organisms/wolf",
+        "type": ["bio:Organism", "bio:classes/Canine"],
+        "schema:name": "Gray Wolf",
+        "bio:scientificName": "Canis lupus",
+        "bio:habitat": { "id": "bio:habitats/Forest" },
+        "bio:conservationStatus": "Least Concern",
+        "bio:averageLifespan": 13
+      },
+      {
+        "id": "bio:organisms/arctic-fox",
+        "type": ["bio:Organism", "bio:classes/Canine"],
+        "schema:name": "Arctic Fox",
+        "bio:scientificName": "Vulpes lagopus",
+        "bio:habitat": { "id": "bio:habitats/Arctic" },
+        "bio:conservationStatus": "Least Concern",
+        "bio:averageLifespan": 5
+      },
+      {
+        "id": "bio:organisms/elephant",
+        "type": ["bio:Organism", "bio:classes/Herbivore"],
+        "schema:name": "African Elephant",
+        "bio:scientificName": "Loxodonta africana",
+        "bio:habitat": { "id": "bio:habitats/Grassland" },
+        "bio:conservationStatus": "Vulnerable",
+        "bio:averageLifespan": 60
+      },
+      {
+        "id": "bio:organisms/deer",
+        "type": ["bio:Organism", "bio:classes/Herbivore"],
+        "schema:name": "White-tailed Deer",
+        "bio:scientificName": "Odocoileus virginianus",
+        "bio:habitat": { "id": "bio:habitats/Forest" },
+        "bio:conservationStatus": "Least Concern",
+        "bio:averageLifespan": 6
+      },
+      {
+        "id": "bio:organisms/chimpanzee",
+        "type": ["bio:Organism", "bio:classes/Primate"],
+        "schema:name": "Chimpanzee",
+        "bio:scientificName": "Pan troglodytes",
+        "bio:habitat": { "id": "bio:habitats/Forest" },
+        "bio:conservationStatus": "Endangered",
+        "bio:averageLifespan": 40
+      },
+      {
+        "id": "bio:organisms/gorilla",
+        "type": ["bio:Organism", "bio:classes/Primate"],
+        "schema:name": "Mountain Gorilla",
+        "bio:scientificName": "Gorilla beringei beringei",
+        "bio:habitat": { "id": "bio:habitats/Forest" },
+        "bio:conservationStatus": "Endangered",
+        "bio:averageLifespan": 35
+      },
+      {
+        "id": "bio:organisms/mouse",
+        "type": ["bio:Organism", "bio:classes/Rodent"],
+        "schema:name": "House Mouse",
+        "bio:scientificName": "Mus musculus",
+        "bio:conservationStatus": "Least Concern",
+        "bio:averageLifespan": 2
+      },
+      {
+        "id": "bio:organisms/beaver",
+        "type": ["bio:Organism", "bio:classes/Rodent"],
+        "schema:name": "North American Beaver",
+        "bio:scientificName": "Castor canadensis",
+        "bio:habitat": { "id": "bio:habitats/Forest" },
+        "bio:conservationStatus": "Least Concern",
+        "bio:averageLifespan": 15
+      },
+      {
+        "id": "bio:organisms/eagle",
+        "type": ["bio:Organism", "bio:classes/Raptor"],
+        "schema:name": "Bald Eagle",
+        "bio:scientificName": "Haliaeetus leucocephalus",
+        "bio:habitat": { "id": "bio:habitats/Forest" },
+        "bio:conservationStatus": "Least Concern",
+        "bio:averageLifespan": 20
+      },
+      {
+        "id": "bio:organisms/hawk",
+        "type": ["bio:Organism", "bio:classes/Raptor"],
+        "schema:name": "Red-tailed Hawk",
+        "bio:scientificName": "Buteo jamaicensis",
+        "bio:habitat": { "id": "bio:habitats/Grassland" },
+        "bio:conservationStatus": "Least Concern",
+        "bio:averageLifespan": 15
+      },
+      {
+        "id": "bio:organisms/cobra",
+        "type": ["bio:Organism", "bio:classes/Reptile"],
+        "schema:name": "King Cobra",
+        "bio:scientificName": "Ophiophagus hannah",
+        "bio:habitat": { "id": "bio:habitats/Forest" },
+        "bio:conservationStatus": "Vulnerable",
+        "bio:averageLifespan": 20
+      }
+    ]
+  }
+]

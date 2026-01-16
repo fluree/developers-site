@@ -1,0 +1,34 @@
+---
+title: Introduction
+---
+
+import { FlureeMermaid } from "@site/src/components/Mermaid/FlureeMermaid.jsx";
+
+# Supply Chain / Logistics
+
+Track shipments from factory to customer with full provenance and audit trail.
+
+## Schema Overview
+
+<FlureeMermaid
+  chart={`
+  graph LR
+    s(Shipment) -->|origin| l1(Location)
+    s -->|destination| l2(Location)
+    s -->|sender| o1(Organization)
+    s -->|receiver| o2(Organization)
+    e(Event) -->|shipment| s
+    e -->|location| l1
+  `}
+/>
+
+### Entities
+
+| Entity | Description |
+|--------|-------------|
+| **Organization** | Supplier, Manufacturer, Distributor, Retailer |
+| **Location** | Factory, warehouse, store |
+| **Shipment** | Movement of goods between locations |
+| **Event** | Shipped, received, inspected timestamps |
+
+Graph queries enable powerful provenance tracking—follow the complete path of goods from origin to destination.

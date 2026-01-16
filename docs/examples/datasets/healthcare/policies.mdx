@@ -1,0 +1,57 @@
+---
+title: Access Control Policies
+---
+
+# Healthcare Access Control
+
+## Patient Self-Access Policy
+
+Patients can only see their own records:
+
+```json
+{
+  "@id": "health:policies/patient-self-access",
+  "type": ["f:Policy"],
+  "f:targetClass": { "@id": "health:Diagnosis" },
+  "f:allow": [{
+    "f:targetRole": { "@id": "health:roles/patient" },
+    "f:action": [{ "@id": "f:view" }],
+    "f:where": {
+      "@type": "@json",
+      "@value": { "@id": "?$this", "health:patient": "?$identity" }
+    }
+  }]
+}
+```
+
+## Provider Access Policy
+
+Providers can see records for their patients:
+
+```json
+{
+  "@id": "health:policies/provider-patient-access",
+  "type": ["f:Policy"],
+  "f:targetClass": { "@id": "health:Patient" },
+  "f:allow": [{
+    "f:targetRole": { "@id": "health:roles/provider" },
+    "f:action": [{ "@id": "f:view" }],
+    "f:where": {
+      "@type": "@json",
+      "@value": { "@id": "?$this", "health:primaryProvider": "?$identity" }
+    }
+  }]
+}
+```
+
+## Testing Access
+
+Query as a patient (should only see own records):
+
+```json
+{
+  "select": { "?diagnosis": ["*"] },
+  "where": { "@id": "?diagnosis", "@type": "health:Diagnosis" },
+  "opts": { "identity": { "@id": "health:patients/p001" } }
+}
+```

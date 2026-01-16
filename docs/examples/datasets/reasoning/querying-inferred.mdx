@@ -1,0 +1,270 @@
+---
+title: Querying Inferred Data
+---
+
+import Admonition from "@theme/Admonition";
+
+# Querying Inferred Data
+
+This page demonstrates how to query both asserted facts and inferred facts using Fluree's reasoning capabilities.
+
+## Find All Mammals
+
+With the class hierarchy in place, query for all Mammals:
+
+```json
+{
+  "@context": {
+    "bio": "https://biology-example.com/ns/",
+    "schema": "http://schema.org/"
+  },
+  "select": {
+    "?organism": ["schema:name", "bio:scientificName"]
+  },
+  "where": { "@id": "?organism", "@type": "bio:classes/Mammal" },
+  "opts": {
+    "reasoner": "owl2rl"
+  }
+}
+```
+
+**Result includes:**
+- Lion (typed as Feline → inferred as Mammal)
+- Tiger (typed as Feline → inferred as Mammal)
+- Wolf (typed as Canine → inferred as Mammal)
+- Elephant (typed as Herbivore → inferred as Mammal)
+- Chimpanzee (typed as Primate → inferred as Mammal)
+- ... and all other mammals
+
+Without reasoning, only organisms explicitly typed as `bio:classes/Mammal` would be returned.
+
+## Find All Animals
+
+Go further up the hierarchy:
+
+```json
+{
+  "@context": {
+    "bio": "https://biology-example.com/ns/",
+    "schema": "http://schema.org/"
+  },
+  "select": {
+    "?organism": ["schema:name", "type"]
+  },
+  "where": { "@id": "?organism", "@type": "bio:classes/Animal" },
+  "opts": {
+    "reasoner": "owl2rl"
+  }
+}
+```
+
+This returns ALL organisms in the database, since every class is a subclass of Animal.
+
+## Find All Carnivores
+
+Query for meat-eaters:
+
+```json
+{
+  "@context": {
+    "bio": "https://biology-example.com/ns/",
+    "schema": "http://schema.org/"
+  },
+  "select": {
+    "?organism": ["schema:name", "bio:habitat"]
+  },
+  "where": { "@id": "?organism", "@type": "bio:classes/Carnivore" },
+  "opts": {
+    "reasoner": "owl2rl"
+  }
+}
+```
+
+**Result:**
+- Lion (Feline → Carnivore)
+- Tiger (Feline → Carnivore)
+- Domestic Cat (Feline → Carnivore)
+- Wolf (Canine → Carnivore)
+- Arctic Fox (Canine → Carnivore)
+
+## Query Inverse Relationships
+
+Find what each organism is eaten by:
+
+```json
+{
+  "@context": {
+    "bio": "https://biology-example.com/ns/",
+    "schema": "http://schema.org/"
+  },
+  "select": ["?preyName", "?predatorName"],
+  "where": [
+    { "@id": "?prey", "bio:properties/eatenBy": "?predator", "schema:name": "?preyName" },
+    { "@id": "?predator", "schema:name": "?predatorName" }
+  ],
+  "opts": {
+    "reasoner": "owl2rl"
+  }
+}
+```
+
+Even though we only asserted `eats` relationships, the inverse `eatenBy` is inferred:
+
+| Prey | Eaten By |
+|------|----------|
+| Deer | Lion |
+| Deer | Wolf |
+| Mouse | Eagle |
+| Mouse | Hawk |
+| Mouse | Cobra |
+
+## Find All Predators of an Organism
+
+What eats the mouse?
+
+```json
+{
+  "@context": {
+    "bio": "https://biology-example.com/ns/",
+    "schema": "http://schema.org/"
+  },
+  "select": {
+    "?predator": ["schema:name", "type"]
+  },
+  "where": { "@id": "bio:organisms/mouse", "bio:properties/eatenBy": "?predator" },
+  "opts": {
+    "reasoner": "owl2rl"
+  }
+}
+```
+
+**Result:** Bald Eagle, Red-tailed Hawk, King Cobra
+
+## Query Symmetric Relationships
+
+Find organisms related to the Lion:
+
+```json
+{
+  "@context": {
+    "bio": "https://biology-example.com/ns/",
+    "schema": "http://schema.org/"
+  },
+  "select": {
+    "?related": ["schema:name"]
+  },
+  "where": { "@id": "bio:organisms/lion", "bio:properties/relatedTo": "?related" },
+  "opts": {
+    "reasoner": "owl2rl"
+  }
+}
+```
+
+Or query from the Tiger's perspective:
+
+```json
+{
+  "select": {
+    "?related": ["schema:name"]
+  },
+  "where": { "@id": "bio:organisms/tiger", "bio:properties/relatedTo": "?related" }
+}
+```
+
+Both queries return the same result due to symmetry.
+
+## Endangered Species Analysis
+
+Find endangered mammals:
+
+```json
+{
+  "@context": {
+    "bio": "https://biology-example.com/ns/",
+    "schema": "http://schema.org/"
+  },
+  "select": {
+    "?organism": ["schema:name", "bio:conservationStatus", "bio:habitat"]
+  },
+  "where": { "@id": "?organism", "@type": "bio:classes/Mammal", "bio:conservationStatus": "Endangered" },
+  "opts": {
+    "reasoner": "owl2rl"
+  }
+}
+```
+
+**Result:**
+- Tiger (Feline → Mammal, Endangered)
+- Chimpanzee (Primate → Mammal, Endangered)
+- Gorilla (Primate → Mammal, Endangered)
+
+## Compare Inferred vs Asserted Types
+
+See all types (both asserted and inferred) for an organism:
+
+```json
+{
+  "@context": {
+    "bio": "https://biology-example.com/ns/",
+    "schema": "http://schema.org/"
+  },
+  "select": ["?type"],
+  "where": { "@id": "bio:organisms/tiger", "@type": "?type" },
+  "opts": {
+    "reasoner": "owl2rl"
+  }
+}
+```
+
+**Result:**
+- `bio:Organism` (asserted)
+- `bio:classes/Feline` (asserted)
+- `bio:classes/Carnivore` (inferred)
+- `bio:classes/Mammal` (inferred)
+- `bio:classes/Animal` (inferred)
+
+## Habitat Analysis with Inference
+
+Find all animals in a specific habitat:
+
+```json
+{
+  "@context": {
+    "bio": "https://biology-example.com/ns/",
+    "schema": "http://schema.org/"
+  },
+  "select": {
+    "?organism": ["schema:name", "type"]
+  },
+  "where": { "@id": "?organism", "@type": "bio:classes/Animal", "bio:habitat": {"@id": "bio:habitats/Forest"} },
+  "opts": {
+    "reasoner": "owl2rl"
+  }
+}
+```
+
+Returns all forest-dwelling animals across the entire taxonomy.
+
+<Admonition type="tip">
+  Reasoning enables you to write simpler queries—ask for "Mammals" and get all organisms that are mammals, regardless of how specifically they were typed.
+</Admonition>
+
+## Performance Considerations
+
+Reasoning adds computational overhead. Strategies for optimization:
+
+1. **Materialize inferences**: Pre-compute and store inferred facts
+2. **Limit scope**: Use `reasoner` only when needed
+3. **Optimize hierarchy depth**: Deeper hierarchies = more inference work
+
+## Summary
+
+| Query Pattern | Result |
+|--------------|--------|
+| `type Animal` | All organisms (everything is an animal) |
+| `type Mammal` | All mammals including Felines, Canines, etc. |
+| `eatenBy ?predator` | Inverse of asserted `eats` relationships |
+| `relatedTo ?x` | Both directions of symmetric relationships |
+| All types for entity | Shows asserted + all inferred supertypes |
+
+Reasoning transforms your data model from explicit to expressive—store minimal facts, query rich knowledge.

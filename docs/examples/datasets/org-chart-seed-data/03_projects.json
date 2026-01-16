@@ -1,0 +1,112 @@
+[
+  {
+    "@id": "acme-corp",
+    "@graph": [
+      {
+        "id": "org:projects/platform-v2",
+        "type": "org:Project",
+        "schema:name": "Platform v2.0",
+        "schema:description": "Major platform infrastructure upgrade",
+        "org:status": "active",
+        "org:startDate": "2024-01-15",
+        "org:lead": { "id": "org:people/alex-rivera" },
+        "org:members": [
+          { "id": "org:people/emma-wilson" },
+          { "id": "org:people/michael-brown" },
+          { "id": "org:people/sophia-martinez" }
+        ]
+      },
+      {
+        "id": "org:projects/mobile-app",
+        "type": "org:Project",
+        "schema:name": "Mobile App Launch",
+        "schema:description": "Native mobile application development",
+        "org:status": "active",
+        "org:startDate": "2024-03-01",
+        "org:lead": { "id": "org:people/jordan-patel" },
+        "org:members": [
+          { "id": "org:people/james-taylor" },
+          { "id": "org:people/olivia-garcia" },
+          { "id": "org:people/william-anderson" }
+        ]
+      },
+      {
+        "id": "org:projects/enterprise-sales",
+        "type": "org:Project",
+        "schema:name": "Enterprise Sales Initiative",
+        "schema:description": "Expanding into enterprise market segment",
+        "org:status": "active",
+        "org:startDate": "2024-02-01",
+        "org:lead": { "id": "org:people/ava-thomas" },
+        "org:members": [
+          { "id": "org:people/ethan-jackson" },
+          { "id": "org:people/mia-white" }
+        ]
+      },
+      {
+        "id": "org:projects/brand-refresh",
+        "type": "org:Project",
+        "schema:name": "Brand Refresh 2024",
+        "schema:description": "Company-wide brand identity update",
+        "org:status": "completed",
+        "org:startDate": "2023-09-01",
+        "org:endDate": "2024-01-31",
+        "org:lead": { "id": "org:people/noah-harris" },
+        "org:members": [
+          { "id": "org:people/isabella-clark" }
+        ]
+      },
+      {
+        "id": "org:projects/hiring-2024",
+        "type": "org:Project",
+        "schema:name": "2024 Hiring Initiative",
+        "schema:description": "Scaling the team for growth",
+        "org:status": "active",
+        "org:startDate": "2024-01-01",
+        "org:lead": { "id": "org:people/rachel-green" },
+        "org:members": [
+          { "id": "org:people/liam-lewis" }
+        ]
+      },
+      {
+        "id": "org:projects/security-audit",
+        "type": "org:Project",
+        "schema:name": "Security Audit Q1",
+        "schema:description": "Quarterly security review and improvements",
+        "org:status": "active",
+        "org:startDate": "2024-01-08",
+        "org:lead": { "id": "org:people/marcus-johnson" },
+        "org:members": [
+          { "id": "org:people/alex-rivera" },
+          { "id": "org:people/emma-wilson" }
+        ]
+      },
+      {
+        "id": "org:projects/customer-portal",
+        "type": "org:Project",
+        "schema:name": "Customer Portal Redesign",
+        "schema:description": "Improving the customer self-service experience",
+        "org:status": "planning",
+        "org:startDate": "2024-04-01",
+        "org:lead": { "id": "org:people/jordan-patel" },
+        "org:members": [
+          { "id": "org:people/james-taylor" },
+          { "id": "org:people/noah-harris" }
+        ]
+      },
+      {
+        "id": "org:projects/api-v3",
+        "type": "org:Project",
+        "schema:name": "API v3 Development",
+        "schema:description": "Next generation public API",
+        "org:status": "planning",
+        "org:startDate": "2024-05-01",
+        "org:lead": { "id": "org:people/emma-wilson" },
+        "org:members": [
+          { "id": "org:people/michael-brown" },
+          { "id": "org:people/sophia-martinez" }
+        ]
+      }
+    ]
+  }
+]

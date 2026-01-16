@@ -1,0 +1,65 @@
+# How Fluree Stores Data
+
+Understanding how Fluree organizes and stores data will help you work with it effectively.
+
+## Ledgers
+
+A **ledger** is Fluree's container for data—similar to a database in relational systems. When you create a ledger, you're creating a place to store related data.
+
+```sh
+curl --location 'http://localhost:58090/fluree/create' \
+--header 'Content-Type: application/json' \
+--data '{
+  "ledger": "my-app/data"
+}'
+```
+
+## Entities
+
+Data in Fluree represents **entities**—things you want to record information about. An entity could be a person, a product, an event, or any concept relevant to your domain.
+
+Entities are represented as JSON objects:
+
+```json
+{
+  "@id": "ex:alice",
+  "name": "Alice",
+  "email": "alice@example.com"
+}
+```
+
+The `@id` uniquely identifies the entity. Every entity should have one.
+
+## The Triple Model
+
+Under the hood, Fluree stores data as **triples**: subject-predicate-object statements.
+
+The entity above becomes:
+- `ex:alice` → `name` → `"Alice"`
+- `ex:alice` → `email` → `"alice@example.com"`
+
+This model enables flexible graph queries and relationships, but you interact with Fluree using familiar JSON.
+
+## Transactions and Commits
+
+When you insert or modify data, you create a **transaction**. Each transaction creates a new **commit**—an immutable snapshot of the change.
+
+```json
+{
+  "ledger": "my-app/data",
+  "insert": {
+    "@id": "ex:alice",
+    "name": "Alice"
+  }
+}
+```
+
+This append-only model means:
+- No data is ever overwritten
+- You can query any historical state
+- Changes are auditable
+
+## Next Steps
+
+- [Understanding Graph Relationships](./understanding-graph-relationships.mdx) — How entities connect
+- [Inserting Data](../working-with-data/inserting-data.mdx) — Detailed transaction patterns

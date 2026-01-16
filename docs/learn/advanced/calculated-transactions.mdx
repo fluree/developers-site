@@ -1,0 +1,355 @@
+# Calculated Transactions
+
+Fluree supports computed values in transactions using the `bind` clause. This enables atomic read-modify-write operations like incrementing counters, applying discounts, or computing derived values—all within a single transaction.
+
+---
+
+## The Problem
+
+Without calculated transactions, updating a value like an inventory count requires multiple steps:
+
+1. Query the current value (e.g., `100`)
+2. Calculate the new value in your application code (`100 - 1 = 99`)
+3. Issue a transaction with the hard-coded value (`99`)
+
+This creates a **race condition**: if another transaction modifies the value between steps 1 and 3, your update will overwrite it with stale data.
+
+## The Solution: BIND in Transactions
+
+Fluree's `bind` clause computes values atomically within the transaction itself:
+
+```json
+{
+  "@context": { "ex": "http://example.org/" },
+  "ledger": "inventory",
+  "where": [
+    { "@id": "?product", "ex:sku": "ABC123", "ex:inventory": "?qty" },
+    ["bind", "?newQty", "(- ?qty 1)"]
+  ],
+  "delete": { "@id": "?product", "ex:inventory": "?qty" },
+  "insert": { "@id": "?product", "ex:inventory": "?newQty" }
+}
+```
+
+The `where` clause binds the current value, `bind` computes the new value, and `delete`/`insert` perform the atomic update—all in one transaction with no race conditions.
+
+## BIND Syntax
+
+The bind clause uses a tuple format within the `where` array:
+
+```json
+["bind", "?variableName", "(expression)"]
+```
+
+Expressions use **prefix notation** (Lisp-style):
+
+| Expression | Result |
+|------------|--------|
+| `(+ 1 2)` | `3` |
+| `(- 10 3)` | `7` |
+| `(* 2 3 4)` | `24` |
+| `(/ 100 4)` | `25` |
+| `(power 2 8)` | `256` |
+| `(+ ?a (* ?b 2))` | `a + (b * 2)` |
+
+## Built-in Functions
+
+Fluree provides 60+ built-in functions for use in BIND expressions.
+
+### Arithmetic
+
+| Function | Alias | Example | Result |
+|----------|-------|---------|--------|
+| `plus` | `+` | `(+ 1 2 3)` | `6` |
+| `minus` | `-` | `(- 10 3)` | `7` |
+| `multiply` | `*` | `(* 2 3 4)` | `24` |
+| `divide` | `/` | `(/ 100 4)` | `25` |
+| `power` | | `(power 2 8)` | `256` |
+| `quotient` | `quot` | `(quot 17 5)` | `3` |
+| `absolute-value` | `abs` | `(abs -5)` | `5` |
+
+### Numeric
+
+| Function | Example | Result |
+|----------|---------|--------|
+| `ceil` | `(ceil 4.2)` | `5` |
+| `floor` | `(floor 4.8)` | `4` |
+| `round` | `(round 4.5)` | `5` |
+| `min` | `(min 3 1 4)` | `1` |
+| `max` | `(max 3 1 4)` | `4` |
+
+### Aggregates
+
+| Function | Description |
+|----------|-------------|
+| `sum` | Sum of values |
+| `avg` | Average |
+| `median` | Median value |
+| `variance` | Variance |
+| `stddev` | Standard deviation |
+| `count` | Count values |
+| `count-distinct` | Count unique values |
+| `sample` | Random sample |
+
+### String
+
+| Function | Example | Result |
+|----------|---------|--------|
+| `concat` | `(concat "Hello" " " "World")` | `"Hello World"` |
+| `strLen` | `(strLen "Hello")` | `5` |
+| `subStr` | `(subStr "Hello" 0 2)` | `"He"` |
+| `ucase` | `(ucase "hello")` | `"HELLO"` |
+| `lcase` | `(lcase "HELLO")` | `"hello"` |
+| `strStarts` | `(strStarts "Hello" "He")` | `true` |
+| `strEnds` | `(strEnds "Hello" "lo")` | `true` |
+| `contains` | `(contains "Hello" "ell")` | `true` |
+| `strBefore` | `(strBefore "Hello" "l")` | `"He"` |
+| `strAfter` | `(strAfter "Hello" "l")` | `"lo"` |
+| `replace` | `(replace "Hello" "l" "L")` | `"HeLLo"` |
+| `regex` | `(regex "test123" "[0-9]+")` | `true` |
+
+### Date/Time
+
+| Function | Description |
+|----------|-------------|
+| `now` | Current timestamp |
+| `year` | Extract year |
+| `month` | Extract month |
+| `day` | Extract day |
+| `hours` | Extract hours |
+| `minutes` | Extract minutes |
+| `seconds` | Extract seconds |
+| `tz` | Extract timezone |
+
+### Cryptographic
+
+| Function | Description |
+|----------|-------------|
+| `sha256` | SHA-256 hash |
+| `sha512` | SHA-512 hash |
+
+### Logic & Comparison
+
+| Function | Alias | Example |
+|----------|-------|---------|
+| `and` | `&&` | `(and true false)` → `false` |
+| `or` | `\|\|` | `(or true false)` → `true` |
+| `not` | `!` | `(not true)` → `false` |
+| `=` | | `(= 1 1)` → `true` |
+| `!=` | | `(!= 1 2)` → `true` |
+| `<` | | `(< 1 2)` → `true` |
+| `<=` | | `(<= 1 1)` → `true` |
+| `>` | | `(> 2 1)` → `true` |
+| `>=` | | `(>= 1 1)` → `true` |
+| `bound` | | `(bound ?x)` → is variable bound? |
+| `coalesce` | | `(coalesce ?x ?y 0)` → first non-null |
+
+### RDF/Type Functions
+
+| Function | Description |
+|----------|-------------|
+| `datatype` | Get datatype IRI |
+| `lang` | Get language tag |
+| `isNumeric` | Check if numeric |
+| `isBlank` | Check if blank node |
+| `is-iri` | Check if IRI |
+| `is-literal` | Check if literal |
+| `uuid` | Generate UUID |
+| `struuid` | Generate UUID as string |
+| `bnode` | Generate blank node |
+
+### Vector/ML Functions
+
+| Function | Description |
+|----------|-------------|
+| `dotProduct` | Vector dot product |
+| `cosineSimilarity` | Cosine similarity |
+| `euclidianDistance` | Euclidean distance |
+
+## Practical Examples
+
+### Decrement Inventory
+
+Atomically reduce inventory by 1:
+
+```json
+{
+  "@context": { "ex": "http://example.org/" },
+  "ledger": "inventory",
+  "where": [
+    { "@id": "?product", "ex:sku": "ABC123", "ex:inventory": "?qty" },
+    ["bind", "?newQty", "(- ?qty 1)"]
+  ],
+  "delete": { "@id": "?product", "ex:inventory": "?qty" },
+  "insert": { "@id": "?product", "ex:inventory": "?newQty" }
+}
+```
+
+### Increment Counter
+
+Atomically increment a page view counter:
+
+```json
+{
+  "@context": { "ex": "http://example.org/" },
+  "ledger": "analytics",
+  "where": [
+    { "@id": "?counter", "ex:name": "page-views", "ex:count": "?n" },
+    ["bind", "?newCount", "(+ ?n 1)"]
+  ],
+  "delete": { "@id": "?counter", "ex:count": "?n" },
+  "insert": { "@id": "?counter", "ex:count": "?newCount" }
+}
+```
+
+### Apply Percentage Discount
+
+Apply a 20% discount to all items on sale:
+
+```json
+{
+  "@context": { "ex": "http://example.org/" },
+  "ledger": "products",
+  "where": [
+    { "@id": "?item", "ex:price": "?price", "ex:onSale": true },
+    ["bind", "?salePrice", "(* ?price 0.8)"]
+  ],
+  "insert": { "@id": "?item", "ex:salePrice": "?salePrice" }
+}
+```
+
+### Compute Full Name from Parts
+
+Concatenate first and last names:
+
+```json
+{
+  "@context": { "ex": "http://example.org/" },
+  "ledger": "people",
+  "where": [
+    { "@id": "?person", "ex:firstName": "?first", "ex:lastName": "?last" },
+    ["bind", "?fullName", "(concat ?first \" \" ?last)"]
+  ],
+  "insert": { "@id": "?person", "ex:fullName": "?fullName" }
+}
+```
+
+### Complex Mathematical Expression
+
+Compute a complex formula:
+
+```json
+{
+  "@context": { "ex": "http://example.org/" },
+  "ledger": "data",
+  "where": [
+    { "@id": "?s", "ex:num": "?num" },
+    ["bind", "?result", "(* (power (- (/ (+ ?num 10) 2) 3) 3) 5 2)"]
+  ],
+  "insert": { "@id": "?s", "ex:result": "?result" }
+}
+```
+
+This computes: `((((num + 10) / 2) - 3) ^ 3) * 5 * 2`
+
+### Set Default Value with Coalesce
+
+Set a default value if a property is missing:
+
+```json
+{
+  "@context": { "ex": "http://example.org/" },
+  "ledger": "inventory",
+  "where": [
+    { "@id": "?item", "ex:name": "?name" },
+    ["optional", { "@id": "?item", "ex:quantity": "?existingQty" }],
+    ["bind", "?qty", "(coalesce ?existingQty 0)"]
+  ],
+  "insert": { "@id": "?item", "ex:quantity": "?qty" }
+}
+```
+
+### Add Timestamp to Records
+
+Add a last-modified timestamp:
+
+```json
+{
+  "@context": { "ex": "http://example.org/" },
+  "ledger": "records",
+  "where": [
+    { "@id": "?record", "ex:status": "updated" },
+    ["bind", "?timestamp", "(now)"]
+  ],
+  "insert": { "@id": "?record", "ex:lastModified": "?timestamp" }
+}
+```
+
+### Generate Unique IDs
+
+Generate a UUID for new records:
+
+```json
+{
+  "@context": { "ex": "http://example.org/" },
+  "ledger": "orders",
+  "where": [
+    ["bind", "?orderId", "(struuid)"]
+  ],
+  "insert": {
+    "@id": "?orderId",
+    "@type": "ex:Order",
+    "ex:createdAt": { "@value": "2024-01-15T10:30:00Z", "@type": "xsd:dateTime" }
+  }
+}
+```
+
+### Conditional Updates with If
+
+Apply different logic based on conditions:
+
+```json
+{
+  "@context": { "ex": "http://example.org/" },
+  "ledger": "accounts",
+  "where": [
+    { "@id": "?account", "ex:balance": "?balance", "ex:type": "?type" },
+    ["bind", "?fee", "(if (= ?type \"premium\") 0 5)"],
+    ["bind", "?newBalance", "(- ?balance ?fee)"]
+  ],
+  "delete": { "@id": "?account", "ex:balance": "?balance" },
+  "insert": { "@id": "?account", "ex:balance": "?newBalance" }
+}
+```
+
+## Combining BIND with Filters
+
+You can filter which records to update based on computed values:
+
+```json
+{
+  "@context": { "ex": "http://example.org/" },
+  "ledger": "inventory",
+  "where": [
+    { "@id": "?product", "ex:inventory": "?qty", "ex:reorderPoint": "?reorder" },
+    ["bind", "?newQty", "(- ?qty 1)"],
+    ["filter", "(< ?newQty ?reorder)"]
+  ],
+  "insert": { "@id": "?product", "ex:needsReorder": true }
+}
+```
+
+This marks products for reorder when inventory falls below the reorder point.
+
+## Limitations
+
+- **No shorthand operators**: No `++` or `--` syntax; use `(+ ?x 1)` or `(- ?x 1)`
+- **No triggers**: Calculations don't run automatically; must be explicit in transactions
+- **No custom functions**: Limited to built-in functions
+- **Prefix notation only**: Must use `(+ 1 2)` not `1 + 2`
+
+## Related Resources
+
+- [Transaction Syntax](/docs/reference/transaction-syntax) - Full transaction reference
+- [FlureeQL Query Syntax](/docs/reference/querying/where-clauses/#bind) - BIND in queries
+- [Vector Search](/docs/reference/querying/advanced-features/#vector-search) - Using vector functions

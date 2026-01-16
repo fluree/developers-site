@@ -1,0 +1,107 @@
+# Data Access Control Concepts
+
+Fluree's data access control (DAC) system governs what data can be read and written by users. This guide explains the concepts—see [Writing Policies](./writing-policies.mdx) for implementation details.
+
+## Data-Centric Security
+
+Traditional security relies on application perimeters: APIs, firewalls, and middleware between users and data. Breach the perimeter, and data is exposed.
+
+In Fluree, **the data defends itself**. Access policies are evaluated at the data layer, not the application layer. This means:
+
+- Data can be safely exposed without intermediary APIs
+- Multiple applications can share the same data, governed by the same policies
+- Security travels with the data, not the application
+
+## How It Works
+
+### 1. Identity
+
+Users authenticate with a **DID** (Decentralized Identifier). This cryptographic identity proves who is making the request.
+
+```
+did:key:z6MkhaXg...
+```
+
+### 2. Policy Class
+
+The DID is linked to a **policy class**—a named group of access rules:
+
+```json
+{
+  "@id": "did:key:z6MkhaXg...",
+  "f:policyClass": {"@id": "ex:UserPolicy"}
+}
+```
+
+### 3. Policy Rules
+
+The policy class contains rules that determine what the identity can access:
+
+```json
+{
+  "@id": "ex:UserPolicy",
+  "f:allow": [...]
+}
+```
+
+### 4. Filtered Results
+
+When the user queries, Fluree applies the policy rules and returns only permitted data.
+
+## Policy Classes
+
+Policy classes group related access rules. Common patterns:
+
+| Policy Class | Purpose |
+|--------------|---------|
+| `AdminPolicy` | Full access to all data |
+| `UserPolicy` | Users can see their own data |
+| `PublicPolicy` | Unauthenticated/public access |
+| `AuditorPolicy` | Read-only access to everything |
+
+An identity can have multiple policy classes. Rules are combined.
+
+## What Policies Can Control
+
+Policies can restrict:
+
+- **Which entities** — Only see your own user record
+- **Which properties** — See names but not SSNs
+- **Which values** — See salaries under $100k
+- **Read vs. write** — Read anything, write only your own data
+
+## Context-Aware Rules
+
+Because policies query the current data state, rules can be sophisticated:
+
+- "Managers can see SSNs of their direct reports"
+- "Users can edit orders that aren't shipped yet"
+- "Admins in the Finance department can see salary data"
+
+The policy checks relationships in real-time.
+
+## Example: User Can Only See Their Own SSN
+
+Setup:
+1. Alice authenticates with her DID
+2. Her DID links to `ex:UserPolicy` and to her user record `ex:alice`
+3. The policy says "users can see SSNs only for entities linked to their identity"
+
+When Alice queries all users:
+- She sees everyone's names
+- She sees only her own SSN
+- Bob's SSN is filtered out (not redacted—it's as if it doesn't exist)
+
+## Policy as Data
+
+Policies are stored as data in your ledger, subject to the same:
+- Transactions (add, modify, remove policies)
+- Queries (inspect current policies)
+- History (audit policy changes)
+- Access control (policies can govern who modifies policies)
+
+## Next Steps
+
+- [Writing Policies](./writing-policies.mdx) — Implementation guide
+- [Verifiable Data](./verifiable-data.mdx) — Cryptographic proofs
+- [Policy Syntax Reference](/docs/reference/policy-syntax) — Complete syntax

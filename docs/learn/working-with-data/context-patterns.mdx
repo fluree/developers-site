@@ -1,0 +1,146 @@
+# Context Patterns & Best Practices
+
+This guide covers practical patterns for using `@context` effectively in your Fluree applications.
+
+## Defining Prefixes
+
+Use prefixes to shorten URIs:
+
+```json
+{
+  "@context": {
+    "ex": "http://example.org/",
+    "schema": "http://schema.org/"
+  },
+  "ledger": "my-app/data",
+  "insert": {
+    "@id": "ex:alice",
+    "schema:name": "Alice"
+  }
+}
+```
+
+## Defining Custom Terms
+
+Map short names to full URIs:
+
+```json
+{
+  "@context": {
+    "name": "http://schema.org/name",
+    "email": "http://schema.org/email",
+    "worksAt": {"@id": "http://example.org/worksAt", "@type": "@id"}
+  }
+}
+```
+
+Now you can write:
+```json
+{
+  "@id": "ex:alice",
+  "name": "Alice",
+  "worksAt": {"@id": "ex:acme"}
+}
+```
+
+## Specifying Property Types
+
+Use `@type` to indicate how values should be interpreted:
+
+```json
+{
+  "@context": {
+    "birthDate": {"@id": "schema:birthDate", "@type": "xsd:date"},
+    "manager": {"@id": "ex:manager", "@type": "@id"}
+  }
+}
+```
+
+- `@type": "@id"` — Value is a reference to another entity
+- `@type": "xsd:date"` — Value is a date
+- `@type": "xsd:integer"` — Value is an integer
+
+## Context in Transactions
+
+Include context in your transactions:
+
+```json
+{
+  "@context": {
+    "ex": "http://example.org/",
+    "schema": "http://schema.org/"
+  },
+  "ledger": "my-app/data",
+  "insert": {
+    "@id": "ex:product-1",
+    "schema:name": "Widget",
+    "schema:price": 29.99
+  }
+}
+```
+
+## Context in Queries
+
+Context also applies to queries:
+
+```json
+{
+  "@context": {
+    "schema": "http://schema.org/"
+  },
+  "from": "my-app/data",
+  "where": {
+    "@id": "?product",
+    "schema:name": "?name"
+  },
+  "select": ["?name"]
+}
+```
+
+## Reusable Context
+
+Define context once and reuse it:
+
+```javascript
+const myContext = {
+  "ex": "http://example.org/",
+  "schema": "http://schema.org/",
+  "name": "schema:name",
+  "email": "schema:email"
+};
+
+// Use in transactions
+const transaction = {
+  "@context": myContext,
+  "ledger": "my-app/data",
+  "insert": {...}
+};
+
+// Use in queries
+const query = {
+  "@context": myContext,
+  "from": "my-app/data",
+  ...
+};
+```
+
+## Best Practices
+
+1. **Use established vocabularies** — Schema.org, FOAF, Dublin Core when applicable
+2. **Be consistent** — Use the same terms throughout your application
+3. **Document your context** — Make it clear what terms mean
+4. **Keep it minimal** — Only include terms you actually use
+
+## Common Vocabularies
+
+| Prefix | URI | Use For |
+|--------|-----|---------|
+| `schema` | http://schema.org/ | General-purpose (people, products, events) |
+| `foaf` | http://xmlns.com/foaf/0.1/ | People and social networks |
+| `dc` | http://purl.org/dc/elements/1.1/ | Metadata (title, creator, date) |
+| `rdfs` | http://www.w3.org/2000/01/rdf-schema# | Classes and properties |
+
+## Next Steps
+
+- [Understanding Context](../foundations/understanding-context.mdx) — Conceptual overview
+- [Working with Ontologies](../modeling/working-with-ontologies.mdx) — Using established vocabularies

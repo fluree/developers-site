@@ -1,0 +1,34 @@
+---
+title: Introduction
+---
+
+# SQL Migration Guide
+
+This guide helps developers familiar with relational databases understand how to model and query data in Fluree's graph model.
+
+## Conceptual Mapping
+
+| SQL Concept | Fluree Equivalent |
+|-------------|-------------------|
+| Table | Class/Type |
+| Row | Entity (node) |
+| Column | Property |
+| Primary Key | Entity ID (`@id`) |
+| Foreign Key | Relationship (reference) |
+| JOIN | Graph traversal |
+| Schema | Ontology |
+
+## Key Differences
+
+1. **No fixed schema**: Properties can be added to any entity
+2. **Relationships are first-class**: No join tables needed
+3. **Multi-valued properties**: An entity can have multiple values for a property
+4. **Semantic types**: Properties carry meaning via ontologies
+
+## When to Migrate
+
+Consider Fluree when you need:
+- Complex relationships (many-to-many, hierarchies)
+- Flexible schemas that evolve
+- Built-in versioning and audit trails
+- Semantic data integration

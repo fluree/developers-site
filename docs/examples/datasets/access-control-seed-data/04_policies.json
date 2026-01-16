@@ -1,0 +1,106 @@
+[
+  {
+    "@id": "multi-tenant-app",
+    "@graph": [
+      {
+        "@id": "app:policies/tenant-isolation",
+        "type": ["f:Policy"],
+        "f:targetClass": { "@id": "app:Document" },
+        "f:allow": [
+          {
+            "@id": "app:policies/tenant-isolation/rule",
+            "f:targetRole": { "@id": "app:roles/viewer" },
+            "f:action": [{ "@id": "f:view" }],
+            "f:property": [{ "@id": "f:allProperties" }],
+            "f:where": {
+              "@list": [
+                { "@list": ["?$this", "app:organization", "?org"] },
+                { "@list": ["?$identity", "app:organization", "?org"] }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "@id": "app:policies/editor-create",
+        "type": ["f:Policy"],
+        "f:targetClass": { "@id": "app:Document" },
+        "f:allow": [
+          {
+            "@id": "app:policies/editor-create/rule",
+            "f:targetRole": { "@id": "app:roles/editor" },
+            "f:action": [{ "@id": "f:view" }, { "@id": "f:modify" }],
+            "f:property": [{ "@id": "f:allProperties" }],
+            "f:where": {
+              "@list": [
+                { "@list": ["?$this", "app:organization", "?org"] },
+                { "@list": ["?$identity", "app:organization", "?org"] },
+                { "@list": ["?$this", "app:visibility", "?vis"] },
+                { "filter": ["!=", "?vis", "confidential"] }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "@id": "app:policies/admin-full",
+        "type": ["f:Policy"],
+        "f:targetClass": { "@id": "app:Document" },
+        "f:allow": [
+          {
+            "@id": "app:policies/admin-full/rule",
+            "f:targetRole": { "@id": "app:roles/admin" },
+            "f:action": [{ "@id": "f:view" }, { "@id": "f:modify" }, { "@id": "f:delete" }],
+            "f:property": [{ "@id": "f:allProperties" }],
+            "f:where": {
+              "@list": [
+                { "@list": ["?$this", "app:organization", "?org"] },
+                { "@list": ["?$identity", "app:organization", "?org"] }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "@id": "app:policies/department-confidential",
+        "type": ["f:Policy"],
+        "f:targetClass": { "@id": "app:Document" },
+        "f:allow": [
+          {
+            "@id": "app:policies/department-confidential/rule",
+            "f:targetRole": { "@id": "app:roles/editor" },
+            "f:action": [{ "@id": "f:view" }],
+            "f:property": [{ "@id": "f:allProperties" }],
+            "f:where": {
+              "@list": [
+                { "@list": ["?$this", "app:organization", "?org"] },
+                { "@list": ["?$identity", "app:organization", "?org"] },
+                { "@list": ["?$this", "app:visibility", "confidential"] },
+                { "@list": ["?$this", "app:department", "?dept"] },
+                { "@list": ["?$identity", "app:department", "?dept"] }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "@id": "app:policies/public-read",
+        "type": ["f:Policy"],
+        "f:targetClass": { "@id": "app:Document" },
+        "f:allow": [
+          {
+            "@id": "app:policies/public-read/rule",
+            "f:targetRole": { "@id": "app:roles/viewer" },
+            "f:action": [{ "@id": "f:view" }],
+            "f:property": [{ "@id": "f:allProperties" }],
+            "f:where": {
+              "@list": [
+                { "@list": ["?$this", "app:visibility", "public"] }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  }
+]

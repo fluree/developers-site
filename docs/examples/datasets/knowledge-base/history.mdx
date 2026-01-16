@@ -1,0 +1,51 @@
+---
+title: History & Time-Travel
+---
+
+# History & Time-Travel Queries
+
+Fluree maintains a complete history of all changes, enabling powerful temporal queries.
+
+## Article History
+
+See all versions of an article:
+
+```json
+{
+  "@context": { "f": "https://ns.flur.ee/ledger#", "wiki": "https://wiki-example.com/ns/", "schema": "http://schema.org/" },
+  "select": { "?article": ["schema:name", "wiki:content", "wiki:modifiedAt"] },
+  "where": { "@id": "wiki:articles/dev-setup" },
+  "opts": {
+    "history": true
+  }
+}
+```
+
+## Point-in-Time Query
+
+See the wiki as it was on a specific date:
+
+```json
+{
+  "select": { "?article": ["schema:name"] },
+  "where": { "@id": "?article", "@type": "wiki:Article" },
+  "opts": {
+    "t": "2024-01-20"
+  }
+}
+```
+
+## Change Log
+
+Track who modified what:
+
+```json
+{
+  "history": {"@id": "wiki:articles/dev-setup"},
+  "opts": {
+    "showAssertions": true
+  }
+}
+```
+
+This returns the complete change history with timestamps and assertions/retractions.

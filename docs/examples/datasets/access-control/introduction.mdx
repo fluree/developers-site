@@ -1,0 +1,115 @@
+---
+title: Introduction
+---
+
+import { FlureeMermaid } from "@site/src/components/Mermaid/FlureeMermaid.jsx";
+import Admonition from "@theme/Admonition";
+
+# Policy & Access Control
+
+This example demonstrates Fluree's data-centric access control model. Unlike traditional application-layer authorization, Fluree policies are stored as data in the ledger itself, ensuring consistent enforcement across all queries and transactions.
+
+## The Scenario
+
+A multi-tenant SaaS application needs to:
+
+- **Isolate tenants**: Users from ACME should never see Globex's documents
+- **Enforce roles**: Admins can do everything, Editors can create/edit (but not delete), Viewers can only read
+- **Handle confidentiality**: Confidential documents are restricted to users in the same department
+- **Support public content**: Some documents are visible to everyone
+
+These requirements must be enforced consistently, regardless of how the data is accessed.
+
+## Schema Overview
+
+<FlureeMermaid
+  chart={`
+  graph LR
+    u(User) -->|organization| o(Organization)
+    u -->|role| r(Role)
+    d(Document) -->|organization| o
+    d -->|author| u
+    p(Policy) -.->|controls| d
+  `}
+/>
+
+### Entities
+
+| Entity | Description |
+|--------|-------------|
+| **Organization** | Tenant (e.g., ACME, Globex) |
+| **User** | Person with role and organization membership |
+| **Role** | Permission level (Admin, Editor, Viewer) |
+| **Document** | Content with visibility (public, internal, confidential) |
+| **Policy** | Access control rules stored as data |
+
+## Users and Roles
+
+The example includes users across two organizations with different roles:
+
+| User | Organization | Role | Department |
+|------|--------------|------|------------|
+| Alice | ACME | Admin | - |
+| Bob | ACME | Editor | - |
+| Carol | ACME | Viewer | - |
+| Frank | ACME | Viewer | Finance |
+| Grace | ACME | Editor | HR |
+| Dan | Globex | Admin | - |
+| Eve | Globex | Editor | - |
+
+## Document Visibility Levels
+
+Documents have three visibility levels:
+
+| Level | Who Can See |
+|-------|-------------|
+| **public** | Everyone (even across organizations) |
+| **internal** | All users in the same organization |
+| **confidential** | Only users in the same department |
+
+## Policy Model
+
+Fluree policies are defined as data using the `f:Policy` type. Each policy specifies:
+
+- **Target class**: Which entity type the policy applies to
+- **Target role**: Which users the policy affects
+- **Actions**: What operations are allowed (view, modify, delete)
+- **Where clause**: Conditions that must be met
+
+Example policy structure:
+
+```json
+{
+  "@id": "app:policies/tenant-isolation",
+  "type": ["f:Policy"],
+  "f:targetClass": { "@id": "app:Document" },
+  "f:allow": [
+    {
+      "f:targetRole": { "@id": "app:roles/viewer" },
+      "f:action": [{ "@id": "f:view" }],
+      "f:where": {
+        "@list": [
+          { "@list": ["?$this", "app:organization", "?org"] },
+          { "@list": ["?$identity", "app:organization", "?org"] }
+        ]
+      }
+    }
+  ]
+}
+```
+
+The `where` clause uses the same pattern language as queries:
+- `?$this` refers to the document being accessed
+- `?$identity` refers to the current user
+- The clause requires both to share the same organization (`?org`)
+
+## What You'll Learn
+
+In the following pages, you'll explore:
+
+1. **[Defining Policies](../defining-policies/)** - Create access control rules step by step
+2. **[Testing Policies](../testing-policies/)** - Query as different users and verify restrictions
+
+<Admonition type="tip">
+  Fluree's policy model treats authorization as data, which means policies are queryable, version-controlled, and auditable just like any other data in your ledger.
+</Admonition>

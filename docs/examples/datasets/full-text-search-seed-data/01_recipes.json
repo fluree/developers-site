@@ -1,0 +1,222 @@
+[
+  {
+    "@id": "recipe-database",
+    "@graph": [
+      {
+        "id": "recipe:cuisines/italian",
+        "type": "recipe:Cuisine",
+        "schema:name": "Italian"
+      },
+      {
+        "id": "recipe:cuisines/mexican",
+        "type": "recipe:Cuisine",
+        "schema:name": "Mexican"
+      },
+      {
+        "id": "recipe:cuisines/asian",
+        "type": "recipe:Cuisine",
+        "schema:name": "Asian"
+      },
+      {
+        "id": "recipe:cuisines/american",
+        "type": "recipe:Cuisine",
+        "schema:name": "American"
+      },
+      {
+        "id": "recipe:cuisines/mediterranean",
+        "type": "recipe:Cuisine",
+        "schema:name": "Mediterranean"
+      },
+      {
+        "id": "recipe:diets/vegetarian",
+        "type": "recipe:DietaryRestriction",
+        "schema:name": "Vegetarian"
+      },
+      {
+        "id": "recipe:diets/vegan",
+        "type": "recipe:DietaryRestriction",
+        "schema:name": "Vegan"
+      },
+      {
+        "id": "recipe:diets/gluten-free",
+        "type": "recipe:DietaryRestriction",
+        "schema:name": "Gluten-Free"
+      },
+      {
+        "id": "recipe:diets/dairy-free",
+        "type": "recipe:DietaryRestriction",
+        "schema:name": "Dairy-Free"
+      },
+      {
+        "id": "recipe:authors/chef-maria",
+        "type": "recipe:Author",
+        "schema:name": "Chef Maria",
+        "schema:description": "Italian cuisine specialist with 20 years experience"
+      },
+      {
+        "id": "recipe:authors/chef-carlos",
+        "type": "recipe:Author",
+        "schema:name": "Chef Carlos",
+        "schema:description": "Expert in Mexican and Latin American cooking"
+      },
+      {
+        "id": "recipe:authors/chef-lee",
+        "type": "recipe:Author",
+        "schema:name": "Chef Lee",
+        "schema:description": "Asian fusion chef and cookbook author"
+      },
+      {
+        "id": "recipe:recipes/spaghetti-carbonara",
+        "type": "recipe:Recipe",
+        "schema:name": "Classic Spaghetti Carbonara",
+        "schema:description": "A rich and creamy Roman pasta dish made with eggs, cheese, pancetta, and black pepper. This traditional recipe creates a silky sauce without using cream.",
+        "recipe:cuisine": { "id": "recipe:cuisines/italian" },
+        "recipe:author": { "id": "recipe:authors/chef-maria" },
+        "recipe:prepTime": 15,
+        "recipe:cookTime": 20,
+        "recipe:servings": 4,
+        "recipe:ingredients": "spaghetti, eggs, pecorino romano, guanciale, black pepper, salt",
+        "recipe:instructions": "Cook pasta until al dente. Fry guanciale until crispy. Mix eggs with cheese. Combine hot pasta with guanciale, remove from heat, add egg mixture. Toss quickly to create creamy sauce."
+      },
+      {
+        "id": "recipe:recipes/margherita-pizza",
+        "type": "recipe:Recipe",
+        "schema:name": "Authentic Margherita Pizza",
+        "schema:description": "The classic Neapolitan pizza with fresh tomatoes, mozzarella, and basil. Simple ingredients showcase the beauty of Italian cooking.",
+        "recipe:cuisine": { "id": "recipe:cuisines/italian" },
+        "recipe:author": { "id": "recipe:authors/chef-maria" },
+        "recipe:prepTime": 30,
+        "recipe:cookTime": 15,
+        "recipe:servings": 2,
+        "recipe:ingredients": "pizza dough, san marzano tomatoes, fresh mozzarella, fresh basil, olive oil, salt",
+        "recipe:instructions": "Stretch dough into circle. Spread crushed tomatoes. Add torn mozzarella. Bake at 500F until crust is golden and cheese bubbles. Top with fresh basil and olive oil."
+      },
+      {
+        "id": "recipe:recipes/tacos-al-pastor",
+        "type": "recipe:Recipe",
+        "schema:name": "Tacos al Pastor",
+        "schema:description": "Mexican street tacos with marinated pork, pineapple, and fresh cilantro. The smoky, sweet, and savory flavors come from the adobo marinade and grilled pineapple.",
+        "recipe:cuisine": { "id": "recipe:cuisines/mexican" },
+        "recipe:author": { "id": "recipe:authors/chef-carlos" },
+        "recipe:prepTime": 45,
+        "recipe:cookTime": 30,
+        "recipe:servings": 6,
+        "recipe:ingredients": "pork shoulder, dried chiles, pineapple, corn tortillas, onion, cilantro, lime",
+        "recipe:instructions": "Marinate pork in adobo sauce overnight. Grill pork with pineapple until caramelized. Slice thin. Serve on warm tortillas with onion, cilantro, and lime."
+      },
+      {
+        "id": "recipe:recipes/guacamole",
+        "type": "recipe:Recipe",
+        "schema:name": "Fresh Guacamole",
+        "schema:description": "Creamy avocado dip with lime, cilantro, and jalapeño. Perfect for chips or as a topping for tacos and burritos.",
+        "recipe:cuisine": { "id": "recipe:cuisines/mexican" },
+        "recipe:author": { "id": "recipe:authors/chef-carlos" },
+        "recipe:dietaryRestrictions": [
+          { "id": "recipe:diets/vegan" },
+          { "id": "recipe:diets/gluten-free" }
+        ],
+        "recipe:prepTime": 10,
+        "recipe:cookTime": 0,
+        "recipe:servings": 4,
+        "recipe:ingredients": "ripe avocados, lime juice, red onion, jalapeño, cilantro, salt, tomato",
+        "recipe:instructions": "Mash avocados to desired consistency. Add lime juice, diced onion, minced jalapeño, chopped cilantro, and salt. Fold in diced tomato. Serve immediately."
+      },
+      {
+        "id": "recipe:recipes/pad-thai",
+        "type": "recipe:Recipe",
+        "schema:name": "Authentic Pad Thai",
+        "schema:description": "Thailand's famous stir-fried rice noodles with shrimp, tofu, eggs, and tamarind sauce. The balance of sweet, sour, salty, and spicy defines this iconic dish.",
+        "recipe:cuisine": { "id": "recipe:cuisines/asian" },
+        "recipe:author": { "id": "recipe:authors/chef-lee" },
+        "recipe:dietaryRestrictions": [
+          { "id": "recipe:diets/gluten-free" }
+        ],
+        "recipe:prepTime": 20,
+        "recipe:cookTime": 15,
+        "recipe:servings": 4,
+        "recipe:ingredients": "rice noodles, shrimp, tofu, eggs, bean sprouts, tamarind paste, fish sauce, palm sugar, garlic, peanuts, lime",
+        "recipe:instructions": "Soak noodles until pliable. Make tamarind sauce. Stir-fry garlic, add shrimp and tofu. Push aside, scramble eggs. Add noodles and sauce. Toss with bean sprouts. Serve with peanuts and lime."
+      },
+      {
+        "id": "recipe:recipes/miso-soup",
+        "type": "recipe:Recipe",
+        "schema:name": "Traditional Miso Soup",
+        "schema:description": "A warming Japanese soup with fermented soybean paste, tofu, and seaweed. Simple but deeply flavorful, often served with rice and pickles.",
+        "recipe:cuisine": { "id": "recipe:cuisines/asian" },
+        "recipe:author": { "id": "recipe:authors/chef-lee" },
+        "recipe:dietaryRestrictions": [
+          { "id": "recipe:diets/vegetarian" },
+          { "id": "recipe:diets/dairy-free" }
+        ],
+        "recipe:prepTime": 10,
+        "recipe:cookTime": 10,
+        "recipe:servings": 4,
+        "recipe:ingredients": "dashi stock, white miso paste, silken tofu, wakame seaweed, green onion",
+        "recipe:instructions": "Heat dashi stock. Add wakame and tofu cubes. Remove from heat. Whisk miso paste with a little stock, then stir into soup. Serve immediately with sliced green onion."
+      },
+      {
+        "id": "recipe:recipes/chocolate-brownies",
+        "type": "recipe:Recipe",
+        "schema:name": "Fudgy Chocolate Brownies",
+        "schema:description": "Dense, rich chocolate brownies with a crackly top and gooey center. Perfect for chocolate lovers who want intense cocoa flavor in every bite.",
+        "recipe:cuisine": { "id": "recipe:cuisines/american" },
+        "recipe:author": { "id": "recipe:authors/chef-maria" },
+        "recipe:prepTime": 15,
+        "recipe:cookTime": 25,
+        "recipe:servings": 12,
+        "recipe:ingredients": "butter, dark chocolate, sugar, eggs, vanilla, flour, cocoa powder, salt",
+        "recipe:instructions": "Melt butter and chocolate together. Whisk in sugar and eggs. Add vanilla. Fold in flour, cocoa, and salt. Pour into greased pan. Bake at 350F until set but still fudgy."
+      },
+      {
+        "id": "recipe:recipes/hummus",
+        "type": "recipe:Recipe",
+        "schema:name": "Creamy Hummus",
+        "schema:description": "Smooth chickpea dip with tahini, lemon, and garlic. A Mediterranean staple perfect with pita bread, vegetables, or as a sandwich spread.",
+        "recipe:cuisine": { "id": "recipe:cuisines/mediterranean" },
+        "recipe:author": { "id": "recipe:authors/chef-carlos" },
+        "recipe:dietaryRestrictions": [
+          { "id": "recipe:diets/vegan" },
+          { "id": "recipe:diets/gluten-free" }
+        ],
+        "recipe:prepTime": 15,
+        "recipe:cookTime": 0,
+        "recipe:servings": 6,
+        "recipe:ingredients": "chickpeas, tahini, lemon juice, garlic, olive oil, cumin, salt, paprika",
+        "recipe:instructions": "Blend chickpeas with tahini, lemon juice, garlic, and cumin. Add cold water to reach desired consistency. Season with salt. Serve drizzled with olive oil and sprinkled with paprika."
+      },
+      {
+        "id": "recipe:recipes/veggie-stir-fry",
+        "type": "recipe:Recipe",
+        "schema:name": "Asian Vegetable Stir-Fry",
+        "schema:description": "A quick and healthy dish with crisp vegetables in a savory ginger soy sauce. High heat cooking keeps vegetables vibrant and crunchy.",
+        "recipe:cuisine": { "id": "recipe:cuisines/asian" },
+        "recipe:author": { "id": "recipe:authors/chef-lee" },
+        "recipe:dietaryRestrictions": [
+          { "id": "recipe:diets/vegan" },
+          { "id": "recipe:diets/dairy-free" }
+        ],
+        "recipe:prepTime": 15,
+        "recipe:cookTime": 10,
+        "recipe:servings": 4,
+        "recipe:ingredients": "broccoli, bell peppers, snap peas, carrots, garlic, ginger, soy sauce, sesame oil, vegetable oil",
+        "recipe:instructions": "Heat wok until smoking. Add oil and vegetables in order of cooking time. Stir-fry until crisp-tender. Add garlic and ginger. Sauce with soy and sesame oil. Serve immediately over rice."
+      },
+      {
+        "id": "recipe:recipes/banana-bread",
+        "type": "recipe:Recipe",
+        "schema:name": "Classic Banana Bread",
+        "schema:description": "Moist and tender quick bread made with overripe bananas. The natural sweetness of ripe bananas creates an irresistible flavor and tender crumb.",
+        "recipe:cuisine": { "id": "recipe:cuisines/american" },
+        "recipe:author": { "id": "recipe:authors/chef-maria" },
+        "recipe:dietaryRestrictions": [
+          { "id": "recipe:diets/vegetarian" }
+        ],
+        "recipe:prepTime": 15,
+        "recipe:cookTime": 60,
+        "recipe:servings": 8,
+        "recipe:ingredients": "ripe bananas, butter, sugar, eggs, vanilla, flour, baking soda, salt, walnuts",
+        "recipe:instructions": "Mash bananas. Cream butter and sugar. Add eggs and vanilla. Combine dry ingredients. Fold wet into dry. Add nuts. Bake at 350F until toothpick comes out clean."
+      }
+    ]
+  }
+]

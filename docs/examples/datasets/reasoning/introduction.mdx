@@ -1,0 +1,118 @@
+---
+title: Introduction
+---
+
+import { FlureeMermaid } from "@site/src/components/Mermaid/FlureeMermaid.jsx";
+import Admonition from "@theme/Admonition";
+
+# Reasoning & Inference
+
+This example demonstrates Fluree's reasoning capabilities using a biological taxonomy. You'll learn how to define rules that automatically infer new facts from your data—a powerful feature for knowledge graphs and ontology-driven applications.
+
+## The Scenario
+
+A wildlife research database needs to:
+
+- Classify organisms using a taxonomic hierarchy (Kingdom → Class → Order → Family)
+- Infer that a Tiger is a Mammal (even if only typed as Feline)
+- Define symmetric relationships (if A is related to B, then B is related to A)
+- Define inverse relationships (if A eats B, then B is eaten by A)
+- Query inferred facts alongside asserted facts
+
+## Schema Overview
+
+<FlureeMermaid
+  chart={`
+  graph TB
+    Animal --> Mammal
+    Animal --> Bird
+    Animal --> Reptile
+    Mammal --> Carnivore
+    Mammal --> Herbivore
+    Mammal --> Primate
+    Mammal --> Rodent
+    Carnivore --> Feline
+    Carnivore --> Canine
+    Bird --> Raptor
+  `}
+/>
+
+### Taxonomic Hierarchy
+
+Each class in the hierarchy is defined using `rdfs:subClassOf`:
+
+```json
+{
+  "id": "bio:classes/Feline",
+  "type": ["rdfs:Class", "bio:TaxonomicClass"],
+  "rdfs:label": "Feline",
+  "rdfs:subClassOf": { "id": "bio:classes/Carnivore" }
+}
+```
+
+When reasoning is enabled, a Tiger (typed as Feline) is automatically inferred to be:
+- A Carnivore
+- A Mammal
+- An Animal
+
+## OWL Property Types
+
+Fluree supports several OWL property types for automatic inference:
+
+| Property Type | Behavior |
+|--------------|----------|
+| `owl:TransitiveProperty` | If A→B and B→C, then A→C |
+| `owl:SymmetricProperty` | If A→B, then B→A |
+| `owl:InverseProperty` | If A→B via prop1, then B→A via prop2 |
+
+### Example: Inverse Properties
+
+```json
+{
+  "id": "bio:properties/eats",
+  "type": ["rdf:Property", "owl:ObjectProperty"],
+  "rdfs:label": "eats"
+},
+{
+  "id": "bio:properties/eatenBy",
+  "type": ["rdf:Property", "owl:ObjectProperty"],
+  "owl:inverseOf": { "id": "bio:properties/eats" }
+}
+```
+
+When you assert "Lion eats Deer", the system automatically infers "Deer eatenBy Lion".
+
+### Example: Symmetric Properties
+
+```json
+{
+  "id": "bio:properties/relatedTo",
+  "type": ["rdf:Property", "owl:ObjectProperty", "owl:SymmetricProperty"]
+}
+```
+
+If you assert "Lion relatedTo Tiger", the inverse "Tiger relatedTo Lion" is automatically inferred.
+
+## Organisms in the Dataset
+
+| Organism | Class | Habitat | Conservation |
+|----------|-------|---------|--------------|
+| Lion | Feline | Grassland | Vulnerable |
+| Tiger | Feline | Forest | Endangered |
+| Wolf | Canine | Forest | Least Concern |
+| Arctic Fox | Canine | Arctic | Least Concern |
+| Elephant | Herbivore | Grassland | Vulnerable |
+| Chimpanzee | Primate | Forest | Endangered |
+| Bald Eagle | Raptor | Forest | Least Concern |
+| King Cobra | Reptile | Forest | Vulnerable |
+
+## What You'll Learn
+
+In the following pages, you'll explore:
+
+1. **[Defining Rules](../rules/)** - Create OWL properties and class hierarchies
+2. **[Querying Inferred Data](../querying-inferred/)** - Query both asserted and inferred facts
+
+<Admonition type="info">
+  Reasoning enables you to store minimal facts and let the system derive additional knowledge, reducing data duplication and ensuring consistency.
+</Admonition>

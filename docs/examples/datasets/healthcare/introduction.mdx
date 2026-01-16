@@ -1,0 +1,37 @@
+---
+title: Introduction
+---
+
+import { FlureeMermaid } from "@site/src/components/Mermaid/FlureeMermaid.jsx";
+import Admonition from "@theme/Admonition";
+
+# Healthcare Records
+
+This example demonstrates a clinic patient management system with a focus on access control—patients should only see their own records, and providers should only see their patients.
+
+## Schema Overview
+
+<FlureeMermaid
+  chart={`
+  graph LR
+    p(Patient) -->|primaryProvider| pr(Provider)
+    pr -->|facility| f(Facility)
+    a(Appointment) -->|patient| p
+    a -->|provider| pr
+    d(Diagnosis) -->|patient| p
+  `}
+/>
+
+### Entities
+
+| Entity | Description |
+|--------|-------------|
+| **Patient** | Person receiving care |
+| **Provider** | Doctor or healthcare professional |
+| **Facility** | Clinic or hospital |
+| **Appointment** | Scheduled visit |
+| **Diagnosis** | Medical diagnosis with ICD code |
+
+<Admonition type="warning">
+  Healthcare data requires strict access control. This example demonstrates HIPAA-style restrictions using Fluree policies.
+</Admonition>

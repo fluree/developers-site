@@ -288,7 +288,7 @@ Luckily it's fairly basic and intuitive, as far as target schemas go. Check it o
 
 If we compare this schema to what our credentials currently look like in our latest resultset, we can see we have a bit more work to do.
 To deliver on this data request, we need to shift our attention from selecting nodes with the `where` clause, to "projecting" them with the `select` clause. "Projection" in this case is just a fancy way of saying "describe which properties we want to see for which nodes in our resultset".
-If you're interested in projection and how to build Fluree queries, check out the [reference](/docs/reference/flureeql-query-syntax/)!
+If you're interested in projection and how to build Fluree queries, check out the [reference](/docs/reference/querying/)!
 
 We need to expand a few referenced nodes in order to include all of the required fields we're missing.  
 Here's what that looks like:
@@ -353,7 +353,7 @@ I'll let the rude opinion slide and skip straight to the answer: we'll add an `@
 ### Querying the ACD with @context
 
 I'm sure you, my very attentive reader, have already picked up on my use of `@context` earlier in this article and
-I'm further sure, my very diligent reader, that you've already [read about `@context`](/docs/learn/tutorial/collaborative-data/#json-ld-context-and-compact-iris) and so you know that you can use `@context` in a query to sprinkle some delicious alias sugar into your resultset.
+I'm further sure, my very diligent reader, that you've already [read about `@context`](/docs/learn/advanced/collaborative-data/) and so you know that you can use `@context` in a query to sprinkle some delicious alias sugar into your resultset.
 Take a look at the same query with an `@context` that translates the keys in our resultset to exactly match those expected by Lucia's administrator.
 
 {/* <SandboxButton /> */}

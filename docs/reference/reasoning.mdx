@@ -1,0 +1,346 @@
+# Reasoning and Inference
+
+Fluree supports semantic reasoning, allowing you to derive new facts from existing data using rules and ontologies. Reasoning is performed in-memory and does not modify persisted data.
+
+Reasoning works hand-in-hand with your [data model](/docs/learn/modeling/classes-and-properties/)—the classes, properties, and relationships you define using RDFS and OWL vocabularies become the basis for inference. For example, if you define that `Dog` is a subclass of `Mammal`, reasoning can automatically infer that all dogs are mammals.
+
+---
+
+## Overview
+
+Fluree supports three reasoning methods:
+
+| Method | Description |
+|--------|-------------|
+| `datalog` | Custom forward-chaining rules using JSON-LD format |
+| `owl2rl` | OWL 2 RL profile with automatic rule generation from OWL constructs |
+| `owl-datalog` | Extended OWL 2 RL with additional Datalog-compatible constructs |
+
+Reasoning is applied to a database snapshot and returns a new database value that includes inferred facts.
+
+---
+
+## Using Reasoning in Queries
+
+To use reasoning with HTTP API queries, include the `opts` object with reasoning configuration:
+
+```json
+{
+  "from": "my-ledger",
+  "select": { "?s": ["*"] },
+  "where": { "@id": "?s", "@type": "ex:Person" },
+  "opts": {
+    "reasoner": ["datalog"]
+  }
+}
+```
+
+### Reasoning Options
+
+| Option | Type | Description |
+|--------|------|-------------|
+| `reasoner` | array | Reasoning methods to apply: `"datalog"`, `"owl2rl"`, or `"owl-datalog"` |
+| `reasoner-max` | integer | Maximum reasoning iterations (default: 10) |
+
+---
+
+## Datalog Rules
+
+Datalog rules are custom forward-chaining rules stored as JSON-LD entities in your ledger.
+
+### Rule Structure
+
+Rules are stored as entities with a `f:rule` property containing a JSON-LD rule definition:
+
+```json
+{
+  "@context": {
+    "f": "https://ns.flur.ee/ledger#",
+    "ex": "http://example.org/"
+  },
+  "@id": "ex:uncleRule",
+  "f:rule": {
+    "@type": "@json",
+    "@value": {
+      "@context": { "ex": "http://example.org/" },
+      "where": {
+        "@id": "?person",
+        "ex:parents": {
+          "ex:brother": { "@id": "?pBrother" }
+        }
+      },
+      "insert": {
+        "@id": "?person",
+        "ex:uncle": "?pBrother"
+      }
+    }
+  }
+}
+```
+
+### Rule Syntax
+
+A rule has two main clauses:
+
+| Clause | Description |
+|--------|-------------|
+| `where` | Pattern to match against existing data (uses logic variables starting with `?`) |
+| `insert` | Data to assert when the pattern matches |
+
+### Example: Senior Citizen Rule
+
+```json
+{
+  "@context": {
+    "f": "https://ns.flur.ee/ledger#",
+    "ex": "http://example.org/"
+  },
+  "@id": "ex:seniorRule",
+  "f:rule": {
+    "@type": "@json",
+    "@value": {
+      "@context": { "ex": "http://example.org/" },
+      "where": [
+        { "@id": "?person", "ex:age": "?age" },
+        ["filter", "(>= ?age 62)"]
+      ],
+      "insert": { "@id": "?person", "ex:seniorCitizen": true }
+    }
+  }
+}
+```
+
+This rule infers that any person aged 62 or older is a senior citizen.
+
+### Filter Expressions
+
+Rules can include filter expressions for conditional matching:
+
+```json
+"where": [
+  { "@id": "?person", "ex:salary": "?salary" },
+  ["filter", "(> ?salary 100000)"]
+]
+```
+
+Available filter functions are the same as those in [FlureeQL queries](/docs/reference/querying/where-clauses/#valid-functions-for-use-in-filter-and-bind-expressions).
+
+---
+
+## OWL 2 RL Reasoning
+
+OWL 2 RL reasoning automatically generates inference rules from OWL constructs in your data. This is useful when you have an OWL ontology and want automatic semantic inference.
+
+### Using OWL 2 RL
+
+```json
+{
+  "from": "my-ledger",
+  "select": { "?s": ["*"] },
+  "where": { "@id": "?s", "@type": "ex:Person" },
+  "opts": {
+    "reasoner": ["owl2rl"]
+  }
+}
+```
+
+### Supported OWL Constructs
+
+#### Property Axioms
+
+| Construct | Effect |
+|-----------|--------|
+| `rdfs:domain` | Infers type from property usage |
+| `rdfs:range` | Infers type on property objects |
+| `rdfs:subPropertyOf` | Property hierarchy inheritance |
+| `owl:inverseOf` | Bidirectional property inference |
+| `owl:propertyChainAxiom` | Complex property chains |
+
+#### Property Characteristics
+
+| Construct | Effect |
+|-----------|--------|
+| `owl:FunctionalProperty` | Single-valued constraint |
+| `owl:InverseFunctionalProperty` | Unique inverse values |
+| `owl:SymmetricProperty` | Bidirectional relationships |
+| `owl:TransitiveProperty` | Transitive closure |
+
+#### Class Axioms
+
+| Construct | Effect |
+|-----------|--------|
+| `rdfs:subClassOf` | Class hierarchy inheritance |
+| `owl:equivalentClass` | Class equivalence |
+| `owl:intersectionOf` | Class intersection |
+| `owl:unionOf` | Class union |
+
+#### Equality
+
+| Construct | Effect |
+|-----------|--------|
+| `owl:sameAs` | Entity equivalence (properties are merged) |
+
+### Example: Domain and Range Inference
+
+Define an ontology:
+
+```json
+{
+  "@context": {
+    "ex": "http://example.org/",
+    "owl": "http://www.w3.org/2002/07/owl#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#"
+  },
+  "@id": "ex:worksFor",
+  "@type": "owl:ObjectProperty",
+  "rdfs:domain": { "@id": "ex:Employee" },
+  "rdfs:range": { "@id": "ex:Organization" }
+}
+```
+
+With this ontology, when you assert:
+
+```json
+{ "@id": "ex:alice", "ex:worksFor": { "@id": "ex:acme" } }
+```
+
+OWL 2 RL reasoning will infer:
+
+```json
+{ "@id": "ex:alice", "@type": "ex:Employee" }
+{ "@id": "ex:acme", "@type": "ex:Organization" }
+```
+
+### Example: Transitive Properties
+
+```json
+{
+  "@context": {
+    "ex": "http://example.org/",
+    "owl": "http://www.w3.org/2002/07/owl#"
+  },
+  "@id": "ex:ancestorOf",
+  "@type": ["owl:ObjectProperty", "owl:TransitiveProperty"]
+}
+```
+
+With data:
+
+```json
+[
+  { "@id": "ex:alice", "ex:ancestorOf": { "@id": "ex:bob" } },
+  { "@id": "ex:bob", "ex:ancestorOf": { "@id": "ex:charlie" } }
+]
+```
+
+Reasoning infers: `ex:alice ex:ancestorOf ex:charlie`
+
+---
+
+## OWL-Datalog Reasoning
+
+OWL-Datalog extends OWL 2 RL with additional constructs that can be expressed in Datalog. This includes:
+
+- Complex `owl:equivalentClass` with intersections containing restrictions
+- Blank node restrictions in class definitions
+- Enhanced `owl:someValuesFrom` reasoning
+
+Use this method when you need more expressive reasoning than OWL 2 RL alone.
+
+```json
+{
+  "opts": {
+    "reasoner": ["owl-datalog"]
+  }
+}
+```
+
+---
+
+## Combining Reasoning Methods
+
+You can apply multiple reasoning methods in sequence:
+
+```json
+{
+  "opts": {
+    "reasoner": ["datalog", "owl2rl"]
+  }
+}
+```
+
+Methods are applied in order, with each method seeing the results of previous methods.
+
+---
+
+## Reasoning Execution
+
+### Iteration Model
+
+Reasoning executes iteratively:
+
+1. Rules are extracted from the database (Datalog) or ontology (OWL)
+2. Rules are scheduled based on dependencies
+3. Rules execute and generate new facts
+4. Process repeats until no new facts are generated or max iterations reached
+
+### Controlling Iterations
+
+Set `reasoner-max` to control maximum iterations:
+
+```json
+{
+  "opts": {
+    "reasoner": ["datalog"],
+    "reasoner-max": 5
+  }
+}
+```
+
+The default is 10 iterations.
+
+---
+
+## External Rules
+
+You can provide rules directly in the query without storing them in the ledger:
+
+```json
+{
+  "from": "my-ledger",
+  "select": { "?s": ["*"] },
+  "where": { "@id": "?s", "ex:seniorCitizen": true },
+  "opts": {
+    "reasoner": ["datalog"],
+    "rules": [
+      {
+        "@context": { "ex": "http://example.org/" },
+        "where": [
+          { "@id": "?person", "ex:age": "?age" },
+          ["filter", "(>= ?age 62)"]
+        ],
+        "insert": { "@id": "?person", "ex:seniorCitizen": true }
+      }
+    ]
+  }
+}
+```
+
+---
+
+## Best Practices
+
+1. **Start Simple**: Begin with basic Datalog rules before moving to OWL reasoning
+2. **Test Incrementally**: Add rules one at a time to understand their effects
+3. **Limit Iterations**: Set appropriate `reasoner-max` values for complex rule sets
+4. **Use External Rules**: For ad-hoc reasoning, pass rules directly rather than storing them
+5. **Monitor Performance**: Reasoning adds computational overhead; profile queries as needed
+
+---
+
+## Limitations
+
+- Reasoning is in-memory only; inferred facts are not persisted
+- OWL 2 RL is a subset of OWL 2; not all OWL constructs are supported
+- Complex rule sets may require multiple iterations
+- Very large datasets may impact reasoning performance

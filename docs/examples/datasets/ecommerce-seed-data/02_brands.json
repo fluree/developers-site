@@ -1,0 +1,42 @@
+[
+  {
+    "@id": "ecommerce-catalog",
+    "@graph": [
+      {
+        "id": "ecom:brands/techpro",
+        "type": "ecom:Brand",
+        "schema:name": "TechPro",
+        "schema:description": "Premium technology products",
+        "schema:url": "https://techpro.example.com"
+      },
+      {
+        "id": "ecom:brands/soundwave",
+        "type": "ecom:Brand",
+        "schema:name": "SoundWave",
+        "schema:description": "High-quality audio equipment",
+        "schema:url": "https://soundwave.example.com"
+      },
+      {
+        "id": "ecom:brands/urbanstyle",
+        "type": "ecom:Brand",
+        "schema:name": "UrbanStyle",
+        "schema:description": "Modern urban fashion",
+        "schema:url": "https://urbanstyle.example.com"
+      },
+      {
+        "id": "ecom:brands/homeessentials",
+        "type": "ecom:Brand",
+        "schema:name": "HomeEssentials",
+        "schema:description": "Quality home goods",
+        "schema:url": "https://homeessentials.example.com"
+      },
+      {
+        "id": "ecom:brands/nexgen",
+        "type": "ecom:Brand",
+        "schema:name": "NexGen",
+        "schema:description": "Next generation electronics",
+        "schema:url": "https://nexgen.example.com"
+      }
+    ]
+  }
+]

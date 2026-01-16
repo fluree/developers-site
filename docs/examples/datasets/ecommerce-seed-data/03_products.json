@@ -1,0 +1,310 @@
+[
+  {
+    "@id": "ecommerce-catalog",
+    "@graph": [
+      {
+        "id": "ecom:products/smartphone-pro-x",
+        "type": "ecom:Product",
+        "schema:name": "SmartPhone Pro X",
+        "schema:description": "Flagship smartphone with advanced camera system and all-day battery life. Features a stunning 6.7-inch OLED display.",
+        "schema:sku": "SPX-001",
+        "ecom:category": { "id": "ecom:categories/electronics/phones/smartphones" },
+        "ecom:brand": { "id": "ecom:brands/techpro" },
+        "ecom:basePrice": 999.99,
+        "ecom:variants": [
+          {
+            "id": "ecom:variants/spx-128-black",
+            "type": "ecom:ProductVariant",
+            "ecom:color": "Midnight Black",
+            "ecom:storage": "128GB",
+            "ecom:price": 999.99,
+            "ecom:stockQuantity": 45,
+            "schema:sku": "SPX-128-BLK"
+          },
+          {
+            "id": "ecom:variants/spx-256-black",
+            "type": "ecom:ProductVariant",
+            "ecom:color": "Midnight Black",
+            "ecom:storage": "256GB",
+            "ecom:price": 1099.99,
+            "ecom:stockQuantity": 32,
+            "schema:sku": "SPX-256-BLK"
+          },
+          {
+            "id": "ecom:variants/spx-128-silver",
+            "type": "ecom:ProductVariant",
+            "ecom:color": "Silver",
+            "ecom:storage": "128GB",
+            "ecom:price": 999.99,
+            "ecom:stockQuantity": 28,
+            "schema:sku": "SPX-128-SLV"
+          }
+        ]
+      },
+      {
+        "id": "ecom:products/smartphone-lite",
+        "type": "ecom:Product",
+        "schema:name": "SmartPhone Lite",
+        "schema:description": "Affordable smartphone with great performance. Perfect for everyday use with a crisp 6.1-inch display.",
+        "schema:sku": "SPL-001",
+        "ecom:category": { "id": "ecom:categories/electronics/phones/smartphones" },
+        "ecom:brand": { "id": "ecom:brands/techpro" },
+        "ecom:basePrice": 499.99,
+        "ecom:variants": [
+          {
+            "id": "ecom:variants/spl-64-blue",
+            "type": "ecom:ProductVariant",
+            "ecom:color": "Ocean Blue",
+            "ecom:storage": "64GB",
+            "ecom:price": 499.99,
+            "ecom:stockQuantity": 120,
+            "schema:sku": "SPL-64-BLU"
+          },
+          {
+            "id": "ecom:variants/spl-128-blue",
+            "type": "ecom:ProductVariant",
+            "ecom:color": "Ocean Blue",
+            "ecom:storage": "128GB",
+            "ecom:price": 549.99,
+            "ecom:stockQuantity": 85,
+            "schema:sku": "SPL-128-BLU"
+          }
+        ]
+      },
+      {
+        "id": "ecom:products/ultrabook-15",
+        "type": "ecom:Product",
+        "schema:name": "UltraBook 15",
+        "schema:description": "Thin and light 15-inch laptop with powerful performance. Ideal for professionals and creators.",
+        "schema:sku": "UB15-001",
+        "ecom:category": { "id": "ecom:categories/electronics/laptops" },
+        "ecom:brand": { "id": "ecom:brands/nexgen" },
+        "ecom:basePrice": 1299.99,
+        "ecom:variants": [
+          {
+            "id": "ecom:variants/ub15-i5-8gb",
+            "type": "ecom:ProductVariant",
+            "ecom:processor": "Intel i5",
+            "ecom:ram": "8GB",
+            "ecom:storage": "256GB SSD",
+            "ecom:price": 1299.99,
+            "ecom:stockQuantity": 22,
+            "schema:sku": "UB15-I5-8-256"
+          },
+          {
+            "id": "ecom:variants/ub15-i7-16gb",
+            "type": "ecom:ProductVariant",
+            "ecom:processor": "Intel i7",
+            "ecom:ram": "16GB",
+            "ecom:storage": "512GB SSD",
+            "ecom:price": 1699.99,
+            "ecom:stockQuantity": 15,
+            "schema:sku": "UB15-I7-16-512"
+          }
+        ]
+      },
+      {
+        "id": "ecom:products/wireless-headphones-elite",
+        "type": "ecom:Product",
+        "schema:name": "Wireless Headphones Elite",
+        "schema:description": "Premium noise-cancelling wireless headphones with 30-hour battery life and studio-quality sound.",
+        "schema:sku": "WHE-001",
+        "ecom:category": { "id": "ecom:categories/electronics/audio" },
+        "ecom:brand": { "id": "ecom:brands/soundwave" },
+        "ecom:basePrice": 349.99,
+        "ecom:variants": [
+          {
+            "id": "ecom:variants/whe-black",
+            "type": "ecom:ProductVariant",
+            "ecom:color": "Matte Black",
+            "ecom:price": 349.99,
+            "ecom:stockQuantity": 67,
+            "schema:sku": "WHE-BLK"
+          },
+          {
+            "id": "ecom:variants/whe-white",
+            "type": "ecom:ProductVariant",
+            "ecom:color": "Pearl White",
+            "ecom:price": 349.99,
+            "ecom:stockQuantity": 43,
+            "schema:sku": "WHE-WHT"
+          }
+        ]
+      },
+      {
+        "id": "ecom:products/earbuds-sport",
+        "type": "ecom:Product",
+        "schema:name": "SportBuds Pro",
+        "schema:description": "Sweat-resistant wireless earbuds designed for athletes. Secure fit and powerful bass.",
+        "schema:sku": "SBP-001",
+        "ecom:category": { "id": "ecom:categories/electronics/audio" },
+        "ecom:brand": { "id": "ecom:brands/soundwave" },
+        "ecom:basePrice": 149.99,
+        "ecom:variants": [
+          {
+            "id": "ecom:variants/sbp-black",
+            "type": "ecom:ProductVariant",
+            "ecom:color": "Black",
+            "ecom:price": 149.99,
+            "ecom:stockQuantity": 200,
+            "schema:sku": "SBP-BLK"
+          },
+          {
+            "id": "ecom:variants/sbp-red",
+            "type": "ecom:ProductVariant",
+            "ecom:color": "Racing Red",
+            "ecom:price": 149.99,
+            "ecom:stockQuantity": 0,
+            "schema:sku": "SBP-RED"
+          }
+        ]
+      },
+      {
+        "id": "ecom:products/classic-tee",
+        "type": "ecom:Product",
+        "schema:name": "Classic Cotton Tee",
+        "schema:description": "Comfortable 100% organic cotton t-shirt. Pre-shrunk and perfect for everyday wear.",
+        "schema:sku": "CCT-001",
+        "ecom:category": { "id": "ecom:categories/clothing/mens" },
+        "ecom:brand": { "id": "ecom:brands/urbanstyle" },
+        "ecom:basePrice": 29.99,
+        "ecom:variants": [
+          {
+            "id": "ecom:variants/cct-s-white",
+            "type": "ecom:ProductVariant",
+            "ecom:color": "White",
+            "ecom:size": "S",
+            "ecom:price": 29.99,
+            "ecom:stockQuantity": 50,
+            "schema:sku": "CCT-S-WHT"
+          },
+          {
+            "id": "ecom:variants/cct-m-white",
+            "type": "ecom:ProductVariant",
+            "ecom:color": "White",
+            "ecom:size": "M",
+            "ecom:price": 29.99,
+            "ecom:stockQuantity": 75,
+            "schema:sku": "CCT-M-WHT"
+          },
+          {
+            "id": "ecom:variants/cct-l-white",
+            "type": "ecom:ProductVariant",
+            "ecom:color": "White",
+            "ecom:size": "L",
+            "ecom:price": 29.99,
+            "ecom:stockQuantity": 60,
+            "schema:sku": "CCT-L-WHT"
+          },
+          {
+            "id": "ecom:variants/cct-m-navy",
+            "type": "ecom:ProductVariant",
+            "ecom:color": "Navy",
+            "ecom:size": "M",
+            "ecom:price": 29.99,
+            "ecom:stockQuantity": 40,
+            "schema:sku": "CCT-M-NVY"
+          }
+        ]
+      },
+      {
+        "id": "ecom:products/denim-jacket",
+        "type": "ecom:Product",
+        "schema:name": "Vintage Denim Jacket",
+        "schema:description": "Classic denim jacket with a modern fit. Timeless style for any occasion.",
+        "schema:sku": "VDJ-001",
+        "ecom:category": { "id": "ecom:categories/clothing/womens" },
+        "ecom:brand": { "id": "ecom:brands/urbanstyle" },
+        "ecom:basePrice": 89.99,
+        "ecom:variants": [
+          {
+            "id": "ecom:variants/vdj-s-blue",
+            "type": "ecom:ProductVariant",
+            "ecom:color": "Classic Blue",
+            "ecom:size": "S",
+            "ecom:price": 89.99,
+            "ecom:stockQuantity": 18,
+            "schema:sku": "VDJ-S-BLU"
+          },
+          {
+            "id": "ecom:variants/vdj-m-blue",
+            "type": "ecom:ProductVariant",
+            "ecom:color": "Classic Blue",
+            "ecom:size": "M",
+            "ecom:price": 89.99,
+            "ecom:stockQuantity": 25,
+            "schema:sku": "VDJ-M-BLU"
+          }
+        ]
+      },
+      {
+        "id": "ecom:products/chef-knife-set",
+        "type": "ecom:Product",
+        "schema:name": "Professional Chef Knife Set",
+        "schema:description": "8-piece forged steel knife set with ergonomic handles. Includes chef's knife, santoku, paring knife, and more.",
+        "schema:sku": "CKS-001",
+        "ecom:category": { "id": "ecom:categories/home/kitchen" },
+        "ecom:brand": { "id": "ecom:brands/homeessentials" },
+        "ecom:basePrice": 199.99,
+        "ecom:variants": [
+          {
+            "id": "ecom:variants/cks-standard",
+            "type": "ecom:ProductVariant",
+            "ecom:price": 199.99,
+            "ecom:stockQuantity": 35,
+            "schema:sku": "CKS-STD"
+          }
+        ]
+      },
+      {
+        "id": "ecom:products/smart-blender",
+        "type": "ecom:Product",
+        "schema:name": "SmartBlend Pro",
+        "schema:description": "High-powered blender with smart presets for smoothies, soups, and nut butters. 1500W motor.",
+        "schema:sku": "SBP-001",
+        "ecom:category": { "id": "ecom:categories/home/kitchen" },
+        "ecom:brand": { "id": "ecom:brands/homeessentials" },
+        "ecom:basePrice": 149.99,
+        "ecom:variants": [
+          {
+            "id": "ecom:variants/sbp-silver",
+            "type": "ecom:ProductVariant",
+            "ecom:color": "Silver",
+            "ecom:price": 149.99,
+            "ecom:stockQuantity": 42,
+            "schema:sku": "SBP-SLV"
+          },
+          {
+            "id": "ecom:variants/sbp-black",
+            "type": "ecom:ProductVariant",
+            "ecom:color": "Black",
+            "ecom:price": 149.99,
+            "ecom:stockQuantity": 38,
+            "schema:sku": "SBP-BLK"
+          }
+        ]
+      },
+      {
+        "id": "ecom:products/gaming-phone",
+        "type": "ecom:Product",
+        "schema:name": "GamePhone Ultra",
+        "schema:description": "Gaming-focused smartphone with 144Hz display, advanced cooling, and shoulder triggers.",
+        "schema:sku": "GPU-001",
+        "ecom:category": { "id": "ecom:categories/electronics/phones/smartphones" },
+        "ecom:brand": { "id": "ecom:brands/nexgen" },
+        "ecom:basePrice": 799.99,
+        "ecom:variants": [
+          {
+            "id": "ecom:variants/gpu-256-black",
+            "type": "ecom:ProductVariant",
+            "ecom:color": "Stealth Black",
+            "ecom:storage": "256GB",
+            "ecom:price": 799.99,
+            "ecom:stockQuantity": 55,
+            "schema:sku": "GPU-256-BLK"
+          }
+        ]
+      }
+    ]
+  }
+]

@@ -1,0 +1,195 @@
+[
+  {
+    "@id": "ecommerce-catalog",
+    "@graph": [
+      {
+        "id": "ecom:customers/alex",
+        "type": "ecom:Customer",
+        "schema:givenName": "Alex",
+        "schema:familyName": "Chen",
+        "schema:email": "alex.chen@example.com"
+      },
+      {
+        "id": "ecom:customers/jordan",
+        "type": "ecom:Customer",
+        "schema:givenName": "Jordan",
+        "schema:familyName": "Smith",
+        "schema:email": "jordan.smith@example.com"
+      },
+      {
+        "id": "ecom:customers/taylor",
+        "type": "ecom:Customer",
+        "schema:givenName": "Taylor",
+        "schema:familyName": "Williams",
+        "schema:email": "taylor.w@example.com"
+      },
+      {
+        "id": "ecom:customers/morgan",
+        "type": "ecom:Customer",
+        "schema:givenName": "Morgan",
+        "schema:familyName": "Johnson",
+        "schema:email": "morgan.j@example.com"
+      },
+      {
+        "id": "ecom:customers/casey",
+        "type": "ecom:Customer",
+        "schema:givenName": "Casey",
+        "schema:familyName": "Brown",
+        "schema:email": "casey.brown@example.com"
+      },
+      {
+        "id": "ecom:reviews/1",
+        "type": "ecom:Review",
+        "ecom:product": { "id": "ecom:products/smartphone-pro-x" },
+        "ecom:reviewer": { "id": "ecom:customers/alex" },
+        "ecom:rating": 5,
+        "schema:reviewBody": "Absolutely love this phone! The camera is incredible and battery lasts all day. Best phone I've ever owned.",
+        "schema:datePublished": "2024-11-15"
+      },
+      {
+        "id": "ecom:reviews/2",
+        "type": "ecom:Review",
+        "ecom:product": { "id": "ecom:products/smartphone-pro-x" },
+        "ecom:reviewer": { "id": "ecom:customers/jordan" },
+        "ecom:rating": 4,
+        "schema:reviewBody": "Great phone overall. Camera is amazing but wish it had more storage options. Still highly recommend.",
+        "schema:datePublished": "2024-11-20"
+      },
+      {
+        "id": "ecom:reviews/3",
+        "type": "ecom:Review",
+        "ecom:product": { "id": "ecom:products/smartphone-pro-x" },
+        "ecom:reviewer": { "id": "ecom:customers/taylor" },
+        "ecom:rating": 5,
+        "schema:reviewBody": "Switched from a competitor and I'm blown away. The display is stunning!",
+        "schema:datePublished": "2024-12-01"
+      },
+      {
+        "id": "ecom:reviews/4",
+        "type": "ecom:Review",
+        "ecom:product": { "id": "ecom:products/wireless-headphones-elite" },
+        "ecom:reviewer": { "id": "ecom:customers/alex" },
+        "ecom:rating": 5,
+        "schema:reviewBody": "Best noise cancellation I've experienced. Perfect for my daily commute and working from cafes.",
+        "schema:datePublished": "2024-10-28"
+      },
+      {
+        "id": "ecom:reviews/5",
+        "type": "ecom:Review",
+        "ecom:product": { "id": "ecom:products/wireless-headphones-elite" },
+        "ecom:reviewer": { "id": "ecom:customers/morgan" },
+        "ecom:rating": 4,
+        "schema:reviewBody": "Sound quality is excellent. Comfortable for long listening sessions. Battery life as advertised.",
+        "schema:datePublished": "2024-11-05"
+      },
+      {
+        "id": "ecom:reviews/6",
+        "type": "ecom:Review",
+        "ecom:product": { "id": "ecom:products/earbuds-sport" },
+        "ecom:reviewer": { "id": "ecom:customers/casey" },
+        "ecom:rating": 5,
+        "schema:reviewBody": "Perfect for my marathon training. They stay in place no matter how hard I run. Great bass too!",
+        "schema:datePublished": "2024-11-12"
+      },
+      {
+        "id": "ecom:reviews/7",
+        "type": "ecom:Review",
+        "ecom:product": { "id": "ecom:products/earbuds-sport" },
+        "ecom:reviewer": { "id": "ecom:customers/jordan" },
+        "ecom:rating": 3,
+        "schema:reviewBody": "Good earbuds but the case is a bit bulky. Sound quality is solid for the price.",
+        "schema:datePublished": "2024-11-18"
+      },
+      {
+        "id": "ecom:reviews/8",
+        "type": "ecom:Review",
+        "ecom:product": { "id": "ecom:products/ultrabook-15" },
+        "ecom:reviewer": { "id": "ecom:customers/taylor" },
+        "ecom:rating": 5,
+        "schema:reviewBody": "Incredibly thin and light but doesn't compromise on power. Love the keyboard feel.",
+        "schema:datePublished": "2024-10-20"
+      },
+      {
+        "id": "ecom:reviews/9",
+        "type": "ecom:Review",
+        "ecom:product": { "id": "ecom:products/ultrabook-15" },
+        "ecom:reviewer": { "id": "ecom:customers/morgan" },
+        "ecom:rating": 4,
+        "schema:reviewBody": "Great laptop for development work. Fast and reliable. Could use more ports though.",
+        "schema:datePublished": "2024-11-02"
+      },
+      {
+        "id": "ecom:reviews/10",
+        "type": "ecom:Review",
+        "ecom:product": { "id": "ecom:products/chef-knife-set" },
+        "ecom:reviewer": { "id": "ecom:customers/casey" },
+        "ecom:rating": 5,
+        "schema:reviewBody": "These knives are incredibly sharp and well-balanced. Makes meal prep a joy!",
+        "schema:datePublished": "2024-11-25"
+      },
+      {
+        "id": "ecom:reviews/11",
+        "type": "ecom:Review",
+        "ecom:product": { "id": "ecom:products/chef-knife-set" },
+        "ecom:reviewer": { "id": "ecom:customers/alex" },
+        "ecom:rating": 4,
+        "schema:reviewBody": "Professional quality at a reasonable price. The chef's knife alone is worth it.",
+        "schema:datePublished": "2024-12-02"
+      },
+      {
+        "id": "ecom:reviews/12",
+        "type": "ecom:Review",
+        "ecom:product": { "id": "ecom:products/classic-tee" },
+        "ecom:reviewer": { "id": "ecom:customers/jordan" },
+        "ecom:rating": 5,
+        "schema:reviewBody": "Super soft and fits perfectly. Ordering more in different colors!",
+        "schema:datePublished": "2024-11-08"
+      },
+      {
+        "id": "ecom:reviews/13",
+        "type": "ecom:Review",
+        "ecom:product": { "id": "ecom:products/denim-jacket" },
+        "ecom:reviewer": { "id": "ecom:customers/taylor" },
+        "ecom:rating": 5,
+        "schema:reviewBody": "Perfect vintage look but with modern comfort. Get compliments every time I wear it.",
+        "schema:datePublished": "2024-11-22"
+      },
+      {
+        "id": "ecom:reviews/14",
+        "type": "ecom:Review",
+        "ecom:product": { "id": "ecom:products/smart-blender" },
+        "ecom:reviewer": { "id": "ecom:customers/morgan" },
+        "ecom:rating": 4,
+        "schema:reviewBody": "Powerful blender that handles everything. The smart presets are actually useful.",
+        "schema:datePublished": "2024-12-05"
+      },
+      {
+        "id": "ecom:reviews/15",
+        "type": "ecom:Review",
+        "ecom:product": { "id": "ecom:products/gaming-phone" },
+        "ecom:reviewer": { "id": "ecom:customers/casey" },
+        "ecom:rating": 5,
+        "schema:reviewBody": "Game changer for mobile gaming! The 144Hz display and cooling system are no joke.",
+        "schema:datePublished": "2024-11-30"
+      },
+      {
+        "id": "ecom:reviews/16",
+        "type": "ecom:Review",
+        "ecom:product": { "id": "ecom:products/smartphone-lite" },
+        "ecom:reviewer": { "id": "ecom:customers/morgan" },
+        "ecom:rating": 4,
+        "schema:reviewBody": "Great value phone. Does everything I need without breaking the bank.",
+        "schema:datePublished": "2024-11-10"
+      },
+      {
+        "id": "ecom:reviews/17",
+        "type": "ecom:Review",
+        "ecom:product": { "id": "ecom:products/smartphone-lite" },
+        "ecom:reviewer": { "id": "ecom:customers/taylor" },
+        "ecom:rating": 5,
+        "schema:reviewBody": "Best budget phone on the market. Camera surprised me with how good it is.",
+        "schema:datePublished": "2024-12-08"
+      }
+    ]
+  }
+]

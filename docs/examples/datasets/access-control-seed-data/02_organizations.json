@@ -1,0 +1,23 @@
+[
+  {
+    "@id": "multi-tenant-app",
+    "@graph": [
+      {
+        "id": "app:orgs/acme",
+        "type": "app:Organization",
+        "schema:name": "ACME Corporation",
+        "schema:description": "A multinational technology company",
+        "app:plan": "enterprise",
+        "app:createdAt": "2023-01-15"
+      },
+      {
+        "id": "app:orgs/globex",
+        "type": "app:Organization",
+        "schema:name": "Globex Industries",
+        "schema:description": "A global manufacturing company",
+        "app:plan": "professional",
+        "app:createdAt": "2023-06-20"
+      }
+    ]
+  }
+]
