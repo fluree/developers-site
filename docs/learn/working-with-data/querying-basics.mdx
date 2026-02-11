@@ -1,0 +1,127 @@
+# Querying Basics
+
+This guide covers the fundamentals of querying data in Fluree.
+
+## Query Structure
+
+A Fluree query has three main parts:
+
+```json
+{
+  "from": "my-ledger",
+  "select": "...",
+  "where": "..."
+}
+```
+
+- **from**: The ledger to query
+- **where**: Patterns to match (what data to find)
+- **select**: What to return (how to format results)
+
+## Selecting a Specific Entity
+
+To get all properties of a known entity:
+
+```json
+{
+  "from": "my-ledger",
+  "select": {"ex:alice": ["*"]}
+}
+```
+
+The `*` means "all properties."
+
+## Selecting Specific Properties
+
+Request only the properties you need:
+
+```json
+{
+  "from": "my-ledger",
+  "select": {"ex:alice": ["name", "email", "department"]}
+}
+```
+
+## Finding Entities by Pattern
+
+Use `where` with logic variables (prefixed with `?`) to find entities:
+
+```json
+{
+  "from": "my-ledger",
+  "where": {
+    "@id": "?person",
+    "@type": "Person"
+  },
+  "select": {"?person": ["name", "email"]}
+}
+```
+
+This finds all entities of type `Person` and returns their name and email.
+
+## Logic Variables
+
+Variables like `?person` act as placeholders that Fluree fills in with matching values:
+
+```json
+{
+  "from": "my-ledger",
+  "where": {
+    "@id": "?person",
+    "department": "Engineering"
+  },
+  "select": "?person"
+}
+```
+
+Returns IDs of everyone in Engineering.
+
+## Filtering Results
+
+Add conditions to your `where` clause:
+
+```json
+{
+  "from": "my-ledger",
+  "where": [
+    {"@id": "?person", "age": "?age"},
+    ["filter", "(> ?age 30)"]
+  ],
+  "select": {"?person": ["name", "age"]}
+}
+```
+
+## Traversing Relationships
+
+Navigate through entity references:
+
+```json
+{
+  "from": "my-ledger",
+  "select": {"ex:alice": ["name", {"worksAt": ["name", "industry"]}]}
+}
+```
+
+This returns Alice's name and her company's name and industry.
+
+## Result Formats
+
+**Single value:**
+```json
+"select": "?name"
+```
+
+**Array of values:**
+```json
+"select": ["?name", "?email"]
+```
+
+**Entity with properties:**
+```json
+"select": {"?person": ["name", "email"]}
+```
+
+## Next Steps
+
+- [Advanced Queries](./advanced-queries.mdx) — Aggregations, grouping, complex patterns
+- [FlureeQL Reference](/docs/reference/querying/) — Complete syntax
