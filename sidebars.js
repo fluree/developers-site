@@ -456,53 +456,285 @@ module.exports = {
 			]
 		}
 	],
+	"getting-started": [
+		"getting-started/index",
+		"getting-started/quick-start",
+		"getting-started/installation",
+		"getting-started/core-concepts",
+	],
 	learn: [
-		"learn/overview",
+		"learn/index",
 		{
-			Tutorial: [
-				"learn/tutorial/introduction",
-				"learn/tutorial/fluree-data-model",
-				"learn/tutorial/working-with-graph-data",
-				"learn/tutorial/collaborative-data",
-			],
-		},
-		{
-			Guides: [
-				"learn/guides/working-with-context",
-				"learn/guides/working-with-ontologies",
-			],
-		},
-		{
-			Foundations: [
-				"learn/foundations/json-ld",
-				"learn/foundations/querying",
-				"learn/foundations/data-access-control",
-				"learn/foundations/verifiable-data",
-				"learn/foundations/semantic-vocabularies",
-				"learn/foundations/architecture-overview",
+			type: "category",
+			label: "Foundations",
+			items: [
+				"learn/foundations/what-makes-fluree-different",
+				"learn/foundations/how-fluree-stores-data",
+				"learn/foundations/understanding-graph-relationships",
 				"learn/foundations/from-tables-to-graphs",
+				"learn/foundations/json-ld",
+				"learn/foundations/understanding-context",
+			],
+		},
+		{
+			type: "category",
+			label: "Working with Data",
+			items: [
+				"learn/working-with-data/inserting-data",
+				"learn/working-with-data/updating-and-deleting-data",
+				"learn/working-with-data/querying-basics",
+				"learn/working-with-data/advanced-queries",
+				"learn/working-with-data/context-patterns",
+				"learn/working-with-data/time-travel-and-history",
+			],
+		},
+		{
+			type: "category",
+			label: "Modeling Your Data",
+			items: [
+				"learn/modeling/classes-and-properties",
+				"learn/modeling/building-ontologies",
+				"learn/modeling/working-with-ontologies",
+				"learn/modeling/shacl-validation",
+				"learn/modeling/semantic-vocabularies",
+				"learn/modeling/introduction-to-reasoning",
+			],
+		},
+		{
+			type: "category",
+			label: "Security & Access Control",
+			items: [
+				"learn/security/data-access-control-concepts",
+				"learn/security/writing-policies",
+				"learn/security/verifiable-data",
+			],
+		},
+		{
+			type: "category",
+			label: "Advanced Topics",
+			items: [
+				"learn/advanced/calculated-transactions",
+				"learn/advanced/language-tags",
+				"learn/advanced/architecture-overview",
+				"learn/advanced/collaborative-data",
 			],
 		},
 	],
 	examples: [
+		"examples/home",
 		{
-			"Sharing Secure, Trusted Data": [
+			type: "category",
+			label: "Domain Examples",
+			items: [
+				{
+					type: "category",
+					label: "E-Commerce Catalog",
+					items: [
+						"examples/datasets/ecommerce/introduction",
+						"examples/datasets/ecommerce/querying",
+						"examples/datasets/ecommerce/transactions",
+					],
+				},
+				{
+					type: "category",
+					label: "Org Chart",
+					items: [
+						"examples/datasets/org-chart/introduction",
+						"examples/datasets/org-chart/querying",
+						"examples/datasets/org-chart/reasoning",
+					],
+				},
+				{
+					type: "category",
+					label: "Knowledge Base",
+					items: [
+						"examples/datasets/knowledge-base/introduction",
+						"examples/datasets/knowledge-base/querying",
+						"examples/datasets/knowledge-base/history",
+					],
+				},
+				{
+					type: "category",
+					label: "Healthcare Records",
+					items: [
+						"examples/datasets/healthcare/introduction",
+						"examples/datasets/healthcare/querying",
+						"examples/datasets/healthcare/policies",
+					],
+				},
+				{
+					type: "category",
+					label: "Supply Chain",
+					items: [
+						"examples/datasets/supply-chain/introduction",
+						"examples/datasets/supply-chain/querying",
+						"examples/datasets/supply-chain/history",
+					],
+				},
+			],
+		},
+		{
+			type: "category",
+			label: "Feature Showcases",
+			items: [
+				{
+					type: "category",
+					label: "Policy & Access Control",
+					items: [
+						"examples/datasets/access-control/introduction",
+						"examples/datasets/access-control/defining-policies",
+						"examples/datasets/access-control/testing-policies",
+					],
+				},
+				{
+					type: "category",
+					label: "Reasoning & Inference",
+					items: [
+						"examples/datasets/reasoning/introduction",
+						"examples/datasets/reasoning/rules",
+						"examples/datasets/reasoning/querying-inferred",
+					],
+				},
+				{
+					type: "category",
+					label: "Full-Text Search",
+					items: [
+						"examples/datasets/full-text-search/introduction",
+						"examples/datasets/full-text-search/search-queries",
+					],
+				},
+				{
+					type: "category",
+					label: "SHACL Validation",
+					items: [
+						"examples/datasets/shacl-validation/introduction",
+						"examples/datasets/shacl-validation/defining-shapes",
+						"examples/datasets/shacl-validation/validation-errors",
+					],
+				},
+				{
+					type: "category",
+					label: "Time-Travel & Audit",
+					items: [
+						"examples/datasets/time-travel/introduction",
+						"examples/datasets/time-travel/history-queries",
+					],
+				},
+			],
+		},
+		{
+			type: "category",
+			label: "Integration Guides",
+			items: [
+				{
+					type: "category",
+					label: "SQL Migration",
+					items: [
+						"examples/datasets/sql-migration/introduction",
+						"examples/datasets/sql-migration/schema-mapping",
+						"examples/datasets/sql-migration/query-comparison",
+					],
+				},
+				{
+					type: "category",
+					label: "REST API Patterns",
+					items: [
+						"examples/datasets/rest-api/introduction",
+						"examples/datasets/rest-api/crud-operations",
+						"examples/datasets/rest-api/advanced-patterns",
+					],
+				},
+			],
+		},
+		{
+			type: "category",
+			label: "Academic Credentials",
+			items: [
 				"examples/datasets/academic-credentials/introduction",
 				"examples/datasets/academic-credentials/querying",
 			],
 		},
 	],
 	reference: [
-		"reference/http-api",
-		"reference/cloud-http-api",
-		"reference/fluree-server-config",
-		"reference/flureeql-query-syntax",
-		"reference/history-syntax",
-		"reference/transaction-syntax",
-		"reference/cookbook",
+		{
+			type: "category",
+			label: "HTTP API",
+			items: [
+				"reference/http-api/index",
+				"reference/http-api/ledger-operations",
+				"reference/http-api/transactions",
+				"reference/http-api/queries",
+				"reference/http-api/real-time",
+				"reference/http-api/remote",
+			],
+		},
+		{
+			type: "category",
+			label: "Querying",
+			items: [
+				{
+					type: "category",
+					label: "FlureeQL",
+					items: [
+						"reference/querying/index",
+						"reference/querying/select-clauses",
+						"reference/querying/where-clauses",
+						"reference/querying/aggregations",
+						"reference/querying/modifiers",
+						"reference/querying/advanced-features",
+					],
+				},
+				"reference/full-text-search",
+				"reference/history-syntax",
+			],
+		},
+		{
+			type: "category",
+			label: "SPARQL",
+			items: [
+				"reference/sparql-syntax",
+			],
+		},
+		{
+			type: "category",
+			label: "Transactions",
+			items: [
+				"reference/transaction-syntax",
+				"reference/data-types",
+			],
+		},
+		{
+			type: "category",
+			label: "Schema & Validation",
+			items: [
+				"reference/shacl-validation",
+				"reference/reasoning",
+			],
+		},
+		{
+			type: "category",
+			label: "Security",
+			items: [
+				"reference/authentication",
+				"reference/policy-syntax",
+			],
+		},
+		{
+			type: "category",
+			label: "Configuration",
+			items: [
+				"reference/fluree-server-config",
+			],
+		},
+		{
+			type: "category",
+			label: "Cookbook",
+			items: [
+				"reference/cookbook/index",
+				"reference/cookbook/examples",
+			],
+		},
 		"reference/error-codes",
-		"reference/policy-syntax",
-		"reference/data-types",
 	],
 	cloud: [
 		"cloud/welcome",
@@ -582,6 +814,13 @@ module.exports = {
 						},
 					],
 				},
+			],
+		},
+		{
+			type: "category",
+			label: "API Reference",
+			items: [
+				"reference/cloud-http-api",
 			],
 		},
 	]
