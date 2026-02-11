@@ -1,0 +1,259 @@
+import Admonition from "@theme/Admonition";
+
+# Select Clauses
+
+The `select` clause determines what data is returned from a query. It defines the shape of your results.
+
+## `select`
+
+| required? | type                |
+| --------- | ------------------- |
+| yes       | `array` or `object` |
+
+A select can be either a [_select object_](#select-object) or a [_select
+array_](#select-array).
+
+### Select Object
+
+With a select object, each key is a [_logic variable
+name_](#logic-variable-name) and the value is an array of [_select
+expressions_](#select-expression).
+
+The select clause determines what objects are returned in query results. Each
+logic variable corresponds to a set of subjects, and a JSON object gets
+constructed for each subject. The array of select expressions describes how to
+build these JSON objects by specifying what predicates to include.
+
+### Select Object Examples
+
+<details>
+<summary>Simple `select` example</summary>
+```json focus=2:7
+{
+  "select": {
+    "?s": [
+      "name",
+      { "bestFriend": ["*"] }
+    ]
+  },
+  "where": {
+    "@id": "?s",
+    "bestFriend": "?friend"
+  }
+}
+```
+</details>
+
+### Select Array
+
+With a select array, each element is a [_logic variable
+name_](#logic-variable-name) or a [_select
+object_](#select-object). When your select clause is a select array, each element of the query
+results is an array.
+
+### Select Array Examples
+
+<details>
+<summary>Logic variable</summary>
+```json focus=2
+{
+  "select": ["?s", "?name", "?friend"],
+  "where": {
+    "@id": "?s",
+    "bestFriend": "?friend",
+    "name": "?name"
+  }
+}
+```
+
+</details>
+
+<details>
+<summary>Logic variable and a select object</summary>
+```json focus=2:5
+{
+  "select": [
+    { "?s": ["*"] },
+    { "?friend": ["*"] }
+  ],
+  "where": {
+    "@id": "?s",
+    "bestFriend": "?friend",
+    "name": "?name"
+  }
+}
+```
+</details>
+
+## Logic Variable Name
+
+Logic variables are placeholders for sets of subjects. They are identified by
+_logic variable names_.
+
+Logic variable names are strings that begin with a question mark, `?`, followed
+by alphanumeric characters, hyphens, and underscores.
+
+See [Querying Basics](/docs/learn/working-with-data/querying-basics/) for
+information about logic variables.
+
+### Examples
+
+```json
+"?firstname"
+"?first-name"
+"?first_name"
+"?address-1"
+```
+
+## Select Expression
+
+Select clause objects map _logic variables_ to _select expressions_. In the
+select clause below, `"?s"` identifies a logic variable and `["name", {
+"bestFriend": ["*"] }]` is a select expression.
+
+```json focus=2:7
+{
+  "select": {
+    "?s": [
+      "name",
+      { "bestFriend": ["*"] }
+    ]
+  },
+  "where": { ... }
+}
+```
+
+Select expressions describe the shape of data to be returned for subjects. It
+specifies what predicates to include in the result object, and how to traverse
+predicates to return nested values.
+
+A select expression can be one of:
+
+- A predicate, like `"schema:name"`. When included, the corresponding value
+  is returned in the result object.
+- The wildcard symbol, `"*"`. When included, all of a subject's predicates are
+  included in its result object.
+- A [_node object template_](#node-object-template). This describes how to
+  traverse nested predicate values.
+
+### Examples
+
+```json
+// wildcard
+"*"
+
+// predicate
+"schema:name"
+
+// node object template; see below
+{
+   "schema:address": ["*"]
+}
+```
+
+## Node Object Template
+
+Node object templates are objects where the keys are predicates, and the values
+are arrays of select expressions. Node object templates express _for the given
+predicate, construct an object that contains the predicates described by the
+array of select expressions._
+
+```json
+{
+  predicate: [select-expression, select-expression, ...],
+  predicate: [select-expression, select-expression, ...],
+  ...
+}
+```
+
+### Examples
+
+<details>
+<summary>Return an object that has all predicates for the node that `"bestFriend"` refers to</summary>
+
+```json focus=2:6
+{
+  "select": {
+    "?s": [
+      { "bestFriend": ["*"] }
+    ]
+  },
+  "where": { ... }
+}
+```
+
+</details>
+
+<details>
+<summary>Multi-level nested object</summary>
+```json focus=4:12
+{
+  "select": {
+    "?s": [
+      {
+        "bestFriend": [
+          {
+            "address": [
+              "*"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "where": { ... }
+}
+```
+</details>
+
+## `construct`
+
+| required? | type    |
+| --------- | ------- |
+| no*       | `array` |
+
+The `construct` clause builds custom JSON-LD output from query results, similar to SPARQL CONSTRUCT queries. Use `construct` instead of `select` when you want to transform query results into a specific shape.
+
+> **NOTE**: Either `select` or `construct` is required, but not both.
+
+### Basic Construct
+
+```json
+{
+  "from": "my-ledger",
+  "construct": [
+    {
+      "@id": "?s",
+      "@type": "ex:SearchResult",
+      "ex:displayName": "?name"
+    }
+  ],
+  "where": { "@id": "?s", "schema:name": "?name" }
+}
+```
+
+### Example Response
+
+```json
+{
+  "@graph": [
+    {
+      "@id": "ex:alice",
+      "@type": ["ex:SearchResult"],
+      "ex:displayName": ["Alice"]
+    },
+    {
+      "@id": "ex:bob",
+      "@type": ["ex:SearchResult"],
+      "ex:displayName": ["Bob"]
+    }
+  ]
+}
+```
+
+The `construct` clause returns a JSON-LD document with an `@graph` array containing the constructed nodes.
+
+## Next Steps
+
+- [Where Clauses](../where-clauses/) — Filter and match data patterns
+- [Aggregations & Grouping](../aggregations/) — Group and aggregate results

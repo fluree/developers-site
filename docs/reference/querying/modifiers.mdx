@@ -1,0 +1,197 @@
+import Admonition from "@theme/Admonition";
+
+# Query Modifiers
+
+Modifiers control how query results are ordered, limited, and paginated.
+
+## `orderBy`
+
+| required? | type                |
+| --------- | ------------------- |
+| no        | `string` or `array` |
+
+The `orderBy` clause sorts query results by one or more variables. By default, results are sorted in ascending order.
+
+### Basic Ordering
+
+To sort by a single variable in ascending order, use the variable name directly:
+
+```json
+{
+  "select": ["?s", "?name"],
+  "where": { "@id": "?s", "schema:name": "?name" },
+  "orderBy": "?name"
+}
+```
+
+### Direction Functions
+
+To specify sort direction explicitly, use the `(asc ?var)` or `(desc ?var)` function syntax:
+
+```json
+{
+  "select": ["?s", "?name"],
+  "where": { "@id": "?s", "schema:name": "?name" },
+  "orderBy": "(desc ?name)"
+}
+```
+
+### Multiple Sort Criteria
+
+To sort by multiple variables, use an array of variables or direction functions:
+
+```json
+{
+  "select": ["?s", "?lastName", "?firstName"],
+  "where": { "@id": "?s", "schema:familyName": "?lastName", "schema:givenName": "?firstName" },
+  "orderBy": ["?lastName", "(desc ?firstName)"]
+}
+```
+
+## `limit`
+
+| required? | type      |
+| --------- | --------- |
+| no        | `integer` |
+
+The `limit` clause restricts the number of results returned by a query. This is useful for pagination or when you only need a subset of results.
+
+```json
+{
+  "select": ["?s", "?name"],
+  "where": { "@id": "?s", "schema:name": "?name" },
+  "limit": 10
+}
+```
+
+## `offset`
+
+| required? | type      |
+| --------- | --------- |
+| no        | `integer` |
+
+The `offset` clause skips a number of results before returning. Combined with `limit`, this enables pagination through large result sets.
+
+```json
+{
+  "select": ["?s", "?name"],
+  "where": { "@id": "?s", "schema:name": "?name" },
+  "limit": 10,
+  "offset": 20
+}
+```
+
+This query would return results 21-30 (skipping the first 20).
+
+## `values`
+
+| required? | type    |
+| --------- | ------- |
+| no        | `array` |
+
+The `values` clause lets you inject specific values into a query, constraining a logic variable to a predefined set of values. This is similar to SQL's `IN` clause.
+
+### Single Variable
+
+To bind a single variable to a set of values:
+
+```json
+{
+  "select": ["?s", "?name"],
+  "where": { "@id": "?s", "schema:name": "?name" },
+  "values": ["?name", ["Alice", "Bob", "Charlie"]]
+}
+```
+
+This query will only return results where `?name` is one of "Alice", "Bob", or "Charlie".
+
+### Multiple Variables
+
+To bind multiple variables simultaneously, provide arrays of variable names and value tuples:
+
+```json
+{
+  "select": ["?s", "?firstName", "?lastName"],
+  "where": {
+    "@id": "?s",
+    "schema:givenName": "?firstName",
+    "schema:familyName": "?lastName"
+  },
+  "values": [
+    ["?firstName", "?lastName"],
+    [
+      ["Alice", "Smith"],
+      ["Bob", "Jones"],
+      ["Charlie", "Brown"]
+    ]
+  ]
+}
+```
+
+## `t`
+
+| required? | type                  |
+| --------- | --------------------- |
+| no        | `string` or `integer` |
+
+The `t` clause lets you specify a dateTime value or commit number to query against. We refer to this as a "time-traveling" query.
+
+The `t` clause can take two possible values, an **ISO 8601 dateTime string** (expressing a particular moment in time according to the database state), or a **commit integer** (expressing a particular relative commit number in the history of the ledger).
+
+<Admonition type="info">
+Note that, while a commit integer expresses an actual moment of data state change, an ISO dateTime string likely expresses a moment in-between commits. The use of an ISO dateTime string, then, expresses an interest in the data state as of that moment in time.
+
+That is, if commit #1 took place at `'2023-10-30T12:43:38.452Z'` and commit #2 took place 10 minutes later at `'2023-10-30T12:53:38.452Z'`, then a query for a dateTime moment in the middle of those two commits, e.g. `"t": '2023-10-30T12:48:38.452Z'`, would reflect the data state as of commit #1.
+
+</Admonition>
+
+### Using ISO 8601 Timestamp
+
+```json
+{
+  "@context": { "schema": "http://schema.org/", "ex": "http://example.org/" },
+  "where": {
+    "@id": "?s",
+    "@type": "ex:Yeti",
+    "schema:age": "?age"
+  },
+  "select": ["?s", "?age"],
+  "t": "2023-10-30T12:38:45.389Z"
+}
+```
+
+### Using Commit Number
+
+```json
+{
+  "@context": { "schema": "http://schema.org/", "ex": "http://example.org/" },
+  "where": {
+    "@id": "?s",
+    "@type": "ex:Yeti",
+    "schema:age": "?age"
+  },
+  "select": ["?s", "?age"],
+  "t": 4
+}
+```
+
+## Pagination Example
+
+Combine `orderBy`, `limit`, and `offset` for pagination:
+
+```json
+{
+  "select": ["?s", "?name", "?createdAt"],
+  "where": { "@id": "?s", "schema:name": "?name", "ex:createdAt": "?createdAt" },
+  "orderBy": "(desc ?createdAt)",
+  "limit": 25,
+  "offset": 50
+}
+```
+
+This returns page 3 (items 51-75) of results sorted by newest first.
+
+## Next Steps
+
+- [Advanced Features](../advanced-features/) — Property paths, subqueries, federated queries, and more
+- [FlureeQL Overview](../) — Query syntax summary

@@ -1,376 +1,8 @@
 import Admonition from "@theme/Admonition";
 
-# FlureeQL Query Syntax
+# Where Clauses
 
-<div class="overview">
-  FlureeQL is a JSON-based query language for retrieving Fluree data. It is
-  modeled as a JSON-representation of the W3C SPARQL standard.
-</div>
-
----
-
-## Query Object
-
-FlureeQL queries are JSON with the following keys:
-
-| key                    | required? | type                  |
-| ---------------------- | --------- | --------------------- |
-| [`@context`](#context) | no        | `object`              |
-| [`from`](#from)        | yes       | `string` or `array`   |
-| [`where`](#where)      | no        | `array` or `object`   |
-| [`select`](#select)    | yes       | `array` or `object`   |
-| [`t`](#t)              | no        | `string` or `integer` |
-| [`groupBy`](#groupby)  | no        | `array` or `string`   |
-| [`having`](#having)    | no        | `array` or `string`   |
-| `orderBy`              | no        | `string`              |
-
-### Examples
-
-<details>
-<summary>Basic query example</summary>
-```json
-{
-  "from": "cookbook/base",
-  "where": {
-    "@id": "?s",
-    "bestFriend": "?friend"
-  },
-  "select": {
-    "?s": [
-      "*",
-      {
-        "bestFriend": [
-          "*"
-        ]
-      }
-    ]
-  },
-}
-```
-</details>
-
-## `@context`
-
-| required? | type     |
-| --------- | -------- |
-| no        | `object` |
-
-Understanding the use of `@context` within the W3C JSON-LD standard can be important for using it properly within queries. For an explanation of how to use `@context` in FlureeQL, consider first reading our [Guides page on Working with Context](/docs/learn/guides/working-with-context/).
-
-    {/*
-
-If you do not use the `@context` key within a query, Fluree will fall back to any `defaultContext` that has been set for the ledger. If no `defaultContext` has been set, then Fluree will expect the query to use fully-qualified IRIs for any entities, properties, or `@type` values.
-
-<Admonition type="info">
-  If you **do** have a `defaultContext` set for your ledger but you wish to use
-  fully-qualified IRIs in your query, you can do so by setting the `@context`
-  key to `null`
-</Admonition>
-
-You can either **replace** or **extend** the `defaultContext` by using the `@context` key in your query.
-
-The following use of `@context` will ignore a `defaultContext` and replace it with the provided map.
-
-```json
-{
-  "@context": { "schema": "http://schema.org/", "ex": "http://example.org/" },
-  ...
-}
-```
-
-Whereas this next use of `@context` will leverage a `defaultContext` and extend it with the provided map.
-
-```json
-{
-  "@context": ["", { "schema": "http://schema.org/", "ex": "http://example.org/" }],
-  ...
-}
-```
-
-<Admonition type="info">
-  Note that the first element of the array is an _empty string_. This is a
-  shorthand similar to a _relative path_ -- it indicates that there is a
-  `defaultContext` local to the ledger that should be used as a base. The map
-  following the _empty string_ should then be used to extend the
-  `defaultContext`.
-</Admonition>
-
-\*/}
-
-### Examples
-
-<details>
-<summary>Example of a Query without `@context`</summary>
-
-```json
-{
-  "from": "cookbook/base",
-  "where": {
-    "@id": "?s",
-    "@type": "http://example.org/Person"
-  },
-  "select": {
-    "?s": ["http://schema.org/name"]
-  }
-}
-```
-
-</details>
-
-<details>
-<summary>Example of a Query with `@context`</summary>
-
-```json
-{
-  "@context": { "schema": "http://schema.org/", "ex": "http://example.org/" },
-  "from": "cookbook/base",
-  "where": {
-    "@id": "?s",
-    "@type": "ex:Person"
-  },
-  "select": {
-    "?s": ["schema:name"]
-  }
-}
-```
-
-</details>
-
-## `from`
-
-| required? | type     |
-| --------- | -------- |
-| yes       | `string` |
-
-The `from` clause specifies the ledger to query. It takes the same value that would have been supplied to the `/create` endpoint when the ledger was created.
-
-If I named a ledger `"cookbook/base"` when I created it, then when I queried it, I would use `"from": "cookbook/base"` to identify that this query should target that particular ledger.
-
-### Examples
-
-<details>
-<summary>Querying a ledger named `"cookbook/base"`</summary>
-
-```json
-{
-  "@context": { "schema": "http://schema.org/", "ex": "http://example.org/" },
-  "from": "cookbook/base",
-  "where": {
-    "@id": "?s",
-    "@type": "ex:Person"
-  },
-  "select": {
-    "?s": ["schema:name"]
-  }
-}
-```
-
-</details>
-
-## `select`
-
-| required? | type                |
-| --------- | ------------------- |
-| yes       | `array` or `object` |
-
-A select can be either a [_select object_](#select-object) or a [_select
-array_](#select-array).
-
-### Select Object
-
-With a select object, each key is a [_logic variable
-name_](#logic-variable-name) and the value is an array of [_select
-expressions_](#select-expression).
-
-The select clause determines what objects are returned in query results. Each
-logic variable corresponds to a set of subjects, and a JSON object gets
-constructed for each subject. The array of select expressions describes how to
-build these JSON objects by specifying what predicates to include.
-
-### Select Object Examples
-
-<details>
-<summary>Simple `select` example</summary>
-```json focus=2:7
-{
-  "select": {
-    "?s": [
-      "name",
-      { "bestFriend": ["*"] }
-    ]
-  },
-  "where": {
-    "@id": "?s",
-    "bestFriend": "?friend"
-  }
-}
-
-````
-</details>
-
-### Select Array
-
-With a select array, each element is a [_logic variable
-name_](#logic-variable-name) or a [_select
-object_](#select-object). When your select clause is a select array, each element of the query
-results is an array.
-
-### Select Array Examples
-
-<details>
-<summary>Logic variable</summary>
-```json focus=2
-{
-  "select": ["?s", "?name", "?friend"],
-  "where": {
-    "@id": "?s",
-    "bestFriend": "?friend",
-    "name": "?name"
-  }
-}
-
-````
-
-</details>
-
-<details>
-<summary>Logic variable and a select object</summary>
-```json focus=2:5
-{
-  "select": [
-    { "?s": ["*"] },
-    { "?friend": ["*"] }
-  ],
-  "where": {
-    "@id": "?s",
-    "bestFriend": "?friend",
-    "name": "?name"
-  }
-}
-```
-</details>
-
-## Logic variable name
-
-Logic variables are placeholders for sets of subjects. They are identified by
-_logic variable names_.
-
-Logic variable names are strings that begin with a question mark, `?`, followed
-by alphanumeric characters, hyphens, and underscores.
-
-See [the tutorial section on
-queries](/docs/learn/tutorial/working-with-graph-data#a-simple-query) for
-information about logic variables.
-
-### Examples
-
-```json
-"?firstname"
-"?first-name"
-"?first_name"
-"?address-1"
-```
-
-## Select expression
-
-Select clause objects map _logic variables_ to _select expressions_. In the
-select clause below, `"?s"` identifies a logic variable and `["name", {
-"bestFriend": ["*"] }]` is a select expression.
-
-```json focus=2:7
-{
-  "select": {
-    "?s": [
-      "name",
-      { "bestFriend": ["*"] }
-    ]
-  },
-  "where": { ... }
-}
-```
-
-Select expressions describe the shape of data to be returned for subjects. It
-specifies what predicates to include in the result object, and how to traverse
-predicates to return nested values.
-
-A select expression can be one of:
-
-- A predicate, like `"schema:name"`. When included, the corresponding value
-  is returned in the result object.
-- The wildcard symbol, `"*"`. When included, all of a subject's predicates are
-  included in its result object.
-- A [_node object template_](#node-object-template). This describes how to
-  traverse nested predicate values.
-
-### Examples
-
-```json
-// wildcard
-"*"
-
-// predicate
-"schema:name"
-
-// node object template; see below
-{
-   "schema:address": ["*"]
-}
-```
-
-## Node object template
-
-Node object templates are objects where the keys are predicates, and the values
-are arrays of select expressions. Node object templates express _for the given
-predicate, construct an object that contains the predicates described by the
-array of select expressions._
-
-```json
-{
-  predicate: [select-expression, select-expression, ...],
-  predicate: [select-expression, select-expression, ...],
-  ...
-}
-```
-
-### Examples
-
-<details>
-<summary>Return an object that has all predicates for the node that `"bestFriend"` refers to</summary>
-
-```json focus=2:6
-{
-  "select": {
-    "?s": [
-      { "bestFriend": ["*"] }
-    ]
-  },
-  "where": { ... }
-}
-```
-
-</details>
-
-<details>
-<summary>Multi-level nested object</summary>
-```json focus=4:12
-{
-  "select": {
-    "?s": [
-      {
-        "bestFriend": [
-          {
-            "address": [
-              "*"
-            ]
-          }
-        ]
-      }
-    ]
-  },
-  "where": { ... }
-}
-```
-</details>
+The `where` clause filters data and establishes variable bindings for use in the `select` clause.
 
 ## `where`
 
@@ -389,7 +21,7 @@ In any case, in addition to establishing _logic variables_ for bound values, we 
 When a `where` clause is an _array_, it can combine a series of [_where conditions_](#where-condition) and [_where
 operations_](#where-operations).
 
-## Where condition
+## Where Condition
 
 A where condition describes relationships between nodes that must be satisfied for
 the nodes to be included in result sets, and it names those sets.
@@ -503,7 +135,7 @@ Finally, it is possible in _where conditions_ to express a _logic variable_ for 
 
 </details>
 
-## Where operations
+## Where Operations
 
 _Where operations_ allow you to express more complex behavior than _where
 conditions_. There are four such operations:
@@ -562,7 +194,7 @@ read as _`?age` is greater than `45`_.
 Inside of each _filter expression_, you can refer to the logic variables that you've bound elsewhere in your `where`
 clause (i.e. the way that we use `?age` as a variable in the example above).
 
-[Click here](#valid-functions-for-use-in-filter-and-bind-expressions) for a list of valid functions you can use in `filter` expressions.
+[See the full list of valid functions](#valid-functions-for-use-in-filter-and-bind-expressions) you can use in `filter` expressions.
 
 ### `union`
 
@@ -637,7 +269,7 @@ Like [`filter`](#filter) and [`union`](#union), `bind` is an array where the fir
 
 </details>
 
-[Click here](#valid-functions-for-use-in-filter-and-bind-expressions) for a list of valid functions you can use in `bind` expressions.
+[See the full list of valid functions](#valid-functions-for-use-in-filter-and-bind-expressions) you can use in `bind` expressions.
 
 ### `optional`
 
@@ -678,7 +310,7 @@ When we use `optional`, we are saying "if this triple exists, then bind the valu
 
 </Admonition>
 
-### Valid Functions for Use in Filter and Bind Expressions
+## Valid Functions for Use in Filter and Bind Expressions
 
 | function                  | description                                     | example                                         |
 | ------------------------- | ----------------------------------------------- | ----------------------------------------------- |
@@ -714,157 +346,11 @@ When we use `optional`, we are saying "if this triple exists, then bind the valu
 | `now`                     | returns the current time                        | `(> ?date (now))`                               |
 | `if`                      | conditional                                     | `(if (> ?nums 30) (> ?age 100) true)`           |
 | `isNumeric`               | returns true if value is numeric                | `(isNumeric ?age)`                              |
+| `in`                      | check if value is in a collection               | `(in ?x [1 2 3])`                               |
+| `str`                     | convert to string                               | `(str ?value)`                                  |
+| `as`                      | alias an expression (used in select with aggregates) | `(as (avg ?x) ?avgX)`                      |
 
-## `t`
+## Next Steps
 
-| required? | type                  |
-| --------- | --------------------- |
-| no        | `string` or `integer` |
-
-The `t` clause lets you specify a dateTime value or commit number to query against. We refer to this as a "time-traveling" query.
-
-The `t` clause can take two possible values, an **ISO 8601 dateTime string** (expressing a particular moment in time according to the database state), or a **commit integer** (expressing a particular relative commit number in the history of the ledger).
-
-<Admonition type="info">
-Note that, while a commit integer expresses an actual moment of data state change, an ISO dateTime string likely expresses a moment in-between commits. The use of an ISO dateTime string, then, expresses an interest in the data state as of that moment in time.
-
-That is, if commit #1 took place at `'2023-10-30T12:43:38.452Z'` and commit #2 took place 10 minutes later at `'2023-10-30T12:53:38.452Z'`, then a query for a dateTime moment in the middle of those two commits, e.g. `"t": '2023-10-30T12:48:38.452Z'`, would reflect the data state as of commit #1.
-
-</Admonition>
-
-```json focus=9
-{
-  "@context": { "schema": "http://schema.org/", "ex": "http://example.org/" },
-  "where": {
-    "@id": "?s",
-    "@type": "ex:Yeti",
-    "schema:age": "?age"
-  },
-  "select": ["?s", "?age"],
-  "t": "2023-10-30T12:38:45.389Z"
-}
-```
-
-Or the same query, but using a commit integer value for `t`:
-
-```json focus=9
-{
-  "@context": { "schema": "http://schema.org/", "ex": "http://example.org/" },
-  "where": {
-    "@id": "?s",
-    "@type": "ex:Yeti",
-    "schema:age": "?age"
-  },
-  "select": ["?s", "?age"],
-  "t": 4
-}
-```
-
-## `groupBy`
-
-| required? | type                |
-| --------- | ------------------- |
-| no        | `array` or `string` |
-
-The `groupBy` clause lets you group query results by a predicate and perform
-aggregate operations on the groups.
-
-For example, let's say you have a query that returns the name and company for
-all people in your database, and the results look like this:
-
-```json
-[
-  {
-    "ex:company": "Fluree",
-    "ex:name": "Letitia"
-  },
-  {
-    "ex:company": "Fluree",
-    "ex:name": "Freddy"
-  },
-  {
-    "ex:company": "Beep Boop",
-    "ex:name": "Daniel"
-  }
-]
-```
-
-You could group these results by `ex:company` to see who works for each company:
-
-```json
-{
-  "@context": { "ex": "http://example.org/" },
-  "select": ["?company", "?name"],
-  "where": {
-    "@id": "?s",
-    "ex:name": "?name",
-    "ex:company": "?company"
-  },
-  "groupBy": "?company"
-}
-```
-
-This would return:
-
-```json
-[
-  ["Fluree", ["Letitia", "Freddy"]],
-  ["Beep Boop", ["Daniel"]]
-]
-```
-
-You can also perform aggregate operations on the grouped data. These operations
-let you answers questions like, "how many people are employed at each company?"
-or "what is the lowest price that a product has sold for?"
-
-If you wanted to get a count of people per employer, you could write a query like this:
-
-```json
-{
-  "@context": { "ex": "http://example.org/" },
-  "select": ["?company", "(count ?s)"],
-  "where": {
-    "@id": "?s",
-    "ex:name": "?name",
-    "ex:company": "?company"
-  },
-  "groupBy": "?company"
-}
-```
-
-And you would get results like this:
-
-```json
-[
-  ["Fluree", 2],
-  ["Beep Boop", 1]
-]
-```
-
-## `having`
-
-| required? | type                |
-| --------- | ------------------- |
-| no        | `array` or `string` |
-
-Having lets you filter on grouped data using arbitrary expressions.
-
-> **NOTE**: `having` is only valid when used with `groupBy`.
-
-```json
-{
-  "@context": { "ex": "http://example.org/", "schema": "http://schema.org/" },
-  "select": ["?name", "?favNums"],
-  "where": {
-    "@id": "?s",
-    "schema:name": "?name",
-    "ex:favNums": "?favNums"
-  },
-  "groupBy": "?name",
-  "having": "(>= (avg ?favNums) 10)"
-}
-```
-
-As English, this query would read: _"Find all entities with names and favorite numbers. Group the results by name. Keep only results where the average of all `?favNums` for a `?name` is greater than or equal to `10`."_
-
-> If we had used a `filter` function without `groupBy`, then we would have been filtering on the average of **all `favNum` values across all entities**. By using, `groupBy` & `having`, we can filter on the average of only those values grouped to a particular `?name`.
+- [Aggregations & Grouping](../aggregations/) — Group and aggregate results
+- [Modifiers](../modifiers/) — Order, limit, and paginate results
