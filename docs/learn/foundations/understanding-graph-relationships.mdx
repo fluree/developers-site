@@ -1,0 +1,82 @@
+# Understanding Graph Relationships
+
+One of Fluree's most powerful features is how naturally it handles relationships between entities.
+
+## Entities Reference Each Other
+
+In Fluree, entities can reference other entities directly using `@id`:
+
+```json
+[
+  {
+    "@id": "ex:alice",
+    "name": "Alice",
+    "worksAt": {"@id": "ex:acme-corp"}
+  },
+  {
+    "@id": "ex:acme-corp",
+    "name": "Acme Corporation",
+    "industry": "Technology"
+  }
+]
+```
+
+Alice's `worksAt` property points directly to the Acme Corporation entity. This creates a graph edge connecting them.
+
+## Beyond Foreign Keys
+
+If you're coming from relational databases, this might look like a foreign key. But there are key differences:
+
+| Relational | Fluree Graph |
+|------------|--------------|
+| Foreign key references a row in a specific table | Reference points to an entity anywhere |
+| Must define relationship in schema first | Relationships are flexible |
+| JOINs required to traverse | Navigate naturally in queries |
+
+## Navigating Relationships
+
+When you query Alice, you can traverse the relationship to get company details:
+
+```json
+{
+  "select": {"ex:alice": ["name", {"worksAt": ["name", "industry"]}]},
+  "from": "my-ledger"
+}
+```
+
+Result:
+```json
+{
+  "@id": "ex:alice",
+  "name": "Alice",
+  "worksAt": {
+    "@id": "ex:acme-corp",
+    "name": "Acme Corporation",
+    "industry": "Technology"
+  }
+}
+```
+
+## Reverse Relationships
+
+You can also traverse relationships in reverse. Find all people who work at Acme:
+
+```json
+{
+  "select": ["?person"],
+  "where": {
+    "@id": "?person",
+    "worksAt": {"@id": "ex:acme-corp"}
+  },
+  "from": "my-ledger"
+}
+```
+
+## Multi-Hop Traversal
+
+Relationships can chain: Alice works at Acme, which is located in a city, which is in a country. Fluree queries can traverse multiple hops naturally.
+
+## Next Steps
+
+- [Querying Basics](../working-with-data/querying-basics.mdx) — Learn query syntax
+- [From Tables to Graphs](./from-tables-to-graphs.mdx) — More on the relational-to-graph transition
