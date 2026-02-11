@@ -1,0 +1,111 @@
+# Introduction to Reasoning
+
+Reasoning allows Fluree to infer new facts from your data based on logical rules. This guide introduces the concepts—see the [Reasoning Reference](/docs/reference/reasoning) for complete details.
+
+## What is Reasoning?
+
+Reasoning (or inference) lets you define relationships between classes and properties, and Fluree will automatically derive implied facts.
+
+For example, if you define:
+- "Manager" is a subclass of "Employee"
+- Alice is a Manager
+
+Fluree can infer that Alice is also an Employee, even if you never explicitly stated it.
+
+## Class Equivalences
+
+You can declare that classes from different vocabularies mean the same thing:
+
+```json
+{
+  "@id": "ex:Person",
+  "owl:equivalentClass": {"@id": "schema:Person"}
+}
+```
+
+Now data typed as `ex:Person` will also match queries for `schema:Person`.
+
+### OWL and RDFS Classes
+
+A common use case: declaring that OWL classes are equivalent to RDFS classes:
+
+```json
+{
+  "@id": "owl:Class",
+  "owl:equivalentClass": {"@id": "rdfs:Class"}
+}
+```
+
+This is useful when working with ontologies that use OWL vocabulary.
+
+## Property Equivalences
+
+Properties can also be declared equivalent:
+
+```json
+{
+  "@id": "ex:email",
+  "owl:equivalentProperty": {"@id": "schema:email"}
+}
+```
+
+Data stored with `ex:email` will match queries using `schema:email`.
+
+## Subclass Relationships
+
+Define class hierarchies:
+
+```json
+{
+  "@id": "ex:Manager",
+  "rdfs:subClassOf": {"@id": "ex:Employee"}
+}
+```
+
+All Managers are automatically considered Employees.
+
+## Subproperty Relationships
+
+Properties can have hierarchies too:
+
+```json
+{
+  "@id": "ex:workEmail",
+  "rdfs:subPropertyOf": {"@id": "ex:email"}
+}
+```
+
+A query for `ex:email` will also return `ex:workEmail` values.
+
+## Inverse Properties
+
+Define bidirectional relationships:
+
+```json
+{
+  "@id": "ex:manages",
+  "owl:inverseOf": {"@id": "ex:reportsTo"}
+}
+```
+
+If Alice `manages` Bob, Fluree can infer that Bob `reportsTo` Alice.
+
+## When to Use Reasoning
+
+- **Integrating data from multiple sources** with different vocabularies
+- **Building flexible queries** that match related concepts
+- **Modeling real-world hierarchies** (categories, roles, types)
+- **Avoiding redundant data entry** by inferring relationships
+
+## Performance Considerations
+
+Reasoning adds computation. Use it when:
+- You need vocabulary interoperability
+- The logical relationships are stable
+- Query flexibility outweighs the overhead
+
+## Next Steps
+
+- [Reasoning Reference](/docs/reference/reasoning) — Complete syntax and options
+- [Working with Ontologies](./working-with-ontologies.mdx) — Using established vocabularies
+- [Semantic Vocabularies](./semantic-vocabularies.mdx) — Standard vocabularies to leverage

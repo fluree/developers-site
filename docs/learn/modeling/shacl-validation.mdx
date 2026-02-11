@@ -1,0 +1,841 @@
+# SHACL Validation
+
+SHACL (Shapes Constraint Language) lets you define and enforce data quality rules in Fluree. While [classes and properties](/docs/learn/modeling/classes-and-properties/) describe what your data *could* look like, SHACL shapes define what your data *must* look like—enforcing constraints similar to NOT NULL, CHECK, and UNIQUE in relational databases.
+
+## What SHACL Does
+
+SHACL provides a standard way to describe constraints on your data:
+
+- **Required fields**: A person must have a name
+- **Data types**: Age must be an integer
+- **Value ranges**: Age must be between 0 and 150
+- **Patterns**: Email must match a valid format
+- **Relationships**: A manager must be a Person
+- **Cardinality**: A person can have at most one SSN
+
+When you transact data that violates a SHACL shape, Fluree rejects the transaction with a detailed validation report explaining what went wrong.
+
+## SHACL vs. Data Modeling
+
+It's important to understand the distinction:
+
+| Concept | Purpose | Effect |
+|---------|---------|--------|
+| `rdfs:Class` / `rdf:Property` | Describe data structure | Enables inference and queries |
+| `rdfs:domain` / `rdfs:range` | Link properties to types | Enables inference, doesn't enforce |
+| SHACL shapes | Define constraints | **Rejects invalid data** |
+
+You can use SHACL independently from data modeling, but they work well together—your ontology describes the intended structure, SHACL enforces it.
+
+## Basic Shape Structure
+
+A SHACL shape has three key parts:
+
+1. **Target**: What nodes does this shape apply to?
+2. **Property constraints**: Rules for specific properties
+3. **Node constraints**: Rules for the node itself
+
+Here's a simple example:
+
+```json
+{
+  "@context": {
+    "sh": "http://www.w3.org/ns/shacl#",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "ex": "https://example.com/ns/"
+  },
+  "ledger": "my-app",
+  "insert": {
+    "@id": "ex:PersonShape",
+    "@type": "sh:NodeShape",
+    "sh:targetClass": { "@id": "ex:Person" },
+    "sh:property": [
+      {
+        "sh:path": { "@id": "ex:name" },
+        "sh:minCount": 1,
+        "sh:datatype": { "@id": "xsd:string" }
+      }
+    ]
+  }
+}
+```
+
+This shape says: "Every `ex:Person` must have at least one `ex:name`, and it must be a string."
+
+---
+
+## Targeting
+
+Shapes need to know which nodes to validate. Fluree supports several targeting methods:
+
+### Target by Class
+
+Validate all instances of a class:
+
+```json
+{
+  "@id": "ex:PersonShape",
+  "@type": "sh:NodeShape",
+  "sh:targetClass": { "@id": "ex:Person" }
+}
+```
+
+### Target Specific Nodes
+
+Validate specific individuals:
+
+```json
+{
+  "@id": "ex:AdminShape",
+  "@type": "sh:NodeShape",
+  "sh:targetNode": [
+    { "@id": "ex:admin1" },
+    { "@id": "ex:admin2" }
+  ]
+}
+```
+
+### Target by Property Usage
+
+Target subjects or objects of a property:
+
+```json
+{
+  "@id": "ex:AuthorShape",
+  "@type": "sh:NodeShape",
+  "sh:targetSubjectsOf": { "@id": "ex:wrote" }
+}
+```
+
+```json
+{
+  "@id": "ex:BookShape",
+  "@type": "sh:NodeShape",
+  "sh:targetObjectsOf": { "@id": "ex:wrote" }
+}
+```
+
+---
+
+## Cardinality Constraints
+
+Control how many values a property can have:
+
+### sh:minCount
+
+Require at least N values (enforces "required" fields):
+
+```json
+{
+  "sh:path": { "@id": "ex:email" },
+  "sh:minCount": 1
+}
+```
+
+### sh:maxCount
+
+Allow at most N values (enforces uniqueness when set to 1):
+
+```json
+{
+  "sh:path": { "@id": "ex:ssn" },
+  "sh:maxCount": 1
+}
+```
+
+### Combined Example
+
+Require exactly one primary email:
+
+```json
+{
+  "sh:path": { "@id": "ex:primaryEmail" },
+  "sh:minCount": 1,
+  "sh:maxCount": 1,
+  "sh:datatype": { "@id": "xsd:string" }
+}
+```
+
+---
+
+## Datatype Constraints
+
+### sh:datatype
+
+Require values to be a specific type:
+
+```json
+{
+  "@id": "ex:PersonShape",
+  "@type": "sh:NodeShape",
+  "sh:targetClass": { "@id": "ex:Person" },
+  "sh:property": [
+    {
+      "sh:path": { "@id": "ex:name" },
+      "sh:datatype": { "@id": "xsd:string" }
+    },
+    {
+      "sh:path": { "@id": "ex:age" },
+      "sh:datatype": { "@id": "xsd:integer" }
+    },
+    {
+      "sh:path": { "@id": "ex:birthDate" },
+      "sh:datatype": { "@id": "xsd:date" }
+    },
+    {
+      "sh:path": { "@id": "ex:active" },
+      "sh:datatype": { "@id": "xsd:boolean" }
+    }
+  ]
+}
+```
+
+### sh:class
+
+Require values to be instances of a class:
+
+```json
+{
+  "sh:path": { "@id": "ex:employer" },
+  "sh:class": { "@id": "ex:Organization" }
+}
+```
+
+### sh:nodeKind
+
+Require a specific kind of RDF node:
+
+| Value | Meaning |
+|-------|---------|
+| `sh:Literal` | String, number, date, etc. |
+| `sh:IRI` | A reference to another node |
+| `sh:BlankNode` | An anonymous node |
+| `sh:IRIOrLiteral` | Either IRI or literal |
+| `sh:BlankNodeOrIRI` | Either blank node or IRI |
+| `sh:BlankNodeOrLiteral` | Either blank node or literal |
+
+```json
+{
+  "sh:path": { "@id": "ex:manager" },
+  "sh:nodeKind": { "@id": "sh:IRI" }
+}
+```
+
+---
+
+## String Constraints
+
+### sh:minLength and sh:maxLength
+
+Control string length:
+
+```json
+{
+  "sh:path": { "@id": "ex:username" },
+  "sh:minLength": 3,
+  "sh:maxLength": 20
+}
+```
+
+### sh:pattern
+
+Match against a regular expression:
+
+```json
+{
+  "sh:path": { "@id": "ex:email" },
+  "sh:pattern": "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$",
+  "sh:message": "Must be a valid email address"
+}
+```
+
+### sh:flags
+
+Add regex modifiers:
+
+| Flag | Meaning |
+|------|---------|
+| `i` | Case-insensitive |
+| `m` | Multiline (^ and $ match line boundaries) |
+| `s` | Dotall (. matches newlines) |
+| `x` | Extended (ignore whitespace) |
+
+```json
+{
+  "sh:path": { "@id": "ex:code" },
+  "sh:pattern": "^[A-Z]{3}[0-9]{4}$",
+  "sh:flags": "i"
+}
+```
+
+---
+
+## Numeric Range Constraints
+
+Control numeric and date/time values:
+
+### Inclusive Ranges
+
+```json
+{
+  "sh:path": { "@id": "ex:age" },
+  "sh:minInclusive": 0,
+  "sh:maxInclusive": 150
+}
+```
+
+### Exclusive Ranges
+
+```json
+{
+  "sh:path": { "@id": "ex:score" },
+  "sh:minExclusive": 0,
+  "sh:maxExclusive": 100
+}
+```
+
+### Date/Time Ranges
+
+Works with temporal values too:
+
+```json
+{
+  "sh:path": { "@id": "ex:startDate" },
+  "sh:minInclusive": "2020-01-01",
+  "sh:datatype": { "@id": "xsd:date" }
+}
+```
+
+---
+
+## Value Set Constraints
+
+### sh:in
+
+Restrict to a specific set of allowed values:
+
+```json
+{
+  "sh:path": { "@id": "ex:status" },
+  "sh:in": ["pending", "approved", "rejected"]
+}
+```
+
+Works with node references too:
+
+```json
+{
+  "sh:path": { "@id": "ex:priority" },
+  "sh:in": [
+    { "@id": "ex:Low" },
+    { "@id": "ex:Medium" },
+    { "@id": "ex:High" }
+  ]
+}
+```
+
+### sh:hasValue
+
+Require a specific value to be present:
+
+```json
+{
+  "sh:path": { "@id": "ex:type" },
+  "sh:hasValue": "customer"
+}
+```
+
+---
+
+## Property Pair Constraints
+
+Compare values between properties:
+
+### sh:equals
+
+Values must be identical:
+
+```json
+{
+  "sh:path": { "@id": "ex:password" },
+  "sh:equals": { "@id": "ex:confirmPassword" }
+}
+```
+
+### sh:disjoint
+
+Values must not overlap:
+
+```json
+{
+  "sh:path": { "@id": "ex:primaryEmail" },
+  "sh:disjoint": { "@id": "ex:secondaryEmail" }
+}
+```
+
+### sh:lessThan and sh:lessThanOrEquals
+
+Compare numeric or date values:
+
+```json
+{
+  "sh:path": { "@id": "ex:startDate" },
+  "sh:lessThan": { "@id": "ex:endDate" }
+}
+```
+
+```json
+{
+  "sh:path": { "@id": "ex:minPrice" },
+  "sh:lessThanOrEquals": { "@id": "ex:maxPrice" }
+}
+```
+
+---
+
+## Logical Constraints
+
+Combine multiple constraints with boolean logic:
+
+### sh:and
+
+All constraints must pass:
+
+```json
+{
+  "@id": "ex:AdultShape",
+  "@type": "sh:NodeShape",
+  "sh:and": [
+    {
+      "sh:property": [{
+        "sh:path": { "@id": "ex:age" },
+        "sh:minInclusive": 18
+      }]
+    },
+    {
+      "sh:property": [{
+        "sh:path": { "@id": "ex:hasConsent" },
+        "sh:hasValue": true
+      }]
+    }
+  ]
+}
+```
+
+### sh:or
+
+At least one constraint must pass:
+
+```json
+{
+  "@id": "ex:ContactableShape",
+  "@type": "sh:NodeShape",
+  "sh:or": [
+    {
+      "sh:property": [{
+        "sh:path": { "@id": "ex:email" },
+        "sh:minCount": 1
+      }]
+    },
+    {
+      "sh:property": [{
+        "sh:path": { "@id": "ex:phone" },
+        "sh:minCount": 1
+      }]
+    }
+  ]
+}
+```
+
+### sh:not
+
+Constraint must NOT pass:
+
+```json
+{
+  "sh:not": {
+    "sh:property": [{
+      "sh:path": { "@id": "ex:deleted" },
+      "sh:hasValue": true
+    }]
+  }
+}
+```
+
+### sh:xone
+
+Exactly one constraint must pass (exclusive or):
+
+```json
+{
+  "@id": "ex:NameShape",
+  "@type": "sh:NodeShape",
+  "sh:xone": [
+    {
+      "sh:property": [{
+        "sh:path": { "@id": "ex:fullName" },
+        "sh:minCount": 1
+      }]
+    },
+    {
+      "sh:and": [
+        {
+          "sh:property": [{
+            "sh:path": { "@id": "ex:firstName" },
+            "sh:minCount": 1
+          }]
+        },
+        {
+          "sh:property": [{
+            "sh:path": { "@id": "ex:lastName" },
+            "sh:minCount": 1
+          }]
+        }
+      ]
+    }
+  ]
+}
+```
+
+---
+
+## Nested Shape Constraints
+
+### sh:node
+
+Values must conform to another shape:
+
+```json
+{
+  "@context": {
+    "sh": "http://www.w3.org/ns/shacl#",
+    "ex": "https://example.com/ns/"
+  },
+  "ledger": "my-app",
+  "insert": [
+    {
+      "@id": "ex:AddressShape",
+      "@type": "sh:NodeShape",
+      "sh:property": [
+        { "sh:path": { "@id": "ex:street" }, "sh:minCount": 1 },
+        { "sh:path": { "@id": "ex:city" }, "sh:minCount": 1 },
+        { "sh:path": { "@id": "ex:postalCode" }, "sh:minCount": 1 }
+      ]
+    },
+    {
+      "@id": "ex:PersonShape",
+      "@type": "sh:NodeShape",
+      "sh:targetClass": { "@id": "ex:Person" },
+      "sh:property": [
+        {
+          "sh:path": { "@id": "ex:address" },
+          "sh:node": { "@id": "ex:AddressShape" }
+        }
+      ]
+    }
+  ]
+}
+```
+
+### sh:qualifiedValueShape
+
+Apply cardinality to values matching a specific shape:
+
+```json
+{
+  "sh:path": { "@id": "ex:contact" },
+  "sh:qualifiedValueShape": {
+    "sh:property": [{
+      "sh:path": { "@id": "ex:type" },
+      "sh:hasValue": "primary"
+    }]
+  },
+  "sh:qualifiedMinCount": 1,
+  "sh:qualifiedMaxCount": 1
+}
+```
+
+This says: "There must be exactly one contact where type is 'primary'."
+
+---
+
+## Closed Shapes
+
+### sh:closed
+
+Reject any properties not explicitly allowed:
+
+```json
+{
+  "@id": "ex:StrictPersonShape",
+  "@type": "sh:NodeShape",
+  "sh:targetClass": { "@id": "ex:Person" },
+  "sh:closed": true,
+  "sh:property": [
+    { "sh:path": { "@id": "ex:name" } },
+    { "sh:path": { "@id": "ex:email" } }
+  ]
+}
+```
+
+With this shape, a Person with an `ex:phone` property would be rejected.
+
+### sh:ignoredProperties
+
+Exclude certain properties from the closed check:
+
+```json
+{
+  "@id": "ex:StrictPersonShape",
+  "@type": "sh:NodeShape",
+  "sh:closed": true,
+  "sh:ignoredProperties": [
+    { "@id": "rdf:type" }
+  ],
+  "sh:property": [
+    { "sh:path": { "@id": "ex:name" } }
+  ]
+}
+```
+
+---
+
+## Property Paths
+
+SHACL supports property paths for more complex constraints:
+
+### Simple Path
+
+```json
+{ "sh:path": { "@id": "ex:name" } }
+```
+
+### Inverse Path
+
+Follow the property in reverse:
+
+```json
+{ "sh:path": { "sh:inversePath": { "@id": "ex:parent" } } }
+```
+
+This validates children of a node (nodes that have this node as their parent).
+
+### Alternative Path
+
+Match any of several properties:
+
+```json
+{
+  "sh:path": {
+    "sh:alternativePath": [
+      { "@id": "ex:email" },
+      { "@id": "ex:phone" }
+    ]
+  },
+  "sh:minCount": 1
+}
+```
+
+---
+
+## Custom Messages
+
+### sh:message
+
+Provide custom error messages:
+
+```json
+{
+  "sh:path": { "@id": "ex:email" },
+  "sh:pattern": "^.+@.+\\..+$",
+  "sh:message": "Please provide a valid email address"
+}
+```
+
+---
+
+## Validation Reports
+
+When a transaction violates a SHACL shape, Fluree returns a 422 status with a detailed validation report:
+
+```json
+{
+  "error": "shacl/violation",
+  "report": {
+    "@type": "sh:ValidationReport",
+    "sh:conforms": false,
+    "sh:result": [
+      {
+        "@type": "sh:ValidationResult",
+        "sh:resultSeverity": "sh:Violation",
+        "sh:focusNode": "ex:john",
+        "sh:resultPath": ["ex:name"],
+        "sh:constraintComponent": "sh:minCount",
+        "sh:sourceShape": "ex:PersonShape",
+        "sh:resultMessage": "count 0 is less than minimum count of 1"
+      }
+    ]
+  }
+}
+```
+
+The report tells you:
+- **focusNode**: Which entity failed validation
+- **resultPath**: Which property had the issue
+- **constraintComponent**: Which constraint failed
+- **resultMessage**: What went wrong
+
+---
+
+## Complete Example
+
+Here's a comprehensive example showing multiple constraint types:
+
+```json
+{
+  "@context": {
+    "sh": "http://www.w3.org/ns/shacl#",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "ex": "https://example.com/ns/"
+  },
+  "ledger": "company-app",
+  "insert": {
+    "@id": "ex:EmployeeShape",
+    "@type": "sh:NodeShape",
+    "sh:targetClass": { "@id": "ex:Employee" },
+    "sh:property": [
+      {
+        "sh:path": { "@id": "ex:employeeId" },
+        "sh:minCount": 1,
+        "sh:maxCount": 1,
+        "sh:pattern": "^E-[0-9]{5}$",
+        "sh:message": "Employee ID must be in format E-XXXXX"
+      },
+      {
+        "sh:path": { "@id": "ex:name" },
+        "sh:minCount": 1,
+        "sh:datatype": { "@id": "xsd:string" },
+        "sh:minLength": 1,
+        "sh:maxLength": 100
+      },
+      {
+        "sh:path": { "@id": "ex:email" },
+        "sh:minCount": 1,
+        "sh:pattern": "^[a-zA-Z0-9._%+-]+@company\\.com$",
+        "sh:message": "Must be a company email address"
+      },
+      {
+        "sh:path": { "@id": "ex:department" },
+        "sh:minCount": 1,
+        "sh:class": { "@id": "ex:Department" }
+      },
+      {
+        "sh:path": { "@id": "ex:salary" },
+        "sh:datatype": { "@id": "xsd:decimal" },
+        "sh:minInclusive": 0
+      },
+      {
+        "sh:path": { "@id": "ex:startDate" },
+        "sh:minCount": 1,
+        "sh:datatype": { "@id": "xsd:date" },
+        "sh:lessThanOrEquals": { "@id": "ex:endDate" }
+      },
+      {
+        "sh:path": { "@id": "ex:status" },
+        "sh:in": ["active", "onLeave", "terminated"]
+      }
+    ]
+  }
+}
+```
+
+Now transactions that don't conform will be rejected:
+
+```json
+{
+  "ledger": "company-app",
+  "insert": {
+    "@id": "ex:emp1",
+    "@type": "ex:Employee",
+    "ex:employeeId": "12345",
+    "ex:name": "John Doe"
+  }
+}
+```
+
+This fails because:
+- `employeeId` doesn't match the pattern (should be `E-12345`)
+- `email` is missing
+- `department` is missing
+- `startDate` is missing
+
+---
+
+## Best Practices
+
+### Start Permissive, Get Stricter
+
+Begin with minimal constraints and add more as you understand your data requirements.
+
+### Use Meaningful Messages
+
+Always include `sh:message` for complex patterns to help users understand what's expected.
+
+### Separate Concerns
+
+Create focused shapes rather than one giant shape:
+
+```json
+{
+  "@id": "ex:ContactInfoShape",
+  "@type": "sh:NodeShape",
+  "sh:property": [...]
+}
+
+{
+  "@id": "ex:EmploymentShape",
+  "@type": "sh:NodeShape",
+  "sh:property": [...]
+}
+
+{
+  "@id": "ex:EmployeeShape",
+  "@type": "sh:NodeShape",
+  "sh:targetClass": { "@id": "ex:Employee" },
+  "sh:node": [
+    { "@id": "ex:ContactInfoShape" },
+    { "@id": "ex:EmploymentShape" }
+  ]
+}
+```
+
+### Document Your Shapes
+
+Use `rdfs:label` and `rdfs:comment` on shapes:
+
+```json
+{
+  "@id": "ex:EmployeeShape",
+  "@type": "sh:NodeShape",
+  "rdfs:label": "Employee Shape",
+  "rdfs:comment": "Validates employee records for HR system"
+}
+```
+
+---
+
+## Limitations
+
+Current limitations to be aware of:
+
+- **Enforcing only**: SHACL validation rejects invalid transactions. There's no non-enforcing "report only" mode currently.
+- **Path expressions**: Zero-or-more (`*`), one-or-more (`+`), and optional (`?`) paths are not yet supported.
+- **SHACL-AF**: Advanced features like SPARQL-based constraints are not supported.
+
+---
+
+## Next Steps
+
+- Review the complete [Data Types](/docs/reference/data-types) reference for all supported datatypes
+- See how SHACL complements [Reasoning](/docs/reference/reasoning) for comprehensive data governance
+- Explore the [Transaction Syntax](/docs/reference/transaction-syntax) for more on how transactions are processed
