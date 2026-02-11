@@ -231,7 +231,7 @@ shorter IRIs that mean the same thing. Here's an example:
 ```javascript
 {
   "@context": {
-    "schema": "http://schema.org/"
+    "schema": "https://schema.org/"
   },
   "schema:familyName": "Worrel",
   "schema:givenName": "Ernest"
@@ -245,7 +245,7 @@ This can be understood with the following rule:
 2. Then replace `namespace:` with the corresponding value under `@context`
 
 In this example, instances of `"schema:"` are replaced with
-`"http://schema.org/"`. Applications that understand JSON-LD, like
+`"https://schema.org/"`. Applications that understand JSON-LD, like
 Fluree, will automatically expand namespaces into their full form. The
 `@context` is there to make JSON data a bit easier for humans to read.
 
@@ -256,7 +256,7 @@ You can also include a context when querying:
 ```javascript
 {
   "@context": {
-    "schema": "http://schema.org/"
+    "schema": "https://schema.org/"
   },
   "select": {
     "?s": [
@@ -284,7 +284,7 @@ values, making them the subjects for the corresponding triples. The JSON-LD:
 ```javascript
 {
   "@context": {
-    "schema": "http://schema.org/"
+    "schema": "https://schema.org/"
   },
   "@id": "http://example.org/people/ErnestWorrel",
   "schema:familyName": "Worrel",
@@ -298,12 +298,12 @@ And the triples:
 [
   [
     "http://example.org/people/ErnestWorrel",
-    "http://schema.org/familyName",
+    "https://schema.org/familyName",
     "Worrel",
   ],
   [
     "http://example.org/people/ErnestWorrel",
-    "http://schema.org/givenName",
+    "https://schema.org/givenName",
     "Ernest",
   ],
 ];
