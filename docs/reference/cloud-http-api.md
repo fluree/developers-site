@@ -232,7 +232,7 @@ Commit a transaction to a ledger.
 
 | Key        | Required | Value                                                                                                                       |
 | ---------- | -------- | --------------------------------------------------------------------------------------------------------------------------- |
-| `@context` | no       | **object** • a map of terms for the transaction ([See our Guide on Using Context](/docs/learn/guides/working-with-context)) |
+| `@context` | no       | **object** • a map of terms for the transaction ([See our Guide on Using Context](/docs/learn/working-with-data/context-patterns/)) |
 | `ledger`   | yes      | **string** • the name of the _existing_ ledger                                                                              |
 | `insert`   | no       | **object** or **array** • data to be asserted                                                                               |
 | `where`    | no       | **object** or **array** • a subquery to bind logic variables for use in your `delete` and/or `insert` clauses               |
@@ -296,13 +296,13 @@ POST /fluree/query
 
 | Key        | Required | Value                                                                                                                                                                                                          |
 | ---------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `@context` | no       | **object** • a map of terms for the query and the result set ([See our Guide on Using Context](/docs/learn/guides/working-with-context))                                                                       |
+| `@context` | no       | **object** • a map of terms for the query and the result set ([See our Guide on Using Context](/docs/learn/working-with-data/context-patterns/))                                                                       |
 | `from`     | yes      | **string** • the name of the _existing_ ledger                                                                                                                                                                 |
-| `where`    | no       | **object** or **array** • a subquery to set query constraints and bind logic variables for use in your `select` clause [See our Reference Doc on FlureeQL Query Syntax](/docs/reference/flureeql-query-syntax) |
-| `select`   | yes      | **object** or **array** • a clause used to format the projected result set of your query [See our Reference Doc on FlureeQL Query Syntax](/docs/reference/flureeql-query-syntax)                               |
-| `groupBy`  | no       | **string** • an optional clause used to group the projected result set of your query [See our Reference Doc on FlureeQL Query Syntax](/docs/reference/flureeql-query-syntax)                                   |
+| `where`    | no       | **object** or **array** • a subquery to set query constraints and bind logic variables for use in your `select` clause [See our Reference Doc on FlureeQL Query Syntax](/docs/reference/querying/) |
+| `select`   | yes      | **object** or **array** • a clause used to format the projected result set of your query [See our Reference Doc on FlureeQL Query Syntax](/docs/reference/querying/)                               |
+| `groupBy`  | no       | **string** • an optional clause used to group the projected result set of your query [See our Reference Doc on FlureeQL Query Syntax](/docs/reference/querying/)                                   |
 | `having`   | no       | **string** or **array** • an optional clause used to filter the projected result set of your query (requires the use of `groupBy`)                                                                             |
-| `orderBy`  | no       | **string** • an optional clause used to order the projected result set of your query [See our Reference Doc on FlureeQL Query Syntax](/docs/reference/flureeql-query-syntax)                                   |
+| `orderBy`  | no       | **string** • an optional clause used to order the projected result set of your query [See our Reference Doc on FlureeQL Query Syntax](/docs/reference/querying/)                                   |
 | `opts`     | no       | **object** • an optional object used to set query options, such as the `role` or `did` identity of the querying entity                                                                                         |
 
 ### Example Request Object
@@ -391,7 +391,7 @@ POST /fluree/history
 
 | Key              | Required | Value                                                                                                                                                                                                                 |
 | ---------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `@context`       | no       | **object** • a map of terms for the history query and the result set ([See our Guide on Using Context](/docs/learn/guides/working-with-context))                                                                      |
+| `@context`       | no       | **object** • a map of terms for the history query and the result set ([See our Guide on Using Context](/docs/learn/working-with-data/context-patterns/))                                                                      |
 | `from`           | yes      | **string** • the name of the _existing_ ledger                                                                                                                                                                        |
 | `history`        | yes      | **string** or **array** • used to express the entity or entity patterns for which you are auditing history ([See the Reference section for Constraining Nodes](/docs/reference/history-syntax/#constraints-on-nodes)) |
 | `t`              | yes      | **object** • used to express individual commit/time values or ranges of commit/time values ([See the Reference section for Constraining by Time](/docs/reference/history-syntax/#constraints-on-time))                |
