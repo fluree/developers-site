@@ -1,0 +1,49 @@
+---
+title: Provenance & History
+---
+
+# Provenance & Audit Trail
+
+## Complete Event Timeline
+
+Track a shipment's journey with timestamps:
+
+```json
+{
+  "@context": { "sc": "https://supply-chain-example.com/ns/", "schema": "http://schema.org/" },
+  "select": ["?eventType", "?timestamp", "?locationName"],
+  "where": [
+    { "@id": "?event", "sc:shipment": {"@id": "sc:shipments/ship-001"}, "sc:eventType": "?eventType", "sc:timestamp": "?timestamp", "sc:location": "?loc" },
+    { "@id": "?loc", "schema:name": "?locationName" }
+  ],
+  "orderBy": "?timestamp"
+}
+```
+
+## Provenance Query
+
+Who handled this shipment?
+
+```json
+{
+  "select": ["?orgName", "?role"],
+  "where": [
+    ["union",
+      [
+        { "@id": "?shipment", "sc:sender": "?org" },
+        ["bind", "?role", "\"sender\""]
+      ],
+      [
+        { "@id": "?shipment", "sc:receiver": "?org" },
+        ["bind", "?role", "\"receiver\""]
+      ]
+    ],
+    { "@id": "?org", "schema:name": "?orgName" }
+  ],
+  "values": [["?shipment"], [{"@id": "sc:shipments/ship-001"}]]
+}
+```
+
+## Immutable Audit Trail
+
+All changes to shipment records are preserved in Fluree's history, enabling complete audit capability for compliance requirements.

@@ -1,0 +1,74 @@
+[
+  {
+    "@id": "ecommerce-catalog",
+    "@graph": [
+      {
+        "id": "ecom:categories/electronics",
+        "type": "ecom:Category",
+        "schema:name": "Electronics",
+        "schema:description": "Electronic devices and accessories"
+      },
+      {
+        "id": "ecom:categories/electronics/phones",
+        "type": "ecom:Category",
+        "schema:name": "Phones",
+        "schema:description": "Smartphones and mobile devices",
+        "ecom:parentCategory": { "id": "ecom:categories/electronics" }
+      },
+      {
+        "id": "ecom:categories/electronics/phones/smartphones",
+        "type": "ecom:Category",
+        "schema:name": "Smartphones",
+        "schema:description": "Modern smartphones with touchscreens",
+        "ecom:parentCategory": { "id": "ecom:categories/electronics/phones" }
+      },
+      {
+        "id": "ecom:categories/electronics/laptops",
+        "type": "ecom:Category",
+        "schema:name": "Laptops",
+        "schema:description": "Portable computers",
+        "ecom:parentCategory": { "id": "ecom:categories/electronics" }
+      },
+      {
+        "id": "ecom:categories/electronics/audio",
+        "type": "ecom:Category",
+        "schema:name": "Audio",
+        "schema:description": "Headphones, speakers, and audio equipment",
+        "ecom:parentCategory": { "id": "ecom:categories/electronics" }
+      },
+      {
+        "id": "ecom:categories/clothing",
+        "type": "ecom:Category",
+        "schema:name": "Clothing",
+        "schema:description": "Apparel and fashion items"
+      },
+      {
+        "id": "ecom:categories/clothing/mens",
+        "type": "ecom:Category",
+        "schema:name": "Men's Clothing",
+        "schema:description": "Clothing for men",
+        "ecom:parentCategory": { "id": "ecom:categories/clothing" }
+      },
+      {
+        "id": "ecom:categories/clothing/womens",
+        "type": "ecom:Category",
+        "schema:name": "Women's Clothing",
+        "schema:description": "Clothing for women",
+        "ecom:parentCategory": { "id": "ecom:categories/clothing" }
+      },
+      {
+        "id": "ecom:categories/home",
+        "type": "ecom:Category",
+        "schema:name": "Home & Garden",
+        "schema:description": "Home goods and garden supplies"
+      },
+      {
+        "id": "ecom:categories/home/kitchen",
+        "type": "ecom:Category",
+        "schema:name": "Kitchen",
+        "schema:description": "Kitchen appliances and tools",
+        "ecom:parentCategory": { "id": "ecom:categories/home" }
+      }
+    ]
+  }
+]

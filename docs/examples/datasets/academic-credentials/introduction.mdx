@@ -41,7 +41,7 @@ The walkthrough also demonstrates core concepts for working with Fluree and sema
 - Specifying the shape of your query results using the `select` clause
 - Using the `where` and `union` clauses with logic variables to filter query results
 
-This walkthrough assumes that you've gone through [the tutorial](/docs/learn/tutorial/introduction).
+This walkthrough assumes that you're familiar with [Fluree basics](/docs/learn/).
 
 ## Schema Overview
 
@@ -141,7 +141,7 @@ Each time you refresh or come back to this page, the Sandbox is populated anew w
 You can add or delete whatever data you like and just refresh the page to get back to Square One.
 As you read through the articles, try clicking the **Freddy Button** in the top-right of each code block to drop the code into the Sandbox for your querying convenience!
 
-The other option is to clone the [Academic Credential Dataset git repo](https://github.com/fluree/dataset-academic-credentials) and follow the instructions in the [Introduction](/docs/learn/tutorial/introduction/) tutorial to run the ledger on your machine.
+The other option is to clone the [Academic Credential Dataset git repo](https://github.com/fluree/dataset-academic-credentials) and follow the instructions in the [Getting Started](/docs/getting-started/) guide to run the ledger on your machine.
 
     { /*
 
@@ -175,7 +175,7 @@ So, just to make sure no one is missing out, navigate to the [Academic Credentia
 }
 ```
 
-The `defaultContext` is used whenever you don't include an `@context` in your query or if you opt in to merging it with your provided `@context`. Check out [this article on `@context`](/docs/learn/guides/working-with-context) if you wanna learn more.
+The `defaultContext` is used whenever you don't include an `@context` in your query or if you opt in to merging it with your provided `@context`. Check out [this article on `@context`](/docs/learn/working-with-data/context-patterns/) if you wanna learn more.
 This `defaultContext` enables you to run a query like this:
 
 <SandboxButton />

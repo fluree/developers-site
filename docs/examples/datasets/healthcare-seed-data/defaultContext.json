@@ -1,0 +1,7 @@
+{
+  "id": "@id",
+  "type": "@type",
+  "schema": "http://schema.org/",
+  "health": "https://healthcare-example.com/ns/",
+  "f": "https://ns.flur.ee/ledger#"
+}

@@ -1,0 +1,44 @@
+---
+title: Querying
+---
+
+# Querying Supply Chain Data
+
+## Track a Shipment
+
+Get all events for a shipment:
+
+```json
+{
+  "@context": { "sc": "https://supply-chain-example.com/ns/" },
+  "select": { "?event": ["sc:eventType", "sc:timestamp", "sc:location"] },
+  "where": { "@id": "?event", "sc:shipment": {"@id": "sc:shipments/ship-001"} },
+  "orderBy": "?timestamp"
+}
+```
+
+## Shipment Path
+
+Show origin to destination:
+
+```json
+{
+  "@context": { "sc": "https://supply-chain-example.com/ns/", "schema": "http://schema.org/" },
+  "select": ["?originName", "?destName", "?status"],
+  "where": [
+    { "@id": "sc:shipments/ship-001", "sc:origin": "?origin", "sc:destination": "?dest", "sc:status": "?status" },
+    { "@id": "?origin", "schema:name": "?originName" },
+    { "@id": "?dest", "schema:name": "?destName" }
+  ]
+}
+```
+
+## All Shipments by Organization
+
+```json
+{
+  "@context": { "sc": "https://supply-chain-example.com/ns/" },
+  "select": { "?shipment": ["sc:origin", "sc:destination", "sc:status"] },
+  "where": { "@id": "?shipment", "sc:sender": {"@id": "sc:orgs/acme-mfg"} }
+}
+```

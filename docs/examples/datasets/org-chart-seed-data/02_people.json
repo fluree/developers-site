@@ -1,0 +1,215 @@
+[
+  {
+    "@id": "acme-corp",
+    "@graph": [
+      {
+        "id": "org:people/sarah-chen",
+        "type": "org:Person",
+        "schema:givenName": "Sarah",
+        "schema:familyName": "Chen",
+        "schema:email": "sarah.chen@acme.com",
+        "org:title": "CEO",
+        "org:department": { "id": "org:departments/executive" },
+        "org:hireDate": "2018-03-15"
+      },
+      {
+        "id": "org:people/marcus-johnson",
+        "type": "org:Person",
+        "schema:givenName": "Marcus",
+        "schema:familyName": "Johnson",
+        "schema:email": "marcus.johnson@acme.com",
+        "org:title": "CTO",
+        "org:department": { "id": "org:departments/engineering" },
+        "org:reportsTo": { "id": "org:people/sarah-chen" },
+        "org:hireDate": "2018-06-01"
+      },
+      {
+        "id": "org:people/lisa-wong",
+        "type": "org:Person",
+        "schema:givenName": "Lisa",
+        "schema:familyName": "Wong",
+        "schema:email": "lisa.wong@acme.com",
+        "org:title": "VP of Sales",
+        "org:department": { "id": "org:departments/sales" },
+        "org:reportsTo": { "id": "org:people/sarah-chen" },
+        "org:hireDate": "2019-01-10"
+      },
+      {
+        "id": "org:people/david-kim",
+        "type": "org:Person",
+        "schema:givenName": "David",
+        "schema:familyName": "Kim",
+        "schema:email": "david.kim@acme.com",
+        "org:title": "VP of Marketing",
+        "org:department": { "id": "org:departments/marketing" },
+        "org:reportsTo": { "id": "org:people/sarah-chen" },
+        "org:hireDate": "2019-04-22"
+      },
+      {
+        "id": "org:people/rachel-green",
+        "type": "org:Person",
+        "schema:givenName": "Rachel",
+        "schema:familyName": "Green",
+        "schema:email": "rachel.green@acme.com",
+        "org:title": "HR Director",
+        "org:department": { "id": "org:departments/hr" },
+        "org:reportsTo": { "id": "org:people/sarah-chen" },
+        "org:hireDate": "2019-08-05"
+      },
+      {
+        "id": "org:people/alex-rivera",
+        "type": "org:Person",
+        "schema:givenName": "Alex",
+        "schema:familyName": "Rivera",
+        "schema:email": "alex.rivera@acme.com",
+        "org:title": "Platform Lead",
+        "org:department": { "id": "org:departments/engineering/platform" },
+        "org:reportsTo": { "id": "org:people/marcus-johnson" },
+        "org:hireDate": "2019-11-18"
+      },
+      {
+        "id": "org:people/jordan-patel",
+        "type": "org:Person",
+        "schema:givenName": "Jordan",
+        "schema:familyName": "Patel",
+        "schema:email": "jordan.patel@acme.com",
+        "org:title": "Product Lead",
+        "org:department": { "id": "org:departments/engineering/product" },
+        "org:reportsTo": { "id": "org:people/marcus-johnson" },
+        "org:hireDate": "2020-02-03"
+      },
+      {
+        "id": "org:people/emma-wilson",
+        "type": "org:Person",
+        "schema:givenName": "Emma",
+        "schema:familyName": "Wilson",
+        "schema:email": "emma.wilson@acme.com",
+        "org:title": "Senior Platform Engineer",
+        "org:department": { "id": "org:departments/engineering/platform" },
+        "org:reportsTo": { "id": "org:people/alex-rivera" },
+        "org:hireDate": "2020-05-11"
+      },
+      {
+        "id": "org:people/michael-brown",
+        "type": "org:Person",
+        "schema:givenName": "Michael",
+        "schema:familyName": "Brown",
+        "schema:email": "michael.brown@acme.com",
+        "org:title": "Platform Engineer",
+        "org:department": { "id": "org:departments/engineering/platform" },
+        "org:reportsTo": { "id": "org:people/alex-rivera" },
+        "org:hireDate": "2021-01-25"
+      },
+      {
+        "id": "org:people/sophia-martinez",
+        "type": "org:Person",
+        "schema:givenName": "Sophia",
+        "schema:familyName": "Martinez",
+        "schema:email": "sophia.martinez@acme.com",
+        "org:title": "Platform Engineer",
+        "org:department": { "id": "org:departments/engineering/platform" },
+        "org:reportsTo": { "id": "org:people/alex-rivera" },
+        "org:hireDate": "2021-06-14"
+      },
+      {
+        "id": "org:people/james-taylor",
+        "type": "org:Person",
+        "schema:givenName": "James",
+        "schema:familyName": "Taylor",
+        "schema:email": "james.taylor@acme.com",
+        "org:title": "Senior Product Engineer",
+        "org:department": { "id": "org:departments/engineering/product" },
+        "org:reportsTo": { "id": "org:people/jordan-patel" },
+        "org:hireDate": "2020-08-17"
+      },
+      {
+        "id": "org:people/olivia-garcia",
+        "type": "org:Person",
+        "schema:givenName": "Olivia",
+        "schema:familyName": "Garcia",
+        "schema:email": "olivia.garcia@acme.com",
+        "org:title": "Product Engineer",
+        "org:department": { "id": "org:departments/engineering/product" },
+        "org:reportsTo": { "id": "org:people/jordan-patel" },
+        "org:hireDate": "2021-03-29"
+      },
+      {
+        "id": "org:people/william-anderson",
+        "type": "org:Person",
+        "schema:givenName": "William",
+        "schema:familyName": "Anderson",
+        "schema:email": "william.anderson@acme.com",
+        "org:title": "Product Engineer",
+        "org:department": { "id": "org:departments/engineering/product" },
+        "org:reportsTo": { "id": "org:people/jordan-patel" },
+        "org:hireDate": "2022-01-10"
+      },
+      {
+        "id": "org:people/ava-thomas",
+        "type": "org:Person",
+        "schema:givenName": "Ava",
+        "schema:familyName": "Thomas",
+        "schema:email": "ava.thomas@acme.com",
+        "org:title": "Sales Manager",
+        "org:department": { "id": "org:departments/sales" },
+        "org:reportsTo": { "id": "org:people/lisa-wong" },
+        "org:hireDate": "2020-04-06"
+      },
+      {
+        "id": "org:people/ethan-jackson",
+        "type": "org:Person",
+        "schema:givenName": "Ethan",
+        "schema:familyName": "Jackson",
+        "schema:email": "ethan.jackson@acme.com",
+        "org:title": "Account Executive",
+        "org:department": { "id": "org:departments/sales" },
+        "org:reportsTo": { "id": "org:people/ava-thomas" },
+        "org:hireDate": "2021-02-15"
+      },
+      {
+        "id": "org:people/mia-white",
+        "type": "org:Person",
+        "schema:givenName": "Mia",
+        "schema:familyName": "White",
+        "schema:email": "mia.white@acme.com",
+        "org:title": "Account Executive",
+        "org:department": { "id": "org:departments/sales" },
+        "org:reportsTo": { "id": "org:people/ava-thomas" },
+        "org:hireDate": "2021-09-20"
+      },
+      {
+        "id": "org:people/noah-harris",
+        "type": "org:Person",
+        "schema:givenName": "Noah",
+        "schema:familyName": "Harris",
+        "schema:email": "noah.harris@acme.com",
+        "org:title": "Content Manager",
+        "org:department": { "id": "org:departments/marketing" },
+        "org:reportsTo": { "id": "org:people/david-kim" },
+        "org:hireDate": "2020-07-13"
+      },
+      {
+        "id": "org:people/isabella-clark",
+        "type": "org:Person",
+        "schema:givenName": "Isabella",
+        "schema:familyName": "Clark",
+        "schema:email": "isabella.clark@acme.com",
+        "org:title": "Marketing Specialist",
+        "org:department": { "id": "org:departments/marketing" },
+        "org:reportsTo": { "id": "org:people/noah-harris" },
+        "org:hireDate": "2021-11-08"
+      },
+      {
+        "id": "org:people/liam-lewis",
+        "type": "org:Person",
+        "schema:givenName": "Liam",
+        "schema:familyName": "Lewis",
+        "schema:email": "liam.lewis@acme.com",
+        "org:title": "HR Coordinator",
+        "org:department": { "id": "org:departments/hr" },
+        "org:reportsTo": { "id": "org:people/rachel-green" },
+        "org:hireDate": "2020-10-05"
+      }
+    ]
+  }
+]

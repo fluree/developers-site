@@ -1,0 +1,40 @@
+---
+title: Introduction
+---
+
+import { FlureeMermaid } from "@site/src/components/Mermaid/FlureeMermaid.jsx";
+import Admonition from "@theme/Admonition";
+
+# Knowledge Base / Wiki
+
+This example demonstrates a company wiki with articles, tags, citations, and version history—showcasing Fluree's temporal query capabilities.
+
+## Schema Overview
+
+<FlureeMermaid
+  chart={`
+  graph LR
+    a(Article) -->|author| auth(Author)
+    a -->|tags| t(Tag)
+    a -->|cites| a2(Article)
+  `}
+/>
+
+### Entities
+
+| Entity | Description |
+|--------|-------------|
+| **Article** | Wiki page with content, timestamps |
+| **Author** | Person who wrote the article |
+| **Tag** | Category labels for articles |
+| **Citation** | Article-to-article references |
+
+## Key Features
+
+- **Citations**: Articles can reference other articles, creating a knowledge graph
+- **Version History**: All changes are tracked with timestamps
+- **Time-Travel**: Query the wiki as it existed at any point in time
+
+<Admonition type="info">
+  The citation graph enables powerful queries like "find all articles that cite this one" or "show the citation chain."
+</Admonition>

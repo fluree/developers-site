@@ -1,0 +1,81 @@
+[
+  {
+    "@id": "company-wiki",
+    "@graph": [
+      {
+        "id": "wiki:authors/alice",
+        "type": "wiki:Author",
+        "schema:name": "Alice Chen",
+        "schema:email": "alice@company.com"
+      },
+      {
+        "id": "wiki:authors/bob",
+        "type": "wiki:Author",
+        "schema:name": "Bob Smith",
+        "schema:email": "bob@company.com"
+      },
+      {
+        "id": "wiki:tags/onboarding",
+        "type": "wiki:Tag",
+        "schema:name": "onboarding"
+      },
+      {
+        "id": "wiki:tags/engineering",
+        "type": "wiki:Tag",
+        "schema:name": "engineering"
+      },
+      {
+        "id": "wiki:tags/hr",
+        "type": "wiki:Tag",
+        "schema:name": "hr"
+      },
+      {
+        "id": "wiki:tags/architecture",
+        "type": "wiki:Tag",
+        "schema:name": "architecture"
+      },
+      {
+        "id": "wiki:articles/welcome",
+        "type": "wiki:Article",
+        "schema:name": "Welcome to the Company",
+        "wiki:content": "Welcome to our team! This guide will help you get started...",
+        "wiki:author": { "id": "wiki:authors/alice" },
+        "wiki:tags": [{ "id": "wiki:tags/onboarding" }, { "id": "wiki:tags/hr" }],
+        "wiki:createdAt": "2024-01-15",
+        "wiki:modifiedAt": "2024-02-10"
+      },
+      {
+        "id": "wiki:articles/dev-setup",
+        "type": "wiki:Article",
+        "schema:name": "Developer Environment Setup",
+        "wiki:content": "Follow these steps to set up your development environment...",
+        "wiki:author": { "id": "wiki:authors/bob" },
+        "wiki:tags": [{ "id": "wiki:tags/onboarding" }, { "id": "wiki:tags/engineering" }],
+        "wiki:cites": [{ "id": "wiki:articles/welcome" }],
+        "wiki:createdAt": "2024-01-20",
+        "wiki:modifiedAt": "2024-03-05"
+      },
+      {
+        "id": "wiki:articles/api-guide",
+        "type": "wiki:Article",
+        "schema:name": "API Design Guidelines",
+        "wiki:content": "Our API follows RESTful conventions with these standards...",
+        "wiki:author": { "id": "wiki:authors/bob" },
+        "wiki:tags": [{ "id": "wiki:tags/engineering" }, { "id": "wiki:tags/architecture" }],
+        "wiki:createdAt": "2024-02-01",
+        "wiki:modifiedAt": "2024-02-01"
+      },
+      {
+        "id": "wiki:articles/microservices",
+        "type": "wiki:Article",
+        "schema:name": "Microservices Architecture",
+        "wiki:content": "Our system uses a microservices architecture...",
+        "wiki:author": { "id": "wiki:authors/alice" },
+        "wiki:tags": [{ "id": "wiki:tags/architecture" }, { "id": "wiki:tags/engineering" }],
+        "wiki:cites": [{ "id": "wiki:articles/api-guide" }],
+        "wiki:createdAt": "2024-02-15",
+        "wiki:modifiedAt": "2024-03-01"
+      }
+    ]
+  }
+]
