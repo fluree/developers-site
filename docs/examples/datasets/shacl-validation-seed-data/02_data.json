@@ -1,0 +1,22 @@
+[
+  {
+    "@id": "validation-data",
+    "@graph": [
+      {
+        "id": "ex:people/valid-person",
+        "type": "ex:Person",
+        "schema:givenName": "Alice",
+        "schema:familyName": "Smith",
+        "schema:email": "alice@example.com",
+        "ex:age": 30
+      },
+      {
+        "id": "ex:orders/valid-order",
+        "type": "ex:Order",
+        "ex:customer": { "id": "ex:people/valid-person" },
+        "ex:totalAmount": 99.99,
+        "ex:orderDate": "2024-03-15"
+      }
+    ]
+  }
+]

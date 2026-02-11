@@ -1,0 +1,32 @@
+---
+title: Introduction
+---
+
+# REST API Patterns
+
+This guide demonstrates common HTTP API operations with Fluree, showing curl examples for all CRUD operations.
+
+## Base URL
+
+All examples assume Fluree is running at:
+```
+http://localhost:58090/fluree
+```
+
+## Available Endpoints
+
+| Endpoint | Method | Purpose |
+|----------|--------|---------|
+| `/create` | POST | Create a new ledger |
+| `/transact` | POST | Insert/update/delete data |
+| `/query` | POST | Query data |
+| `/history` | POST | Query historical data |
+
+## Authentication
+
+For secured deployments, include an authorization header:
+```sh
+-H "Authorization: Bearer YOUR_TOKEN"
+```
+
+See the detailed examples in the following pages.

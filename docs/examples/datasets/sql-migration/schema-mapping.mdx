@@ -1,0 +1,78 @@
+---
+title: Schema Mapping
+---
+
+# Schema Mapping: SQL to Graph
+
+## SQL Table → Fluree Class
+
+**SQL:**
+```sql
+CREATE TABLE users (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(100),
+  email VARCHAR(100) UNIQUE
+);
+```
+
+**Fluree:**
+```json
+{
+  "insert": {
+    "id": "ex:users/1",
+    "type": "ex:User",
+    "schema:name": "Alice",
+    "schema:email": "alice@example.com"
+  }
+}
+```
+
+## Foreign Keys → Relationships
+
+**SQL:**
+```sql
+CREATE TABLE orders (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER REFERENCES users(id),
+  total DECIMAL
+);
+```
+
+**Fluree:**
+```json
+{
+  "insert": {
+    "id": "ex:orders/1",
+    "type": "ex:Order",
+    "ex:customer": { "id": "ex:users/1" },
+    "ex:total": 99.99
+  }
+}
+```
+
+No foreign key constraints—relationships are direct references.
+
+## Join Table → Multi-valued Property
+
+**SQL (many-to-many):**
+```sql
+CREATE TABLE user_roles (
+  user_id INTEGER REFERENCES users(id),
+  role_id INTEGER REFERENCES roles(id)
+);
+```
+
+**Fluree:**
+```json
+{
+  "insert": {
+    "id": "ex:users/1",
+    "ex:roles": [
+      { "id": "ex:roles/admin" },
+      { "id": "ex:roles/editor" }
+    ]
+  }
+}
+```
+
+No join table needed—multi-valued properties handle many-to-many naturally.

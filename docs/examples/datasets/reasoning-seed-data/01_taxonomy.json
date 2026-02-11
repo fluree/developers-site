@@ -1,0 +1,113 @@
+[
+  {
+    "@id": "biology-taxonomy",
+    "@graph": [
+      {
+        "id": "bio:classes/Animal",
+        "type": ["rdfs:Class", "bio:TaxonomicClass"],
+        "rdfs:label": "Animal",
+        "rdfs:comment": "Kingdom Animalia - multicellular eukaryotic organisms"
+      },
+      {
+        "id": "bio:classes/Mammal",
+        "type": ["rdfs:Class", "bio:TaxonomicClass"],
+        "rdfs:label": "Mammal",
+        "rdfs:subClassOf": { "id": "bio:classes/Animal" },
+        "rdfs:comment": "Warm-blooded vertebrates with hair and mammary glands"
+      },
+      {
+        "id": "bio:classes/Bird",
+        "type": ["rdfs:Class", "bio:TaxonomicClass"],
+        "rdfs:label": "Bird",
+        "rdfs:subClassOf": { "id": "bio:classes/Animal" },
+        "rdfs:comment": "Warm-blooded vertebrates with feathers and beaks"
+      },
+      {
+        "id": "bio:classes/Reptile",
+        "type": ["rdfs:Class", "bio:TaxonomicClass"],
+        "rdfs:label": "Reptile",
+        "rdfs:subClassOf": { "id": "bio:classes/Animal" },
+        "rdfs:comment": "Cold-blooded vertebrates with scales"
+      },
+      {
+        "id": "bio:classes/Carnivore",
+        "type": ["rdfs:Class", "bio:TaxonomicClass"],
+        "rdfs:label": "Carnivore",
+        "rdfs:subClassOf": { "id": "bio:classes/Mammal" },
+        "rdfs:comment": "Mammals that primarily eat meat"
+      },
+      {
+        "id": "bio:classes/Herbivore",
+        "type": ["rdfs:Class", "bio:TaxonomicClass"],
+        "rdfs:label": "Herbivore",
+        "rdfs:subClassOf": { "id": "bio:classes/Mammal" },
+        "rdfs:comment": "Mammals that primarily eat plants"
+      },
+      {
+        "id": "bio:classes/Feline",
+        "type": ["rdfs:Class", "bio:TaxonomicClass"],
+        "rdfs:label": "Feline",
+        "rdfs:subClassOf": { "id": "bio:classes/Carnivore" },
+        "rdfs:comment": "Cat family (Felidae)"
+      },
+      {
+        "id": "bio:classes/Canine",
+        "type": ["rdfs:Class", "bio:TaxonomicClass"],
+        "rdfs:label": "Canine",
+        "rdfs:subClassOf": { "id": "bio:classes/Carnivore" },
+        "rdfs:comment": "Dog family (Canidae)"
+      },
+      {
+        "id": "bio:classes/Primate",
+        "type": ["rdfs:Class", "bio:TaxonomicClass"],
+        "rdfs:label": "Primate",
+        "rdfs:subClassOf": { "id": "bio:classes/Mammal" },
+        "rdfs:comment": "Order Primates including apes and monkeys"
+      },
+      {
+        "id": "bio:classes/Rodent",
+        "type": ["rdfs:Class", "bio:TaxonomicClass"],
+        "rdfs:label": "Rodent",
+        "rdfs:subClassOf": { "id": "bio:classes/Mammal" },
+        "rdfs:comment": "Order Rodentia"
+      },
+      {
+        "id": "bio:classes/Raptor",
+        "type": ["rdfs:Class", "bio:TaxonomicClass"],
+        "rdfs:label": "Raptor",
+        "rdfs:subClassOf": { "id": "bio:classes/Bird" },
+        "rdfs:comment": "Birds of prey"
+      },
+      {
+        "id": "bio:habitats/Forest",
+        "type": "bio:Habitat",
+        "schema:name": "Forest",
+        "schema:description": "Wooded areas with dense tree coverage"
+      },
+      {
+        "id": "bio:habitats/Grassland",
+        "type": "bio:Habitat",
+        "schema:name": "Grassland",
+        "schema:description": "Open areas dominated by grasses"
+      },
+      {
+        "id": "bio:habitats/Arctic",
+        "type": "bio:Habitat",
+        "schema:name": "Arctic",
+        "schema:description": "Polar regions with extreme cold"
+      },
+      {
+        "id": "bio:habitats/Ocean",
+        "type": "bio:Habitat",
+        "schema:name": "Ocean",
+        "schema:description": "Marine environments"
+      },
+      {
+        "id": "bio:habitats/Desert",
+        "type": "bio:Habitat",
+        "schema:name": "Desert",
+        "schema:description": "Arid regions with minimal rainfall"
+      }
+    ]
+  }
+]

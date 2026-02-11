@@ -1,0 +1,52 @@
+[
+  {
+    "@id": "validation-shapes",
+    "@graph": [
+      {
+        "id": "ex:PersonShape",
+        "type": "sh:NodeShape",
+        "sh:targetClass": { "id": "ex:Person" },
+        "sh:property": [
+          {
+            "sh:path": { "id": "schema:givenName" },
+            "sh:minCount": 1,
+            "sh:maxCount": 1,
+            "sh:datatype": { "id": "xsd:string" },
+            "sh:message": "Person must have exactly one given name"
+          },
+          {
+            "sh:path": { "id": "schema:email" },
+            "sh:minCount": 1,
+            "sh:pattern": "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$",
+            "sh:message": "Must have a valid email address"
+          },
+          {
+            "sh:path": { "id": "ex:age" },
+            "sh:minInclusive": 0,
+            "sh:maxInclusive": 150,
+            "sh:message": "Age must be between 0 and 150"
+          }
+        ]
+      },
+      {
+        "id": "ex:OrderShape",
+        "type": "sh:NodeShape",
+        "sh:targetClass": { "id": "ex:Order" },
+        "sh:property": [
+          {
+            "sh:path": { "id": "ex:customer" },
+            "sh:minCount": 1,
+            "sh:class": { "id": "ex:Person" },
+            "sh:message": "Order must have a customer"
+          },
+          {
+            "sh:path": { "id": "ex:totalAmount" },
+            "sh:minCount": 1,
+            "sh:minExclusive": 0,
+            "sh:message": "Total amount must be greater than 0"
+          }
+        ]
+      }
+    ]
+  }
+]

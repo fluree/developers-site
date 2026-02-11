@@ -1,0 +1,76 @@
+---
+title: Validation Errors
+---
+
+# Handling Validation Errors
+
+## Invalid Data Examples
+
+### Missing Required Field
+
+This transaction will fail—no email:
+
+```json
+{
+  "insert": {
+    "id": "ex:people/invalid",
+    "type": "ex:Person",
+    "schema:givenName": "Bob"
+  }
+}
+```
+
+**Error:** "Must have a valid email address"
+
+### Invalid Value Range
+
+This transaction will fail—age too high:
+
+```json
+{
+  "insert": {
+    "id": "ex:people/invalid-age",
+    "type": "ex:Person",
+    "schema:givenName": "Ancient",
+    "schema:email": "ancient@example.com",
+    "ex:age": 200
+  }
+}
+```
+
+**Error:** "Age must be between 0 and 150"
+
+### Invalid Pattern
+
+This transaction will fail—bad email format:
+
+```json
+{
+  "insert": {
+    "id": "ex:people/bad-email",
+    "type": "ex:Person",
+    "schema:givenName": "Test",
+    "schema:email": "not-an-email"
+  }
+}
+```
+
+**Error:** "Must have a valid email address"
+
+## Valid Data Example
+
+This transaction succeeds:
+
+```json
+{
+  "insert": {
+    "id": "ex:people/valid",
+    "type": "ex:Person",
+    "schema:givenName": "Alice",
+    "schema:email": "alice@example.com",
+    "ex:age": 30
+  }
+}
+```
+
+SHACL validation ensures data quality at the database level.

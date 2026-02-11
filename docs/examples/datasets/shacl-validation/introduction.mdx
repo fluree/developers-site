@@ -1,0 +1,40 @@
+---
+title: Introduction
+---
+
+import Admonition from "@theme/Admonition";
+
+# SHACL Validation
+
+This example demonstrates data validation using SHACL (Shapes Constraint Language). Define shapes that describe valid data, and Fluree will reject transactions that violate those constraints.
+
+## What is SHACL?
+
+SHACL is a W3C standard for describing data shapes. It allows you to:
+
+- **Require properties**: A Person must have an email
+- **Constrain values**: Age must be between 0 and 150
+- **Validate patterns**: Email must match a regex
+- **Enforce cardinality**: Exactly one given name
+- **Check types**: Customer must be a Person
+
+## Example Shape
+
+```json
+{
+  "id": "ex:PersonShape",
+  "type": "sh:NodeShape",
+  "sh:targetClass": { "id": "ex:Person" },
+  "sh:property": [
+    {
+      "sh:path": { "id": "schema:email" },
+      "sh:minCount": 1,
+      "sh:pattern": "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"
+    }
+  ]
+}
+```
+
+<Admonition type="info">
+  SHACL validation happens at transaction time—invalid data is rejected before it enters the ledger.
+</Admonition>

@@ -1,0 +1,76 @@
+[
+  {
+    "@id": "biology-taxonomy",
+    "@graph": [
+      {
+        "id": "bio:properties/eats",
+        "type": ["rdf:Property", "owl:ObjectProperty"],
+        "rdfs:label": "eats",
+        "rdfs:comment": "Indicates that one organism eats another"
+      },
+      {
+        "id": "bio:properties/eatenBy",
+        "type": ["rdf:Property", "owl:ObjectProperty"],
+        "rdfs:label": "eaten by",
+        "rdfs:comment": "Inverse of eats - indicates this organism is eaten by another",
+        "owl:inverseOf": { "id": "bio:properties/eats" }
+      },
+      {
+        "id": "bio:properties/relatedTo",
+        "type": ["rdf:Property", "owl:ObjectProperty", "owl:SymmetricProperty"],
+        "rdfs:label": "related to",
+        "rdfs:comment": "Symmetric relationship indicating biological similarity"
+      },
+      {
+        "id": "bio:properties/ancestorOf",
+        "type": ["rdf:Property", "owl:ObjectProperty", "owl:TransitiveProperty"],
+        "rdfs:label": "ancestor of",
+        "rdfs:comment": "Transitive evolutionary ancestry"
+      },
+      {
+        "id": "bio:relationships/lion-eats-deer",
+        "type": "bio:PredatorPrey",
+        "bio:predator": { "id": "bio:organisms/lion" },
+        "bio:prey": { "id": "bio:organisms/deer" }
+      },
+      {
+        "id": "bio:relationships/wolf-eats-deer",
+        "type": "bio:PredatorPrey",
+        "bio:predator": { "id": "bio:organisms/wolf" },
+        "bio:prey": { "id": "bio:organisms/deer" }
+      },
+      {
+        "id": "bio:relationships/eagle-eats-mouse",
+        "type": "bio:PredatorPrey",
+        "bio:predator": { "id": "bio:organisms/eagle" },
+        "bio:prey": { "id": "bio:organisms/mouse" }
+      },
+      {
+        "id": "bio:relationships/hawk-eats-mouse",
+        "type": "bio:PredatorPrey",
+        "bio:predator": { "id": "bio:organisms/hawk" },
+        "bio:prey": { "id": "bio:organisms/mouse" }
+      },
+      {
+        "id": "bio:relationships/cobra-eats-mouse",
+        "type": "bio:PredatorPrey",
+        "bio:predator": { "id": "bio:organisms/cobra" },
+        "bio:prey": { "id": "bio:organisms/mouse" }
+      },
+      {
+        "id": "bio:relationships/lion-tiger-related",
+        "type": "bio:BiologicalRelationship",
+        "bio:organism1": { "id": "bio:organisms/lion" },
+        "bio:organism2": { "id": "bio:organisms/tiger" },
+        "bio:relationshipType": "same genus"
+      },
+      {
+        "id": "bio:relationships/chimp-gorilla-related",
+        "type": "bio:BiologicalRelationship",
+        "bio:organism1": { "id": "bio:organisms/chimpanzee" },
+        "bio:organism2": { "id": "bio:organisms/gorilla" },
+        "bio:relationshipType": "same family"
+      }
+    ]
+  }
+]

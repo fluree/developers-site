@@ -1,0 +1,70 @@
+---
+title: History Queries
+---
+
+# Time-Travel Queries
+
+## Point-in-Time Query
+
+See account balance as of a specific date:
+
+```json
+{
+  "@context": { "fin": "https://finance-example.com/ns/", "schema": "http://schema.org/" },
+  "select": { "?account": ["schema:name", "fin:balance"] },
+  "where": { "@id": "?account", "@type": "fin:Account" },
+  "opts": {
+    "t": "2024-03-01"
+  }
+}
+```
+
+## Entity History
+
+Get all changes to an account:
+
+```json
+{
+  "@context": { "fin": "https://finance-example.com/ns/" },
+  "history": { "@id": "fin:accounts/checking-001" },
+  "opts": {
+    "showAssertions": true
+  }
+}
+```
+
+Returns every assertion and retraction with timestamps.
+
+## Balance Over Time
+
+Track balance changes:
+
+```json
+{
+  "@context": { "fin": "https://finance-example.com/ns/" },
+  "history": { "@id": "fin:accounts/checking-001" },
+  "select": ["fin:balance"],
+  "opts": {
+    "t": { "from": "2024-01-01", "to": "2024-03-31" }
+  }
+}
+```
+
+## Transaction Audit
+
+All transactions for an account:
+
+```json
+{
+  "@context": { "fin": "https://finance-example.com/ns/" },
+  "select": { "?tx": ["fin:amount", "fin:description", "fin:date"] },
+  "where": { "@id": "?tx", "fin:account": {"@id": "fin:accounts/checking-001"} },
+  "orderBy": [{"desc": "?date"}]
+}
+```
+
+## Compare Points in Time
+
+See what changed between two dates by running the same query with different `t` values and comparing results.
+
+The immutable ledger ensures complete auditability for compliance requirements.

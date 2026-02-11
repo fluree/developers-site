@@ -1,0 +1,273 @@
+---
+title: Search Queries
+---
+
+import Admonition from "@theme/Admonition";
+
+# Full-Text Search Queries
+
+This page demonstrates how to perform text searches and combine them with graph queries.
+
+## Basic Text Search
+
+Search for recipes containing "chocolate":
+
+```json
+{
+  "@context": {
+    "f": "https://ns.flur.ee/ledger#",
+    "schema": "http://schema.org/",
+    "recipe": "https://recipe-example.com/ns/"
+  },
+  "select": {
+    "?recipe": ["schema:name", "schema:description"]
+  },
+  "where": [
+    { "@id": "?recipe", "@type": "recipe:Recipe" },
+    { "@id": "?recipe", "f:fullText": "chocolate" }
+  ]
+}
+```
+
+This searches all indexed text fields for "chocolate" and returns matching recipes.
+
+## Search with Relevance Scores
+
+Get relevance scores to understand why results ranked:
+
+```json
+{
+  "@context": {
+    "f": "https://ns.flur.ee/ledger#",
+    "schema": "http://schema.org/",
+    "recipe": "https://recipe-example.com/ns/"
+  },
+  "select": ["?name", "?score"],
+  "where": [
+    { "@id": "?recipe", "@type": "recipe:Recipe", "schema:name": "?name" },
+    { "@id": "?recipe", "f:fullText": "?search" },
+    { "@id": "?search", "f:query": "pasta", "f:score": "?score" }
+  ],
+  "orderBy": [{"desc": "?score"}]
+}
+```
+
+Higher scores indicate better matches.
+
+## Search Specific Fields
+
+Search only in the ingredients field:
+
+```json
+{
+  "@context": {
+    "f": "https://ns.flur.ee/ledger#",
+    "schema": "http://schema.org/",
+    "recipe": "https://recipe-example.com/ns/"
+  },
+  "select": {
+    "?recipe": ["schema:name", "recipe:ingredients"]
+  },
+  "where": [
+    { "@id": "?recipe", "@type": "recipe:Recipe", "recipe:ingredients": "?ingredients" },
+    { "@id": "?ingredients", "f:fullText": "garlic" }
+  ]
+}
+```
+
+This finds recipes where "garlic" appears in the ingredients.
+
+## Multi-Term Search
+
+Search for multiple terms:
+
+```json
+{
+  "@context": {
+    "f": "https://ns.flur.ee/ledger#",
+    "schema": "http://schema.org/",
+    "recipe": "https://recipe-example.com/ns/"
+  },
+  "select": {
+    "?recipe": ["schema:name"]
+  },
+  "where": [
+    { "@id": "?recipe", "@type": "recipe:Recipe" },
+    { "@id": "?recipe", "f:fullText": "creamy cheese" }
+  ]
+}
+```
+
+Recipes containing both "creamy" and "cheese" will rank highest.
+
+## Combine Search with Graph Filters
+
+Find vegan recipes mentioning "tofu":
+
+```json
+{
+  "@context": {
+    "f": "https://ns.flur.ee/ledger#",
+    "schema": "http://schema.org/",
+    "recipe": "https://recipe-example.com/ns/"
+  },
+  "select": {
+    "?recipe": ["schema:name", "schema:description"]
+  },
+  "where": [
+    { "@id": "?recipe", "@type": "recipe:Recipe", "recipe:dietaryRestrictions": {"@id": "recipe:diets/vegan"} },
+    { "@id": "?recipe", "f:fullText": "tofu" }
+  ]
+}
+```
+
+This uses both:
+- Graph filter: `recipe:dietaryRestrictions` = vegan
+- Text search: contains "tofu"
+
+## Search by Cuisine
+
+Find Italian recipes with "tomato":
+
+```json
+{
+  "@context": {
+    "f": "https://ns.flur.ee/ledger#",
+    "schema": "http://schema.org/",
+    "recipe": "https://recipe-example.com/ns/"
+  },
+  "select": {
+    "?recipe": ["schema:name", "recipe:cuisine"]
+  },
+  "where": [
+    { "@id": "?recipe", "@type": "recipe:Recipe", "recipe:cuisine": {"@id": "recipe:cuisines/italian"} },
+    { "@id": "?recipe", "f:fullText": "tomato" }
+  ]
+}
+```
+
+## Stemming Effects
+
+Fluree's text search includes stemming—word variations are matched:
+
+```json
+{
+  "where": { "@id": "?recipe", "f:fullText": "baking" }
+}
+```
+
+This matches:
+- "bake"
+- "baked"
+- "baking"
+- "baker"
+
+<Admonition type="info">
+  Stemming helps users find results even if they don't use the exact word form in the document.
+</Admonition>
+
+## Quick Recipe Finder
+
+Find recipes under 30 minutes prep that contain specific ingredients:
+
+```json
+{
+  "@context": {
+    "f": "https://ns.flur.ee/ledger#",
+    "schema": "http://schema.org/",
+    "recipe": "https://recipe-example.com/ns/"
+  },
+  "select": {
+    "?recipe": ["schema:name", "recipe:prepTime", "recipe:cookTime"]
+  },
+  "where": [
+    { "@id": "?recipe", "@type": "recipe:Recipe", "recipe:prepTime": "?prep" },
+    ["filter", "(< ?prep 30)"],
+    { "@id": "?recipe", "f:fullText": "avocado lime" }
+  ]
+}
+```
+
+## Dietary-Friendly Search
+
+Find gluten-free recipes with specific ingredients:
+
+```json
+{
+  "@context": {
+    "f": "https://ns.flur.ee/ledger#",
+    "schema": "http://schema.org/",
+    "recipe": "https://recipe-example.com/ns/"
+  },
+  "select": {
+    "?recipe": ["schema:name"],
+    "?diet": []
+  },
+  "where": [
+    { "@id": "?recipe", "@type": "recipe:Recipe", "recipe:dietaryRestrictions": "?restriction" },
+    { "@id": "?restriction", "schema:name": "?diet" },
+    { "@id": "?recipe", "f:fullText": "noodles" }
+  ]
+}
+```
+
+## Author's Recipes Search
+
+Find Chef Lee's recipes that mention "soy sauce":
+
+```json
+{
+  "@context": {
+    "f": "https://ns.flur.ee/ledger#",
+    "schema": "http://schema.org/",
+    "recipe": "https://recipe-example.com/ns/"
+  },
+  "select": {
+    "?recipe": ["schema:name", "recipe:instructions"]
+  },
+  "where": [
+    { "@id": "?recipe", "@type": "recipe:Recipe", "recipe:author": {"@id": "recipe:authors/chef-lee"} },
+    { "@id": "?recipe", "f:fullText": "soy sauce" }
+  ]
+}
+```
+
+## Negative Search (Exclude Terms)
+
+Find chocolate recipes that don't mention "nuts":
+
+```json
+{
+  "@context": {
+    "f": "https://ns.flur.ee/ledger#",
+    "schema": "http://schema.org/",
+    "recipe": "https://recipe-example.com/ns/"
+  },
+  "select": {
+    "?recipe": ["schema:name"]
+  },
+  "where": [
+    { "@id": "?recipe", "@type": "recipe:Recipe" },
+    { "@id": "?recipe", "f:fullText": "chocolate" },
+    {
+      "minus": { "@id": "?recipe", "f:fullText": "nuts" }
+    }
+  ]
+}
+```
+
+## Summary
+
+Full-text search patterns:
+
+| Pattern | Use Case |
+|---------|----------|
+| Basic search | Find documents containing term |
+| Field-specific | Search only ingredients, description, etc. |
+| Multi-term | Documents with multiple terms rank higher |
+| With graph filters | Combine text + relationship constraints |
+| Stemming | Match word variations automatically |
+| Negative search | Exclude documents with certain terms |
+| Relevance scores | Understand ranking factors |
+
+Full-text search transforms Fluree from a graph database into a searchable knowledge base—perfect for applications that need both structured queries and freeform search.

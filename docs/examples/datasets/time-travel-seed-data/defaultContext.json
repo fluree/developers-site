@@ -1,0 +1,7 @@
+{
+  "id": "@id",
+  "type": "@type",
+  "schema": "http://schema.org/",
+  "fin": "https://finance-example.com/ns/",
+  "f": "https://ns.flur.ee/ledger#"
+}

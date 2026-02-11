@@ -1,0 +1,81 @@
+---
+title: Query Comparison
+---
+
+# Query Comparison: SQL vs FlureeQL
+
+## Simple SELECT
+
+**SQL:**
+```sql
+SELECT name, email FROM users WHERE id = 1;
+```
+
+**FlureeQL:**
+```json
+{
+  "select": { "?user": ["schema:name", "schema:email"] },
+  "where": { "@id": "ex:users/1", "schema:name": "?name", "schema:email": "?email" }
+}
+```
+
+## JOIN
+
+**SQL:**
+```sql
+SELECT u.name, o.total
+FROM users u
+JOIN orders o ON u.id = o.user_id;
+```
+
+**FlureeQL:**
+```json
+{
+  "select": ["?userName", "?total"],
+  "where": [
+    { "@id": "?order", "ex:customer": "?user", "ex:total": "?total" },
+    { "@id": "?user", "schema:name": "?userName" }
+  ]
+}
+```
+
+No explicit JOIN—graph traversal is natural.
+
+## GROUP BY with COUNT
+
+**SQL:**
+```sql
+SELECT user_id, COUNT(*)
+FROM orders
+GROUP BY user_id;
+```
+
+**FlureeQL:**
+```json
+{
+  "select": ["?user", "(count ?order)"],
+  "where": { "@id": "?order", "ex:customer": "?user" },
+  "groupBy": "?user"
+}
+```
+
+## Subquery
+
+**SQL:**
+```sql
+SELECT * FROM users
+WHERE id IN (SELECT user_id FROM orders WHERE total > 100);
+```
+
+**FlureeQL:**
+```json
+{
+  "select": { "?user": ["*"] },
+  "where": [
+    { "@id": "?order", "ex:customer": "?user", "ex:total": "?total" },
+    ["filter", "(> ?total 100)"]
+  ]
+}
+```
+
+The graph model eliminates the need for subqueries.
