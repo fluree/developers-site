@@ -1,0 +1,8 @@
+{
+  "id": "@id",
+  "type": "@type",
+  "xsd": "http://www.w3.org/2001/XMLSchema#",
+  "schema": "http://schema.org/",
+  "recipe": "https://recipe-example.com/ns/",
+  "f": "https://ns.flur.ee/ledger#"
+}

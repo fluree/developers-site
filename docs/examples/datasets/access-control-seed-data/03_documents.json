@@ -1,0 +1,98 @@
+[
+  {
+    "@id": "multi-tenant-app",
+    "@graph": [
+      {
+        "id": "app:docs/acme-roadmap",
+        "type": "app:Document",
+        "schema:name": "2024 Product Roadmap",
+        "schema:description": "Strategic product plans for the year",
+        "app:organization": { "id": "app:orgs/acme" },
+        "app:author": { "id": "app:users/alice" },
+        "app:visibility": "internal",
+        "app:createdAt": "2024-01-10",
+        "app:content": "Q1: Launch mobile app. Q2: API v3. Q3: Enterprise features. Q4: International expansion."
+      },
+      {
+        "id": "app:docs/acme-budget",
+        "type": "app:Document",
+        "schema:name": "2024 Budget Report",
+        "schema:description": "Confidential financial projections",
+        "app:organization": { "id": "app:orgs/acme" },
+        "app:author": { "id": "app:users/frank" },
+        "app:visibility": "confidential",
+        "app:department": "Finance",
+        "app:createdAt": "2024-01-05",
+        "app:content": "Total budget: $5M. Engineering: $2M. Marketing: $1.5M. Operations: $1.5M."
+      },
+      {
+        "id": "app:docs/acme-hr-policies",
+        "type": "app:Document",
+        "schema:name": "Employee Handbook",
+        "schema:description": "HR policies and procedures",
+        "app:organization": { "id": "app:orgs/acme" },
+        "app:author": { "id": "app:users/grace" },
+        "app:visibility": "internal",
+        "app:department": "HR",
+        "app:createdAt": "2024-01-02",
+        "app:content": "Welcome to ACME! This handbook covers our policies on PTO, benefits, and workplace conduct."
+      },
+      {
+        "id": "app:docs/acme-salaries",
+        "type": "app:Document",
+        "schema:name": "Salary Bands 2024",
+        "schema:description": "Confidential compensation data",
+        "app:organization": { "id": "app:orgs/acme" },
+        "app:author": { "id": "app:users/grace" },
+        "app:visibility": "confidential",
+        "app:department": "HR",
+        "app:createdAt": "2024-01-08",
+        "app:content": "Engineering L1: $80k-$100k. L2: $100k-$130k. L3: $130k-$160k. L4: $160k-$200k."
+      },
+      {
+        "id": "app:docs/acme-public-blog",
+        "type": "app:Document",
+        "schema:name": "Company Blog Post",
+        "schema:description": "Public announcement draft",
+        "app:organization": { "id": "app:orgs/acme" },
+        "app:author": { "id": "app:users/bob" },
+        "app:visibility": "public",
+        "app:createdAt": "2024-02-01",
+        "app:content": "We're excited to announce our new mobile app! Download it today."
+      },
+      {
+        "id": "app:docs/globex-roadmap",
+        "type": "app:Document",
+        "schema:name": "Globex Product Strategy",
+        "schema:description": "Manufacturing innovation plans",
+        "app:organization": { "id": "app:orgs/globex" },
+        "app:author": { "id": "app:users/dan" },
+        "app:visibility": "internal",
+        "app:createdAt": "2024-01-20",
+        "app:content": "Focus on automation and AI-driven quality control for 2024."
+      },
+      {
+        "id": "app:docs/globex-contracts",
+        "type": "app:Document",
+        "schema:name": "Supplier Contracts",
+        "schema:description": "Confidential supplier agreements",
+        "app:organization": { "id": "app:orgs/globex" },
+        "app:author": { "id": "app:users/dan" },
+        "app:visibility": "confidential",
+        "app:createdAt": "2024-01-25",
+        "app:content": "Contract terms with key suppliers. Confidential pricing and volume commitments."
+      },
+      {
+        "id": "app:docs/globex-public-docs",
+        "type": "app:Document",
+        "schema:name": "Product Specifications",
+        "schema:description": "Public product documentation",
+        "app:organization": { "id": "app:orgs/globex" },
+        "app:author": { "id": "app:users/eve" },
+        "app:visibility": "public",
+        "app:createdAt": "2024-02-05",
+        "app:content": "Technical specifications for our industrial equipment line."
+      }
+    ]
+  }
+]

@@ -1,0 +1,328 @@
+---
+title: Testing Policies
+---
+
+import Admonition from "@theme/Admonition";
+
+# Testing Access Control Policies
+
+This page demonstrates how to verify policies work correctly by querying as different users and observing what they can and cannot see.
+
+## Querying as a Specific User
+
+In Fluree, you specify the current user identity using the `opts` parameter:
+
+```json
+{
+  "@context": {
+    "app": "https://app-example.com/ns/",
+    "schema": "http://schema.org/"
+  },
+  "select": {
+    "?doc": ["schema:name", "app:visibility"]
+  },
+  "where": { "@id": "?doc", "@type": "app:Document" },
+  "opts": {
+    "identity": { "@id": "app:users/carol" }
+  }
+}
+```
+
+The `opts.identity` tells Fluree to apply policies as if Carol is making the request.
+
+## Test Case 1: Viewer Tenant Isolation
+
+Carol (ACME Viewer) queries all documents:
+
+```json
+{
+  "@context": {
+    "app": "https://app-example.com/ns/",
+    "schema": "http://schema.org/"
+  },
+  "select": {
+    "?doc": ["schema:name", "app:visibility", "app:organization"]
+  },
+  "where": { "@id": "?doc", "@type": "app:Document" },
+  "opts": {
+    "identity": { "@id": "app:users/carol" }
+  }
+}
+```
+
+**Expected results:**
+
+Carol should see:
+- ACME documents with visibility `public` or `internal`
+- Globex documents with visibility `public` only
+
+Carol should NOT see:
+- Any confidential ACME documents (she's not in a department)
+- Any non-public Globex documents
+
+## Test Case 2: Cross-Tenant Isolation
+
+Dan (Globex Admin) queries all documents:
+
+```json
+{
+  "@context": {
+    "app": "https://app-example.com/ns/",
+    "schema": "http://schema.org/"
+  },
+  "select": {
+    "?doc": ["schema:name", "app:visibility"]
+  },
+  "where": { "@id": "?doc", "@type": "app:Document" },
+  "opts": {
+    "identity": { "@id": "app:users/dan" }
+  }
+}
+```
+
+**Expected results:**
+
+Dan should see:
+- All Globex documents (he's admin)
+- Public ACME documents only
+
+Dan should NOT see:
+- ACME internal or confidential documents (wrong organization)
+
+## Test Case 3: Editor with Confidential Filter
+
+Bob (ACME Editor) queries documents:
+
+```json
+{
+  "@context": {
+    "app": "https://app-example.com/ns/",
+    "schema": "http://schema.org/"
+  },
+  "select": {
+    "?doc": ["schema:name", "app:visibility"]
+  },
+  "where": { "@id": "?doc", "@type": "app:Document" },
+  "opts": {
+    "identity": { "@id": "app:users/bob" }
+  }
+}
+```
+
+**Expected results:**
+
+Bob should see:
+- All ACME public documents
+- All ACME internal documents
+- Public documents from Globex
+
+Bob should NOT see:
+- Confidential ACME documents (Bob has no department)
+- Non-public Globex documents
+
+## Test Case 4: Department-Scoped Confidential Access
+
+Grace (ACME HR Editor) queries documents:
+
+```json
+{
+  "@context": {
+    "app": "https://app-example.com/ns/",
+    "schema": "http://schema.org/"
+  },
+  "select": {
+    "?doc": ["schema:name", "app:visibility", "app:department"]
+  },
+  "where": { "@id": "?doc", "@type": "app:Document" },
+  "opts": {
+    "identity": { "@id": "app:users/grace" }
+  }
+}
+```
+
+**Expected results:**
+
+Grace should see:
+- All ACME public and internal documents
+- ACME HR confidential documents (Salary Bands, Employee Handbook)
+- Public Globex documents
+
+Grace should NOT see:
+- ACME Finance confidential documents (wrong department)
+- Non-public Globex documents
+
+## Test Case 5: Admin Full Access
+
+Alice (ACME Admin) queries all documents:
+
+```json
+{
+  "@context": {
+    "app": "https://app-example.com/ns/",
+    "schema": "http://schema.org/"
+  },
+  "select": {
+    "?doc": ["schema:name", "app:visibility", "app:department"]
+  },
+  "where": { "@id": "?doc", "@type": "app:Document" },
+  "opts": {
+    "identity": { "@id": "app:users/alice" }
+  }
+}
+```
+
+**Expected results:**
+
+Alice should see:
+- ALL ACME documents (public, internal, and confidential)
+- Public Globex documents
+
+Alice should NOT see:
+- Non-public Globex documents
+
+## Test Case 6: Modification Permissions
+
+Test if Bob can modify a document:
+
+```json
+{
+  "@context": {
+    "schema": "http://schema.org/",
+    "app": "https://app-example.com/ns/"
+  },
+  "delete": {
+    "id": "app:docs/acme-public-blog",
+    "schema:name": "Company Blog Post"
+  },
+  "insert": {
+    "id": "app:docs/acme-public-blog",
+    "schema:name": "Updated Blog Post Title"
+  },
+  "opts": {
+    "identity": { "@id": "app:users/bob" }
+  }
+}
+```
+
+**Expected:** Success—Bob is an Editor with modify permissions for public documents.
+
+Now test modifying a confidential document:
+
+```json
+{
+  "@context": {
+    "schema": "http://schema.org/",
+    "app": "https://app-example.com/ns/"
+  },
+  "delete": {
+    "id": "app:docs/acme-budget",
+    "schema:name": "2024 Budget Report"
+  },
+  "insert": {
+    "id": "app:docs/acme-budget",
+    "schema:name": "Hacked Budget"
+  },
+  "opts": {
+    "identity": { "@id": "app:users/bob" }
+  }
+}
+```
+
+**Expected:** Failure—Bob cannot modify confidential documents.
+
+## Test Case 7: Delete Permissions
+
+Test if Carol can delete a document:
+
+```json
+{
+  "@context": {
+    "app": "https://app-example.com/ns/"
+  },
+  "delete": {
+    "id": "app:docs/acme-public-blog",
+    "app:content": null
+  },
+  "opts": {
+    "identity": { "@id": "app:users/carol" }
+  }
+}
+```
+
+**Expected:** Failure—Viewers cannot delete.
+
+Test if Alice can delete:
+
+```json
+{
+  "@context": {
+    "app": "https://app-example.com/ns/"
+  },
+  "delete": {
+    "id": "app:docs/acme-public-blog",
+    "app:content": null
+  },
+  "opts": {
+    "identity": { "@id": "app:users/alice" }
+  }
+}
+```
+
+**Expected:** Success—Admins can delete.
+
+## Debugging Policy Issues
+
+If a policy isn't working as expected:
+
+### 1. Check the user's role
+
+```json
+{
+  "select": {
+    "?user": ["schema:givenName", "app:role", "app:organization", "app:department"]
+  },
+  "where": { "@id": "app:users/grace" }
+}
+```
+
+### 2. Check the document's properties
+
+```json
+{
+  "select": {
+    "?doc": ["*"]
+  },
+  "where": { "@id": "app:docs/acme-salaries" }
+}
+```
+
+### 3. Query policies directly
+
+```json
+{
+  "select": {
+    "?policy": ["*"]
+  },
+  "where": { "@id": "?policy", "@type": "f:Policy" }
+}
+```
+
+<Admonition type="tip">
+  When debugging, temporarily remove filters from your policy's `where` clause to see if the basic role/organization matching works. Then add constraints back one at a time.
+</Admonition>
+
+## Summary
+
+Key testing patterns:
+
+| Test | What to Verify |
+|------|----------------|
+| **Tenant isolation** | Users see only their org's data |
+| **Role escalation** | Higher roles don't break lower restrictions |
+| **Cross-tenant** | Admins can't bypass tenant boundaries |
+| **Department scope** | Confidential docs respect department |
+| **Public access** | Public content visible across orgs |
+| **Write permissions** | Editors can modify, viewers cannot |
+| **Delete permissions** | Only admins can delete |
+
+Policies provide defense-in-depth—even if application code has a bug, the database enforces access rules consistently.

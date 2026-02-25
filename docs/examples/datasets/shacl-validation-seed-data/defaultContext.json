@@ -1,0 +1,8 @@
+{
+  "id": "@id",
+  "type": "@type",
+  "sh": "http://www.w3.org/ns/shacl#",
+  "schema": "http://schema.org/",
+  "ex": "https://example.com/ns/",
+  "xsd": "http://www.w3.org/2001/XMLSchema#"
+}

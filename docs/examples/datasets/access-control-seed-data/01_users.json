@@ -1,0 +1,90 @@
+[
+  {
+    "@id": "multi-tenant-app",
+    "@graph": [
+      {
+        "id": "app:roles/admin",
+        "type": "app:Role",
+        "schema:name": "Admin",
+        "schema:description": "Full access to all resources in their organization"
+      },
+      {
+        "id": "app:roles/editor",
+        "type": "app:Role",
+        "schema:name": "Editor",
+        "schema:description": "Can create and edit documents"
+      },
+      {
+        "id": "app:roles/viewer",
+        "type": "app:Role",
+        "schema:name": "Viewer",
+        "schema:description": "Read-only access to documents"
+      },
+      {
+        "id": "app:users/alice",
+        "type": "app:User",
+        "schema:givenName": "Alice",
+        "schema:familyName": "Admin",
+        "schema:email": "alice@acme.com",
+        "app:organization": { "id": "app:orgs/acme" },
+        "app:role": { "id": "app:roles/admin" }
+      },
+      {
+        "id": "app:users/bob",
+        "type": "app:User",
+        "schema:givenName": "Bob",
+        "schema:familyName": "Builder",
+        "schema:email": "bob@acme.com",
+        "app:organization": { "id": "app:orgs/acme" },
+        "app:role": { "id": "app:roles/editor" }
+      },
+      {
+        "id": "app:users/carol",
+        "type": "app:User",
+        "schema:givenName": "Carol",
+        "schema:familyName": "Contractor",
+        "schema:email": "carol@acme.com",
+        "app:organization": { "id": "app:orgs/acme" },
+        "app:role": { "id": "app:roles/viewer" }
+      },
+      {
+        "id": "app:users/dan",
+        "type": "app:User",
+        "schema:givenName": "Dan",
+        "schema:familyName": "Developer",
+        "schema:email": "dan@globex.com",
+        "app:organization": { "id": "app:orgs/globex" },
+        "app:role": { "id": "app:roles/admin" }
+      },
+      {
+        "id": "app:users/eve",
+        "type": "app:User",
+        "schema:givenName": "Eve",
+        "schema:familyName": "Editor",
+        "schema:email": "eve@globex.com",
+        "app:organization": { "id": "app:orgs/globex" },
+        "app:role": { "id": "app:roles/editor" }
+      },
+      {
+        "id": "app:users/frank",
+        "type": "app:User",
+        "schema:givenName": "Frank",
+        "schema:familyName": "Finance",
+        "schema:email": "frank@acme.com",
+        "app:organization": { "id": "app:orgs/acme" },
+        "app:role": { "id": "app:roles/viewer" },
+        "app:department": "Finance"
+      },
+      {
+        "id": "app:users/grace",
+        "type": "app:User",
+        "schema:givenName": "Grace",
+        "schema:familyName": "HR",
+        "schema:email": "grace@acme.com",
+        "app:organization": { "id": "app:orgs/acme" },
+        "app:role": { "id": "app:roles/editor" },
+        "app:department": "HR"
+      }
+    ]
+  }
+]

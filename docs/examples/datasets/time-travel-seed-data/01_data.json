@@ -1,0 +1,39 @@
+[
+  {
+    "@id": "financial-data",
+    "@graph": [
+      {
+        "id": "fin:accounts/checking-001",
+        "type": "fin:Account",
+        "schema:name": "Main Checking",
+        "fin:accountNumber": "CHK-001",
+        "fin:balance": 5000.00,
+        "fin:accountType": "checking"
+      },
+      {
+        "id": "fin:accounts/savings-001",
+        "type": "fin:Account",
+        "schema:name": "Emergency Fund",
+        "fin:accountNumber": "SAV-001",
+        "fin:balance": 10000.00,
+        "fin:accountType": "savings"
+      },
+      {
+        "id": "fin:transactions/tx-001",
+        "type": "fin:Transaction",
+        "fin:account": { "id": "fin:accounts/checking-001" },
+        "fin:amount": -500.00,
+        "fin:description": "Rent payment",
+        "fin:date": "2024-03-01"
+      },
+      {
+        "id": "fin:transactions/tx-002",
+        "type": "fin:Transaction",
+        "fin:account": { "id": "fin:accounts/checking-001" },
+        "fin:amount": 3000.00,
+        "fin:description": "Salary deposit",
+        "fin:date": "2024-03-15"
+      }
+    ]
+  }
+]

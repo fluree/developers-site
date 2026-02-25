@@ -1,0 +1,79 @@
+---
+title: Introduction
+---
+
+import { FlureeMermaid } from "@site/src/components/Mermaid/FlureeMermaid.jsx";
+import Admonition from "@theme/Admonition";
+
+# Full-Text Search
+
+This example demonstrates Fluree's full-text search capabilities using a recipe database. You'll learn how to index text content and perform relevance-ranked searches.
+
+## The Scenario
+
+A recipe website needs to:
+
+- Search recipes by ingredient ("find recipes with chicken")
+- Search recipe descriptions and instructions
+- Rank results by relevance
+- Combine text search with graph filters (e.g., "vegan recipes containing tofu")
+
+## Schema Overview
+
+<FlureeMermaid
+  chart={`
+  graph LR
+    r(Recipe) -->|cuisine| c(Cuisine)
+    r -->|author| a(Author)
+    r -->|dietaryRestrictions| d(DietaryRestriction)
+  `}
+/>
+
+### Entities
+
+| Entity | Description |
+|--------|-------------|
+| **Recipe** | Name, description, ingredients, instructions |
+| **Cuisine** | Type of cuisine (Italian, Mexican, Asian, etc.) |
+| **Author** | Chef who created the recipe |
+| **DietaryRestriction** | Diet compatibility (Vegan, Vegetarian, Gluten-Free) |
+
+## Example Recipe
+
+```json
+{
+  "id": "recipe:recipes/pad-thai",
+  "type": "recipe:Recipe",
+  "schema:name": "Authentic Pad Thai",
+  "schema:description": "Thailand's famous stir-fried rice noodles with shrimp, tofu, eggs, and tamarind sauce...",
+  "recipe:cuisine": { "id": "recipe:cuisines/asian" },
+  "recipe:author": { "id": "recipe:authors/chef-lee" },
+  "recipe:prepTime": 20,
+  "recipe:cookTime": 15,
+  "recipe:servings": 4,
+  "recipe:ingredients": "rice noodles, shrimp, tofu, eggs, bean sprouts, tamarind paste...",
+  "recipe:instructions": "Soak noodles until pliable. Make tamarind sauce..."
+}
+```
+
+The `ingredients`, `description`, and `instructions` fields are ideal for full-text indexing.
+
+## BM25 Search Algorithm
+
+Fluree uses the BM25 algorithm for full-text search ranking. BM25 considers:
+
+- **Term frequency**: How often the search term appears in a document
+- **Inverse document frequency**: Rarer terms are weighted higher
+- **Document length normalization**: Longer documents don't unfairly dominate
+
+This produces intuitive relevance rankings—documents with more occurrences of rarer search terms rank higher.
+
+## What You'll Learn
+
+In the following pages, you'll explore:
+
+1. **[Search Queries](../search-queries/)** - Perform text searches with relevance ranking
+
+<Admonition type="info">
+  Full-text search complements graph queries—use text search to find candidates, then traverse relationships for richer results.
+</Admonition>

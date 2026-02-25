@@ -1,0 +1,225 @@
+---
+title: Defining Rules
+---
+
+import Admonition from "@theme/Admonition";
+
+# Defining Reasoning Rules
+
+This page demonstrates how to define class hierarchies and OWL properties that enable automatic inference in Fluree.
+
+## Class Hierarchies with rdfs:subClassOf
+
+The taxonomic hierarchy is built using `rdfs:subClassOf`:
+
+```json
+{
+  "@context": {
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+    "bio": "https://biology-example.com/ns/"
+  },
+  "insert": [
+    {
+      "id": "bio:classes/Animal",
+      "type": "rdfs:Class",
+      "rdfs:label": "Animal"
+    },
+    {
+      "id": "bio:classes/Mammal",
+      "type": "rdfs:Class",
+      "rdfs:label": "Mammal",
+      "rdfs:subClassOf": { "id": "bio:classes/Animal" }
+    },
+    {
+      "id": "bio:classes/Carnivore",
+      "type": "rdfs:Class",
+      "rdfs:label": "Carnivore",
+      "rdfs:subClassOf": { "id": "bio:classes/Mammal" }
+    },
+    {
+      "id": "bio:classes/Feline",
+      "type": "rdfs:Class",
+      "rdfs:label": "Feline",
+      "rdfs:subClassOf": { "id": "bio:classes/Carnivore" }
+    }
+  ]
+}
+```
+
+This creates the chain: Feline → Carnivore → Mammal → Animal
+
+## Adding an Organism
+
+When you add a Tiger typed as Feline:
+
+```json
+{
+  "@context": {
+    "schema": "http://schema.org/",
+    "bio": "https://biology-example.com/ns/"
+  },
+  "insert": {
+    "id": "bio:organisms/tiger",
+    "type": ["bio:Organism", "bio:classes/Feline"],
+    "schema:name": "Tiger",
+    "bio:scientificName": "Panthera tigris"
+  }
+}
+```
+
+With reasoning enabled, the Tiger is automatically inferred to be:
+- A Feline (asserted)
+- A Carnivore (inferred)
+- A Mammal (inferred)
+- An Animal (inferred)
+
+## Inverse Properties
+
+Define two properties as inverses of each other:
+
+```json
+{
+  "@context": {
+    "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+    "owl": "http://www.w3.org/2002/07/owl#",
+    "bio": "https://biology-example.com/ns/"
+  },
+  "insert": [
+    {
+      "id": "bio:properties/eats",
+      "type": ["rdf:Property", "owl:ObjectProperty"],
+      "rdfs:label": "eats",
+      "rdfs:comment": "Predator eats prey"
+    },
+    {
+      "id": "bio:properties/eatenBy",
+      "type": ["rdf:Property", "owl:ObjectProperty"],
+      "rdfs:label": "eaten by",
+      "owl:inverseOf": { "id": "bio:properties/eats" }
+    }
+  ]
+}
+```
+
+Now when you assert a predator-prey relationship:
+
+```json
+{
+  "insert": {
+    "id": "bio:organisms/lion",
+    "bio:properties/eats": { "id": "bio:organisms/deer" }
+  }
+}
+```
+
+The inverse is automatically inferred:
+- `bio:organisms/deer` `bio:properties/eatenBy` `bio:organisms/lion`
+
+## Symmetric Properties
+
+For bidirectional relationships, use `owl:SymmetricProperty`:
+
+```json
+{
+  "@context": {
+    "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+    "owl": "http://www.w3.org/2002/07/owl#",
+    "bio": "https://biology-example.com/ns/"
+  },
+  "insert": {
+    "id": "bio:properties/relatedTo",
+    "type": ["rdf:Property", "owl:ObjectProperty", "owl:SymmetricProperty"],
+    "rdfs:label": "related to",
+    "rdfs:comment": "Symmetric biological relationship"
+  }
+}
+```
+
+Assert one direction:
+
+```json
+{
+  "insert": {
+    "id": "bio:organisms/lion",
+    "bio:properties/relatedTo": { "id": "bio:organisms/tiger" }
+  }
+}
+```
+
+The reverse is automatically inferred:
+- `bio:organisms/tiger` `bio:properties/relatedTo` `bio:organisms/lion`
+
+## Transitive Properties
+
+For chains of relationships, use `owl:TransitiveProperty`:
+
+```json
+{
+  "insert": {
+    "id": "bio:properties/ancestorOf",
+    "type": ["rdf:Property", "owl:ObjectProperty", "owl:TransitiveProperty"],
+    "rdfs:label": "ancestor of"
+  }
+}
+```
+
+If you assert:
+- A ancestorOf B
+- B ancestorOf C
+
+Then A ancestorOf C is automatically inferred.
+
+## Custom Rules
+
+For more complex inference, Fluree supports custom rules:
+
+```json
+{
+  "@context": {
+    "f": "https://ns.flur.ee/ledger#",
+    "bio": "https://biology-example.com/ns/"
+  },
+  "@id": "bio:rules/endangered-in-habitat",
+  "f:rule": {
+    "@type": "@json",
+    "@value": {
+      "@context": { "bio": "https://biology-example.com/ns/" },
+      "where": [
+        { "@id": "?organism", "bio:habitat": "?habitat" },
+        { "@id": "?organism", "bio:conservationStatus": "Endangered" }
+      ],
+      "insert": { "@id": "?habitat", "bio:hasEndangeredSpecies": { "@id": "?organism" } }
+    }
+  }
+}
+```
+
+This rule infers that a habitat has endangered species when any organism in that habitat has "Endangered" conservation status.
+
+## Enabling Reasoning
+
+Reasoning can be enabled at query time:
+
+```json
+{
+  "select": { "?organism": ["*"] },
+  "where": { "@id": "?organism", "@type": "bio:classes/Mammal" },
+  "opts": {
+    "reasoner": "owl2rl"
+  }
+}
+```
+
+Or configured at the ledger level for automatic reasoning on all queries.
+
+## Summary
+
+| Technique | Use Case |
+|-----------|----------|
+| `rdfs:subClassOf` | Class hierarchies (is-a relationships) |
+| `owl:inverseOf` | Bidirectional properties (eats ↔ eatenBy) |
+| `owl:SymmetricProperty` | Same property both directions |
+| `owl:TransitiveProperty` | Chained relationships (A→B→C implies A→C) |
+| Custom rules (`f:rule`) | Complex custom inference |
+
+Next, learn how to [query inferred data](../querying-inferred/) alongside asserted facts.
