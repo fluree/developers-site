@@ -1,0 +1,122 @@
+# Time Travel & History
+
+Fluree's append-only architecture means every change is preserved. You can query data as it existed at any point in time.
+
+## How It Works
+
+Every transaction creates a new **commit** with a **t value** (transaction number). The data isn't overwritten—new commits build on previous ones.
+
+```
+t=1: Alice created with name="Alice"
+t=2: Alice's email added
+t=3: Alice's department changed to Engineering
+t=4: Alice's email updated
+```
+
+Each commit is immutable. You can query any of these states.
+
+## Querying at a Specific Time
+
+Use the `t` option to query a historical state:
+
+```json
+{
+  "from": "my-ledger",
+  "select": {"ex:alice": ["*"]},
+  "t": 2
+}
+```
+
+Returns Alice as she existed after transaction 2.
+
+## Using Time Ranges
+
+Query a range of transactions:
+
+```json
+{
+  "from": "my-ledger",
+  "select": {"ex:alice": ["*"]},
+  "t": {"from": 1, "to": 3}
+}
+```
+
+## History Queries
+
+See how an entity changed over time:
+
+```json
+{
+  "from": "my-ledger",
+  "history": "ex:alice",
+  "t": {"from": 1}
+}
+```
+
+Returns all changes to Alice from transaction 1 onward:
+
+```json
+[
+  {
+    "f:t": 1,
+    "f:assert": [{"@id": "ex:alice", "name": "Alice"}],
+    "f:retract": []
+  },
+  {
+    "f:t": 2,
+    "f:assert": [{"@id": "ex:alice", "email": "alice@example.com"}],
+    "f:retract": []
+  },
+  {
+    "f:t": 4,
+    "f:assert": [{"@id": "ex:alice", "email": "alice.new@example.com"}],
+    "f:retract": [{"@id": "ex:alice", "email": "alice@example.com"}]
+  }
+]
+```
+
+## History of Specific Properties
+
+Track changes to a particular property:
+
+```json
+{
+  "from": "my-ledger",
+  "history": ["ex:alice", "email"],
+  "t": {"from": 1}
+}
+```
+
+## Including Commit Details
+
+Get metadata about each commit:
+
+```json
+{
+  "from": "my-ledger",
+  "history": "ex:alice",
+  "t": {"from": 1},
+  "commit-details": true
+}
+```
+
+Returns commit timestamps, authors, and messages.
+
+## Use Cases
+
+### Audit Trails
+Track who changed what and when for compliance.
+
+### Debugging
+See the exact state when a bug occurred.
+
+### Undo/Rollback
+Understand what to retract to reverse a change.
+
+### Analytics
+Analyze how data evolved over time.
+
+## Next Steps
+
+- [History Syntax Reference](/docs/reference/history-syntax) — Complete query options
+- [Data Access Control](../security/data-access-control-concepts.mdx) — Control who can see history
