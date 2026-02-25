@@ -1,0 +1,251 @@
+# Core Concepts
+
+Before diving deep into Fluree, it helps to understand a few key concepts that make it different from traditional databases.
+
+## Ledgers
+
+A **ledger** is Fluree's term for a database. Unlike traditional databases that only store current state, a ledger maintains a complete, immutable history of all changes.
+
+```
+Ledger = Current State + Complete History
+```
+
+Every transaction creates a new **commit** that records what changed. You can query any point in time or see exactly how data evolved.
+
+**Naming Convention**: Ledgers use a `namespace/name` format, like `myapp/users` or `production/inventory`.
+
+---
+
+## Entities and Triples
+
+Fluree stores data as **triples** — three-part statements in the form:
+
+```
+Subject → Predicate → Object
+```
+
+For example:
+- `ex:alice` → `ex:name` → `"Alice"`
+- `ex:alice` → `ex:age` → `30`
+- `ex:alice` → `ex:knows` → `ex:bob`
+
+An **entity** is a subject with all its predicates and objects:
+
+```json
+{
+  "@id": "ex:alice",
+  "ex:name": "Alice",
+  "ex:age": 30,
+  "ex:knows": { "@id": "ex:bob" }
+}
+```
+
+This triple-based model enables:
+- **Flexible schemas** — Add new properties anytime
+- **Graph relationships** — Entities link to other entities naturally
+- **Semantic meaning** — Properties have universal definitions
+
+---
+
+## JSON-LD
+
+Fluree uses **JSON-LD** (JSON for Linked Data) as its data format. JSON-LD is regular JSON with a few special keys:
+
+| Key | Purpose | Example |
+|-----|---------|---------|
+| `@context` | Define namespace prefixes | `{"ex": "http://example.org/"}` |
+| `@id` | Unique identifier for an entity | `"ex:alice"` |
+| `@type` | The type/class of an entity | `"ex:Person"` |
+
+### Why JSON-LD?
+
+JSON-LD gives your data **universal meaning**. The property `ex:name` expands to `http://example.org/name`, making it unambiguous across systems.
+
+```json
+{
+  "@context": {
+    "ex": "http://example.org/",
+    "schema": "http://schema.org/"
+  },
+  "@id": "ex:alice",
+  "@type": "schema:Person",
+  "schema:name": "Alice"
+}
+```
+
+This enables:
+- **Data portability** — Share data with anyone who understands the vocabulary
+- **Integration** — Combine data from multiple sources that use the same terms
+- **Semantic web compatibility** — Works with RDF, SPARQL, and linked data standards
+
+---
+
+## Queries with FlureeQL
+
+FlureeQL is Fluree's query language. Queries have three main parts:
+
+```json
+{
+  "from": "my-ledger",
+  "@context": { "ex": "http://example.org/" },
+  "select": { "?s": ["*"] },
+  "where": { "@id": "?s", "@type": "ex:Person" }
+}
+```
+
+### Logic Variables
+
+Variables start with `?` and bind to matching values:
+
+```json
+{
+  "from": "my-ledger",
+  "@context": { "ex": "http://example.org/" },
+  "select": ["?name", "?age"],
+  "where": {
+    "@id": "?person",
+    "ex:name": "?name",
+    "ex:age": "?age"
+  }
+}
+```
+
+This finds all entities with `ex:name` and `ex:age` properties.
+
+### Graph Traversal
+
+Navigate relationships by nesting patterns:
+
+```json
+{
+  "from": "my-ledger",
+  "@context": { "ex": "http://example.org/" },
+  "select": { "?person": ["ex:name", {"ex:knows": ["ex:name"]}] },
+  "where": { "@id": "?person", "@type": "ex:Person" }
+}
+```
+
+This returns each person's name AND the names of everyone they know.
+
+---
+
+## Transactions
+
+Transactions modify data using three operations:
+
+| Operation | Purpose |
+|-----------|---------|
+| `insert` | Add new data |
+| `delete` | Remove existing data |
+| `where` | Find data to delete/update |
+
+### Insert
+
+```json
+{
+  "ledger": "my-ledger",
+  "@context": { "ex": "http://example.org/" },
+  "insert": {
+    "@id": "ex:alice",
+    "ex:name": "Alice"
+  }
+}
+```
+
+### Update (Delete + Insert)
+
+To update, delete the old value and insert the new one:
+
+```json
+{
+  "ledger": "my-ledger",
+  "@context": { "ex": "http://example.org/" },
+  "where": { "@id": "ex:alice", "ex:age": "?oldAge" },
+  "delete": { "@id": "ex:alice", "ex:age": "?oldAge" },
+  "insert": { "@id": "ex:alice", "ex:age": 31 }
+}
+```
+
+### Upsert
+
+The `/fluree/upsert` endpoint simplifies updates — it inserts if the entity doesn't exist, or updates if it does:
+
+```json
+{
+  "@id": "ex:alice",
+  "ex:age": 31
+}
+```
+
+---
+
+## Time Travel
+
+Every transaction creates a new point in time, identified by `t` (transaction number). You can query any historical state:
+
+```json
+{
+  "from": "my-ledger",
+  "@context": { "ex": "http://example.org/" },
+  "select": { "ex:alice": ["*"] },
+  "t": 5
+}
+```
+
+Or query a range of changes:
+
+```json
+{
+  "from": "my-ledger",
+  "@context": { "ex": "http://example.org/" },
+  "history": "ex:alice",
+  "t": { "from": 1, "to": 10 }
+}
+```
+
+---
+
+## Policies (Access Control)
+
+Fluree implements **data-centric security** — access rules are defined in the data itself, not in application code.
+
+A policy is a query that determines if access is allowed:
+
+```json
+{
+  "@id": "ex:readOwnData",
+  "f:action": { "@id": "f:view" },
+  "f:query": {
+    "@type": "@json",
+    "@value": {
+      "where": ["filter", "(= ?$this ?$identity)"]
+    }
+  }
+}
+```
+
+This policy allows users to view only their own data. The `?$this` variable is the entity being accessed, and `?$identity` is the requesting user.
+
+---
+
+## Key Differences from SQL Databases
+
+| SQL Database | Fluree |
+|--------------|--------|
+| Tables with fixed columns | Flexible entities with any properties |
+| Rows identified by primary keys | Entities identified by IRIs |
+| Foreign keys for relationships | Direct entity references |
+| Current state only | Complete history built-in |
+| Application-level security | Data-level security policies |
+| Proprietary data format | Standard JSON-LD format |
+
+---
+
+## Next Steps
+
+Now that you understand the core concepts:
+
+- **[Quick Start](/docs/getting-started/quick-start)** — Hands-on introduction
+- **[Learn Fluree](/docs/learn/)** — Concepts, guides, and advanced topics
+- **[FlureeQL Reference](/docs/reference/querying/)** — Complete query syntax
+- **[Transaction Reference](/docs/reference/transaction-syntax)** — All transaction options

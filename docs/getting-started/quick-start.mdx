@@ -1,0 +1,165 @@
+# Quick Start
+
+Get up and running with Fluree in 5 minutes. By the end of this guide, you'll have created a ledger, inserted data, and run your first query.
+
+## Prerequisites
+
+- Docker installed on your machine
+- curl or any HTTP client
+
+## 1. Start Fluree Server
+
+Run Fluree using Docker:
+
+```sh
+docker run -d -p 8090:8090 --name fluree fluree/server
+```
+
+Wait a few seconds for startup, then verify it's running by creating a test ledger:
+
+```sh
+curl -X POST "http://localhost:8090/fluree/create" \
+  -H "Content-Type: application/json" \
+  -d '{"ledger": "test/connection"}'
+```
+
+You should see a JSON response with `"ledger": "test/connection"` confirming the server is ready.
+
+## 2. Create a Ledger
+
+A ledger is Fluree's term for a database. Create one called `quickstart/demo`:
+
+```sh
+curl -X POST "http://localhost:8090/fluree/create" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "ledger": "quickstart/demo",
+    "insert": {
+      "@context": {
+        "ex": "http://example.org/"
+      },
+      "@id": "ex:alice",
+      "@type": "ex:Person",
+      "ex:name": "Alice",
+      "ex:age": 30
+    }
+  }'
+```
+
+This creates the ledger and inserts your first entity in one operation.
+
+## 3. Insert More Data
+
+Add another person:
+
+```sh
+curl -X POST "http://localhost:8090/fluree/transact" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "ledger": "quickstart/demo",
+    "insert": {
+      "@context": { "ex": "http://example.org/" },
+      "@id": "ex:bob",
+      "@type": "ex:Person",
+      "ex:name": "Bob",
+      "ex:age": 25,
+      "ex:knows": { "@id": "ex:alice" }
+    }
+  }'
+```
+
+Notice how Bob references Alice using `"@id": "ex:alice"` — this creates a graph relationship.
+
+## 4. Query Your Data
+
+### Get All People
+
+```sh
+curl -X POST "http://localhost:8090/fluree/query" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "from": "quickstart/demo",
+    "@context": { "ex": "http://example.org/" },
+    "select": { "?person": ["*"] },
+    "where": { "@id": "?person", "@type": "ex:Person" }
+  }'
+```
+
+### Find People Over 25
+
+```sh
+curl -X POST "http://localhost:8090/fluree/query" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "from": "quickstart/demo",
+    "@context": { "ex": "http://example.org/" },
+    "select": ["?name", "?age"],
+    "where": [
+      { "@id": "?person", "ex:name": "?name", "ex:age": "?age" },
+      ["filter", "(> ?age 25)"]
+    ]
+  }'
+```
+
+### Traverse Relationships
+
+Find who Bob knows:
+
+```sh
+curl -X POST "http://localhost:8090/fluree/query" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "from": "quickstart/demo",
+    "@context": { "ex": "http://example.org/" },
+    "select": { "ex:bob": ["ex:knows"] }
+  }'
+```
+
+## 5. Update Data
+
+Change Alice's age:
+
+```sh
+curl -X POST "http://localhost:8090/fluree/transact" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "ledger": "quickstart/demo",
+    "@context": { "ex": "http://example.org/" },
+    "where": { "@id": "ex:alice", "ex:age": "?oldAge" },
+    "delete": { "@id": "ex:alice", "ex:age": "?oldAge" },
+    "insert": { "@id": "ex:alice", "ex:age": 31 }
+  }'
+```
+
+## 6. View History
+
+Fluree tracks all changes. See what changed over time:
+
+```sh
+curl -X POST "http://localhost:8090/fluree/history" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "from": "quickstart/demo",
+    "@context": { "ex": "http://example.org/" },
+    "history": "ex:alice",
+    "t": { "from": 1 }
+  }'
+```
+
+## What's Next?
+
+You've just scratched the surface. Explore these topics:
+
+- **[Installation Guide](/docs/getting-started/installation)** — Production setup options
+- **[Core Concepts](/docs/getting-started/core-concepts)** — Understand the data model
+- **[Learn Fluree](/docs/learn/)** — Concepts, guides, and advanced topics
+- **[FlureeQL Reference](/docs/reference/querying/)** — Complete query syntax
+- **[HTTP API Reference](/docs/reference/http-api/)** — All available endpoints
+
+## Cleanup
+
+Stop and remove the container:
+
+```sh
+docker stop fluree && docker rm fluree
+```
