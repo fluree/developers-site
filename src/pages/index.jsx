@@ -33,7 +33,7 @@ const HomePage = () => {
 							</p>
 							<div>
 								<a
-									href="/docs/learn/overview/"
+									href="/docs/getting-started/"
 									className="rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
 								>
 									Get started
@@ -52,61 +52,53 @@ const HomePage = () => {
 					<div className="col">
 						<div className="flex items-center">
 							<AcademicCapIcon className="w-5 h-5 stroke-2 mr-2" />
+							<h3>Getting Started</h3>
+						</div>
+						<div>
+							<div className="doc-group">
+								<h4>
+									<a href="/docs/getting-started/quick-start/">Quick Start</a>
+								</h4>
+								<div className="description">
+									Create a ledger, insert data, and run queries in 5 minutes
+								</div>
+							</div>
+							<div className="doc-group">
+								<h4>
+									<a href="/docs/getting-started/installation/">Installation</a>
+								</h4>
+								<div className="description">
+									Docker, JAR deployment, and configuration options
+								</div>
+							</div>
+							<div className="doc-group">
+								<h4>
+									<a href="/docs/getting-started/core-concepts/">Core Concepts</a>
+								</h4>
+								<div className="description">
+									Understand ledgers, entities, JSON-LD, and time travel
+								</div>
+							</div>
+						</div>
+						<div className="flex items-center mt-4">
+							<AcademicCapIcon className="w-5 h-5 stroke-2 mr-2" />
 							<h3>Learn</h3>
 						</div>
 						<div>
 							<div className="doc-group">
 								<h4>
-									<a href="/docs/learn/overview/">Fluree Overview</a>
+									<a href="/docs/learn/">Learn Fluree</a>
 								</h4>
 								<div className="description">
-									What sets Fluree apart and how it can help you
+									Concepts, guides, and advanced topics for mastering Fluree
 								</div>
-							</div>
-
-							<div className="doc-group">
-								<h4>
-									<a href="/docs/learn/tutorial/introduction/">Tutorial</a>
-								</h4>
-								<div className="description">
-									Learn the essentials of using Fluree and develop an accurate
-									mental model of the system
-								</div>
-								{/* <div>
-							<div><a href="/docs/learn/tutorial/introduction/">Introduction</a></div>
-							<div><a href="/docs/learn/tutorial/fluree-data-model/">Fluree's Data Model</a></div>
-							<div><a href="/docs/learn/tutorial/working-with-graph-data/">Working with Graph Data</a></div>
-							<div><a href="/docs/learn/tutorial/collaborative-data/">Collaborative Data</a></div>
-						  </div> */}
-							</div>
-							<div className="doc-group">
-								<h4>
-									<a href="/docs/learn/guides/working-with-context/">Guides</a>
-								</h4>
-								<div className="description">
-									Get into the details of working with Open Standards and Fluree
-								</div>
-								{/* <div className="doc-sub-group">
-									<h5>
-										<a href="/docs/learn/guides/working-with-context/">
-											Working with Context
-										</a>
-									</h5>
-								</div>
-								<div className="doc-sub-group">
-									<h5>
-										<a href="/docs/learn/guides/working-with-ontologies/">
-											Working with Ontologies
-										</a>
-									</h5>
-								</div> */}
 							</div>
 							<div className="doc-group">
 								<h4>
 									<a href="/docs/learn/foundations/json-ld/">Foundations</a>
 								</h4>
 								<div className="description">
-									Deep dives into slices of Fluree functionality
+									Deep dives into JSON-LD, querying, policies, and architecture
 								</div>
 								{/* <div className="doc-sub-group">
 							  <h5><a href="/docs/learn/foundations/from-tables-to-graphs/">From Tables to Graphs: How to Model Entities in a Graph Database </a></h5>

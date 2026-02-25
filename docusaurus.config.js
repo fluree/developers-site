@@ -63,16 +63,23 @@ module.exports = {
 					className: "navbar-home-link",
 				},
 				{
+					label: "Getting Started",
+					to: "/getting-started",
+					docId: "getting-started/index",
+					type: "doc",
+					position: "left",
+				},
+				{
 					label: "Learn",
 					to: "/learn",
-					docId: "learn/overview",
+					docId: "learn/index",
 					type: "doc",
 					position: "left",
 				},
 				{
 					label: "Reference",
-					to: "/refence",
-					docId: "reference/http-api",
+					to: "/reference",
+					docId: "reference/http-api/index",
 					type: "doc",
 					position: "left",
 				},
@@ -143,8 +150,8 @@ module.exports = {
 					title: "Docs",
 					items: [
 						{
-							label: "Tutorial",
-							to: "docs/learn/tutorial/introduction/",
+							label: "Learn",
+							to: "/docs/learn/",
 						},
 						{
 							label: "Examples",
@@ -243,12 +250,13 @@ module.exports = {
 						],
 					],
 				},
-				gtag: {
-					// You can also use your "G-" Measurement ID here.
-					trackingID: "G-XDLKYE388T",
-					// Optional fields.
-					anonymizeIP: true, // Should IPs be anonymized?
-				},
+				gtag:
+					process.env.NODE_ENV === "production"
+						? {
+								trackingID: "G-XDLKYE388T",
+								anonymizeIP: true,
+							}
+						: false,
 				// blog: {
 				//   showReadingTime: true,
 				//   // TODO: Please change this to your repo.
