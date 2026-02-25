@@ -1,0 +1,7 @@
+{
+  "id": "@id",
+  "type": "@type",
+  "schema": "http://schema.org/",
+  "sc": "https://supply-chain-example.com/ns/",
+  "f": "https://ns.flur.ee/ledger#"
+}

@@ -1,0 +1,60 @@
+[
+  {
+    "@id": "clinic-records",
+    "@graph": [
+      {
+        "id": "health:facilities/downtown-clinic",
+        "type": "health:Facility",
+        "schema:name": "Downtown Medical Clinic",
+        "schema:address": "123 Main St"
+      },
+      {
+        "id": "health:providers/dr-smith",
+        "type": "health:Provider",
+        "schema:name": "Dr. Sarah Smith",
+        "health:specialty": "Internal Medicine",
+        "health:facility": { "id": "health:facilities/downtown-clinic" }
+      },
+      {
+        "id": "health:providers/dr-jones",
+        "type": "health:Provider",
+        "schema:name": "Dr. Michael Jones",
+        "health:specialty": "Cardiology",
+        "health:facility": { "id": "health:facilities/downtown-clinic" }
+      },
+      {
+        "id": "health:patients/p001",
+        "type": "health:Patient",
+        "schema:givenName": "John",
+        "schema:familyName": "Doe",
+        "health:dateOfBirth": "1985-03-15",
+        "health:primaryProvider": { "id": "health:providers/dr-smith" }
+      },
+      {
+        "id": "health:patients/p002",
+        "type": "health:Patient",
+        "schema:givenName": "Jane",
+        "schema:familyName": "Wilson",
+        "health:dateOfBirth": "1990-07-22",
+        "health:primaryProvider": { "id": "health:providers/dr-jones" }
+      },
+      {
+        "id": "health:appointments/a001",
+        "type": "health:Appointment",
+        "health:patient": { "id": "health:patients/p001" },
+        "health:provider": { "id": "health:providers/dr-smith" },
+        "health:date": "2024-03-15",
+        "health:reason": "Annual checkup"
+      },
+      {
+        "id": "health:diagnoses/d001",
+        "type": "health:Diagnosis",
+        "health:patient": { "id": "health:patients/p001" },
+        "health:provider": { "id": "health:providers/dr-smith" },
+        "health:icdCode": "I10",
+        "health:description": "Essential hypertension",
+        "health:date": "2024-03-15"
+      }
+    ]
+  }
+]

@@ -1,0 +1,236 @@
+---
+title: Querying the Catalog
+---
+
+import Admonition from "@theme/Admonition";
+
+# Querying the E-Commerce Catalog
+
+In this walkthrough, we'll explore the product catalog using progressively complex queries. You'll learn how to traverse the graph, filter results, and aggregate data.
+
+## Alex Browses the Store
+
+Alex wants to find a new smartphone. Let's help them navigate the catalog.
+
+### List All Products
+
+Start with a simple query to see what products are available:
+
+```json
+{
+  "@context": {
+    "ecom": "https://ecommerce-example.com/ns/",
+    "schema": "http://schema.org/"
+  },
+  "select": { "?product": ["*"] },
+  "where": { "@id": "?product", "@type": "ecom:Product" }
+}
+```
+
+This returns all products with their properties. But Alex wants to see products organized by category.
+
+### Products with Category Info
+
+Let's include the category name by traversing the graph:
+
+```json
+{
+  "@context": {
+    "ecom": "https://ecommerce-example.com/ns/",
+    "schema": "http://schema.org/"
+  },
+  "select": {
+    "?product": ["schema:name", "ecom:basePrice"],
+    "?categoryName": []
+  },
+  "where": [
+    { "@id": "?product", "@type": "ecom:Product", "ecom:category": "?category" },
+    { "@id": "?category", "schema:name": "?categoryName" }
+  ]
+}
+```
+
+Now we see each product with its category name. The `where` clause traverses from product → category → name.
+
+### Filter by Category
+
+Alex only wants smartphones. We can filter using `values`:
+
+```json
+{
+  "@context": {
+    "ecom": "https://ecommerce-example.com/ns/",
+    "schema": "http://schema.org/"
+  },
+  "select": {
+    "?product": ["schema:name", "schema:description", "ecom:basePrice"]
+  },
+  "where": { "@id": "?product", "@type": "ecom:Product", "ecom:category": "?category" },
+  "values": [
+    ["?category"],
+    [{"@id": "ecom:categories/electronics/phones/smartphones"}]
+  ]
+}
+```
+
+This returns only products in the Smartphones category: SmartPhone Pro X, SmartPhone Lite, and GamePhone Ultra.
+
+### Filter by Price Range
+
+Alex has a budget. Let's find smartphones under $800:
+
+```json
+{
+  "@context": {
+    "ecom": "https://ecommerce-example.com/ns/",
+    "schema": "http://schema.org/"
+  },
+  "select": {
+    "?product": ["schema:name", "ecom:basePrice"]
+  },
+  "where": [
+    { "@id": "?product", "@type": "ecom:Product", "ecom:category": {"@id": "ecom:categories/electronics/phones/smartphones"}, "ecom:basePrice": "?price" },
+    ["filter", "(< ?price 800)"]
+  ]
+}
+```
+
+Result: SmartPhone Lite ($499.99) and GamePhone Ultra ($799.99).
+
+<Admonition type="info">
+  The `filter` clause uses comparison operators like `<`, `>`, `<=`, `>=`, and `=` to constrain numeric values.
+</Admonition>
+
+### Find In-Stock Variants
+
+Alex wants to see available variants. Let's find variants with stock > 0:
+
+```json
+{
+  "@context": {
+    "ecom": "https://ecommerce-example.com/ns/",
+    "schema": "http://schema.org/"
+  },
+  "select": {
+    "?product": ["schema:name"],
+    "?variant": ["ecom:color", "ecom:storage", "ecom:price", "ecom:stockQuantity"]
+  },
+  "where": [
+    { "@id": "?product", "@type": "ecom:Product", "ecom:variants": "?variant" },
+    { "@id": "?variant", "ecom:stockQuantity": "?stock" },
+    ["filter", "(> ?stock 0)"]
+  ]
+}
+```
+
+This traverses product → variants and filters out any with zero stock (like the Racing Red SportBuds).
+
+### Category Hierarchy Traversal
+
+One of the most powerful graph features is traversing hierarchies. Let's find all products in "Electronics" including subcategories:
+
+```json
+{
+  "@context": {
+    "ecom": "https://ecommerce-example.com/ns/",
+    "schema": "http://schema.org/"
+  },
+  "select": {
+    "?product": ["schema:name"],
+    "?categoryName": []
+  },
+  "where": [
+    { "@id": "?product", "@type": "ecom:Product", "ecom:category": "?leafCategory" },
+    { "@id": "?leafCategory", "ecom:parentCategory*": {"@id": "ecom:categories/electronics"}, "schema:name": "?categoryName" }
+  ]
+}
+```
+
+The `*` modifier on `parentCategory*` enables transitive traversal—it follows the parent chain up to the Electronics category. This returns all phones, laptops, and audio products.
+
+### Get Product Reviews
+
+Let's see what customers think about a specific product:
+
+```json
+{
+  "@context": {
+    "ecom": "https://ecommerce-example.com/ns/",
+    "schema": "http://schema.org/"
+  },
+  "select": {
+    "?review": ["ecom:rating", "schema:reviewBody", "schema:datePublished"],
+    "?reviewerName": []
+  },
+  "where": [
+    { "@id": "?review", "@type": "ecom:Review", "ecom:product": {"@id": "ecom:products/smartphone-pro-x"}, "ecom:reviewer": "?reviewer" },
+    { "@id": "?reviewer", "schema:givenName": "?reviewerName" }
+  ],
+  "orderBy": [{"desc": "?rating"}]
+}
+```
+
+This query:
+1. Finds reviews for the SmartPhone Pro X
+2. Traverses to the reviewer to get their name
+3. Orders by rating (highest first)
+
+### Calculate Average Rating
+
+Let's aggregate ratings to find the average:
+
+```json
+{
+  "@context": {
+    "ecom": "https://ecommerce-example.com/ns/",
+    "schema": "http://schema.org/"
+  },
+  "select": ["?productName", "(avg ?rating)"],
+  "where": [
+    { "@id": "?review", "@type": "ecom:Review", "ecom:product": "?product", "ecom:rating": "?rating" },
+    { "@id": "?product", "schema:name": "?productName" }
+  ],
+  "groupBy": "?productName",
+  "orderBy": [{"desc": "(avg ?rating)"}]
+}
+```
+
+This groups reviews by product and calculates the average rating, sorted from highest to lowest. Great for finding top-rated products!
+
+### Find Products by Brand
+
+Alex prefers TechPro products. Let's filter by brand:
+
+```json
+{
+  "@context": {
+    "ecom": "https://ecommerce-example.com/ns/",
+    "schema": "http://schema.org/"
+  },
+  "select": {
+    "?product": ["schema:name", "schema:description", "ecom:basePrice"]
+  },
+  "where": [
+    { "@id": "?product", "@type": "ecom:Product", "ecom:brand": "?brand" },
+    { "@id": "?brand", "schema:name": "TechPro" }
+  ]
+}
+```
+
+Returns SmartPhone Pro X and SmartPhone Lite—all TechPro products.
+
+## Summary
+
+In this walkthrough, you learned how to:
+
+| Technique | Example |
+|-----------|---------|
+| **Basic selection** | `select: { "?product": ["*"] }` |
+| **Graph traversal** | Product → Category → Name |
+| **Filtering with values** | Constrain to specific category |
+| **Numeric filters** | Price < 800 |
+| **Transitive traversal** | `parentCategory*` for hierarchy |
+| **Aggregation** | `(avg ?rating)` with `groupBy` |
+| **Ordering** | `orderBy: [{"desc": "?rating"}]` |
+
+Next, learn how to [add and update data](../transactions/) in the catalog.

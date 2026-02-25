@@ -1,0 +1,275 @@
+---
+title: Transactions
+---
+
+import Admonition from "@theme/Admonition";
+
+# Managing Catalog Data
+
+This page demonstrates how to add, update, and delete data in the e-commerce catalog. You'll learn transaction patterns for common operations like adding products, updating inventory, and managing reviews.
+
+## Adding a New Product
+
+To add a new product with variants, use an insert transaction:
+
+```json
+{
+  "@context": {
+    "schema": "http://schema.org/",
+    "ecom": "https://ecommerce-example.com/ns/"
+  },
+  "insert": [
+    {
+      "id": "ecom:products/wireless-charger",
+      "type": "ecom:Product",
+      "schema:name": "FastCharge Wireless Pad",
+      "schema:description": "15W fast wireless charging pad compatible with all Qi devices.",
+      "schema:sku": "FWP-001",
+      "ecom:category": { "id": "ecom:categories/electronics" },
+      "ecom:brand": { "id": "ecom:brands/techpro" },
+      "ecom:basePrice": 49.99,
+      "ecom:variants": [
+        {
+          "id": "ecom:variants/fwp-black",
+          "type": "ecom:ProductVariant",
+          "ecom:color": "Black",
+          "ecom:price": 49.99,
+          "ecom:stockQuantity": 100,
+          "schema:sku": "FWP-BLK"
+        },
+        {
+          "id": "ecom:variants/fwp-white",
+          "type": "ecom:ProductVariant",
+          "ecom:color": "White",
+          "ecom:price": 49.99,
+          "ecom:stockQuantity": 75,
+          "schema:sku": "FWP-WHT"
+        }
+      ]
+    }
+  ]
+}
+```
+
+The product and its variants are created in a single transaction, maintaining data consistency.
+
+## Adding a New Category
+
+Extend the category hierarchy by adding a new subcategory:
+
+```json
+{
+  "@context": {
+    "schema": "http://schema.org/",
+    "ecom": "https://ecommerce-example.com/ns/"
+  },
+  "insert": {
+    "id": "ecom:categories/electronics/accessories",
+    "type": "ecom:Category",
+    "schema:name": "Accessories",
+    "schema:description": "Phone cases, chargers, cables, and more",
+    "ecom:parentCategory": { "id": "ecom:categories/electronics" }
+  }
+}
+```
+
+Now you can assign products to this new category.
+
+## Updating Inventory
+
+When a sale occurs, decrement the stock quantity. Use `delete` + `insert` for updates:
+
+```json
+{
+  "@context": {
+    "schema": "http://schema.org/",
+    "ecom": "https://ecommerce-example.com/ns/"
+  },
+  "delete": {
+    "id": "ecom:variants/spx-128-black",
+    "ecom:stockQuantity": 45
+  },
+  "insert": {
+    "id": "ecom:variants/spx-128-black",
+    "ecom:stockQuantity": 44
+  }
+}
+```
+
+<Admonition type="info">
+  In Fluree, updates are performed by deleting the old value and inserting the new one. This maintains a complete history of all changes.
+</Admonition>
+
+## Bulk Inventory Update
+
+Update multiple variants at once:
+
+```json
+{
+  "@context": {
+    "schema": "http://schema.org/",
+    "ecom": "https://ecommerce-example.com/ns/"
+  },
+  "delete": [
+    { "id": "ecom:variants/spx-128-black", "ecom:stockQuantity": 45 },
+    { "id": "ecom:variants/spx-256-black", "ecom:stockQuantity": 32 }
+  ],
+  "insert": [
+    { "id": "ecom:variants/spx-128-black", "ecom:stockQuantity": 50 },
+    { "id": "ecom:variants/spx-256-black", "ecom:stockQuantity": 40 }
+  ]
+}
+```
+
+## Adding a Customer Review
+
+When a customer submits a review:
+
+```json
+{
+  "@context": {
+    "schema": "http://schema.org/",
+    "ecom": "https://ecommerce-example.com/ns/"
+  },
+  "insert": {
+    "id": "ecom:reviews/18",
+    "type": "ecom:Review",
+    "ecom:product": { "id": "ecom:products/wireless-charger" },
+    "ecom:reviewer": { "id": "ecom:customers/alex" },
+    "ecom:rating": 5,
+    "schema:reviewBody": "Charges my phone super fast! Love the minimalist design.",
+    "schema:datePublished": "2024-12-10"
+  }
+}
+```
+
+## Updating a Review
+
+If a customer edits their review:
+
+```json
+{
+  "@context": {
+    "schema": "http://schema.org/",
+    "ecom": "https://ecommerce-example.com/ns/"
+  },
+  "delete": {
+    "id": "ecom:reviews/18",
+    "ecom:rating": 5,
+    "schema:reviewBody": "Charges my phone super fast! Love the minimalist design."
+  },
+  "insert": {
+    "id": "ecom:reviews/18",
+    "ecom:rating": 4,
+    "schema:reviewBody": "Charges fast but gets a bit warm. Still recommend it."
+  }
+}
+```
+
+## Updating Product Price
+
+Change the base price and variant prices:
+
+```json
+{
+  "@context": {
+    "schema": "http://schema.org/",
+    "ecom": "https://ecommerce-example.com/ns/"
+  },
+  "delete": [
+    { "id": "ecom:products/smartphone-lite", "ecom:basePrice": 499.99 },
+    { "id": "ecom:variants/spl-64-blue", "ecom:price": 499.99 },
+    { "id": "ecom:variants/spl-128-blue", "ecom:price": 549.99 }
+  ],
+  "insert": [
+    { "id": "ecom:products/smartphone-lite", "ecom:basePrice": 449.99 },
+    { "id": "ecom:variants/spl-64-blue", "ecom:price": 449.99 },
+    { "id": "ecom:variants/spl-128-blue", "ecom:price": 499.99 }
+  ]
+}
+```
+
+## Deleting a Product
+
+Remove a discontinued product and its variants:
+
+```json
+{
+  "@context": {
+    "schema": "http://schema.org/",
+    "ecom": "https://ecommerce-example.com/ns/"
+  },
+  "delete": [
+    {
+      "id": "ecom:products/discontinued-item",
+      "schema:name": null,
+      "schema:description": null,
+      "schema:sku": null,
+      "ecom:category": null,
+      "ecom:brand": null,
+      "ecom:basePrice": null,
+      "ecom:variants": null
+    }
+  ]
+}
+```
+
+Using `null` as the value deletes all values for that property.
+
+<Admonition type="warning">
+  Deleting a product doesn't automatically delete its reviews. Depending on your application logic, you may want to keep reviews for historical purposes or delete them separately.
+</Admonition>
+
+## Moving a Product to a Different Category
+
+Recategorize a product:
+
+```json
+{
+  "@context": {
+    "schema": "http://schema.org/",
+    "ecom": "https://ecommerce-example.com/ns/"
+  },
+  "delete": {
+    "id": "ecom:products/wireless-charger",
+    "ecom:category": { "id": "ecom:categories/electronics" }
+  },
+  "insert": {
+    "id": "ecom:products/wireless-charger",
+    "ecom:category": { "id": "ecom:categories/electronics/accessories" }
+  }
+}
+```
+
+## Registering a New Customer
+
+Add a new customer who can then leave reviews:
+
+```json
+{
+  "@context": {
+    "schema": "http://schema.org/",
+    "ecom": "https://ecommerce-example.com/ns/"
+  },
+  "insert": {
+    "id": "ecom:customers/sam",
+    "type": "ecom:Customer",
+    "schema:givenName": "Sam",
+    "schema:familyName": "Rivera",
+    "schema:email": "sam.rivera@example.com"
+  }
+}
+```
+
+## Summary
+
+Common transaction patterns:
+
+| Operation | Pattern |
+|-----------|---------|
+| **Create** | `insert: { ... }` |
+| **Update** | `delete: { old }` + `insert: { new }` |
+| **Delete property** | `delete: { "id": "...", "prop": null }` |
+| **Bulk operations** | Use arrays: `insert: [...]` |
+
+All transactions in Fluree are immutable—the previous state is preserved in history, enabling time-travel queries and audit trails.

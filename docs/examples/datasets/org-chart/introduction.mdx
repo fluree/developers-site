@@ -1,0 +1,124 @@
+---
+title: Introduction
+---
+
+import { FlureeMermaid } from "@site/src/components/Mermaid/FlureeMermaid.jsx";
+import Admonition from "@theme/Admonition";
+
+# Org Chart & Team Structure
+
+This example demonstrates how to model organizational hierarchies and team structures using Fluree. You'll learn how to represent reporting relationships, departments, projects, and skills—patterns that appear in HR systems, team management tools, and enterprise applications.
+
+## The Scenario
+
+ACME Corp's HR team needs to:
+
+- Visualize the company's reporting structure
+- Find all employees who report to a specific manager (directly or indirectly)
+- Track which skills exist across teams
+- See who's working on which projects
+- Answer questions like "who are all the engineers under the CTO?"
+
+Graph databases are ideal for organizational data because the `reportsTo` relationship naturally forms a tree that can be traversed efficiently.
+
+## Schema Overview
+
+The organization is modeled with five main entity types:
+
+<FlureeMermaid
+  chart={`
+  graph LR
+    p(Person) -->|reportsTo| m(Person)
+    p -->|department| d(Department)
+    d -->|parentDepartment| pd(Department)
+    p -->|member of| proj(Project)
+    proj -->|lead| p
+    ps(PersonSkill) -->|person| p
+    ps -->|skill| s(Skill)
+  `}
+/>
+
+### Entities
+
+| Entity | Description |
+|--------|-------------|
+| **Person** | Employee with name, email, title, hire date |
+| **Department** | Organizational unit with optional parent |
+| **Project** | Work initiative with lead and members |
+| **Skill** | Technical or soft skill (e.g., JavaScript, Leadership) |
+| **PersonSkill** | Links a person to a skill with proficiency level |
+
+## The Reporting Hierarchy
+
+The `reportsTo` relationship creates a management tree:
+
+```
+Sarah Chen (CEO)
+├── Marcus Johnson (CTO)
+│   ├── Alex Rivera (Platform Lead)
+│   │   ├── Emma Wilson (Senior Platform Engineer)
+│   │   ├── Michael Brown (Platform Engineer)
+│   │   └── Sophia Martinez (Platform Engineer)
+│   └── Jordan Patel (Product Lead)
+│       ├── James Taylor (Senior Product Engineer)
+│       ├── Olivia Garcia (Product Engineer)
+│       └── William Anderson (Product Engineer)
+├── Lisa Wong (VP of Sales)
+│   └── Ava Thomas (Sales Manager)
+│       ├── Ethan Jackson (Account Executive)
+│       └── Mia White (Account Executive)
+├── David Kim (VP of Marketing)
+│   └── Noah Harris (Content Manager)
+│       └── Isabella Clark (Marketing Specialist)
+└── Rachel Green (HR Director)
+    └── Liam Lewis (HR Coordinator)
+```
+
+This hierarchy enables powerful transitive queries—finding everyone in someone's entire reporting chain.
+
+## Example Person
+
+Here's how an employee is represented:
+
+```json
+{
+  "id": "org:people/alex-rivera",
+  "type": "org:Person",
+  "schema:givenName": "Alex",
+  "schema:familyName": "Rivera",
+  "schema:email": "alex.rivera@acme.com",
+  "org:title": "Platform Lead",
+  "org:department": { "id": "org:departments/engineering/platform" },
+  "org:reportsTo": { "id": "org:people/marcus-johnson" },
+  "org:hireDate": "2019-11-18"
+}
+```
+
+The `reportsTo` relationship links to another person, creating the graph structure.
+
+## Skills Model
+
+Skills are tracked separately from people, with a proficiency level:
+
+```json
+{
+  "id": "org:person-skills/alex-aws",
+  "type": "org:PersonSkill",
+  "org:person": { "id": "org:people/alex-rivera" },
+  "org:skill": { "id": "org:skills/aws" },
+  "org:proficiency": "expert"
+}
+```
+
+This allows queries like "find all experts in Kubernetes" or "what skills does the Platform team have?"
+
+## What You'll Learn
+
+In the following pages, you'll explore:
+
+1. **[Querying](../querying/)** - Find direct reports, team members, and traverse the org tree
+2. **[Reasoning](../reasoning/)** - Use transitive queries to find all reports under a manager
+
+<Admonition type="tip">
+  The `reportsTo` relationship is a classic example of a graph pattern that's awkward in SQL (requiring recursive CTEs) but natural in a graph database.
+</Admonition>

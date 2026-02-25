@@ -1,0 +1,48 @@
+---
+title: Querying
+---
+
+# Querying the Knowledge Base
+
+## Find Articles by Tag
+
+```json
+{
+  "@context": { "wiki": "https://wiki-example.com/ns/", "schema": "http://schema.org/" },
+  "select": { "?article": ["schema:name", "wiki:author"] },
+  "where": { "@id": "?article", "wiki:tags": {"@id": "wiki:tags/engineering"} }
+}
+```
+
+## Citation Graph
+
+Find what an article cites:
+
+```json
+{
+  "@context": { "wiki": "https://wiki-example.com/ns/", "schema": "http://schema.org/" },
+  "select": { "?cited": ["schema:name"] },
+  "where": { "@id": "wiki:articles/microservices", "wiki:cites": "?cited" }
+}
+```
+
+Find articles citing a specific article:
+
+```json
+{
+  "@context": { "wiki": "https://wiki-example.com/ns/", "schema": "http://schema.org/" },
+  "select": { "?article": ["schema:name"] },
+  "where": { "@id": "?article", "wiki:cites": {"@id": "wiki:articles/api-guide"} }
+}
+```
+
+## Articles by Author
+
+```json
+{
+  "@context": { "wiki": "https://wiki-example.com/ns/", "schema": "http://schema.org/" },
+  "select": { "?article": ["schema:name", "wiki:createdAt"] },
+  "where": { "@id": "?article", "wiki:author": {"@id": "wiki:authors/bob"} },
+  "orderBy": [{"desc": "?createdAt"}]
+}
+```

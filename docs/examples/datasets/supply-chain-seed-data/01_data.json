@@ -1,0 +1,68 @@
+[
+  {
+    "@id": "supply-chain",
+    "@graph": [
+      {
+        "id": "sc:orgs/acme-mfg",
+        "type": "sc:Organization",
+        "schema:name": "ACME Manufacturing",
+        "sc:orgType": "Manufacturer"
+      },
+      {
+        "id": "sc:orgs/global-dist",
+        "type": "sc:Organization",
+        "schema:name": "Global Distribution Co",
+        "sc:orgType": "Distributor"
+      },
+      {
+        "id": "sc:orgs/retail-mart",
+        "type": "sc:Organization",
+        "schema:name": "RetailMart",
+        "sc:orgType": "Retailer"
+      },
+      {
+        "id": "sc:locations/factory-1",
+        "type": "sc:Location",
+        "schema:name": "Factory 1",
+        "schema:address": "100 Industrial Blvd, Detroit, MI"
+      },
+      {
+        "id": "sc:locations/warehouse-east",
+        "type": "sc:Location",
+        "schema:name": "East Coast Warehouse",
+        "schema:address": "500 Commerce Way, Newark, NJ"
+      },
+      {
+        "id": "sc:locations/store-101",
+        "type": "sc:Location",
+        "schema:name": "Store #101",
+        "schema:address": "123 Main St, New York, NY"
+      },
+      {
+        "id": "sc:shipments/ship-001",
+        "type": "sc:Shipment",
+        "sc:origin": { "id": "sc:locations/factory-1" },
+        "sc:destination": { "id": "sc:locations/warehouse-east" },
+        "sc:sender": { "id": "sc:orgs/acme-mfg" },
+        "sc:receiver": { "id": "sc:orgs/global-dist" },
+        "sc:status": "delivered"
+      },
+      {
+        "id": "sc:events/e001",
+        "type": "sc:Event",
+        "sc:shipment": { "id": "sc:shipments/ship-001" },
+        "sc:eventType": "shipped",
+        "sc:timestamp": "2024-03-01T08:00:00Z",
+        "sc:location": { "id": "sc:locations/factory-1" }
+      },
+      {
+        "id": "sc:events/e002",
+        "type": "sc:Event",
+        "sc:shipment": { "id": "sc:shipments/ship-001" },
+        "sc:eventType": "received",
+        "sc:timestamp": "2024-03-03T14:30:00Z",
+        "sc:location": { "id": "sc:locations/warehouse-east" }
+      }
+    ]
+  }
+]

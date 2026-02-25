@@ -1,0 +1,114 @@
+---
+title: Introduction
+---
+
+import { FlureeMermaid } from "@site/src/components/Mermaid/FlureeMermaid.jsx";
+import Admonition from "@theme/Admonition";
+
+# E-Commerce Product Catalog
+
+This example demonstrates how to model and query a product catalog using Fluree's graph database capabilities. You'll learn how to represent hierarchical categories, products with variants, and customer reviews—common patterns in any e-commerce application.
+
+## The Scenario
+
+Alex is building an online store and needs to:
+
+- Organize products into hierarchical categories (e.g., Electronics → Phones → Smartphones)
+- Support product variants (different sizes, colors, storage options)
+- Allow customers to leave reviews
+- Search and filter products efficiently
+
+Graph databases excel at these tasks because relationships between entities (product → category → parent category) are first-class citizens, making traversals fast and queries intuitive.
+
+## Schema Overview
+
+The catalog consists of five main entity types connected through relationships:
+
+<FlureeMermaid
+  chart={`
+  graph LR
+    p(Product) -->|category| c(Category)
+    c -->|parentCategory| pc(Category)
+    p -->|brand| b(Brand)
+    p -->|variants| v(ProductVariant)
+    r(Review) -->|product| p
+    r -->|reviewer| cust(Customer)
+  `}
+/>
+
+### Entities
+
+| Entity | Description |
+|--------|-------------|
+| **Category** | Hierarchical product categories with optional parent |
+| **Brand** | Manufacturers or brand names |
+| **Product** | Main product with base info, linked to category and brand |
+| **ProductVariant** | Specific SKU with color, size, storage, price, stock |
+| **Customer** | Registered user who can leave reviews |
+| **Review** | Rating and text feedback linked to product and customer |
+
+## Example Product
+
+Here's how a product is represented in the catalog:
+
+```json
+{
+  "id": "ecom:products/smartphone-pro-x",
+  "type": "ecom:Product",
+  "schema:name": "SmartPhone Pro X",
+  "schema:description": "Flagship smartphone with advanced camera system...",
+  "schema:sku": "SPX-001",
+  "ecom:category": { "id": "ecom:categories/electronics/phones/smartphones" },
+  "ecom:brand": { "id": "ecom:brands/techpro" },
+  "ecom:basePrice": 999.99,
+  "ecom:variants": [
+    {
+      "id": "ecom:variants/spx-128-black",
+      "type": "ecom:ProductVariant",
+      "ecom:color": "Midnight Black",
+      "ecom:storage": "128GB",
+      "ecom:price": 999.99,
+      "ecom:stockQuantity": 45,
+      "schema:sku": "SPX-128-BLK"
+    }
+  ]
+}
+```
+
+Key observations:
+
+- **Linked data**: The product references its category and brand by ID, enabling graph traversal
+- **Embedded variants**: Product variants are nested within the product
+- **Mixed vocabularies**: We use `schema:` (schema.org) for standard fields and `ecom:` for domain-specific ones
+
+## Category Hierarchy
+
+Categories form a tree structure through the `parentCategory` relationship:
+
+```
+Electronics
+├── Phones
+│   └── Smartphones
+├── Laptops
+└── Audio
+
+Clothing
+├── Men's Clothing
+└── Women's Clothing
+
+Home & Garden
+└── Kitchen
+```
+
+This structure enables powerful queries like "find all products in Electronics and its subcategories."
+
+## What You'll Learn
+
+In the following pages, you'll explore:
+
+1. **[Querying](../querying/)** - Browse products, filter by category, search by price, and calculate average ratings
+2. **[Transactions](../transactions/)** - Add new products, update inventory, and manage reviews
+
+<Admonition type="tip">
+  The hierarchical category structure and graph relationships make this dataset perfect for understanding how Fluree handles real-world e-commerce patterns.
+</Admonition>

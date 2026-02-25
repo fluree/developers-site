@@ -1,0 +1,236 @@
+---
+title: Transitive Queries
+---
+
+import Admonition from "@theme/Admonition";
+
+# Transitive Queries & Reasoning
+
+One of the most powerful features of graph databases is the ability to traverse relationships transitively—following chains of connections without knowing how deep they go.
+
+## The Challenge
+
+HR needs to answer: "Who are ALL the people who report to the CTO, directly or indirectly?"
+
+With only direct relationship queries, you'd need to:
+1. Find Marcus Johnson's direct reports (Alex, Jordan)
+2. Find their direct reports (Emma, Michael, Sophia, James, Olivia, William)
+3. Continue until you run out of levels
+
+This is tedious and requires knowing the org depth in advance. With transitive queries, it's a single query.
+
+## Transitive Path Queries
+
+The `*` modifier enables transitive traversal. Let's find everyone under Marcus Johnson:
+
+```json
+{
+  "@context": {
+    "org": "https://org-example.com/ns/",
+    "schema": "http://schema.org/"
+  },
+  "select": {
+    "?person": ["schema:givenName", "schema:familyName", "org:title"]
+  },
+  "where": { "@id": "?person", "org:reportsTo*": {"@id": "org:people/marcus-johnson"} }
+}
+```
+
+The `reportsTo*` pattern follows the `reportsTo` chain zero or more times. This returns:
+
+- Alex Rivera (direct report)
+- Jordan Patel (direct report)
+- Emma Wilson (reports to Alex)
+- Michael Brown (reports to Alex)
+- Sophia Martinez (reports to Alex)
+- James Taylor (reports to Jordan)
+- Olivia Garcia (reports to Jordan)
+- William Anderson (reports to Jordan)
+
+<Admonition type="info">
+  The `*` modifier means "zero or more hops." Use `+` for "one or more hops" if you want to exclude the starting node.
+</Admonition>
+
+## Management Chain (Upward Traversal)
+
+Find everyone in William Anderson's management chain up to the CEO:
+
+```json
+{
+  "@context": {
+    "org": "https://org-example.com/ns/",
+    "schema": "http://schema.org/"
+  },
+  "select": {
+    "?manager": ["schema:givenName", "schema:familyName", "org:title"]
+  },
+  "where": { "@id": "org:people/william-anderson", "org:reportsTo+": "?manager" }
+}
+```
+
+Result (in order of the chain):
+1. Jordan Patel (Product Lead)
+2. Marcus Johnson (CTO)
+3. Sarah Chen (CEO)
+
+## Count Reports at Each Level
+
+How many people report to each manager (directly and indirectly)?
+
+```json
+{
+  "@context": {
+    "org": "https://org-example.com/ns/",
+    "schema": "http://schema.org/"
+  },
+  "select": ["?managerName", "(count ?report)"],
+  "where": [
+    { "@id": "?manager", "@type": "org:Person", "schema:givenName": "?managerName" },
+    { "@id": "?report", "org:reportsTo+": "?manager" }
+  ],
+  "groupBy": "?managerName",
+  "orderBy": [{"desc": "(count ?report)"}]
+}
+```
+
+This shows Sarah Chen with the most reports (everyone), followed by Marcus Johnson, etc.
+
+## Find Common Manager
+
+Who is the lowest common manager of Emma Wilson and James Taylor?
+
+This requires finding where their management chains intersect:
+
+```json
+{
+  "@context": {
+    "org": "https://org-example.com/ns/",
+    "schema": "http://schema.org/"
+  },
+  "select": {
+    "?commonManager": ["schema:givenName", "schema:familyName", "org:title"]
+  },
+  "where": [
+    { "@id": "org:people/emma-wilson", "org:reportsTo+": "?commonManager" },
+    { "@id": "org:people/james-taylor", "org:reportsTo+": "?commonManager" }
+  ]
+}
+```
+
+Result: Marcus Johnson and Sarah Chen (both are in both chains). Marcus is the lowest common manager.
+
+## Organizational Depth
+
+How deep is the reporting structure from the CEO?
+
+```json
+{
+  "@context": {
+    "org": "https://org-example.com/ns/",
+    "schema": "http://schema.org/"
+  },
+  "select": ["?level", "(count ?person)"],
+  "where": [
+    { "@id": "?person", "@type": "org:Person" },
+    ["bind", "?level", "(count (path org:people/sarah-chen ^org:reportsTo* ?person))"]
+  ],
+  "groupBy": "?level",
+  "orderBy": "?level"
+}
+```
+
+<Admonition type="warning">
+  Path length queries can be more complex. The example above shows the concept—actual syntax may vary based on Fluree version.
+</Admonition>
+
+## All Engineering Staff
+
+Find everyone in Engineering and its sub-departments (Platform, Product):
+
+```json
+{
+  "@context": {
+    "org": "https://org-example.com/ns/",
+    "schema": "http://schema.org/"
+  },
+  "select": {
+    "?person": ["schema:givenName", "schema:familyName", "org:title"],
+    "?deptName": []
+  },
+  "where": [
+    { "@id": "?person", "@type": "org:Person", "org:department": "?dept" },
+    { "@id": "?dept", "org:parentDepartment*": {"@id": "org:departments/engineering"}, "schema:name": "?deptName" }
+  ]
+}
+```
+
+This finds people whose department is Engineering or has Engineering as an ancestor.
+
+## Skill Gap Analysis
+
+Find skills that exist under the CTO but not on the Platform team:
+
+```json
+{
+  "@context": {
+    "org": "https://org-example.com/ns/",
+    "schema": "http://schema.org/"
+  },
+  "select": ["?skillName"],
+  "where": [
+    { "@id": "?person", "org:reportsTo*": {"@id": "org:people/marcus-johnson"} },
+    { "@id": "?ps", "org:person": "?person", "org:skill": "?skill" },
+    { "@id": "?skill", "schema:name": "?skillName" },
+    {
+      "minus": [
+        { "@id": "?platformPerson", "org:department": {"@id": "org:departments/engineering/platform"} },
+        { "@id": "?platformPs", "org:person": "?platformPerson", "org:skill": "?skill" }
+      ]
+    }
+  ]
+}
+```
+
+The `minus` clause excludes skills that exist on the Platform team.
+
+## Comparison: SQL vs Graph
+
+In SQL, finding all reports under a manager requires a recursive CTE:
+
+```sql
+WITH RECURSIVE reports AS (
+  SELECT id, name, title, reports_to
+  FROM people
+  WHERE reports_to = 'marcus-johnson'
+
+  UNION ALL
+
+  SELECT p.id, p.name, p.title, p.reports_to
+  FROM people p
+  JOIN reports r ON p.reports_to = r.id
+)
+SELECT * FROM reports;
+```
+
+In Fluree, it's simply:
+
+```json
+{
+  "select": { "?person": ["*"] },
+  "where": { "@id": "?person", "org:reportsTo*": {"@id": "org:people/marcus-johnson"} }
+}
+```
+
+## Summary
+
+Transitive query patterns:
+
+| Pattern | Meaning |
+|---------|---------|
+| `reportsTo*` | Zero or more hops (includes self) |
+| `reportsTo+` | One or more hops (excludes self) |
+| `parentDepartment*` | Traverse department hierarchy |
+| Upward traversal | Find all managers in chain |
+| Common ancestor | Find shared manager |
+
+These patterns make organizational queries natural and efficient, without the complexity of recursive SQL or manual graph traversal.

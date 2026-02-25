@@ -1,0 +1,49 @@
+---
+title: Querying
+---
+
+# Querying Healthcare Records
+
+## Patient History
+
+Get a patient's complete history:
+
+```json
+{
+  "@context": { "schema": "http://schema.org/", "health": "https://healthcare-example.com/ns/" },
+  "select": {
+    "?patient": ["schema:givenName", "schema:familyName"],
+    "?diagnosis": ["health:description", "health:date"]
+  },
+  "where": [
+    { "@id": "health:patients/p001" },
+    { "@id": "?diagnosis", "health:patient": {"@id": "health:patients/p001"} }
+  ]
+}
+```
+
+## Provider's Patients
+
+```json
+{
+  "select": { "?patient": ["schema:givenName", "schema:familyName"] },
+  "where": { "@id": "?patient", "health:primaryProvider": {"@id": "health:providers/dr-smith"} }
+}
+```
+
+## Upcoming Appointments
+
+```json
+{
+  "select": {
+    "?appt": ["health:date", "health:reason"],
+    "?patientName": []
+  },
+  "where": [
+    { "@id": "?appt", "@type": "health:Appointment", "health:patient": "?patient", "health:date": "?date" },
+    { "@id": "?patient", "schema:givenName": "?patientName" },
+    ["filter", "(>= ?date \"2024-03-01\")"]
+  ],
+  "orderBy": "?date"
+}
+```

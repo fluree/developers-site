@@ -1,0 +1,51 @@
+[
+  {
+    "@id": "acme-corp",
+    "@graph": [
+      {
+        "id": "org:departments/executive",
+        "type": "org:Department",
+        "schema:name": "Executive",
+        "schema:description": "Executive leadership team"
+      },
+      {
+        "id": "org:departments/engineering",
+        "type": "org:Department",
+        "schema:name": "Engineering",
+        "schema:description": "Product development and technical operations"
+      },
+      {
+        "id": "org:departments/engineering/platform",
+        "type": "org:Department",
+        "schema:name": "Platform Team",
+        "schema:description": "Core infrastructure and platform services",
+        "org:parentDepartment": { "id": "org:departments/engineering" }
+      },
+      {
+        "id": "org:departments/engineering/product",
+        "type": "org:Department",
+        "schema:name": "Product Team",
+        "schema:description": "User-facing product development",
+        "org:parentDepartment": { "id": "org:departments/engineering" }
+      },
+      {
+        "id": "org:departments/sales",
+        "type": "org:Department",
+        "schema:name": "Sales",
+        "schema:description": "Revenue generation and customer acquisition"
+      },
+      {
+        "id": "org:departments/marketing",
+        "type": "org:Department",
+        "schema:name": "Marketing",
+        "schema:description": "Brand, content, and demand generation"
+      },
+      {
+        "id": "org:departments/hr",
+        "type": "org:Department",
+        "schema:name": "Human Resources",
+        "schema:description": "People operations and culture"
+      }
+    ]
+  }
+]
