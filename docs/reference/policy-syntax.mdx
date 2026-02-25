@@ -18,7 +18,7 @@ A Policy is used to decide which flakes can be viewed or modified. Here is the F
 
 | key                               | required? | type                      | example values|
 | --------------------------------- | --------- | ------------------------- | ----------------------------|
-| `f:query`                         | yes       | `WhereClause`             | `{"type": "@json", "@value": {"where": [["filter" "(= ?$this ?$identity)"]]}}` |
+| `f:query`                         | yes       | `WhereClause`             | `{"type": "@json", "@value": {"where": ["filter", "(= ?$this ?$identity)"]}}` |
 | `@context`                        | no        | `{[key: string]:TermDef}` | `{"f": "https://ns.flur.ee/"}`|
 | `@id`                             | no        | `IRI[]`                   | `"ex:MyPolicy"`|
 | `@type`                           | no        | `IRI[]`                   | `"ex:AdminPolicy"` |
@@ -71,11 +71,506 @@ Policies are processed for each flake that will be returned in this way:
 1. All `f:required` policies must evaluate to `true` to permit access the flake. Non required policies are ignored.
 2. If no policies are "required", then all the policies are checked in sequence. The first one to evaluate to `true` permits access. If no policy evaluates to true, access to the flake is denied.
 
-During policy evaluation, the `f:query` of each targeted policy is evaluated with certain variables bound:  
-`?$this` - the subject of the flake being tested  
-`?$identity` - the identity of the principal performing the action
+During policy evaluation, the `f:query` of each targeted policy is evaluated with certain variables bound (see [Policy Variables Reference](#policy-variables-reference) below).
 
 The query returns an authorization result:
 - 1+ results: flake is allowed
 - 0 results: flake is not allowed
 - error: operation is aborted
+
+## Policy Variables Reference
+
+Policy queries have access to special variables prefixed with `?$`. These are automatically bound during policy evaluation:
+
+| Variable | Description | Available In |
+|----------|-------------|--------------|
+| `?$this` | The subject (entity ID) of the flake being evaluated | All policies |
+| `?$identity` | The identity (DID or IRI) of the user making the request | All policies |
+| `?$target` | Bound by `f:targetSubject` or `f:targetProperty` where clauses | Targeting queries |
+| `?$property` | The property of the flake being evaluated | Property-targeted policies |
+
+### Using Policy Variables
+
+**`?$this`** — The entity being accessed:
+```json
+{
+  "f:query": {
+    "@type": "@json",
+    "@value": {
+      "where": [
+        { "@id": "?$this", "ex:owner": "?owner" },
+        ["filter", "(= ?owner ?$identity)"]
+      ]
+    }
+  }
+}
+```
+
+**`?$identity`** — The authenticated user:
+```json
+{
+  "f:query": {
+    "@type": "@json",
+    "@value": {
+      "where": [
+        { "@id": "?$identity", "ex:role": "admin" }
+      ]
+    }
+  }
+}
+```
+
+**`?$target`** — Used in targeting where clauses:
+```json
+{
+  "f:targetSubject": {
+    "@type": "@json",
+    "@value": {
+      "where": [{ "@id": "?$target", "@type": "ex:ConfidentialDocument" }]
+    }
+  }
+}
+```
+
+### Custom Policy Values
+
+In addition to built-in variables, you can pass custom values via the `policy-values` option or `fluree-policy-values` header. Reference them with the `?$` prefix:
+
+```json
+{
+  "f:query": {
+    "@type": "@json",
+    "@value": {
+      "where": [
+        { "@id": "?$this", "ex:department": "?dept" },
+        ["filter", "(= ?dept ?$department)"]
+      ]
+    }
+  }
+}
+```
+
+Pass the value at query time:
+```json
+{
+  "opts": {
+    "identity": "ex:alice",
+    "policy-values": { "department": "engineering" }
+  }
+}
+```
+
+## Policy Examples
+
+### Example 1: Read-Only Policy for Own Data
+
+This policy allows users to view only their own data:
+
+```json
+{
+  "@context": {
+    "f": "https://ns.flur.ee/ledger#",
+    "ex": "http://example.org/"
+  },
+  "@id": "ex:readOwnDataPolicy",
+  "f:action": { "@id": "f:view" },
+  "f:query": {
+    "@type": "@json",
+    "@value": {
+      "@context": { "ex": "http://example.org/" },
+      "where": [
+        ["filter", "(= ?$this ?$identity)"]
+      ]
+    }
+  }
+}
+```
+
+### Example 2: Role-Based Access Control
+
+This policy allows users with an admin role to view all data:
+
+```json
+{
+  "@context": {
+    "f": "https://ns.flur.ee/ledger#",
+    "ex": "http://example.org/"
+  },
+  "@id": "ex:adminViewPolicy",
+  "f:action": { "@id": "f:view" },
+  "f:query": {
+    "@type": "@json",
+    "@value": {
+      "@context": { "ex": "http://example.org/" },
+      "where": [
+        { "@id": "?$identity", "ex:role": "admin" }
+      ]
+    }
+  }
+}
+```
+
+### Example 3: Property-Level Protection
+
+This policy restricts access to sensitive properties:
+
+```json
+{
+  "@context": {
+    "f": "https://ns.flur.ee/ledger#",
+    "ex": "http://example.org/"
+  },
+  "@id": "ex:sensitivePropertyPolicy",
+  "f:targetProperty": [
+    { "@id": "ex:ssn" },
+    { "@id": "ex:salary" }
+  ],
+  "f:query": {
+    "@type": "@json",
+    "@value": {
+      "@context": { "ex": "http://example.org/" },
+      "where": [
+        { "@id": "?$identity", "ex:role": "hr" }
+      ]
+    }
+  }
+}
+```
+
+### Example 4: Write Protection
+
+This policy restricts who can modify data:
+
+```json
+{
+  "@context": {
+    "f": "https://ns.flur.ee/ledger#",
+    "ex": "http://example.org/"
+  },
+  "@id": "ex:writeProtectionPolicy",
+  "f:action": { "@id": "f:modify" },
+  "f:required": true,
+  "f:exMessage": "Only data owners can modify their records",
+  "f:query": {
+    "@type": "@json",
+    "@value": {
+      "@context": { "ex": "http://example.org/" },
+      "where": [
+        { "@id": "?$this", "ex:owner": "?owner" },
+        ["filter", "(= ?owner ?$identity)"]
+      ]
+    }
+  }
+}
+```
+
+## Using Policies with the HTTP API
+
+### Query-Level Policy via Request Body
+
+Include the `opts` object with identity information in your query:
+
+```json
+{
+  "from": "my-ledger",
+  "select": { "?s": ["*"] },
+  "where": { "@id": "?s", "@type": "ex:Person" },
+  "opts": {
+    "identity": "did:key:z6Mkk7yqnGF3YwTrLpqrW6PGsKci7dNqh1CjnvMbzrMerSeL"
+  }
+}
+```
+
+### Header-Based Policy
+
+Policies can be applied via HTTP headers:
+
+#### Identity Header
+
+```sh
+curl --location 'http://localhost:58090/fluree/query' \
+  --header 'Content-Type: application/json' \
+  --header 'fluree-identity: did:key:z6Mkk7yqnGF3YwTrLpqrW6PGsKci7dNqh1CjnvMbzrMerSeL' \
+  --data '{
+    "from": "my-ledger",
+    "select": { "?s": ["*"] },
+    "where": { "@id": "?s", "@type": "ex:Person" }
+  }'
+```
+
+#### Inline Policy Header
+
+For ad-hoc policy evaluation, use the `fluree-policy` header with a JSON policy document:
+
+```sh
+curl --location 'http://localhost:58090/fluree/query' \
+  --header 'Content-Type: application/json' \
+  --header 'fluree-identity: ex:alice' \
+  --header 'fluree-policy: {"@context":{"f":"https://ns.flur.ee/ledger#"},"f:query":{"@type":"@json","@value":{"where":["filter","(= ?$this ?$identity)"]}}}' \
+  --data '{
+    "from": "my-ledger",
+    "select": { "?s": ["*"] },
+    "where": { "@id": "?s" }
+  }'
+```
+
+#### Policy Values Header
+
+Bind dynamic values for policy evaluation:
+
+```sh
+curl --location 'http://localhost:58090/fluree/query' \
+  --header 'Content-Type: application/json' \
+  --header 'fluree-identity: ex:alice' \
+  --header 'fluree-policy-values: {"department":"engineering"}' \
+  --data '{
+    "from": "my-ledger",
+    "select": { "?s": ["*"] },
+    "where": { "@id": "?s", "@type": "ex:Employee" }
+  }'
+```
+
+## Policy Values Binding
+
+Policy values allow you to pass dynamic parameters to policy queries. In your policy `f:query`, reference bound values with the `?$` prefix:
+
+```json
+{
+  "f:query": {
+    "@type": "@json",
+    "@value": {
+      "where": [
+        { "@id": "?$this", "ex:department": "?dept" },
+        ["filter", "(= ?dept ?$department)"]
+      ]
+    }
+  }
+}
+```
+
+When evaluating this policy, pass the department value:
+
+```json
+{
+  "opts": {
+    "identity": "ex:alice",
+    "policy-values": {
+      "department": "engineering"
+    }
+  }
+}
+```
+
+## Default Allow Behavior
+
+By default, if no policies are defined, all data is accessible. When policies are added:
+
+- If no policy matches a flake, access is **denied**
+- At least one non-required policy must permit access, OR
+- All required policies must permit access
+
+To implement a default-allow pattern with specific restrictions, ensure you have a catch-all policy:
+
+```json
+{
+  "@id": "ex:defaultAllowPolicy",
+  "f:query": {
+    "@type": "@json",
+    "@value": {
+      "where": ["filter", "true"]
+    }
+  }
+}
+```
+
+Then add required policies to restrict specific data.
+
+## Identity-Based Policy Patterns
+
+These examples demonstrate common patterns for user-specific access control.
+
+### Linking DIDs to Application Users
+
+A common pattern is to link a DID (used for authentication) to an application-level user entity:
+
+```json
+{
+  "@context": {
+    "f": "https://ns.flur.ee/ledger#",
+    "ex": "http://example.org/",
+    "schema": "http://schema.org/"
+  },
+  "insert": [
+    {
+      "@id": "ex:alice",
+      "@type": "ex:User",
+      "schema:name": "Alice",
+      "schema:email": "alice@example.com",
+      "schema:ssn": "111-11-1111"
+    },
+    {
+      "@id": "did:key:z6MkqtpqKGs4Et8mqBLBBAitDC1DPBiTJEbu26AcBX75B5rR",
+      "f:policyClass": [{"@id": "ex:UserPolicy"}],
+      "ex:user": {"@id": "ex:alice"}
+    }
+  ]
+}
+```
+
+The DID entity has:
+- `f:policyClass` — Links to policy classes that apply to this identity
+- `ex:user` — Custom property linking to the application user
+
+### Property-Level Identity Restriction
+
+Restrict sensitive properties so users can only see their own data:
+
+```json
+{
+  "@context": {
+    "f": "https://ns.flur.ee/ledger#",
+    "ex": "http://example.org/",
+    "schema": "http://schema.org/"
+  },
+  "insert": [
+    {
+      "@id": "ex:ssnRestriction",
+      "@type": ["f:AccessPolicy", "ex:UserPolicy"],
+      "f:required": true,
+      "f:onProperty": [{"@id": "schema:ssn"}],
+      "f:action": {"@id": "f:view"},
+      "f:query": {
+        "@type": "@json",
+        "@value": {
+          "@context": {"ex": "http://example.org/"},
+          "where": {
+            "@id": "?$identity",
+            "ex:user": {"@id": "?$this"}
+          }
+        }
+      }
+    },
+    {
+      "@id": "ex:defaultAllow",
+      "@type": ["f:AccessPolicy", "ex:UserPolicy"],
+      "f:action": {"@id": "f:view"},
+      "f:query": {"@type": "@json", "@value": {}}
+    }
+  ]
+}
+```
+
+How this works:
+1. `ex:ssnRestriction` is marked `f:required` — it must pass for SSN access
+2. The query checks if `?$identity` (the DID) has `ex:user` pointing to `?$this` (the entity with the SSN)
+3. `ex:defaultAllow` permits viewing other data without restriction
+4. Result: Users can see all data, but only their own SSN
+
+### Query Behavior with Identity Policies
+
+When querying with an identity that has the above policies:
+
+```json
+{
+  "from": "my-ledger",
+  "select": {"?s": ["*"]},
+  "where": {"@id": "?s", "@type": "ex:User"},
+  "opts": {
+    "identity": "did:key:z6MkqtpqKGs4Et8mqBLBBAitDC1DPBiTJEbu26AcBX75B5rR"
+  }
+}
+```
+
+Returns:
+```json
+[
+  {
+    "@id": "ex:alice",
+    "@type": "ex:User",
+    "schema:name": "Alice",
+    "schema:email": "alice@example.com",
+    "schema:ssn": "111-11-1111"
+  },
+  {
+    "@id": "ex:bob",
+    "@type": "ex:User",
+    "schema:name": "Bob",
+    "schema:email": "bob@example.com"
+  }
+]
+```
+
+Alice sees her own SSN, but Bob's SSN is filtered out.
+
+### User Can Only Modify Own Data
+
+Restrict modifications so users can only change their own records:
+
+```json
+{
+  "@id": "ex:modifyOwnDataOnly",
+  "@type": ["f:AccessPolicy", "ex:UserPolicy"],
+  "f:required": true,
+  "f:action": {"@id": "f:modify"},
+  "f:exMessage": "You can only modify your own data",
+  "f:query": {
+    "@type": "@json",
+    "@value": {
+      "@context": {"ex": "http://example.org/"},
+      "where": {
+        "@id": "?$identity",
+        "ex:user": {"@id": "?$this"}
+      }
+    }
+  }
+}
+```
+
+### Team-Based Access
+
+Allow users to access data belonging to their team:
+
+```json
+{
+  "@id": "ex:teamAccess",
+  "@type": ["f:AccessPolicy", "ex:UserPolicy"],
+  "f:action": {"@id": "f:view"},
+  "f:query": {
+    "@type": "@json",
+    "@value": {
+      "@context": {"ex": "http://example.org/"},
+      "where": [
+        {"@id": "?$identity", "ex:user": "?user"},
+        {"@id": "?user", "ex:team": "?team"},
+        {"@id": "?$this", "ex:team": "?team"}
+      ]
+    }
+  }
+}
+```
+
+This allows access when:
+1. The identity's linked user belongs to a team
+2. The target entity belongs to the same team
+
+### Hierarchical Access (Manager Can See Reports)
+
+Allow managers to see data of their direct reports:
+
+```json
+{
+  "@id": "ex:managerAccess",
+  "@type": ["f:AccessPolicy", "ex:UserPolicy"],
+  "f:action": {"@id": "f:view"},
+  "f:query": {
+    "@type": "@json",
+    "@value": {
+      "@context": {"ex": "http://example.org/"},
+      "where": [
+        {"@id": "?$identity", "ex:user": "?manager"},
+        {"@id": "?$this", "ex:reportsTo": {"@id": "?manager"}}
+      ]
+    }
+  }
+}
+```

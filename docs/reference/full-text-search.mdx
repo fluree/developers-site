@@ -1,0 +1,255 @@
+# Full-Text Search (BM25)
+
+<div class="overview">
+  Fluree supports full-text search using the BM25 algorithm through virtual graphs. This enables powerful text search capabilities including stemming, stopword removal, and relevance scoring.
+</div>
+
+---
+
+## Overview
+
+BM25 (Best Match 25) is a ranking function used by search engines to estimate the relevance of documents to a search query. Fluree implements BM25 through virtual graphs, which are computed indexes that stay synchronized with your data.
+
+Key features:
+- **Automatic indexing** — Data matching your query is automatically indexed
+- **Relevance scoring** — Results ranked by BM25 score
+- **Stemming** — Words reduced to root form (e.g., "running" → "run")
+- **Stopwords** — Common words filtered out (e.g., "the", "and")
+- **Incremental updates** — Index updates automatically as data changes
+
+## Creating a BM25 Index
+
+Define a BM25 index by inserting an entity with types `f:VirtualGraph` and `fidx:BM25`:
+
+```json
+{
+  "@context": {
+    "f": "https://ns.flur.ee/ledger#",
+    "fidx": "https://ns.flur.ee/index#",
+    "ex": "http://example.org/"
+  },
+  "insert": {
+    "@id": "ex:articleSearch",
+    "@type": ["f:VirtualGraph", "fidx:BM25"],
+    "f:virtualGraph": "articleSearch",
+    "fidx:stemmer": {"@id": "fidx:snowballStemmer-en"},
+    "fidx:stopwords": {"@id": "fidx:stopwords-en"},
+    "f:query": {
+      "@type": "@json",
+      "@value": {
+        "@context": {"ex": "http://example.org/"},
+        "where": [{"@id": "?x", "ex:author": "?author"}],
+        "select": {"?x": ["@id", "ex:title", "ex:summary"]}
+      }
+    }
+  }
+}
+```
+
+### Required Properties
+
+| Property | Description |
+|----------|-------------|
+| `@type` | Must include both `f:VirtualGraph` and `fidx:BM25` |
+| `f:virtualGraph` | Name used to reference the index in queries |
+| `f:query` | Query defining which data to index |
+
+### Configuration Options
+
+| Property | Description | Default |
+|----------|-------------|---------|
+| `fidx:stemmer` | Stemmer algorithm for the index | None |
+| `fidx:stopwords` | Stopwords list to filter common words | None |
+
+### Available Stemmers
+
+| Stemmer ID | Language |
+|------------|----------|
+| `fidx:snowballStemmer-en` | English |
+
+### Available Stopword Lists
+
+| Stopwords ID | Language |
+|--------------|----------|
+| `fidx:stopwords-en` | English |
+
+### Index Query Requirements
+
+The `f:query` property defines what data gets indexed. It has specific requirements:
+
+1. **Must use subgraph selector** — The `select` must be an object, not an array
+2. **Must include `@id`** — The subgraph selector must include `"@id"`
+3. **Cannot use wildcard** — Cannot use `"*"` in the selector
+
+**Valid:**
+```json
+{"select": {"?x": ["@id", "ex:title", "ex:summary"]}}
+```
+
+**Invalid:**
+```json
+{"select": ["?x", "?title"]}  // Not a subgraph selector
+{"select": {"?x": ["ex:title"]}}  // Missing @id
+{"select": {"?x": ["@id", "*"]}}  // Contains wildcard
+```
+
+## Querying a BM25 Index
+
+Query the index using a `graph` clause with the index name prefixed by `##`:
+
+```json
+{
+  "@context": {
+    "ex": "http://example.org/",
+    "fidx": "https://ns.flur.ee/index#"
+  },
+  "select": ["?doc", "?score", "?title"],
+  "where": [
+    ["graph", "##articleSearch", {
+      "fidx:target": "search terms here",
+      "fidx:limit": 10,
+      "fidx:result": {
+        "@id": "?doc",
+        "fidx:score": "?score"
+      }
+    }],
+    {"@id": "?doc", "ex:title": "?title"}
+  ]
+}
+```
+
+### Query Parameters
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `fidx:target` | Yes | Search query string |
+| `fidx:limit` | No | Maximum number of results |
+| `fidx:sync` | No | Wait for index to be current (default: false) |
+| `fidx:result` | Yes | Result binding pattern |
+
+### Result Binding
+
+The `fidx:result` object binds variables to the search results:
+
+```json
+{
+  "fidx:result": {
+    "@id": "?doc",
+    "fidx:score": "?score"
+  }
+}
+```
+
+- `@id` binds the IRI of matching documents
+- `fidx:score` binds the BM25 relevance score
+
+## Complete Example
+
+### 1. Insert Data
+
+```json
+{
+  "@context": {"ex": "http://example.org/"},
+  "insert": [
+    {
+      "@id": "ex:article1",
+      "ex:author": "Jane Smith",
+      "ex:title": "Introduction to Graph Databases",
+      "ex:summary": "Graph databases store data as nodes and edges, enabling complex relationship queries."
+    },
+    {
+      "@id": "ex:article2",
+      "ex:author": "John Doe",
+      "ex:title": "Semantic Web Technologies",
+      "ex:summary": "The semantic web uses RDF and linked data to create machine-readable content."
+    },
+    {
+      "@id": "ex:article3",
+      "ex:author": "Jane Smith",
+      "ex:title": "Building Knowledge Graphs",
+      "ex:summary": "Knowledge graphs combine structured data with semantic relationships for AI applications."
+    }
+  ]
+}
+```
+
+### 2. Create Index
+
+```json
+{
+  "@context": {
+    "f": "https://ns.flur.ee/ledger#",
+    "fidx": "https://ns.flur.ee/index#",
+    "ex": "http://example.org/"
+  },
+  "insert": {
+    "@id": "ex:articleIndex",
+    "@type": ["f:VirtualGraph", "fidx:BM25"],
+    "f:virtualGraph": "articleIndex",
+    "fidx:stemmer": {"@id": "fidx:snowballStemmer-en"},
+    "fidx:stopwords": {"@id": "fidx:stopwords-en"},
+    "f:query": {
+      "@type": "@json",
+      "@value": {
+        "@context": {"ex": "http://example.org/"},
+        "where": [{"@id": "?x", "ex:author": "?author"}],
+        "select": {"?x": ["@id", "ex:title", "ex:summary"]}
+      }
+    }
+  }
+}
+```
+
+### 3. Search the Index
+
+```json
+{
+  "@context": {
+    "ex": "http://example.org/",
+    "fidx": "https://ns.flur.ee/index#"
+  },
+  "select": ["?doc", "?score", "?title"],
+  "where": [
+    ["graph", "##articleIndex", {
+      "fidx:target": "semantic knowledge graph",
+      "fidx:limit": 10,
+      "fidx:result": {
+        "@id": "?doc",
+        "fidx:score": "?score"
+      }
+    }],
+    {"@id": "?doc", "ex:title": "?title"}
+  ],
+  "orderBy": "(desc ?score)"
+}
+```
+
+This returns articles ranked by relevance to "semantic knowledge graph", with stemming applied (e.g., "graph" matches "graphs").
+
+## How BM25 Scoring Works
+
+BM25 scores documents based on:
+
+1. **Term frequency (TF)** — How often search terms appear in a document
+2. **Inverse document frequency (IDF)** — How rare the terms are across all documents
+3. **Document length normalization** — Adjusts for document size
+
+Higher scores indicate more relevant documents. Scores are unbounded but typically range from 0 to several units depending on query and corpus.
+
+## Index Updates
+
+BM25 indexes update automatically when data changes:
+
+- **Inserts** — New documents matching the index query are added
+- **Updates** — Modified documents are re-indexed
+- **Deletes** — Removed documents are removed from the index
+
+Updates happen asynchronously. Use `fidx:sync: true` in queries if you need to ensure the index is current.
+
+## Best Practices
+
+1. **Be specific with index queries** — Index only the data you need to search
+2. **Use appropriate language settings** — Match stemmer and stopwords to your content language
+3. **Include all searchable fields** — The index only searches fields in the `select` subgraph
+4. **Use `fidx:limit`** — Limit results for better performance on large datasets
+5. **Order by score** — Use `orderBy: "(desc ?score)"` to show most relevant results first

@@ -73,6 +73,159 @@ Arbitrarily nested JSON-LD is also supported:
 
 See [the W3C standard for JSON-LD](https://www.w3.org/TR/json-ld11/) for more information on structuring JSON-LD objects.
 
+## Multi-Value Properties: @set vs @list
+
+In Fluree, properties can have multiple values. By default, multi-value properties use **set semantics** (`@set`), meaning values are unordered and unique. For ordered collections, use **list semantics** (`@list`).
+
+### Default Behavior: @set (Unordered)
+
+By default, when you provide an array of values, Fluree treats them as an unordered set:
+
+```json
+{
+  "ledger": "my-ledger",
+  "insert": {
+    "@id": "ex:movie1",
+    "ex:starring": ["Alice", "Bob", "Charlie"]
+  }
+}
+```
+
+**Set characteristics:**
+- **Unordered** — Query results may return values in any order
+- **Unique** — Duplicate values are automatically deduplicated
+- **Efficient** — Optimized for membership testing and updates
+
+When querying, the order of values is not guaranteed:
+```json
+["Charlie", "Alice", "Bob"]  // Order may vary
+```
+
+### Ordered Collections: @list
+
+When order matters, use the `@list` container. Define it in your context:
+
+```json
+{
+  "@context": {
+    "ex": "http://example.org/",
+    "ex:playlist": {"@container": "@list"}
+  },
+  "ledger": "my-ledger",
+  "insert": {
+    "@id": "ex:myPlaylist",
+    "ex:playlist": ["Song A", "Song B", "Song C"]
+  }
+}
+```
+
+**List characteristics:**
+- **Ordered** — Values maintain their sequence
+- **Allows duplicates** — The same value can appear multiple times
+- **Atomic updates** — Must replace entire list to modify
+
+When querying, the order is preserved:
+```json
+["Song A", "Song B", "Song C"]  // Order guaranteed
+```
+
+### Inline @list Syntax
+
+You can also specify `@list` inline without modifying the context:
+
+```json
+{
+  "ledger": "my-ledger",
+  "insert": {
+    "@id": "ex:recipe1",
+    "ex:steps": {
+      "@list": ["Preheat oven", "Mix ingredients", "Bake for 30 min"]
+    }
+  }
+}
+```
+
+### Lists with Object References
+
+Lists can contain references to other entities:
+
+```json
+{
+  "@context": {
+    "ex": "http://example.org/",
+    "ex:orderedFriends": {"@container": "@list"}
+  },
+  "ledger": "my-ledger",
+  "insert": [
+    {"@id": "ex:alice", "ex:name": "Alice"},
+    {"@id": "ex:bob", "ex:name": "Bob"},
+    {
+      "@id": "ex:charlie",
+      "ex:name": "Charlie",
+      "ex:orderedFriends": [
+        {"@id": "ex:alice"},
+        {"@id": "ex:bob"}
+      ]
+    }
+  ]
+}
+```
+
+### When to Use Each
+
+| Use Case | Container | Reason |
+|----------|-----------|--------|
+| Tags, categories, roles | `@set` (default) | Order doesn't matter |
+| Cast members, authors | `@set` (default) | Membership is what matters |
+| Playlist, queue, steps | `@list` | Sequence is important |
+| Priority ranking | `@list` | Position has meaning |
+| History, log entries | `@list` | Chronological order matters |
+
+### Updating Lists vs Sets
+
+**Sets** support incremental updates — you can add or remove individual values:
+
+```json
+{
+  "ledger": "my-ledger",
+  "insert": {
+    "@id": "ex:movie1",
+    "ex:starring": ["Diana"]
+  }
+}
+```
+
+This adds "Diana" to the existing cast without removing others.
+
+**Lists** require full replacement — you cannot insert at a specific position:
+
+```json
+{
+  "@context": {"ex:steps": {"@container": "@list"}},
+  "ledger": "my-ledger",
+  "where": {"@id": "ex:recipe1", "ex:steps": "?oldSteps"},
+  "delete": {"@id": "ex:recipe1", "ex:steps": "?oldSteps"},
+  "insert": {
+    "@id": "ex:recipe1",
+    "ex:steps": {
+      "@list": ["Preheat oven", "Grease pan", "Mix ingredients", "Bake for 30 min"]
+    }
+  }
+}
+```
+
+### Single Values
+
+When a property has only one value, both `@set` and `@list` return the value directly (not wrapped in an array):
+
+```json
+// Stored as @list with one item
+{"ex:playlist": ["Only Song"]}
+
+// Returns as single value
+{"ex:playlist": "Only Song"}
+```
+
 ## Sample Data & Ledger
 
 You can recreate and test each of the sample transactions in this page using the json objects below to create the "media" ledger and transact in your sample data.
@@ -164,7 +317,7 @@ In this example we will insert two records, one for the book Hyperion, and the o
 
 ## Transaction object: delete
 
-To delete a subject, the transaction object must include the `"delete"` key. We will also often use the `where` key to bind existing data to logic variables, and then use them to qualify the exact existing data to be retracted. [For more on the `where` clause, see our Reference Doc on FlureeQL Syntax](/docs/reference/flureeql-query-syntax/#where).
+To delete a subject, the transaction object must include the `"delete"` key. We will also often use the `where` key to bind existing data to logic variables, and then use them to qualify the exact existing data to be retracted. [For more on the `where` clause, see our Reference Doc on FlureeQL Syntax](/docs/reference/querying/where-clauses/).
 
 ### Deleting All Facts on a Subject
 
