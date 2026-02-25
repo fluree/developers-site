@@ -126,6 +126,41 @@ Defines HTTP API configuration.
 **Properties**:
 - `httpPort`: HTTP port number (positive integer)
 - `maxTxnWaitMs` (optional): Maximum transaction wait time in milliseconds (positive integer)
+- `closedMode` (optional): Enable closed mode requiring authentication (boolean)
+- `rootIdentities` (optional): Array of trusted DID identities for authentication
+- `corsOrigins` (optional): Array of allowed CORS origins (strings or regex patterns)
+
+#### Closed Mode
+
+When `closedMode` is set to `true`, the server requires authentication for all requests. Requests must include a valid credential (JWT) signed by one of the `rootIdentities`.
+
+```json
+{
+  "@id": "http",
+  "@type": "API",
+  "httpPort": 8090,
+  "closedMode": true,
+  "rootIdentities": [
+    "did:key:z6Mkk7yqnGF3YwTrLpqrW6PGsKci7dNqh1CjnvMbzrMerSeL"
+  ]
+}
+```
+
+#### CORS Configuration
+
+The `corsOrigins` property accepts an array of strings. Each string can be:
+- An exact origin: `"http://localhost:3000"`
+- A wildcard: `"*"` (allows all origins)
+- A regex pattern: `"^https://.*\\.example\\.com$"`
+
+```json
+{
+  "@id": "http",
+  "@type": "API",
+  "httpPort": 8090,
+  "corsOrigins": ["http://localhost:3000", "https://app.example.com"]
+}
+```
 
 <!-- ## Profiles (Future Functionality)
 
@@ -144,6 +179,80 @@ Profiles will allow you to override specific configuration values for different 
   ]
 }
 ``` -->
+
+## Dynamic Configuration Values
+
+Configuration properties can be set dynamically using environment variables or Java system properties via the `ConfigurationValue` pattern. This allows you to avoid hardcoding sensitive values like credentials or paths that vary between environments.
+
+### ConfigurationValue Structure
+
+```json
+{
+  "@type": "ConfigurationValue",
+  "env": "ENVIRONMENT_VARIABLE_NAME",
+  "java": "java.system.property.name",
+  "default": "fallback-value"
+}
+```
+
+**Properties**:
+- `env` (optional): Environment variable name to read from
+- `java` (optional): Java system property name to read from
+- `default` (optional): Default value if neither env nor java property is set
+
+Resolution order: `env` → `java` → `default`
+
+### Examples
+
+#### Using Environment Variables
+
+```json
+{
+  "@id": "localDiskStorage",
+  "@type": "Storage",
+  "filePath": {
+    "@type": "ConfigurationValue",
+    "env": "FLUREE_DATA_PATH",
+    "default": "/opt/fluree-server/data"
+  }
+}
+```
+
+#### Using Java System Properties
+
+```json
+{
+  "@id": "http",
+  "@type": "API",
+  "httpPort": {
+    "@type": "ConfigurationValue",
+    "java": "fluree.server.port",
+    "default": "8090"
+  }
+}
+```
+
+#### S3 Credentials Example
+
+```json
+{
+  "@id": "s3Storage",
+  "@type": "Storage",
+  "s3Endpoint": "https://s3.amazonaws.com",
+  "s3Bucket": {
+    "@type": "ConfigurationValue",
+    "env": "AWS_S3_BUCKET"
+  },
+  "s3AccessKey": {
+    "@type": "ConfigurationValue",
+    "env": "AWS_ACCESS_KEY_ID"
+  },
+  "s3SecretKey": {
+    "@type": "ConfigurationValue",
+    "env": "AWS_SECRET_ACCESS_KEY"
+  }
+}
+```
 
 ## Storage Backend Options
 
