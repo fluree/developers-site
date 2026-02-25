@@ -1,0 +1,153 @@
+import Admonition from "@theme/Admonition";
+
+# FlureeQL Query Syntax
+
+<div class="overview">
+  FlureeQL is a JSON-based query language for retrieving Fluree data. It is
+  modeled as a JSON-representation of the W3C SPARQL standard.
+</div>
+
+---
+
+## Query Object
+
+FlureeQL queries are JSON with the following keys:
+
+| key                        | required? | type                  |
+| -------------------------- | --------- | --------------------- |
+| [`@context`](#context)     | no        | `object`              |
+| [`from`](#from)            | yes       | `string` or `array`   |
+| [`where`](./where-clauses) | no        | `array` or `object`   |
+| [`select`](./select-clauses) | yes*    | `array` or `object`   |
+| [`construct`](./select-clauses#construct) | no* | `array`       |
+| [`values`](./modifiers#values) | no    | `array`               |
+| [`t`](./modifiers#t)       | no        | `string` or `integer` |
+| [`groupBy`](./aggregations#groupby) | no | `array` or `string` |
+| [`having`](./aggregations#having) | no | `array` or `string`   |
+| [`orderBy`](./modifiers#orderby) | no  | `string` or `array`   |
+| [`limit`](./modifiers#limit) | no      | `integer`             |
+| [`offset`](./modifiers#offset) | no    | `integer`             |
+
+> **NOTE**: Either `select` or `construct` is required, but not both.
+
+### Advanced Features
+
+| Feature | Description |
+| ------- | ----------- |
+| [Property Paths](./advanced-features#property-paths-transitive-queries) | Traverse relationships across multiple hops |
+| [Subqueries](./advanced-features#subqueries) | Nest queries within queries |
+| [Time Travel](./advanced-features#time-travel-in-queries) | Query historical data using `@t:`, `@iso:`, or `@sha:` syntax |
+| [Value Map Filters](./advanced-features#value-map-filters) | Inline filters in where conditions |
+| [Federated Queries](./advanced-features#federated-queries-multi-ledger) | Query across multiple ledgers |
+| [Vector Search](./advanced-features#vector-search) | Similarity search with embeddings |
+
+### Examples
+
+<details>
+<summary>Basic query example</summary>
+```json
+{
+  "from": "cookbook/base",
+  "where": {
+    "@id": "?s",
+    "bestFriend": "?friend"
+  },
+  "select": {
+    "?s": [
+      "*",
+      {
+        "bestFriend": [
+          "*"
+        ]
+      }
+    ]
+  },
+}
+```
+</details>
+
+## `@context`
+
+| required? | type     |
+| --------- | -------- |
+| no        | `object` |
+
+Understanding the use of `@context` within the W3C JSON-LD standard can be important for using it properly within queries. For an explanation of how to use `@context` in FlureeQL, consider first reading our [Guides page on Working with Context](/docs/learn/working-with-data/context-patterns/).
+
+### Examples
+
+<details>
+<summary>Example of a Query without `@context`</summary>
+
+```json
+{
+  "from": "cookbook/base",
+  "where": {
+    "@id": "?s",
+    "@type": "http://example.org/Person"
+  },
+  "select": {
+    "?s": ["http://schema.org/name"]
+  }
+}
+```
+
+</details>
+
+<details>
+<summary>Example of a Query with `@context`</summary>
+
+```json
+{
+  "@context": { "schema": "http://schema.org/", "ex": "http://example.org/" },
+  "from": "cookbook/base",
+  "where": {
+    "@id": "?s",
+    "@type": "ex:Person"
+  },
+  "select": {
+    "?s": ["schema:name"]
+  }
+}
+```
+
+</details>
+
+## `from`
+
+| required? | type     |
+| --------- | -------- |
+| yes       | `string` |
+
+The `from` clause specifies the ledger to query. It takes the same value that would have been supplied to the `/create` endpoint when the ledger was created.
+
+If I named a ledger `"cookbook/base"` when I created it, then when I queried it, I would use `"from": "cookbook/base"` to identify that this query should target that particular ledger.
+
+### Examples
+
+<details>
+<summary>Querying a ledger named `"cookbook/base"`</summary>
+
+```json
+{
+  "@context": { "schema": "http://schema.org/", "ex": "http://example.org/" },
+  "from": "cookbook/base",
+  "where": {
+    "@id": "?s",
+    "@type": "ex:Person"
+  },
+  "select": {
+    "?s": ["schema:name"]
+  }
+}
+```
+
+</details>
+
+## Next Steps
+
+- [Select Clauses](./select-clauses) — Control what data is returned
+- [Where Clauses](./where-clauses) — Filter and match data patterns
+- [Aggregations & Grouping](./aggregations) — Group and aggregate results
+- [Modifiers](./modifiers) — Order, limit, and paginate results
+- [Advanced Features](./advanced-features) — Property paths, subqueries, federated queries, and more

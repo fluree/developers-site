@@ -1,0 +1,537 @@
+import Admonition from "@theme/Admonition";
+
+# Advanced Query Features
+
+Advanced query patterns for complex data retrieval scenarios.
+
+## Property Paths (Transitive Queries)
+
+Property paths allow you to traverse relationships across multiple hops in a single query. This is useful for querying hierarchical data like organizational structures, social networks, or category trees.
+
+### Syntax
+
+| Pattern | Description | Example |
+| ------- | ----------- | ------- |
+| `<prop+>` | One or more hops (transitive closure) | `"<ex:knows+>"` |
+| `<prop*>` | Zero or more hops (includes self) | `"<ex:knows*>"` |
+
+The property is wrapped in angle brackets with `+` or `*` suffix.
+
+### One or More Hops (`+`)
+
+Find everyone Alice knows directly or indirectly:
+
+```json
+{
+  "@context": {"ex": "http://example.org/"},
+  "select": "?who",
+  "where": {"@id": "ex:alice", "<ex:knows+>": "?who"}
+}
+```
+
+If Alice knows Bob, and Bob knows Carol, this returns both Bob and Carol.
+
+### Zero or More Hops (`*`)
+
+The `*` operator includes the starting node itself (reflexive transitive closure):
+
+```json
+{
+  "@context": {"ex": "http://example.org/"},
+  "select": "?who",
+  "where": {"@id": "ex:alice", "<ex:knows*>": "?who"}
+}
+```
+
+This returns Alice, Bob, and Carol (Alice is included because of zero hops).
+
+### Finding Ancestors
+
+Property paths work in both directions. Find all ancestors of a person:
+
+```json
+{
+  "@context": {"ex": "http://example.org/"},
+  "select": "?ancestor",
+  "where": {"@id": "?ancestor", "<ex:parent+>": {"@id": "ex:alice"}}
+}
+```
+
+### All Pairs
+
+You can use variables on both sides to find all connected pairs:
+
+```json
+{
+  "@context": {"ex": "http://example.org/"},
+  "select": ["?person", "?connection"],
+  "where": {"@id": "?person", "<ex:knows+>": "?connection"}
+}
+```
+
+### Cycle Handling
+
+Property paths handle cycles automatically. If Alice knows Bob and Bob knows Alice, the query will still terminate and return the correct results without infinite loops.
+
+## Subqueries
+
+Subqueries allow you to nest one query inside another. They are useful for:
+- Computing aggregates and using them in the parent query
+- Limiting results before joining with other data
+- Combining results from multiple independent queries
+
+### Syntax
+
+```json
+["query", { ...query object... }]
+```
+
+Subqueries are placed in the `where` clause as an array with `"query"` as the first element.
+
+### Basic Subquery
+
+Join data from a subquery with the parent query:
+
+```json
+{
+  "@context": {"schema": "http://schema.org/"},
+  "select": ["?name", "?age"],
+  "where": [
+    {"@id": "?s", "schema:name": "?name"},
+    ["query", {
+      "select": ["?s", "?age"],
+      "where": {"@id": "?s", "schema:age": "?age"}
+    }]
+  ],
+  "orderBy": "?name"
+}
+```
+
+Variables bound in the subquery (`?s`, `?age`) are available in the parent query.
+
+### Subquery with Aggregate
+
+Calculate an aggregate in a subquery and use it in the parent:
+
+```json
+{
+  "@context": {"ex": "http://example.org/"},
+  "select": ["?person", "?favNums"],
+  "where": [
+    {"@id": "?person", "ex:favNums": "?favNums"},
+    ["filter", "(> ?favNums ?avgFavNum)"],
+    ["query", {
+      "where": {"ex:favNums": "?favN"},
+      "select": ["(as (avg ?favN) ?avgFavNum)"]
+    }]
+  ]
+}
+```
+
+This finds people whose favorite numbers are above the overall average.
+
+### Subquery with Limit
+
+Limit results in a subquery before joining:
+
+```json
+{
+  "@context": {"schema": "http://schema.org/", "ex": "http://example.org/"},
+  "select": ["?age", "?favNums"],
+  "where": [
+    {"schema:age": "?age"},
+    ["query", {
+      "select": ["?favNums"],
+      "where": {"ex:favNums": "?favNums"},
+      "limit": 2
+    }]
+  ]
+}
+```
+
+### selectDistinct in Subqueries
+
+Use `selectDistinct` to get unique values from a subquery:
+
+```json
+{
+  "select": ["?name", "?email"],
+  "where": [
+    {"schema:name": "?name"},
+    ["query", {
+      "selectDistinct": ["?email"],
+      "where": {"schema:email": "?email"}
+    }]
+  ]
+}
+```
+
+### Multiple Subqueries
+
+You can have multiple subqueries in the same where clause:
+
+```json
+{
+  "select": ["?age", "?favNums"],
+  "where": [
+    ["query", {"select": ["?age"], "where": {"schema:age": "?age"}}],
+    ["query", {"select": ["?favNums"], "where": {"ex:favNums": "?favNums"}}]
+  ]
+}
+```
+
+### Nested Subqueries
+
+Subqueries can be nested within other subqueries:
+
+```json
+{
+  "select": ["?name", "?email", "?age"],
+  "where": [
+    {"schema:name": "?name"},
+    ["query", {
+      "selectDistinct": ["?age", "?email"],
+      "where": [
+        {"schema:age": "?age"},
+        ["query", {"select": ["?email"], "where": {"schema:email": "?email"}}]
+      ]
+    }]
+  ]
+}
+```
+
+### Subqueries in Union
+
+Subqueries can be used inside union operations:
+
+```json
+{
+  "select": ["?person", "?avgFavNum"],
+  "where": [
+    ["union",
+      ["query", {
+        "where": {"@id": "ex:alice", "ex:favNums": "?favN"},
+        "select": ["(as (str \"Alice\") ?person)", "(as (avg ?favN) ?avgFavNum)"]
+      }],
+      ["query", {
+        "where": {"@id": "ex:bob", "ex:favNums": "?favN"},
+        "select": ["(as (str \"Bob\") ?person)", "(as (avg ?favN) ?avgFavNum)"]
+      }]
+    ]
+  ]
+}
+```
+
+## Time Travel in Queries
+
+Fluree supports querying historical data using time travel syntax in the `from` clause. This allows you to query the database as it existed at a specific point in time.
+
+### Syntax
+
+Append a time specifier to the ledger name using `@`:
+
+| Syntax | Description | Example |
+| ------ | ----------- | ------- |
+| `ledger@t:N` | Query at transaction number N | `"myLedger@t:5"` |
+| `ledger@iso:TIMESTAMP` | Query at ISO-8601 timestamp | `"myLedger@iso:2024-01-15T10:30:00Z"` |
+| `ledger@sha:HASH` | Query at commit SHA | `"myLedger@sha:bafyrei..."` |
+
+### Query at Transaction Number
+
+Query the state of the ledger at a specific transaction:
+
+```json
+{
+  "from": "myLedger@t:5",
+  "select": ["?s", "?name"],
+  "where": {"@id": "?s", "schema:name": "?name"}
+}
+```
+
+This returns data as it existed after transaction 5.
+
+### Query at ISO-8601 Timestamp
+
+Query the state of the ledger at a specific point in time:
+
+```json
+{
+  "from": "myLedger@iso:2024-06-15T14:30:00Z",
+  "select": ["?s", "?name"],
+  "where": {"@id": "?s", "schema:name": "?name"}
+}
+```
+
+If the timestamp falls between transactions, Fluree returns the state as of the most recent transaction before that time.
+
+### Query at Commit SHA
+
+Query the state at a specific commit using its SHA hash:
+
+```json
+{
+  "from": "myLedger@sha:bafyreib",
+  "select": ["?s", "?name"],
+  "where": {"@id": "?s", "schema:name": "?name"}
+}
+```
+
+SHA prefixes must be at least 6 characters. You can use the full SHA or a unique prefix.
+
+### With Branch Specification
+
+Combine branch and time travel:
+
+```json
+{
+  "from": "myLedger:main@t:10",
+  "select": ["?s", "?name"],
+  "where": {"@id": "?s", "schema:name": "?name"}
+}
+```
+
+## Value Map Filters
+
+In addition to using `filter` as a where operation, you can apply filters directly inline within where conditions using value maps. This provides a more compact syntax for simple filtering.
+
+### Syntax
+
+```json
+{
+  "propertyName": {"@value": "?variable", "@filter": "expression"}
+}
+```
+
+Or using context aliases:
+
+```json
+{
+  "@context": {"value": "@value", "filter": "@filter"},
+  "where": {
+    "schema:age": {"value": "?age", "filter": "(> ?age 45)"}
+  }
+}
+```
+
+### Example
+
+Filter inline while binding variables:
+
+```json
+{
+  "@context": {
+    "schema": "http://schema.org/",
+    "ex": "http://example.org/",
+    "value": "@value",
+    "filter": "@filter"
+  },
+  "select": ["?name", "?last"],
+  "where": {
+    "@type": "ex:User",
+    "schema:age": {"value": "?age", "filter": "(> ?age 45)"},
+    "schema:name": "?name",
+    "ex:last": {"value": "?last", "filter": "(strEnds ?last \"ith\")"}
+  }
+}
+```
+
+This is equivalent to:
+
+```json
+{
+  "select": ["?name", "?last"],
+  "where": [
+    {"@type": "ex:User", "schema:age": "?age", "schema:name": "?name", "ex:last": "?last"},
+    ["filter", "(> ?age 45)", "(strEnds ?last \"ith\")"]
+  ]
+}
+```
+
+## Federated Queries (Multi-Ledger)
+
+Fluree supports querying across multiple ledgers in a single query. This is useful for:
+- Distributed data across microservices
+- Separating concerns (users, products, orders in different ledgers)
+- Combining data from multiple sources
+
+### Combined Datasets (`from` with Array)
+
+When you provide an array of ledger names to `from`, the ledgers are merged into a single unified graph:
+
+```json
+{
+  "@context": "https://schema.org",
+  "from": ["test/authors", "test/books", "test/movies"],
+  "select": ["?movieName", "?authorName"],
+  "where": {
+    "@type": "Movie",
+    "name": "?movieName",
+    "isBasedOn": {
+      "author": {"name": "?authorName"}
+    }
+  }
+}
+```
+
+In this mode:
+- All data is merged as if it were in one ledger
+- Entities with the same `@id` across ledgers are unified
+- You can traverse relationships that span ledgers
+
+### Named Graphs (`from-named` with `graph`)
+
+For more control, use `from-named` with explicit `graph` clauses to query ledgers separately:
+
+```json
+{
+  "@context": "https://schema.org",
+  "from-named": ["test/authors", "test/books", "test/movies"],
+  "select": ["?movieName", "?bookIsbn", "?authorName"],
+  "where": [
+    ["graph", "test/movies", {
+      "@id": "?movie",
+      "@type": "Movie",
+      "name": "?movieName",
+      "isBasedOn": "?book"
+    }],
+    ["graph", "test/books", {
+      "@id": "?book",
+      "isbn": "?bookIsbn",
+      "author": "?author"
+    }],
+    ["graph", "test/authors", {
+      "@id": "?author",
+      "name": "?authorName"
+    }]
+  ]
+}
+```
+
+In this mode:
+- Each ledger is kept separate
+- You explicitly specify which ledger to query with `["graph", "ledger-name", {...}]`
+- Variables bind across graph clauses to join data
+
+### Graph Clause Syntax
+
+```json
+["graph", "ledger-name", { ...where pattern... }]
+```
+
+The graph clause takes:
+1. The string `"graph"`
+2. The ledger name
+3. A where pattern to match in that ledger
+
+### Time Travel with Federated Queries
+
+You can combine time travel with federated queries:
+
+```json
+{
+  "from-named": ["ledger1@t:5", "ledger2@iso:2024-01-01T00:00:00Z"],
+  "select": ["?s", "?value"],
+  "where": [
+    ["graph", "ledger1@t:5", {"@id": "?s", "value": "?value"}]
+  ]
+}
+```
+
+## Vector Search
+
+Fluree supports vector similarity search for AI/ML applications like semantic search, recommendations, and embeddings.
+
+### Vector Datatype
+
+Store vectors using the `f:Vector` datatype:
+
+```json
+{
+  "@context": {
+    "ex": "http://example.org/",
+    "f": "https://ns.flur.ee/ledger#"
+  },
+  "insert": {
+    "@id": "ex:document1",
+    "ex:embedding": {
+      "@value": [0.6, 0.5, 0.3, 0.8],
+      "@type": "f:Vector"
+    }
+  }
+}
+```
+
+### Similarity Functions
+
+Use these functions in `bind` expressions to compute similarity scores:
+
+| Function | Description | Range |
+|----------|-------------|-------|
+| `dotProduct` | Dot product of two vectors | Unbounded |
+| `cosineSimilarity` | Cosine similarity (angle-based) | 0 to 1 |
+| `euclidianDistance` | Euclidean distance | 0 to infinity (lower = more similar) |
+
+### Basic Vector Search
+
+Find similar vectors using `values` to inject a target vector:
+
+```json
+{
+  "@context": {"ex": "http://example.org/", "f": "https://ns.flur.ee/ledger#"},
+  "select": ["?doc", "?score"],
+  "values": ["?targetVec", [{"@value": [0.7, 0.6, 0.4, 0.9], "@type": "f:Vector"}]],
+  "where": [
+    {"@id": "?doc", "ex:embedding": "?vec"},
+    ["bind", "?score", "(cosineSimilarity ?vec ?targetVec)"]
+  ],
+  "orderBy": "(desc ?score)"
+}
+```
+
+### Filtering by Score
+
+Add a filter to only return results above a similarity threshold:
+
+```json
+{
+  "@context": {"ex": "http://example.org/", "f": "https://ns.flur.ee/ledger#"},
+  "select": ["?doc", "?score"],
+  "values": ["?targetVec", [{"@value": [0.7, 0.6], "@type": "f:Vector"}]],
+  "where": [
+    {"@id": "?doc", "ex:embedding": "?vec"},
+    ["bind", "?score", "(cosineSimilarity ?vec ?targetVec)"],
+    ["filter", "(> ?score 0.8)"]
+  ]
+}
+```
+
+### Combining with Other Filters
+
+Filter by metadata before computing similarity:
+
+```json
+{
+  "@context": {"ex": "http://example.org/", "f": "https://ns.flur.ee/ledger#"},
+  "select": ["?doc", "?score", "?title"],
+  "values": ["?targetVec", [{"@value": [0.7, 0.6], "@type": "f:Vector"}]],
+  "where": [
+    {"@id": "?doc", "ex:embedding": "?vec", "ex:category": "technology", "ex:title": "?title"},
+    ["bind", "?score", "(cosineSimilarity ?vec ?targetVec)"]
+  ],
+  "orderBy": "(desc ?score)",
+  "limit": 10
+}
+```
+
+### Best Practices
+
+1. **Normalize vectors** — Especially for cosine similarity, normalized vectors give more consistent results
+2. **Use appropriate dimensions** — Match your embedding model's output dimension
+3. **Filter first** — Apply metadata filters before vector operations to reduce computation
+4. **Limit results** — Vector search over large datasets should use `limit` for performance
+
+## Next Steps
+
+- [FlureeQL Overview](../) — Query syntax summary
+- [Full-Text Search](/docs/reference/full-text-search) — Text-based search
+- [History Queries](/docs/reference/history-syntax) — Query data changes over time
