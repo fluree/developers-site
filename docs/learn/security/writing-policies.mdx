@@ -1,0 +1,181 @@
+# Writing Policies
+
+This guide covers how to implement access control policies in Fluree. See [Data Access Control Concepts](./data-access-control-concepts.mdx) for the conceptual foundation.
+
+## Creating a Policy Class
+
+Policy classes are entities with access rules:
+
+```json
+{
+  "@id": "ex:UserPolicy",
+  "@type": "f:Policy",
+  "f:allow": [...]
+}
+```
+
+## Linking Identity to Policy
+
+Connect a DID to a policy class:
+
+```json
+{
+  "@id": "did:key:z6MkhaXg...",
+  "f:policyClass": {"@id": "ex:UserPolicy"},
+  "ex:user": {"@id": "ex:alice"}
+}
+```
+
+The `ex:user` link lets policies reference "the user making this request."
+
+## Allow Rules
+
+Specify what the policy permits:
+
+```json
+{
+  "@id": "ex:UserPolicy",
+  "@type": "f:Policy",
+  "f:allow": [
+    {
+      "@id": "ex:allowReadOwnData",
+      "f:action": {"@id": "f:read"},
+      "f:property": {"@id": "?p"},
+      "f:where": {
+        "@id": "?entity",
+        "ex:owner": "?$identity"
+      }
+    }
+  ]
+}
+```
+
+This allows reading any property (`?p`) of entities where the owner matches the requesting identity.
+
+## The ?$identity Variable
+
+`?$identity` is a special variable that resolves to the current user's identity node. Use it to create "own data" rules.
+
+## Property-Level Restrictions
+
+Restrict specific properties:
+
+```json
+{
+  "@id": "ex:hideSensitiveFields",
+  "f:action": {"@id": "f:read"},
+  "f:property": {"@id": "schema:ssn"},
+  "f:allow": false
+}
+```
+
+Or allow only certain properties:
+
+```json
+{
+  "@id": "ex:allowPublicFields",
+  "f:action": {"@id": "f:read"},
+  "f:property": [
+    {"@id": "schema:name"},
+    {"@id": "schema:email"}
+  ]
+}
+```
+
+## Conditional Rules with Where
+
+Use `f:where` for context-aware rules:
+
+```json
+{
+  "@id": "ex:managersCanSeeReports",
+  "f:action": {"@id": "f:read"},
+  "f:where": [
+    {"@id": "?entity", "ex:reportsTo": "?manager"},
+    {"@id": "?$identity", "ex:user": "?manager"}
+  ]
+}
+```
+
+Managers can see data for people who report to them.
+
+## Write Policies
+
+Control who can modify data:
+
+```json
+{
+  "@id": "ex:allowWriteOwnProfile",
+  "f:action": {"@id": "f:write"},
+  "f:where": {
+    "@id": "?entity",
+    "ex:owner": "?$identity"
+  }
+}
+```
+
+## Combining Multiple Rules
+
+Policies can have multiple allow rules. Access is granted if **any** rule matches:
+
+```json
+{
+  "@id": "ex:UserPolicy",
+  "f:allow": [
+    {"@id": "ex:readOwnData", ...},
+    {"@id": "ex:readPublicData", ...}
+  ]
+}
+```
+
+## Common Patterns
+
+### Public Read, Authenticated Write
+```json
+{
+  "f:allow": [
+    {"f:action": {"@id": "f:read"}},
+    {"f:action": {"@id": "f:write"}, "f:where": {"@id": "?$identity"}}
+  ]
+}
+```
+
+### Role-Based Access
+```json
+{
+  "f:where": {
+    "@id": "?$identity",
+    "ex:role": "admin"
+  }
+}
+```
+
+### Resource Ownership
+```json
+{
+  "f:where": {
+    "@id": "?entity",
+    "ex:createdBy": "?$identity"
+  }
+}
+```
+
+## Testing Policies
+
+Query with a specific identity to test:
+
+```json
+{
+  "from": "my-ledger",
+  "select": {"ex:alice": ["*"]},
+  "opts": {
+    "did": "did:key:z6MkhaXg..."
+  }
+}
+```
+
+## Next Steps
+
+- [Data Access Control Concepts](./data-access-control-concepts.mdx) — Conceptual overview
+- [Policy Syntax Reference](/docs/reference/policy-syntax) — Complete syntax
+- [Authentication Reference](/docs/reference/authentication) — Identity setup
