@@ -1,0 +1,482 @@
+# Building Ontologies
+
+An ontology goes beyond simple class and property definitions to describe how concepts relate to each other. By using hierarchies and equivalences, you can create rich, interconnected data models that enable powerful queries and inference.
+
+## Class Hierarchies with Subclasses
+
+Real-world concepts often form natural hierarchies. In RDF, you express these using `rdfs:subClassOf`:
+
+```json
+{
+  "@context": {
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+    "ex": "https://example.com/ns/"
+  },
+  "ledger": "ontology-demo",
+  "insert": [
+    {
+      "@id": "ex:LivingThing",
+      "@type": "rdfs:Class",
+      "rdfs:label": "Living Thing"
+    },
+    {
+      "@id": "ex:Animal",
+      "@type": "rdfs:Class",
+      "rdfs:subClassOf": { "@id": "ex:LivingThing" },
+      "rdfs:label": "Animal"
+    },
+    {
+      "@id": "ex:Mammal",
+      "@type": "rdfs:Class",
+      "rdfs:subClassOf": { "@id": "ex:Animal" },
+      "rdfs:label": "Mammal"
+    },
+    {
+      "@id": "ex:Dog",
+      "@type": "rdfs:Class",
+      "rdfs:subClassOf": { "@id": "ex:Mammal" },
+      "rdfs:label": "Dog"
+    },
+    {
+      "@id": "ex:Cat",
+      "@type": "rdfs:Class",
+      "rdfs:subClassOf": { "@id": "ex:Mammal" },
+      "rdfs:label": "Cat"
+    }
+  ]
+}
+```
+
+This creates a hierarchy:
+
+```
+LivingThing
+  └── Animal
+        └── Mammal
+              ├── Dog
+              └── Cat
+```
+
+### Querying Hierarchies
+
+With reasoning enabled, you can query at any level of the hierarchy. Add some instances:
+
+```json
+{
+  "@context": { "ex": "https://example.com/ns/" },
+  "ledger": "ontology-demo",
+  "insert": [
+    { "@id": "ex:fido", "@type": "ex:Dog", "ex:name": "Fido" },
+    { "@id": "ex:whiskers", "@type": "ex:Cat", "ex:name": "Whiskers" },
+    { "@id": "ex:buddy", "@type": "ex:Dog", "ex:name": "Buddy" }
+  ]
+}
+```
+
+Now query for all mammals:
+
+```json
+{
+  "@context": { "ex": "https://example.com/ns/" },
+  "from": "ontology-demo",
+  "where": {
+    "@id": "?animal",
+    "@type": "ex:Mammal",
+    "ex:name": "?name"
+  },
+  "select": ["?animal", "?name"],
+  "opts": { "reasoner": ["owl2rl"] }
+}
+```
+
+This returns Fido, Whiskers, and Buddy—even though they're explicitly typed as Dog or Cat, the reasoner infers they're also Mammals (and Animals, and LivingThings).
+
+### Multiple Inheritance
+
+A class can have multiple superclasses:
+
+```json
+{
+  "@context": {
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+    "ex": "https://example.com/ns/"
+  },
+  "ledger": "ontology-demo",
+  "insert": [
+    { "@id": "ex:FlyingThing", "@type": "rdfs:Class" },
+    { "@id": "ex:SwimmingThing", "@type": "rdfs:Class" },
+    {
+      "@id": "ex:Duck",
+      "@type": "rdfs:Class",
+      "rdfs:subClassOf": [
+        { "@id": "ex:Animal" },
+        { "@id": "ex:FlyingThing" },
+        { "@id": "ex:SwimmingThing" }
+      ]
+    }
+  ]
+}
+```
+
+A Duck is simultaneously an Animal, a FlyingThing, and a SwimmingThing.
+
+## Property Hierarchies with Subproperties
+
+Just as classes can have hierarchies, properties can too. Use `rdfs:subPropertyOf` to express that one property is a more specific version of another:
+
+```json
+{
+  "@context": {
+    "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+    "ex": "https://example.com/ns/"
+  },
+  "ledger": "ontology-demo",
+  "insert": [
+    {
+      "@id": "ex:knows",
+      "@type": "rdf:Property",
+      "rdfs:label": "knows"
+    },
+    {
+      "@id": "ex:isFriendOf",
+      "@type": "rdf:Property",
+      "rdfs:subPropertyOf": { "@id": "ex:knows" },
+      "rdfs:label": "is friend of"
+    },
+    {
+      "@id": "ex:isColleagueOf",
+      "@type": "rdf:Property",
+      "rdfs:subPropertyOf": { "@id": "ex:knows" },
+      "rdfs:label": "is colleague of"
+    },
+    {
+      "@id": "ex:isBestFriendOf",
+      "@type": "rdf:Property",
+      "rdfs:subPropertyOf": { "@id": "ex:isFriendOf" },
+      "rdfs:label": "is best friend of"
+    }
+  ]
+}
+```
+
+This creates:
+
+```
+knows
+  ├── isFriendOf
+  │     └── isBestFriendOf
+  └── isColleagueOf
+```
+
+Now add some relationships:
+
+```json
+{
+  "@context": { "ex": "https://example.com/ns/" },
+  "ledger": "ontology-demo",
+  "insert": [
+    { "@id": "ex:alice", "ex:isBestFriendOf": { "@id": "ex:bob" } },
+    { "@id": "ex:alice", "ex:isColleagueOf": { "@id": "ex:charlie" } }
+  ]
+}
+```
+
+Query for everyone Alice knows:
+
+```json
+{
+  "@context": { "ex": "https://example.com/ns/" },
+  "from": "ontology-demo",
+  "where": {
+    "@id": "ex:alice",
+    "ex:knows": { "@id": "?person" }
+  },
+  "select": "?person",
+  "opts": { "reasoner": ["owl2rl"] }
+}
+```
+
+The result includes both Bob (via `isBestFriendOf → isFriendOf → knows`) and Charlie (via `isColleagueOf → knows`).
+
+## Understanding IRIs
+
+Every class and property in your ontology is identified by an IRI (Internationalized Resource Identifier). Understanding how IRIs work is essential for building effective ontologies.
+
+### Structure of an IRI
+
+An IRI has two parts:
+
+1. **Namespace**: A base URL that provides uniqueness (e.g., `https://example.com/ns/`)
+2. **Local name**: The specific term (e.g., `Person`)
+
+Together: `https://example.com/ns/Person`
+
+### Working with Prefixes
+
+Writing full IRIs everywhere would be verbose. JSON-LD lets you define prefixes in the `@context`:
+
+```json
+{
+  "@context": {
+    "ex": "https://example.com/ns/",
+    "schema": "https://schema.org/",
+    "foaf": "http://xmlns.com/foaf/0.1/"
+  }
+}
+```
+
+Now `ex:Person` expands to `https://example.com/ns/Person`.
+
+### The @vocab Shortcut
+
+For simpler documents, use `@vocab` to set a default namespace:
+
+```json
+{
+  "@context": {
+    "@vocab": "https://example.com/ns/"
+  },
+  "ledger": "my-app",
+  "insert": {
+    "@id": "jane",
+    "@type": "Person",
+    "name": "Jane Doe"
+  }
+}
+```
+
+Here, `Person` and `name` automatically expand to `https://example.com/ns/Person` and `https://example.com/ns/name`.
+
+### Why IRIs Matter
+
+IRIs solve problems that local names can't:
+
+1. **Global uniqueness**: Your `Customer` class won't conflict with anyone else's
+2. **Dereferenceable documentation**: IRIs can point to real documentation (schema.org does this)
+3. **Data integration**: When two datasets use the same IRI, they mean the same thing
+4. **Explicit semantics**: No ambiguity about what a term means
+
+## Using Established Vocabularies
+
+Rather than defining everything from scratch, you can build on established vocabularies:
+
+### Extending Schema.org
+
+Schema.org provides thousands of well-documented classes and properties:
+
+```json
+{
+  "@context": {
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+    "schema": "https://schema.org/",
+    "ex": "https://example.com/ns/"
+  },
+  "ledger": "my-app",
+  "insert": [
+    {
+      "@id": "ex:Employee",
+      "@type": "rdfs:Class",
+      "rdfs:subClassOf": { "@id": "schema:Person" },
+      "rdfs:label": "Employee"
+    },
+    {
+      "@id": "ex:employeeId",
+      "@type": "rdf:Property",
+      "rdfs:domain": { "@id": "ex:Employee" },
+      "rdfs:label": "employee ID"
+    }
+  ]
+}
+```
+
+Now your `ex:Employee` inherits all the semantics of `schema:Person`—anyone familiar with Schema.org knows what properties to expect.
+
+### Mixing Vocabularies
+
+You can freely combine terms from multiple vocabularies:
+
+```json
+{
+  "@context": {
+    "schema": "https://schema.org/",
+    "foaf": "http://xmlns.com/foaf/0.1/",
+    "ex": "https://example.com/ns/"
+  },
+  "ledger": "my-app",
+  "insert": {
+    "@id": "ex:jane",
+    "@type": "schema:Person",
+    "schema:name": "Jane Doe",
+    "schema:email": "jane@example.com",
+    "foaf:knows": { "@id": "ex:bob" },
+    "ex:employeeId": "E-12345"
+  }
+}
+```
+
+This entity uses Schema.org for basic person info, FOAF for social connections, and your custom vocabulary for business-specific properties.
+
+## Equivalent Classes and Properties
+
+Sometimes the same concept exists in multiple vocabularies. OWL provides ways to declare equivalences:
+
+### Equivalent Properties
+
+```json
+{
+  "@context": {
+    "owl": "http://www.w3.org/2002/07/owl#",
+    "schema": "https://schema.org/",
+    "foaf": "http://xmlns.com/foaf/0.1/",
+    "ex": "https://example.com/ns/"
+  },
+  "ledger": "my-app",
+  "insert": {
+    "@id": "ex:name",
+    "owl:equivalentProperty": [
+      { "@id": "schema:name" },
+      { "@id": "foaf:name" }
+    ]
+  }
+}
+```
+
+With reasoning enabled, querying for `ex:name` will also find data stored under `schema:name` or `foaf:name`.
+
+### Equivalent Classes
+
+```json
+{
+  "@context": {
+    "owl": "http://www.w3.org/2002/07/owl#",
+    "schema": "https://schema.org/",
+    "foaf": "http://xmlns.com/foaf/0.1/"
+  },
+  "ledger": "my-app",
+  "insert": {
+    "@id": "schema:Person",
+    "owl:equivalentClass": { "@id": "foaf:Person" }
+  }
+}
+```
+
+Now instances of `schema:Person` are also considered instances of `foaf:Person`.
+
+## Inverse Properties
+
+Some relationships are naturally bidirectional. Use `owl:inverseOf` to declare this:
+
+```json
+{
+  "@context": {
+    "owl": "http://www.w3.org/2002/07/owl#",
+    "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+    "ex": "https://example.com/ns/"
+  },
+  "ledger": "my-app",
+  "insert": [
+    {
+      "@id": "ex:hasParent",
+      "@type": "rdf:Property"
+    },
+    {
+      "@id": "ex:hasChild",
+      "@type": "rdf:Property",
+      "owl:inverseOf": { "@id": "ex:hasParent" }
+    }
+  ]
+}
+```
+
+Now if you assert:
+
+```json
+{ "@id": "ex:alice", "ex:hasChild": { "@id": "ex:bob" } }
+```
+
+The reasoner can infer:
+
+```json
+{ "@id": "ex:bob", "ex:hasParent": { "@id": "ex:alice" } }
+```
+
+## Symmetric and Transitive Properties
+
+Some properties have special characteristics that enable additional inference:
+
+### Symmetric Properties
+
+A symmetric property works in both directions—if A is married to B, then B is married to A:
+
+```json
+{
+  "@context": {
+    "owl": "http://www.w3.org/2002/07/owl#",
+    "ex": "https://example.com/ns/"
+  },
+  "ledger": "my-app",
+  "insert": {
+    "@id": "ex:marriedTo",
+    "@type": ["rdf:Property", "owl:SymmetricProperty"]
+  }
+}
+```
+
+### Transitive Properties
+
+A transitive property chains across relationships—if A is ancestor of B, and B is ancestor of C, then A is ancestor of C:
+
+```json
+{
+  "@context": {
+    "owl": "http://www.w3.org/2002/07/owl#",
+    "ex": "https://example.com/ns/"
+  },
+  "ledger": "my-app",
+  "insert": {
+    "@id": "ex:ancestorOf",
+    "@type": ["rdf:Property", "owl:TransitiveProperty"]
+  }
+}
+```
+
+## Best Practices
+
+### Start with Existing Vocabularies
+
+Before creating new terms, check if they exist in:
+- [Schema.org](https://schema.org) - General purpose vocabulary
+- [Dublin Core](https://www.dublincore.org) - Metadata and documents
+- [FOAF](http://xmlns.com/foaf/0.1/) - People and social
+- [SKOS](https://www.w3.org/TR/skos-reference/) - Taxonomies
+
+### Use Consistent Naming
+
+- Classes: PascalCase (`Person`, `Organization`)
+- Properties: camelCase (`firstName`, `worksFor`)
+- Use clear, descriptive names
+
+### Document Your Ontology
+
+Always include labels and comments:
+
+```json
+{
+  "@id": "ex:Employee",
+  "@type": "rdfs:Class",
+  "rdfs:label": "Employee",
+  "rdfs:comment": "A person employed by an organization",
+  "rdfs:seeAlso": { "@id": "https://example.com/docs/employee" }
+}
+```
+
+### Keep Hierarchies Shallow
+
+Deep hierarchies (more than 4-5 levels) can be harder to maintain and query efficiently. Prefer broader, flatter structures when possible.
+
+## Next Steps
+
+- Learn to enforce data constraints with [SHACL Validation](/docs/learn/modeling/shacl-validation/)
+- See the full list of supported OWL constructs in the [Reasoning reference](/docs/reference/reasoning)
+- Explore the [Working with Ontologies](/docs/learn/modeling/working-with-ontologies/) tutorial for hands-on examples
