@@ -1,0 +1,10 @@
+{
+  "id": "reference/http-api/ledger-operations/create",
+  "description": "Create a new ledger with initial data (Freddy the Yeti)",
+  "testable": true,
+  "endpoint": "POST /v1/fluree/create",
+  "body": "create.json",
+  "expected": {
+    "status": 201
+  }
+}

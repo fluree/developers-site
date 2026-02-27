@@ -1,0 +1,12 @@
+{
+  "@context": {
+    "schema": "http://schema.org/"
+  },
+  "ledger": "cookbook/base",
+  "where": { "@id": "?s", "schema:description": "We ❤️ All Blood" },
+  "delete": { "@id": "?s", "schema:description": "We ❤️ All Blood" },
+  "insert": {
+    "@id": "?s",
+    "schema:description": ["We ❤️ Human Blood", "We ❤️ Animal Blood"]
+  }
+}

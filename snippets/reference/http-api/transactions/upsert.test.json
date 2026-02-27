@@ -1,0 +1,8 @@
+{
+  "id": "reference/http-api/transactions/upsert",
+  "description": "Insert or update data via fluree/upsert (uses fluree-ledger header, not body field)",
+  "testable": false,
+  "endpoint": "POST /v1/fluree/upsert",
+  "body": "upsert.json",
+  "_note": "Marked testable:false because this endpoint specifies the ledger via the 'fluree-ledger' HTTP header rather than a body field. The test executor does not yet support custom request headers."
+}

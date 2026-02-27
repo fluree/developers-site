@@ -1,0 +1,5 @@
+{
+  "from": "cookbook/base",
+  "select": { "?s": ["*"] },
+  "where": { "@id": "?s", "schema:name": "?name" }
+}

@@ -1,0 +1,6 @@
+{
+  "@context": { "schema": "http://schema.org/" },
+  "from": "cookbook/base",
+  "history": [null, "schema:name"],
+  "t": { "from": 1 }
+}

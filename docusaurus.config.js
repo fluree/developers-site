@@ -4,6 +4,8 @@ const darkCodeTheme = require("./src/theme/flureeTheme");
 // const shiki = require("shiki");
 const codeHikeTheme = require("./src/theme/flureeCodeHikeTheme");
 const { remarkCodeHike } = require("@code-hike/mdx");
+const path = require("node:path");
+const remarkSnippetInject = require("./plugins/remark-snippet-inject");
 
 /** @type {import('@docusaurus/types').DocusaurusConfig} */
 module.exports = {
@@ -238,6 +240,10 @@ module.exports = {
 					sidebarPath: require.resolve("./sidebars.js"),
 					// editUrl: "https://github.com/fluree/developers-site/edit/main/",
 					beforeDefaultRemarkPlugins: [
+						[
+							remarkSnippetInject,
+							{ snippetsDir: path.join(__dirname, "snippets") },
+						],
 						[
 							remarkCodeHike,
 							{

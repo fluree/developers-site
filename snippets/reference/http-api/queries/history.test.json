@@ -1,0 +1,11 @@
+{
+  "id": "reference/http-api/queries/history",
+  "description": "Query history of all schema:name changes from t=1 onward",
+  "testable": "pending",
+  "endpoint": "POST /v1/fluree/history",
+  "body": "history.json",
+  "setup": ["reference/http-api/ledger-operations/create"],
+  "expected": {
+    "status": 200
+  }
+}

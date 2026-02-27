@@ -1,0 +1,7 @@
+{
+  "id": "shared/drop-test-ledger",
+  "description": "Drop a test ledger (used as a teardown step to keep the server clean)",
+  "testable": false,
+  "endpoint": "POST /v1/fluree/drop",
+  "body": "drop-test-ledger.json"
+}

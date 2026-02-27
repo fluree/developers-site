@@ -1,0 +1,10 @@
+{
+  "@context": {
+    "schema": "http://schema.org/"
+  },
+  "ledger": "cookbook/base",
+  "insert": {
+    "@id": "http://example.org/entity1",
+    "schema:description": "We ❤️ All Blood"
+  }
+}

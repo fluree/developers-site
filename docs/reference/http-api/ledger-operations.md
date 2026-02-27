@@ -7,7 +7,7 @@ Endpoints for creating, deleting, and inspecting ledgers.
 ## `fluree/create`
 
 ```
-POST /fluree/create
+POST /v1/fluree/create
 ```
 
 Create a new ledger with optional initial data.
@@ -22,29 +22,13 @@ Create a new ledger with optional initial data.
 
 ### Example Request Object
 
-```json
-{
-  "@context": {
-    "ex": "http://example.org/",
-    "schema": "http://schema.org/"
-  },
-  "ledger": "cookbook/base",
-  "insert": [
-    {
-      "@id": "ex:freddy",
-      "@type": "ex:Yeti",
-      "schema:age": 4,
-      "schema:name": "Freddy",
-      "ex:verified": true
-    }
-  ]
-}
+```json snippet=reference/http-api/ledger-operations/create
 ```
 
 ### Curl Example
 
 ```sh
-curl --location 'http://localhost:58090/fluree/create' --header 'Content-Type: application/json' --data '{
+curl --location 'http://localhost:58090/v1/fluree/create' --header 'Content-Type: application/json' --data '{
   "@context": {
     "ex": "http://example.org/",
     "schema": "http://schema.org/"
@@ -81,7 +65,7 @@ curl --location 'http://localhost:58090/fluree/create' --header 'Content-Type: a
 ## `fluree/drop`
 
 ```
-POST /fluree/drop
+POST /v1/fluree/drop
 ```
 
 Delete a ledger and all its associated data and commit history. This operation is irreversible.
@@ -96,16 +80,13 @@ Delete a ledger and all its associated data and commit history. This operation i
 
 ### Example Request Object
 
-```json
-{
-  "ledger": "cookbook/base"
-}
+```json snippet=reference/http-api/ledger-operations/drop
 ```
 
 ### Curl Example
 
 ```sh
-curl --location 'http://localhost:58090/fluree/drop' \
+curl --location 'http://localhost:58090/v1/fluree/drop' \
   --header 'Content-Type: application/json' \
   --data '{
     "ledger": "cookbook/base"
@@ -126,7 +107,7 @@ curl --location 'http://localhost:58090/fluree/drop' \
 ## `fluree/exists`
 
 ```
-POST /fluree/exists
+POST /v1/fluree/exists
 ```
 
 Check whether a ledger exists.
@@ -139,16 +120,13 @@ Check whether a ledger exists.
 
 ### Example Request Object
 
-```json
-{
-  "ledger": "cookbook/base"
-}
+```json snippet=reference/http-api/ledger-operations/exists
 ```
 
 ### Curl Example
 
 ```sh
-curl --location 'http://localhost:58090/fluree/exists' \
+curl --location 'http://localhost:58090/v1/fluree/exists' \
   --header 'Content-Type: application/json' \
   --data '{
     "ledger": "cookbook/base"
@@ -169,7 +147,7 @@ curl --location 'http://localhost:58090/fluree/exists' \
 ## `fluree/ledger-info`
 
 ```
-POST /fluree/ledger-info
+POST /v1/fluree/ledger-info
 ```
 
 Get detailed information about a ledger, including statistics, commit history, and namespace codes.
@@ -182,16 +160,13 @@ Get detailed information about a ledger, including statistics, commit history, a
 
 ### Example Request Object
 
-```json
-{
-  "ledger": "cookbook/base"
-}
+```json snippet=reference/http-api/ledger-operations/ledger-info
 ```
 
 ### Curl Example
 
 ```sh
-curl --location 'http://localhost:58090/fluree/ledger-info' \
+curl --location 'http://localhost:58090/v1/fluree/ledger-info' \
   --header 'Content-Type: application/json' \
   --data '{
     "ledger": "cookbook/base"
@@ -247,7 +222,7 @@ curl --location 'http://localhost:58090/fluree/ledger-info' \
 ## `fluree/status`
 
 ```
-POST /fluree/status
+POST /v1/fluree/status
 ```
 
 Get the current status of a ledger, including commit and index state. This is a lighter-weight alternative to `ledger-info`.
@@ -260,16 +235,13 @@ Get the current status of a ledger, including commit and index state. This is a 
 
 ### Example Request Object
 
-```json
-{
-  "ledger": "cookbook/base"
-}
+```json snippet=reference/http-api/ledger-operations/status
 ```
 
 ### Curl Example
 
 ```sh
-curl --location 'http://localhost:58090/fluree/status' \
+curl --location 'http://localhost:58090/v1/fluree/status' \
   --header 'Content-Type: application/json' \
   --data '{
     "ledger": "cookbook/base"

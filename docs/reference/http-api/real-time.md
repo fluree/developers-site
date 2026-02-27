@@ -7,7 +7,7 @@ Endpoints for real-time notifications and subscriptions.
 ## `fluree/notify`
 
 ```
-POST /fluree/notify
+POST /v1/fluree/notify
 ```
 
 Notify the server of an external commit. This is used in distributed or federated scenarios where commits may be made to a ledger outside of the current server instance.
@@ -31,7 +31,7 @@ Notify the server of an external commit. This is used in distributed or federate
 ### Curl Example
 
 ```sh
-curl --location 'http://localhost:58090/fluree/notify' \
+curl --location 'http://localhost:58090/v1/fluree/notify' \
   --header 'Content-Type: application/json' \
   --data '{
     "ledger": "cookbook/base",
@@ -44,14 +44,14 @@ curl --location 'http://localhost:58090/fluree/notify' \
 ## `fluree/subscribe`
 
 ```
-WebSocket /fluree/subscribe
+WebSocket /v1/fluree/subscribe
 ```
 
 Subscribe to real-time updates for a ledger via WebSocket. This enables applications to receive notifications when new commits are made.
 
 ### Connection
 
-Connect to the WebSocket endpoint at `ws://localhost:58090/fluree/subscribe`.
+Connect to the WebSocket endpoint at `ws://localhost:58090/v1/fluree/subscribe`.
 
 ### Subscribe Message
 
@@ -102,7 +102,7 @@ When a new commit is made to a subscribed ledger, you'll receive:
 ### JavaScript Example
 
 ```javascript
-const ws = new WebSocket('ws://localhost:58090/fluree/subscribe');
+const ws = new WebSocket('ws://localhost:58090/v1/fluree/subscribe');
 
 ws.onopen = () => {
   // Subscribe to a ledger
@@ -147,7 +147,7 @@ def on_open(ws):
     }))
 
 ws = websocket.WebSocketApp(
-    'ws://localhost:58090/fluree/subscribe',
+    'ws://localhost:58090/v1/fluree/subscribe',
     on_open=on_open,
     on_message=on_message
 )

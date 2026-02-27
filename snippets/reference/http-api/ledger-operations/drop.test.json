@@ -1,0 +1,11 @@
+{
+  "id": "reference/http-api/ledger-operations/drop",
+  "description": "Delete a ledger and all its data permanently",
+  "testable": true,
+  "endpoint": "POST /v1/fluree/drop",
+  "body": "drop.json",
+  "setup": ["reference/http-api/ledger-operations/create"],
+  "expected": {
+    "status": 200
+  }
+}

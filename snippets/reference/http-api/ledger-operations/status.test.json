@@ -1,0 +1,11 @@
+{
+  "id": "reference/http-api/ledger-operations/status",
+  "description": "Get the current status of a ledger",
+  "testable": "pending",
+  "endpoint": "POST /v1/fluree/status",
+  "body": "status.json",
+  "setup": ["reference/http-api/ledger-operations/create"],
+  "expected": {
+    "status": 200
+  }
+}

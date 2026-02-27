@@ -7,7 +7,7 @@ Endpoints for modifying data in ledgers.
 ## `fluree/transact`
 
 ```
-POST /fluree/transact
+POST /v1/fluree/transact
 ```
 
 Commit a transaction to a ledger. This is the most flexible transaction endpoint, supporting `where`/`delete`/`insert` patterns for conditional updates.
@@ -26,25 +26,13 @@ Commit a transaction to a ledger. This is the most flexible transaction endpoint
 
 ### Example Request Object
 
-```json
-{
-  "@context": {
-    "schema": "http://schema.org/"
-  },
-  "ledger": "cookbook/base",
-  "where": { "@id": "?s", "schema:description": "We ❤️ All Blood" },
-  "delete": { "@id": "?s", "schema:description": "We ❤️ All Blood" },
-  "insert": {
-    "@id": "?s",
-    "schema:description": ["We ❤️ Human Blood", "We ❤️ Animal Blood"]
-  }
-}
+```json snippet=reference/http-api/transactions/transact
 ```
 
 ### Curl Example
 
 ```sh
-curl --location 'http://localhost:58090/fluree/transact' --header 'Content-Type: application/json' --data $'{
+curl --location 'http://localhost:58090/v1/fluree/transact' --header 'Content-Type: application/json' --data $'{
   "@context": {
     "schema": "http://schema.org/"
   },
@@ -77,7 +65,7 @@ curl --location 'http://localhost:58090/fluree/transact' --header 'Content-Type:
 ## `fluree/insert`
 
 ```
-POST /fluree/insert
+POST /v1/fluree/insert
 ```
 
 Insert new data into a ledger. This is a simplified endpoint for pure insertions.
@@ -95,23 +83,13 @@ The request body should contain the data to insert, either as JSON-LD or Turtle 
 
 ### Example Request (JSON-LD)
 
-```json
-{
-  "@context": {
-    "ex": "http://example.org/",
-    "schema": "http://schema.org/"
-  },
-  "@id": "ex:alice",
-  "@type": "schema:Person",
-  "schema:name": "Alice",
-  "schema:age": 30
-}
+```json snippet=reference/http-api/transactions/insert
 ```
 
 ### Curl Example
 
 ```sh
-curl --location 'http://localhost:58090/fluree/insert' \
+curl --location 'http://localhost:58090/v1/fluree/insert' \
   --header 'Content-Type: application/json' \
   --header 'fluree-ledger: cookbook/base' \
   --data '{
@@ -145,7 +123,7 @@ curl --location 'http://localhost:58090/fluree/insert' \
 ## `fluree/upsert`
 
 ```
-POST /fluree/upsert
+POST /v1/fluree/upsert
 ```
 
 Insert or update data in a ledger. If an entity with the given `@id` exists, its properties will be merged/updated. If it doesn't exist, a new entity will be created.
@@ -163,24 +141,13 @@ The request body should contain the data to upsert, either as JSON-LD or Turtle 
 
 ### Example Request (JSON-LD)
 
-```json
-{
-  "@context": {
-    "ex": "http://example.org/",
-    "schema": "http://schema.org/"
-  },
-  "@id": "ex:alice",
-  "@type": "schema:Person",
-  "schema:name": "Alice Updated",
-  "schema:age": 31,
-  "schema:email": "alice@example.org"
-}
+```json snippet=reference/http-api/transactions/upsert
 ```
 
 ### Curl Example
 
 ```sh
-curl --location 'http://localhost:58090/fluree/upsert' \
+curl --location 'http://localhost:58090/v1/fluree/upsert' \
   --header 'Content-Type: application/json' \
   --header 'fluree-ledger: cookbook/base' \
   --data '{
@@ -215,10 +182,10 @@ curl --location 'http://localhost:58090/fluree/upsert' \
 ## `fluree/update`
 
 ```
-POST /fluree/update
+POST /v1/fluree/update
 ```
 
-Update data in a ledger using pattern matching. This is functionally equivalent to `/fluree/transact` and supports the same `where`/`delete`/`insert` pattern for conditional updates.
+Update data in a ledger using pattern matching. This is functionally equivalent to `/v1/fluree/transact` and supports the same `where`/`delete`/`insert` pattern for conditional updates.
 
 ### Request Object
 
@@ -232,23 +199,13 @@ Update data in a ledger using pattern matching. This is functionally equivalent 
 
 ### Example Request Object
 
-```json
-{
-  "@context": {
-    "ex": "http://example.org/",
-    "schema": "http://schema.org/"
-  },
-  "ledger": "cookbook/base",
-  "where": { "@id": "?s", "schema:name": "Alice" },
-  "delete": { "@id": "?s", "schema:name": "Alice" },
-  "insert": { "@id": "?s", "schema:name": "Alice Smith" }
-}
+```json snippet=reference/http-api/transactions/update
 ```
 
 ### Curl Example
 
 ```sh
-curl --location 'http://localhost:58090/fluree/update' \
+curl --location 'http://localhost:58090/v1/fluree/update' \
   --header 'Content-Type: application/json' \
   --data '{
     "@context": {

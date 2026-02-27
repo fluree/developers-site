@@ -1,0 +1,7 @@
+{
+  "id": "reference/http-api/transactions/transact-seed",
+  "description": "Setup: create a ledger containing an entity with schema:description 'We ❤️ All Blood' (required by the fluree/transact conditional update example)",
+  "testable": false,
+  "endpoint": "POST /v1/fluree/create",
+  "body": "transact-seed.json"
+}

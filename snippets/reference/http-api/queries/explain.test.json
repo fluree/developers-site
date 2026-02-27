@@ -1,0 +1,11 @@
+{
+  "id": "reference/http-api/queries/explain",
+  "description": "Get the query execution plan for a FlureeQL query",
+  "testable": "pending",
+  "endpoint": "POST /v1/fluree/explain",
+  "body": "explain.json",
+  "setup": ["reference/http-api/ledger-operations/create"],
+  "expected": {
+    "status": 200
+  }
+}

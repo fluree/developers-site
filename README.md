@@ -130,6 +130,85 @@ Mermaid renders diagrams from plain text. To use Mermaid on a page:
 />
 ```
 
+## Snippet Test Harness
+
+The docs include a test harness that runs every code snippet in the reference documentation against a live Fluree server. This keeps the docs honest: if a snippet breaks, CI catches it.
+
+### How it works
+
+Each documented code example lives in two files under `snippets/`:
+
+- **`{name}.json`** — the raw snippet, used verbatim in the docs and in tests
+- **`{name}.test.json`** — metadata describing how to run it (endpoint, expected status, setup steps)
+
+The harness discovers all `.test.json` files and runs them against a live Fluree server. Before launching the parallel test suite, it runs a **preflight check** — creating and immediately dropping a ledger — to verify those two operations work. If either fails, the run aborts immediately with a clear error rather than producing a wall of parallel failures. Tests that pass the preflight run in parallel; after each test, the harness drops its isolated ledger so the server stays clean.
+
+Each snippet has a `testable` field:
+
+| Value | Meaning |
+|-------|---------|
+| `true` | Must pass — CI gate |
+| `"pending"` | Runs but failure is tracked, not blocking — known db-r gap |
+| `false` | Illustrative only — never executed |
+
+### Running the tests
+
+1. Start a Fluree server locally
+2. Set the server URL:
+   ```sh
+   export FLUREE_TEST_SERVER_URL=http://localhost:58090
+   ```
+3. Run the harness:
+   ```sh
+   bun run test:snippets
+   ```
+
+For a machine-readable JSON report (useful in CI):
+
+```sh
+bun run test:snippets:report   # writes snippet-report.json
+```
+
+### Reading the output
+
+```
+Preflight (create/drop): ok
+
+Running: ..F~~.E~.
+```
+
+The preflight line confirms the server is healthy before any tests run. If it prints `FAILED`, the run stops there with the error details.
+
+Once past the preflight, one character appears per test as results arrive:
+
+| Character | Meaning |
+|-----------|---------|
+| `.` | Passed |
+| `F` | Failed (assertion mismatch) |
+| `E` | Error (network, setup, or parse failure) |
+| `~` | Pending (ran, result tracked but not blocking) |
+
+A full summary with failure details follows the progress line.
+
+### Environment variables
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `FLUREE_TEST_SERVER_URL` | yes | Base URL of the running Fluree server |
+| `SNIPPET_REPORT_JSON` | no | Path to write a JSON report file |
+
+### Adding a new snippet test
+
+1. Add your snippet file: `snippets/reference/http-api/{category}/{name}.json`
+2. Add its metadata: `snippets/reference/http-api/{category}/{name}.test.json`
+3. Reference it in the docs with a `snippet=` annotation:
+   ````md
+   ```json snippet=reference/http-api/{category}/{name}
+   ```
+   ````
+
+Set `testable: true` if the snippet should pass against the current server, or `"pending"` if it documents a known gap.
+
 ## Contributing
 
 If you notice any issues on the mark down files please feel free to open an issue

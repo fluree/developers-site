@@ -1,0 +1,12 @@
+{
+  "@context": {
+    "ex": "http://example.org/",
+    "schema": "http://schema.org/"
+  },
+  "from": "cookbook/base",
+  "where": {
+    "@id": "?s",
+    "schema:name": "?name"
+  },
+  "select": { "?s": ["*"] }
+}

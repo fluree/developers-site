@@ -1,0 +1,11 @@
+{
+  "id": "reference/http-api/ledger-operations/ledger-info",
+  "description": "Get detailed information about a ledger",
+  "testable": "pending",
+  "endpoint": "POST /v1/fluree/ledger-info",
+  "body": "ledger-info.json",
+  "setup": ["reference/http-api/ledger-operations/create"],
+  "expected": {
+    "status": 200
+  }
+}

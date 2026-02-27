@@ -7,7 +7,7 @@ These endpoints are used for distributed/federated scenarios where data may be s
 ## `fluree/remote/latestCommit`
 
 ```
-POST /fluree/remote/latestCommit
+POST /v1/fluree/remote/latestCommit
 ```
 
 Retrieve the latest commit for a ledger from a remote publisher address.
@@ -29,7 +29,7 @@ Retrieve the latest commit for a ledger from a remote publisher address.
 ### Curl Example
 
 ```sh
-curl --location 'http://localhost:58090/fluree/remote/latestCommit' \
+curl --location 'http://localhost:58090/v1/fluree/remote/latestCommit' \
   --header 'Content-Type: application/json' \
   --data '{
     "resource": "fluree:file://my-ledger/main/head"
@@ -41,7 +41,7 @@ curl --location 'http://localhost:58090/fluree/remote/latestCommit' \
 ## `fluree/remote/resource`
 
 ```
-POST /fluree/remote/resource
+POST /v1/fluree/remote/resource
 ```
 
 Read a resource (commit or index file) from a remote address.
@@ -63,7 +63,7 @@ Read a resource (commit or index file) from a remote address.
 ### Curl Example
 
 ```sh
-curl --location 'http://localhost:58090/fluree/remote/resource' \
+curl --location 'http://localhost:58090/v1/fluree/remote/resource' \
   --header 'Content-Type: application/json' \
   --data '{
     "resource": "fluree:file://my-ledger/commit/abc123.json"
@@ -75,7 +75,7 @@ curl --location 'http://localhost:58090/fluree/remote/resource' \
 ## `fluree/remote/hash`
 
 ```
-POST /fluree/remote/hash
+POST /v1/fluree/remote/hash
 ```
 
 Parse a resource address and extract its hash.
@@ -97,7 +97,7 @@ Parse a resource address and extract its hash.
 ### Curl Example
 
 ```sh
-curl --location 'http://localhost:58090/fluree/remote/hash' \
+curl --location 'http://localhost:58090/v1/fluree/remote/hash' \
   --header 'Content-Type: application/json' \
   --data '{
     "address": "fluree:file://my-ledger/commit/abc123.json"
@@ -109,7 +109,7 @@ curl --location 'http://localhost:58090/fluree/remote/hash' \
 ## `fluree/remote/addresses`
 
 ```
-POST /fluree/remote/addresses
+POST /v1/fluree/remote/addresses
 ```
 
 Get all published addresses for a ledger.
@@ -131,7 +131,7 @@ Get all published addresses for a ledger.
 ### Curl Example
 
 ```sh
-curl --location 'http://localhost:58090/fluree/remote/addresses' \
+curl --location 'http://localhost:58090/v1/fluree/remote/addresses' \
   --header 'Content-Type: application/json' \
   --data '{
     "ledger": "my-ledger"

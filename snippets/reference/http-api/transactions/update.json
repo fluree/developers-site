@@ -1,0 +1,10 @@
+{
+  "@context": {
+    "ex": "http://example.org/",
+    "schema": "http://schema.org/"
+  },
+  "ledger": "cookbook/base",
+  "where": { "@id": "?s", "schema:name": "Alice" },
+  "delete": { "@id": "?s", "schema:name": "Alice" },
+  "insert": { "@id": "?s", "schema:name": "Alice Smith" }
+}

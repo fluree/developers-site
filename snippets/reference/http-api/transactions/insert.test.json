@@ -1,0 +1,8 @@
+{
+  "id": "reference/http-api/transactions/insert",
+  "description": "Insert JSON-LD data via fluree/insert (uses fluree-ledger header, not body field)",
+  "testable": false,
+  "endpoint": "POST /v1/fluree/insert",
+  "body": "insert.json",
+  "_note": "Marked testable:false because this endpoint specifies the ledger via the 'fluree-ledger' HTTP header rather than a body field. The test executor does not yet support custom request headers. See https://github.com/fluree/developers-site/issues for tracking."
+}

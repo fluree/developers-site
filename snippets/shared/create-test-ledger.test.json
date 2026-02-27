@@ -1,0 +1,7 @@
+{
+  "id": "shared/create-test-ledger",
+  "description": "Create a fresh empty ledger (used as a setup step by other tests for isolation)",
+  "testable": false,
+  "endpoint": "POST /v1/fluree/create",
+  "body": "create-test-ledger.json"
+}

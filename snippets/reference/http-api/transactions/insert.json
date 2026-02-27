@@ -1,0 +1,10 @@
+{
+  "@context": {
+    "ex": "http://example.org/",
+    "schema": "http://schema.org/"
+  },
+  "@id": "ex:alice",
+  "@type": "schema:Person",
+  "schema:name": "Alice",
+  "schema:age": 30
+}

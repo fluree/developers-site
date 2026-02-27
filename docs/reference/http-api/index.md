@@ -17,7 +17,7 @@ This reference documents all HTTP API endpoints provided by Fluree Server.
 All endpoints are relative to your Fluree server URL:
 
 ```
-http://localhost:58090/fluree/{endpoint}
+http://localhost:58090/v1/fluree/{endpoint}
 ```
 
 For Fluree Cloud, use:

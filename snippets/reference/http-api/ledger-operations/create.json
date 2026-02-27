@@ -1,0 +1,16 @@
+{
+  "@context": {
+    "ex": "http://example.org/",
+    "schema": "http://schema.org/"
+  },
+  "ledger": "cookbook/base",
+  "insert": [
+    {
+      "@id": "ex:freddy",
+      "@type": "ex:Yeti",
+      "schema:age": 4,
+      "schema:name": "Freddy",
+      "ex:verified": true
+    }
+  ]
+}

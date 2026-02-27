@@ -7,7 +7,7 @@ Endpoints for reading and analyzing data.
 ## `fluree/query`
 
 ```
-POST /fluree/query
+POST /v1/fluree/query
 ```
 
 Query data from a ledger using FlureeQL.
@@ -27,25 +27,13 @@ Query data from a ledger using FlureeQL.
 
 ### Example Request Object
 
-```json
-{
-  "@context": {
-    "ex": "http://example.org/",
-    "schema": "http://schema.org/"
-  },
-  "from": "cookbook/base",
-  "where": {
-    "@id": "?s",
-    "schema:name": "?name"
-  },
-  "select": { "?s": ["*"] }
-}
+```json snippet=reference/http-api/queries/query
 ```
 
 ### Curl Example
 
 ```sh
-curl --location 'http://localhost:58090/fluree/query' --header 'Content-Type: application/json' --data '{
+curl --location 'http://localhost:58090/v1/fluree/query' --header 'Content-Type: application/json' --data '{
     "@context": {
         "ex": "http://example.org/",
         "schema": "http://schema.org/"
@@ -104,7 +92,7 @@ curl --location 'http://localhost:58090/fluree/query' --header 'Content-Type: ap
 ## `fluree/history`
 
 ```
-POST /fluree/history
+POST /v1/fluree/history
 ```
 
 Query the history of changes for entities in a ledger.
@@ -121,19 +109,13 @@ Query the history of changes for entities in a ledger.
 
 ### Example Request Object
 
-```json
-{
-  "@context": { "schema": "http://schema.org/" },
-  "from": "cookbook/base",
-  "history": [null, "schema:name"],
-  "t": { "from": 1 }
-}
+```json snippet=reference/http-api/queries/history
 ```
 
 ### Curl Example
 
 ```sh
-curl --location 'http://localhost:58090/fluree/history' --header 'Content-Type: application/json' --data '{
+curl --location 'http://localhost:58090/v1/fluree/history' --header 'Content-Type: application/json' --data '{
     "@context": { "schema": "http://schema.org/" },
     "from": "cookbook/base",
     "history": [null, "schema:name"],
@@ -185,29 +167,24 @@ curl --location 'http://localhost:58090/fluree/history' --header 'Content-Type: 
 ## `fluree/explain`
 
 ```
-POST /fluree/explain
+POST /v1/fluree/explain
 ```
 
 Get the query execution plan for a FlureeQL query. This is useful for understanding how Fluree will execute a query and for optimization.
 
 ### Request Object
 
-The request body is a standard FlureeQL query (same format as `/fluree/query`).
+The request body is a standard FlureeQL query (same format as `/v1/fluree/query`).
 
 ### Example Request Object
 
-```json
-{
-  "from": "cookbook/base",
-  "select": { "?s": ["*"] },
-  "where": { "@id": "?s", "schema:name": "?name" }
-}
+```json snippet=reference/http-api/queries/explain
 ```
 
 ### Curl Example
 
 ```sh
-curl --location 'http://localhost:58090/fluree/explain' \
+curl --location 'http://localhost:58090/v1/fluree/explain' \
   --header 'Content-Type: application/json' \
   --data '{
     "from": "cookbook/base",

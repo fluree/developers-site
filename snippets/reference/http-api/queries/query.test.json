@@ -1,0 +1,11 @@
+{
+  "id": "reference/http-api/queries/query",
+  "description": "Query all entities that have a schema:name property",
+  "testable": "pending",
+  "endpoint": "POST /v1/fluree/query",
+  "body": "query.json",
+  "setup": ["reference/http-api/ledger-operations/create"],
+  "expected": {
+    "status": 200
+  }
+}
