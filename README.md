@@ -174,21 +174,16 @@ bun run test:snippets:report   # writes snippet-report.json
 ```
 Preflight (create/drop): ok
 
-Running: ..F~~.E~.
+  ✓ reference/http-api/ledger-operations/create
+  ✗ reference/http-api/transactions/transact
+       Expected HTTP 200, got 400
+  ~ reference/http-api/queries/history (pending — expected gap)
+
+──────────────────────────────────────────────────
+  1 passed  1 failed  1 pending  0 errors
 ```
 
-The preflight line confirms the server is healthy before any tests run. If it prints `FAILED`, the run stops there with the error details.
-
-Once past the preflight, one character appears per test as results arrive:
-
-| Character | Meaning |
-|-----------|---------|
-| `.` | Passed |
-| `F` | Failed (assertion mismatch) |
-| `E` | Error (network, setup, or parse failure) |
-| `~` | Pending (ran, result tracked but not blocking) |
-
-A full summary with failure details follows the progress line.
+The preflight line confirms the server is healthy before any tests run. If it prints `FAILED`, the run stops there with the error details. After the preflight, all tests run in parallel and a full summary is printed.
 
 ### Environment variables
 
