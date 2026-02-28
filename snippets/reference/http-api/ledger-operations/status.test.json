@@ -1,10 +1,8 @@
 {
   "id": "reference/http-api/ledger-operations/status",
-  "description": "Get the current status of a ledger",
-  "testable": "pending",
-  "endpoint": "POST /v1/fluree/status",
-  "body": "status.json",
-  "setup": ["reference/http-api/ledger-operations/create"],
+  "description": "Get server-wide stats",
+  "testable": true,
+  "endpoint": "GET /v1/fluree/stats",
   "expected": {
     "status": 200
   }

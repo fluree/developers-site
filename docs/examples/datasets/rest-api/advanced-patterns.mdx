@@ -9,14 +9,14 @@ title: Advanced Patterns
 Insert multiple entities at once:
 
 ```sh
-curl -X POST http://localhost:58090/fluree/transact \
+curl -X POST http://localhost:8090/v1/fluree/transact \
   -H "Content-Type: application/json" \
   -d '{
     "ledger": "my/ledger",
     "insert": [
-      { "id": "ex:users/1", "type": "ex:User", "schema:name": "Alice" },
-      { "id": "ex:users/2", "type": "ex:User", "schema:name": "Bob" },
-      { "id": "ex:users/3", "type": "ex:User", "schema:name": "Carol" }
+      { "@id": "ex:users/1", "@type": "ex:User", "schema:name": "Alice" },
+      { "@id": "ex:users/2", "@type": "ex:User", "schema:name": "Bob" },
+      { "@id": "ex:users/3", "@type": "ex:User", "schema:name": "Carol" }
     ]
   }'
 ```
@@ -24,7 +24,8 @@ curl -X POST http://localhost:58090/fluree/transact \
 ## Error Handling
 
 Check the response status:
-- `200`: Success
+- `200`: Success (queries, drops)
+- `201`: Created (ledger creation, transactions)
 - `400`: Invalid request (check query syntax)
 - `500`: Server error
 
@@ -41,10 +42,10 @@ Response includes details:
 Use `limit` and `offset`:
 
 ```sh
-curl -X POST http://localhost:58090/fluree/query \
+curl -X POST http://localhost:8090/v1/fluree/query \
   -H "Content-Type: application/json" \
   -d '{
-    "ledger": "my/ledger",
+    "from": "my/ledger",
     "select": { "?user": ["*"] },
     "where": { "@id": "?user", "@type": "ex:User" },
     "limit": 10,
@@ -54,24 +55,33 @@ curl -X POST http://localhost:58090/fluree/query \
 
 ## History Query
 
+History queries run through the same `/v1/fluree/query` endpoint. Adding a `"to"` key with an `@t:` time suffix switches it into history mode:
+
 ```sh
-curl -X POST http://localhost:58090/fluree/history \
+curl -X POST http://localhost:8090/v1/fluree/query \
   -H "Content-Type: application/json" \
   -d '{
-    "ledger": "my/ledger",
-    "history": { "@id": "ex:users/1" }
+    "from": "my/ledger@t:1",
+    "to": "my/ledger@t:latest",
+    "select": ["?prop", "?val", "?t", "?op"],
+    "where": [
+      { "@id": "ex:users/1", "?prop": { "@value": "?val", "@t": "?t", "@op": "?op" } }
+    ],
+    "orderBy": "?t"
   }'
 ```
+
+See the [History Syntax reference](/docs/reference/history-syntax) for more details.
 
 ## Query with Context
 
 Include context in the request:
 
 ```sh
-curl -X POST http://localhost:58090/fluree/query \
+curl -X POST http://localhost:8090/v1/fluree/query \
   -H "Content-Type: application/json" \
   -d '{
-    "ledger": "my/ledger",
+    "from": "my/ledger",
     "@context": {
       "ex": "https://example.com/ns/",
       "schema": "http://schema.org/"

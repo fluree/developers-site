@@ -393,9 +393,9 @@ POST /fluree/history
 | ---------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `@context`       | no       | **object** • a map of terms for the history query and the result set ([See our Guide on Using Context](/docs/learn/working-with-data/context-patterns/))                                                                      |
 | `from`           | yes      | **string** • the name of the _existing_ ledger                                                                                                                                                                        |
-| `history`        | yes      | **string** or **array** • used to express the entity or entity patterns for which you are auditing history ([See the Reference section for Constraining Nodes](/docs/reference/history-syntax/#constraints-on-nodes)) |
-| `t`              | yes      | **object** • used to express individual commit/time values or ranges of commit/time values ([See the Reference section for Constraining by Time](/docs/reference/history-syntax/#constraints-on-time))                |
-| `commit-details` | no       | **boolean** • A flag for whether to include full commit details ([See the Reference section for Including Commit Details](/docs/reference/history-syntax/#including-commit-details))                                  |
+| `history`        | yes      | **string** or **array** • used to express the entity or entity patterns for which you are auditing history ([See the History Syntax reference](/docs/reference/history-syntax/))                                      |
+| `t`              | yes      | **object** • used to express individual commit/time values or ranges of commit/time values ([See the History Syntax reference](/docs/reference/history-syntax/))                                                       |
+| `commit-details` | no       | **boolean** • A flag for whether to include full commit details                                                                                                                                                       |
 
 ### Example Request Object
 

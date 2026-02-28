@@ -6,9 +6,9 @@ This reference documents all HTTP API endpoints provided by Fluree Server.
 
 | Category | Endpoints | Description |
 |----------|-----------|-------------|
-| **[Ledger Operations](./ledger-operations)** | `create`, `drop`, `exists`, `ledger-info`, `status` | Create, delete, and inspect ledgers |
-| **[Transactions](./transactions)** | `transact`, `insert`, `upsert`, `update` | Modify data in ledgers |
-| **[Queries](./queries)** | `query`, `history`, `explain` | Read and analyze data |
+| **[Ledger Operations](./ledger-operations)** | `create`, `drop`, `exists`, `info`, `stats` | Create, delete, and inspect ledgers |
+| **[Transactions](./transactions)** | `transact`, `insert`, `upsert` | Modify data in ledgers |
+| **[Queries](./queries)** | `query` (includes history mode), `explain` | Read and analyze data |
 | **[Real-Time](./real-time)** | `notify`, `subscribe` | WebSocket subscriptions and notifications |
 | **[Remote](./remote)** | `remote/*` | Distributed/federated scenarios |
 
@@ -17,7 +17,7 @@ This reference documents all HTTP API endpoints provided by Fluree Server.
 All endpoints are relative to your Fluree server URL:
 
 ```
-http://localhost:58090/v1/fluree/{endpoint}
+http://localhost:8090/v1/fluree/{endpoint}
 ```
 
 For Fluree Cloud, use:
@@ -46,7 +46,7 @@ All endpoints accept standard HTTP headers. Several custom headers are available
 
 | Header                   | Value           | Description                                                              |
 | ------------------------ | --------------- | ------------------------------------------------------------------------ |
-| `fluree-ledger`          | **string**      | Target ledger name (required for `/insert`, `/upsert`)                   |
+| `fluree-ledger`          | **string**      | Target ledger name (used for SPARQL endpoints)                           |
 | `fluree-format`          | `fql`, `sparql`, `turtle` | Input format hint when Content-Type is ambiguous                |
 | `fluree-output`          | `fql`, `sparql` | Output format for query results                                          |
 

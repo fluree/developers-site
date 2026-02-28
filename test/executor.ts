@@ -7,8 +7,9 @@ const REQUEST_TIMEOUT_MS = 30_000;
 /**
  * Top-level JSON fields that identify the target ledger in a Fluree request body.
  * The executor replaces these with the test-run-specific ledger name for isolation.
+ * "to" is included for history queries, which use "from"/"to" with optional "@t:" suffixes.
  */
-const LEDGER_FIELDS = ["ledger", "from"] as const;
+const LEDGER_FIELDS = ["ledger", "from", "to"] as const;
 
 /** Parse "METHOD /path" into its parts */
 function parseEndpoint(endpoint: string): { method: string; path: string } {
@@ -37,12 +38,15 @@ function loadBody(
 }
 
 /**
- * Replace the top-level "ledger" and "from" fields in a request body
+ * Replace the top-level "ledger", "from", and "to" fields in a request body
  * with the test-run-specific ledger name. This isolates each test so
  * they don't interfere with each other or with production data.
  *
  * The snippet file retains its canonical ledger name (e.g. "cookbook/base")
  * for documentation purposes — only the test executor substitutes it.
+ *
+ * History queries use "ledgername@t:N" notation. The "@t:..." suffix is
+ * preserved so that "cookbook/base@t:1" becomes "t-history-abc@t:1".
  */
 function substituteLedger(
   body: Record<string, unknown>,
@@ -51,7 +55,9 @@ function substituteLedger(
   const result = { ...body };
   for (const field of LEDGER_FIELDS) {
     if (typeof result[field] === "string") {
-      result[field] = testLedger;
+      const value = result[field];
+      const atIdx = value.indexOf("@t:");
+      result[field] = atIdx === -1 ? testLedger : testLedger + value.slice(atIdx);
     }
   }
   return result;
@@ -61,15 +67,15 @@ function substituteLedger(
 async function httpRequest(
   serverUrl: string,
   endpoint: string,
-  body: Record<string, unknown>
+  body?: Record<string, unknown>
 ): Promise<{ status: number; body: unknown }> {
   const { method, path } = parseEndpoint(endpoint);
   const url = `${serverUrl}${path}`;
 
   const response = await fetch(url, {
     method,
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
+    headers: body !== undefined ? { "Content-Type": "application/json" } : {},
+    body: body !== undefined ? JSON.stringify(body) : undefined,
     signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
   });
 
@@ -115,6 +121,14 @@ function makeTestLedger(testId: string): string {
   return `t-${safe}-${uid}`;
 }
 
+/**
+ * Substitute `:ledger` in an endpoint path with the test-run ledger name.
+ * e.g. "GET /v1/fluree/exists/:ledger" → "GET /v1/fluree/exists/t-exists-abc123"
+ */
+function substituteEndpointLedger(endpoint: string, testLedger: string): string {
+  return endpoint.replace(":ledger", testLedger);
+}
+
 /** Run all setup steps, substituting the test-run ledger name into each request body. */
 async function runSetupSteps(
   setupIds: string[],
@@ -127,10 +141,31 @@ async function runSetupSteps(
     if (!setupDiscovered) throw new Error(`Setup snippet not found: "${setupId}"`);
     const { test: setupTest, snippetDir: setupDir } = setupDiscovered;
     if (!setupTest.endpoint) throw new Error(`Setup snippet "${setupId}" has no endpoint`);
-    if (!setupTest.body) throw new Error(`Setup snippet "${setupId}" has no body`);
-    const setupBody = loadBody(setupDir, setupTest.body);
-    await httpRequest(serverUrl, setupTest.endpoint, substituteLedger(setupBody, testLedger));
+    const resolvedEndpoint = substituteEndpointLedger(setupTest.endpoint, testLedger);
+    const setupBody = setupTest.body
+      ? substituteLedger(loadBody(setupDir, setupTest.body), testLedger)
+      : undefined;
+    await httpRequest(serverUrl, resolvedEndpoint, setupBody);
   }
+}
+
+/** Check array-based assertions against the response body. Returns failure messages. */
+function evaluateArrayAssertions(
+  responseBody: unknown,
+  expected: ExpectedResponse
+): string[] {
+  const failures: string[] = [];
+  const arr = Array.isArray(responseBody) ? responseBody : null;
+  if (expected.bodyContainsItem !== undefined) {
+    const found = arr?.some((item) => containsMatch(item, expected.bodyContainsItem!));
+    if (!found) failures.push(`Response array does not contain expected item`);
+  }
+  if (expected.bodyContainsTuple !== undefined) {
+    const target = JSON.stringify(expected.bodyContainsTuple);
+    const found = arr?.some((item) => JSON.stringify(item) === target);
+    if (!found) failures.push(`Response array does not contain expected tuple`);
+  }
+  return failures;
 }
 
 /** Check response against expected values. Returns failure messages (empty = all passed). */
@@ -149,7 +184,7 @@ function evaluateAssertions(
   if (expected.bodyEquals !== undefined && JSON.stringify(responseBody) !== JSON.stringify(expected.bodyEquals)) {
     failures.push(`Response body did not match expected exactly`);
   }
-  return failures;
+  return failures.concat(evaluateArrayAssertions(responseBody, expected));
 }
 
 /**
@@ -207,13 +242,20 @@ export async function executeTest(
     await runSetupSteps(test.setup ?? [], allTests, serverUrl, testLedger);
 
     if (!test.endpoint) throw new Error("Test has no endpoint");
-    if (!test.body) throw new Error("Test has no body");
 
-    const body = loadBody(snippetDir, test.body);
+    const resolvedEndpoint = substituteEndpointLedger(test.endpoint, testLedger);
+    const { method } = parseEndpoint(resolvedEndpoint);
+    let body: Record<string, unknown> | undefined;
+    if (test.body === undefined) {
+      if (method !== "GET") throw new Error("Test has no body");
+    } else {
+      body = substituteLedger(loadBody(snippetDir, test.body), testLedger);
+    }
+
     const { status, body: responseBody } = await httpRequest(
       serverUrl,
-      test.endpoint,
-      substituteLedger(body, testLedger)
+      resolvedEndpoint,
+      body
     );
 
     const failures = evaluateAssertions(status, responseBody, test.expected ?? {});

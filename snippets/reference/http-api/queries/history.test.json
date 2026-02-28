@@ -1,11 +1,15 @@
 {
   "id": "reference/http-api/queries/history",
-  "description": "Query history of all schema:name changes from t=1 onward",
-  "testable": "pending",
-  "endpoint": "POST /v1/fluree/history",
+  "description": "Query history of all schema:name assertions and retractions",
+  "testable": true,
+  "endpoint": "POST /v1/fluree/query",
   "body": "history.json",
-  "setup": ["reference/http-api/ledger-operations/create"],
+  "setup": [
+    "shared/create-test-ledger",
+    "shared/cookbook-base-seed"
+  ],
   "expected": {
-    "status": 200
+    "status": 200,
+    "bodyContainsTuple": ["ex:freddy", "Freddy", 1, "assert"]
   }
 }

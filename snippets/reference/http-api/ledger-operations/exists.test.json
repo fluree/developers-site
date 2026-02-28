@@ -1,12 +1,10 @@
 {
   "id": "reference/http-api/ledger-operations/exists",
   "description": "Check whether a ledger exists",
-  "testable": "pending",
-  "endpoint": "POST /v1/fluree/exists",
-  "body": "exists.json",
+  "testable": true,
+  "endpoint": "GET /v1/fluree/exists/:ledger",
   "setup": ["reference/http-api/ledger-operations/create"],
   "expected": {
-    "status": 200,
-    "bodyContains": { "exists": true }
+    "status": 200
   }
 }

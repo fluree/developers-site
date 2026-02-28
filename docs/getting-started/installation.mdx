@@ -214,14 +214,12 @@ After starting Fluree, verify it's running by creating a test ledger:
 
 ```sh
 # Create a test ledger
-curl -X POST http://localhost:8090/fluree/create \
+curl -X POST http://localhost:8090/v1/fluree/create \
   -H "Content-Type: application/json" \
-  -d '{"ledger": "test/install"}'
+  -d '{"ledger": "test/install", "insert": []}'
 
 # Check it exists
-curl -X POST http://localhost:8090/fluree/exists \
-  -H "Content-Type: application/json" \
-  -d '{"ledger": "test/install"}'
+curl http://localhost:8090/v1/fluree/exists/test/install
 ```
 
 You should see JSON responses confirming the ledger was created and exists.

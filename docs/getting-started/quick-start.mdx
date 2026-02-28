@@ -133,18 +133,24 @@ curl -X POST "http://localhost:8090/fluree/transact" \
 
 ## 6. View History
 
-Fluree tracks all changes. See what changed over time:
+Fluree tracks all changes, giving you a complete audit trail of every modification. History queries run through the same `/v1/fluree/query` endpoint — adding a `"to"` key switches it into history mode:
 
 ```sh
-curl -X POST "http://localhost:8090/fluree/history" \
+curl -X POST "http://localhost:8090/v1/fluree/query" \
   -H "Content-Type: application/json" \
   -d '{
-    "from": "quickstart/demo",
     "@context": { "ex": "http://example.org/" },
-    "history": "ex:alice",
-    "t": { "from": 1 }
+    "from": "quickstart/demo@t:1",
+    "to": "quickstart/demo@t:latest",
+    "select": ["?prop", "?val", "?t", "?op"],
+    "where": [
+      { "@id": "ex:alice", "?prop": { "@value": "?val", "@t": "?t", "@op": "?op" } }
+    ],
+    "orderBy": "?t"
   }'
 ```
+
+This returns a tuple for each assertion and retraction on `ex:alice`, including the commit index (`?t`) and whether the value was added (`"assert"`) or removed (`"retract"`). See the [History Syntax reference](/docs/reference/history-syntax) for the full API.
 
 ## What's Next?
 
