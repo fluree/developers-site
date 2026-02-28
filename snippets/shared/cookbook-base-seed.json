@@ -1,0 +1,42 @@
+{
+  "@context": {
+    "ex": "http://example.org/",
+    "schema": "http://schema.org/"
+  },
+  "ledger": "cookbook/base",
+  "insert": [
+    {
+      "@id": "ex:freddy",
+      "@type": "ex:Yeti",
+      "schema:age": 4,
+      "schema:name": "Freddy",
+      "ex:verified": true
+    },
+    {
+      "@id": "ex:betty",
+      "@type": "ex:Yeti",
+      "schema:name": "Betty",
+      "schema:age": 82,
+      "schema:follows": { "@id": "ex:freddy" }
+    },
+    {
+      "@id": "ex:letty",
+      "@type": "ex:Yeti",
+      "schema:name": "Leticia",
+      "schema:age": 2,
+      "schema:follows": { "@id": "ex:freddy" },
+      "ex:nickname": "Letty"
+    },
+    {
+      "@id": "ex:andrew",
+      "@type": "schema:Person",
+      "schema:name": "Andrew Johnson",
+      "schema:age": 35,
+      "schema:follows": [
+        { "@id": "ex:freddy" },
+        { "@id": "ex:letty" },
+        { "@id": "ex:betty" }
+      ]
+    }
+  ]
+}

@@ -32,7 +32,7 @@ Commit a transaction to a ledger. This is the most flexible transaction endpoint
 ### Curl Example
 
 ```sh
-curl --location 'http://localhost:58090/v1/fluree/transact' --header 'Content-Type: application/json' --data $'{
+curl --location 'http://localhost:8090/v1/fluree/transact' --header 'Content-Type: application/json' --data $'{
   "@context": {
     "schema": "http://schema.org/"
   },
@@ -65,21 +65,20 @@ curl --location 'http://localhost:58090/v1/fluree/transact' --header 'Content-Ty
 ## `fluree/insert`
 
 ```
-POST /v1/fluree/insert
+POST /v1/fluree/insert/:ledger
 ```
 
-Insert new data into a ledger. This is a simplified endpoint for pure insertions.
+Insert new data into a ledger. This is a simplified endpoint for pure insertions — the target ledger is specified in the URL path.
 
-### Request Headers
+### Path Parameters
 
-| Header          | Required | Value                                                   |
-| --------------- | -------- | ------------------------------------------------------- |
-| `Content-Type`  | yes      | **string** &bull; `application/json` or `text/turtle`   |
-| `fluree-ledger` | yes      | **string** &bull; the name of the target ledger         |
+| Parameter | Value                                          |
+| --------- | ---------------------------------------------- |
+| `ledger`  | **string** &bull; the name of the target ledger |
 
 ### Request Body
 
-The request body should contain the data to insert, either as JSON-LD or Turtle format.
+The request body should contain the data to insert as JSON-LD.
 
 ### Example Request (JSON-LD)
 
@@ -89,9 +88,8 @@ The request body should contain the data to insert, either as JSON-LD or Turtle 
 ### Curl Example
 
 ```sh
-curl --location 'http://localhost:58090/v1/fluree/insert' \
+curl --location 'http://localhost:8090/v1/fluree/insert/cookbook/base' \
   --header 'Content-Type: application/json' \
-  --header 'fluree-ledger: cookbook/base' \
   --data '{
     "@context": {
       "ex": "http://example.org/",
@@ -123,21 +121,20 @@ curl --location 'http://localhost:58090/v1/fluree/insert' \
 ## `fluree/upsert`
 
 ```
-POST /v1/fluree/upsert
+POST /v1/fluree/upsert/:ledger
 ```
 
-Insert or update data in a ledger. If an entity with the given `@id` exists, its properties will be merged/updated. If it doesn't exist, a new entity will be created.
+Insert or update data in a ledger. If an entity with the given `@id` exists, its properties will be merged/updated. If it doesn't exist, a new entity will be created. The target ledger is specified in the URL path.
 
-### Request Headers
+### Path Parameters
 
-| Header          | Required | Value                                                   |
-| --------------- | -------- | ------------------------------------------------------- |
-| `Content-Type`  | yes      | **string** &bull; `application/json` or `text/turtle`   |
-| `fluree-ledger` | yes      | **string** &bull; the name of the target ledger         |
+| Parameter | Value                                          |
+| --------- | ---------------------------------------------- |
+| `ledger`  | **string** &bull; the name of the target ledger |
 
 ### Request Body
 
-The request body should contain the data to upsert, either as JSON-LD or Turtle format.
+The request body should contain the data to upsert as JSON-LD.
 
 ### Example Request (JSON-LD)
 
@@ -147,9 +144,8 @@ The request body should contain the data to upsert, either as JSON-LD or Turtle 
 ### Curl Example
 
 ```sh
-curl --location 'http://localhost:58090/v1/fluree/upsert' \
+curl --location 'http://localhost:8090/v1/fluree/upsert/cookbook/base' \
   --header 'Content-Type: application/json' \
-  --header 'fluree-ledger: cookbook/base' \
   --data '{
     "@context": {
       "ex": "http://example.org/",
@@ -177,58 +173,3 @@ curl --location 'http://localhost:58090/v1/fluree/upsert' \
 }
 ```
 
----
-
-## `fluree/update`
-
-```
-POST /v1/fluree/update
-```
-
-Update data in a ledger using pattern matching. This is functionally equivalent to `/v1/fluree/transact` and supports the same `where`/`delete`/`insert` pattern for conditional updates.
-
-### Request Object
-
-| Key        | Required | Value                                                                                                                            |
-| ---------- | -------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| `@context` | no       | **object** &bull; a map of terms for the transaction ([See our Guide on Using Context](/docs/learn/working-with-data/context-patterns/)) |
-| `ledger`   | yes      | **string** &bull; the name of the _existing_ ledger                                                                              |
-| `where`    | no       | **object** or **array** &bull; a subquery to bind logic variables for use in your `delete` and/or `insert` clauses               |
-| `delete`   | no       | **object** or **array** &bull; data to be retracted                                                                              |
-| `insert`   | no       | **object** or **array** &bull; data to be asserted                                                                               |
-
-### Example Request Object
-
-```json snippet=reference/http-api/transactions/update
-```
-
-### Curl Example
-
-```sh
-curl --location 'http://localhost:58090/v1/fluree/update' \
-  --header 'Content-Type: application/json' \
-  --data '{
-    "@context": {
-      "ex": "http://example.org/",
-      "schema": "http://schema.org/"
-    },
-    "ledger": "cookbook/base",
-    "where": { "@id": "?s", "schema:name": "Alice" },
-    "delete": { "@id": "?s", "schema:name": "Alice" },
-    "insert": { "@id": "?s", "schema:name": "Alice Smith" }
-  }'
-```
-
-### Example Response
-
-```json
-{
-  "commit": {
-    "address": "fluree:file://cookbook/base/commit/pdkobei2kowojearflqck64og5lvrjbz2leyqcrsravhvo4rfrl.json",
-    "hash": "pdkobei2kowojearflqck64og5lvrjbz2leyqcrsravhvo4rfrl"
-  },
-  "t": 5,
-  "tx-id": "bef7fc4f5d674a2ba21b154474780538c4977e1fccfcbb3f1933bf1c66fe9502",
-  "ledger": "cookbook/base"
-}
-```

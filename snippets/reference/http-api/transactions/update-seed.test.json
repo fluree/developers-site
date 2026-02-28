@@ -1,7 +1,0 @@
-{
-  "id": "reference/http-api/transactions/update-seed",
-  "description": "Setup: create a ledger with an Alice entity (required by the fluree/update example)",
-  "testable": false,
-  "endpoint": "POST /v1/fluree/create",
-  "body": "update-seed.json"
-}

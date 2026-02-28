@@ -28,7 +28,7 @@ Create a new ledger with optional initial data.
 ### Curl Example
 
 ```sh
-curl --location 'http://localhost:58090/v1/fluree/create' --header 'Content-Type: application/json' --data '{
+curl --location 'http://localhost:8090/v1/fluree/create' --header 'Content-Type: application/json' --data '{
   "@context": {
     "ex": "http://example.org/",
     "schema": "http://schema.org/"
@@ -86,7 +86,7 @@ Delete a ledger and all its associated data and commit history. This operation i
 ### Curl Example
 
 ```sh
-curl --location 'http://localhost:58090/v1/fluree/drop' \
+curl --location 'http://localhost:8090/v1/fluree/drop' \
   --header 'Content-Type: application/json' \
   --data '{
     "ledger": "cookbook/base"
@@ -107,30 +107,21 @@ curl --location 'http://localhost:58090/v1/fluree/drop' \
 ## `fluree/exists`
 
 ```
-POST /v1/fluree/exists
+GET /v1/fluree/exists/:ledger
 ```
 
 Check whether a ledger exists.
 
-### Request Object
+### Path Parameters
 
-| Key      | Required | Value                                            |
-| -------- | -------- | ------------------------------------------------ |
-| `ledger` | yes      | **string** &bull; the name of the ledger to check |
-
-### Example Request Object
-
-```json snippet=reference/http-api/ledger-operations/exists
-```
+| Parameter | Value                                            |
+| --------- | ------------------------------------------------ |
+| `ledger`  | **string** &bull; the name of the ledger to check |
 
 ### Curl Example
 
 ```sh
-curl --location 'http://localhost:58090/v1/fluree/exists' \
-  --header 'Content-Type: application/json' \
-  --data '{
-    "ledger": "cookbook/base"
-  }'
+curl 'http://localhost:8090/v1/fluree/exists/cookbook/base'
 ```
 
 ### Example Response
@@ -144,33 +135,24 @@ curl --location 'http://localhost:58090/v1/fluree/exists' \
 
 ---
 
-## `fluree/ledger-info`
+## `fluree/info`
 
 ```
-POST /v1/fluree/ledger-info
+GET /v1/fluree/info/:ledger
 ```
 
 Get detailed information about a ledger, including statistics, commit history, and namespace codes.
 
-### Request Object
+### Path Parameters
 
-| Key      | Required | Value                                           |
-| -------- | -------- | ----------------------------------------------- |
-| `ledger` | yes      | **string** &bull; the name of the ledger        |
-
-### Example Request Object
-
-```json snippet=reference/http-api/ledger-operations/ledger-info
-```
+| Parameter | Value                                    |
+| --------- | ---------------------------------------- |
+| `ledger`  | **string** &bull; the name of the ledger |
 
 ### Curl Example
 
 ```sh
-curl --location 'http://localhost:58090/v1/fluree/ledger-info' \
-  --header 'Content-Type: application/json' \
-  --data '{
-    "ledger": "cookbook/base"
-  }'
+curl 'http://localhost:8090/v1/fluree/info/cookbook/base'
 ```
 
 ### Example Response
@@ -219,50 +201,28 @@ curl --location 'http://localhost:58090/v1/fluree/ledger-info' \
 
 ---
 
-## `fluree/status`
+## `fluree/stats`
 
 ```
-POST /v1/fluree/status
+GET /v1/fluree/stats
 ```
 
-Get the current status of a ledger, including commit and index state. This is a lighter-weight alternative to `ledger-info`.
-
-### Request Object
-
-| Key      | Required | Value                                           |
-| -------- | -------- | ----------------------------------------------- |
-| `ledger` | yes      | **string** &bull; the name of the ledger        |
-
-### Example Request Object
-
-```json snippet=reference/http-api/ledger-operations/status
-```
+Get server-wide statistics, including information about all loaded ledgers.
 
 ### Curl Example
 
 ```sh
-curl --location 'http://localhost:58090/v1/fluree/status' \
-  --header 'Content-Type: application/json' \
-  --data '{
-    "ledger": "cookbook/base"
-  }'
+curl 'http://localhost:8090/v1/fluree/stats'
 ```
 
 ### Example Response
 
 ```json
 {
-  "address": "cookbook/base:main",
-  "alias": "cookbook/base:main",
-  "branch": "main",
-  "t": 5,
-  "size": 8740,
-  "flakes": 61,
-  "commit": {
-    "address": "fluree:file://cookbook/base/commit/abc123.json",
-    "v": 2,
-    "time": "2026-01-05T21:07:10.762114880Z",
-    "id": "fluree:commit:sha256:babc123"
-  }
+  "uptime_secs": 3600,
+  "storage_type": "file",
+  "indexing_enabled": false,
+  "cached_ledgers": 2,
+  "version": "0.1.0"
 }
 ```

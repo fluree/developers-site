@@ -15,6 +15,18 @@ export interface ExpectedResponse {
   bodyContains?: Record<string, unknown>;
   /** Exact match: actual response body must equal this value */
   bodyEquals?: unknown;
+  /**
+   * Array element match: actual response body must be an array containing at
+   * least one element whose top-level key/value pairs all match.
+   * Use this when the endpoint returns an array of objects.
+   */
+  bodyContainsItem?: Record<string, unknown>;
+  /**
+   * Tuple match: actual response body must be an array containing at least one
+   * element that exactly equals this value.
+   * Use this when the endpoint returns an array of arrays (e.g. history queries).
+   */
+  bodyContainsTuple?: unknown[];
 }
 
 /**

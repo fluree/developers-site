@@ -1,6 +1,16 @@
 {
-  "@context": { "schema": "http://schema.org/" },
-  "from": "cookbook/base",
-  "history": [null, "schema:name"],
-  "t": { "from": 1 }
+  "@context": {
+    "ex": "http://example.org/",
+    "schema": "http://schema.org/"
+  },
+  "from": "cookbook/base@t:1",
+  "to": "cookbook/base@t:latest",
+  "select": ["?s", "?name", "?t", "?op"],
+  "where": [
+    {
+      "@id": "?s",
+      "schema:name": { "@value": "?name", "@t": "?t", "@op": "?op" }
+    }
+  ],
+  "orderBy": "?t"
 }

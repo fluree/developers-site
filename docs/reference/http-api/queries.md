@@ -33,7 +33,7 @@ Query data from a ledger using FlureeQL.
 ### Curl Example
 
 ```sh
-curl --location 'http://localhost:58090/v1/fluree/query' --header 'Content-Type: application/json' --data '{
+curl --location 'http://localhost:8090/v1/fluree/query' --header 'Content-Type: application/json' --data '{
     "@context": {
         "ex": "http://example.org/",
         "schema": "http://schema.org/"
@@ -89,23 +89,22 @@ curl --location 'http://localhost:58090/v1/fluree/query' --header 'Content-Type:
 
 ---
 
-## `fluree/history`
+## History Queries
 
-```
-POST /v1/fluree/history
-```
+History queries run through the same `POST /v1/fluree/query` endpoint as regular queries. Adding a `"to"` key to your query body switches it into history mode, which returns a log of assertions and retractions over the specified time range.
 
-Query the history of changes for entities in a ledger.
+Use `"@t"` and `"@op"` metadata bindings in your `where` clause to capture the commit index and whether each triple was asserted or retracted.
 
 ### Request Object
 
-| Key              | Required | Value                                                                                                                                                                                                                                      |
-| ---------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `@context`       | no       | **object** &bull; a map of terms for the history query and the result set ([See our Guide on Using Context](/docs/learn/working-with-data/context-patterns/))                                                                                      |
-| `from`           | yes      | **string** &bull; the name of the _existing_ ledger                                                                                                                                                                                        |
-| `history`        | yes      | **string** or **array** &bull; used to express the entity or entity patterns for which you are auditing history ([See the Reference section for Constraining Nodes](/docs/reference/history-syntax/#constraints-on-nodes))                 |
-| `t`              | yes      | **object** &bull; used to express individual commit/time values or ranges of commit/time values ([See the Reference section for Constraining by Time](/docs/reference/history-syntax/#constraints-on-time))                                |
-| `commit-details` | no       | **boolean**. A flag for whether or not to include the full details for each `commit` included in the history response ([See the Reference section for Including Commit Details](/docs/reference/history-syntax/#including-commit-details)) |
+| Key        | Required | Value                                                                                                                                        |
+| ---------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| `@context` | no       | **object** &bull; a map of terms for the query and the result set ([See our Guide on Using Context](/docs/learn/working-with-data/context-patterns/)) |
+| `from`     | yes      | **string** &bull; starting point in ledger history, e.g. `"cookbook/base@t:1"` or `"cookbook/base@t:0"`                                     |
+| `to`       | yes      | **string** &bull; ending point in ledger history, e.g. `"cookbook/base@t:latest"`                                                           |
+| `select`   | yes      | **array** &bull; variables to project into the result tuples                                                                                 |
+| `where`    | yes      | **object** or **array** &bull; pattern using `@value`, `@t`, and `@op` metadata keys to bind values and history metadata                    |
+| `orderBy`  | no       | **string** &bull; variable to sort results by                                                                                                |
 
 ### Example Request Object
 
@@ -115,50 +114,36 @@ Query the history of changes for entities in a ledger.
 ### Curl Example
 
 ```sh
-curl --location 'http://localhost:58090/v1/fluree/history' --header 'Content-Type: application/json' --data '{
-    "@context": { "schema": "http://schema.org/" },
-    "from": "cookbook/base",
-    "history": [null, "schema:name"],
-    "t": { "from": 1 }
-}'
+curl --location 'http://localhost:8090/v1/fluree/query' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "@context": {
+      "ex": "http://example.org/",
+      "schema": "http://schema.org/"
+    },
+    "from": "cookbook/base@t:1",
+    "to": "cookbook/base@t:latest",
+    "select": ["?s", "?name", "?t", "?op"],
+    "where": [
+      {
+        "@id": "?s",
+        "schema:name": { "@value": "?name", "@t": "?t", "@op": "?op" }
+      }
+    ],
+    "orderBy": "?t"
+  }'
 ```
 
 ### Example Response
 
+History results are returned as tuples — one per variable binding in your `select` clause:
+
 ```json
 [
-  {
-    "f:t": 1,
-    "f:assert": [
-      {
-        "schema:name": "Andrew Johnson",
-        "@id": "ex:andrew"
-      },
-      {
-        "schema:name": "Betty",
-        "@id": "ex:betty"
-      },
-      {
-        "schema:name": "Freddy",
-        "@id": "ex:freddy"
-      },
-      {
-        "schema:name": "Leticia",
-        "@id": "ex:letty"
-      }
-    ],
-    "f:retract": []
-  },
-  {
-    "f:t": 2,
-    "f:assert": [
-      {
-        "schema:name": "Andy the Yeti",
-        "@id": "ex:andrew"
-      }
-    ],
-    "f:retract": []
-  }
+  ["ex:andrew", "Andrew Johnson", 1, "assert"],
+  ["ex:betty", "Betty", 1, "assert"],
+  ["ex:freddy", "Freddy", 1, "assert"],
+  ["ex:letty", "Leticia", 1, "assert"]
 ]
 ```
 
@@ -184,7 +169,7 @@ The request body is a standard FlureeQL query (same format as `/v1/fluree/query`
 ### Curl Example
 
 ```sh
-curl --location 'http://localhost:58090/v1/fluree/explain' \
+curl --location 'http://localhost:8090/v1/fluree/explain' \
   --header 'Content-Type: application/json' \
   --data '{
     "from": "cookbook/base",
@@ -198,23 +183,15 @@ curl --location 'http://localhost:58090/v1/fluree/explain' \
 ```json
 {
   "query": {
-    "where": [
-      ["id", { "fluree.db.query.exec.where/var": "?s" }]
-    ],
-    "select": {
-      "spec": { "depth": 0, "wildcard?": true },
-      "selection": ["*"],
-      "subj": "?s"
-    },
-    "opts": { "output": "fql", "identity": null },
-    "context": {}
+    "from": "cookbook/base",
+    "select": { "?s": ["*"] },
+    "where": { "@id": "?s", "schema:name": "?name" },
+    "opts": {}
   },
   "plan": {
     "optimization": "none",
     "reason": "No statistics available",
-    "where-clause": [
-      ["id", { "fluree.db.query.exec.where/var": "?s" }]
-    ]
+    "where-clause": { "@id": "?s", "schema:name": "?name" }
   }
 }
 ```

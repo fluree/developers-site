@@ -1,11 +1,18 @@
 {
   "id": "reference/http-api/queries/query",
   "description": "Query all entities that have a schema:name property",
-  "testable": "pending",
+  "testable": true,
   "endpoint": "POST /v1/fluree/query",
   "body": "query.json",
-  "setup": ["reference/http-api/ledger-operations/create"],
+  "setup": [
+    "shared/create-test-ledger",
+    "shared/cookbook-base-seed"
+  ],
   "expected": {
-    "status": 200
+    "status": 200,
+    "bodyContainsItem": {
+      "@id": "ex:freddy",
+      "schema:name": "Freddy"
+    }
   }
 }

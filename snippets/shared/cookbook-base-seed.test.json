@@ -1,0 +1,7 @@
+{
+  "id": "shared/cookbook-base-seed",
+  "description": "Seed the cookbook/base dataset: Freddy, Betty, Letty (Yetis) and Andrew (Person)",
+  "testable": false,
+  "endpoint": "POST /v1/fluree/transact",
+  "body": "cookbook-base-seed.json"
+}

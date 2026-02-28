@@ -1,7 +1,7 @@
 {
   "id": "reference/http-api/transactions/transact",
   "description": "Conditional update: replace 'We ❤️ All Blood' with two specific descriptions using where/delete/insert",
-  "testable": "pending",
+  "testable": true,
   "endpoint": "POST /v1/fluree/transact",
   "body": "transact.json",
   "setup": ["reference/http-api/transactions/transact-seed"],
