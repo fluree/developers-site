@@ -1,0 +1,11 @@
+{
+  "id": "reference/querying/aggregations/groupby-company",
+  "description": "Group people by company, showing names per group",
+  "testable": true,
+  "endpoint": "POST /v1/fluree/query",
+  "setup": ["shared/create-test-ledger", "shared/query-reference-seed"],
+  "body": "groupby-company.json",
+  "expected": {
+    "status": 200
+  }
+}

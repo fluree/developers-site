@@ -1,0 +1,94 @@
+{
+  "@context": {
+    "ex": "http://example.org/",
+    "schema": "http://schema.org/"
+  },
+  "ledger": "reference/querying",
+  "insert": [
+    {
+      "@id": "ex:alice",
+      "@type": "ex:Person",
+      "schema:name": "Alice Smith",
+      "schema:givenName": "Alice",
+      "schema:familyName": "Smith",
+      "schema:age": 30,
+      "schema:email": "alice@example.org",
+      "ex:company": "Fluree",
+      "ex:department": "Engineering",
+      "ex:salary": 95000,
+      "ex:favNums": [7, 13, 42],
+      "ex:bestFriend": { "@id": "ex:bob" },
+      "ex:knows": { "@id": "ex:bob" },
+      "ex:address": { "@id": "ex:alice-home" },
+      "ex:createdAt": "2024-01-15T09:00:00Z"
+    },
+    {
+      "@id": "ex:bob",
+      "@type": "ex:Person",
+      "schema:name": "Bob Jones",
+      "schema:givenName": "Bob",
+      "schema:familyName": "Jones",
+      "schema:age": 47,
+      "ex:email": "bob@example.org",
+      "ex:company": "Fluree",
+      "ex:department": "Engineering",
+      "ex:salary": 85000,
+      "ex:favNums": [3, 17, 99],
+      "ex:bestFriend": { "@id": "ex:carol" },
+      "ex:knows": { "@id": "ex:carol" },
+      "ex:createdAt": "2024-02-20T10:30:00Z"
+    },
+    {
+      "@id": "ex:carol",
+      "@type": "ex:Person",
+      "schema:name": "Carol Brown",
+      "schema:givenName": "Carol",
+      "schema:familyName": "Brown",
+      "schema:age": 25,
+      "schema:email": "carol@example.org",
+      "ex:email": "carol@example.org",
+      "ex:company": "Beep Boop",
+      "ex:department": "Sales",
+      "ex:salary": 75000,
+      "ex:favNums": [5, 8, 21],
+      "ex:bestFriend": { "@id": "ex:alice" },
+      "ex:knows": { "@id": "ex:alice" },
+      "ex:createdAt": "2024-03-01T08:00:00Z"
+    },
+    {
+      "@id": "ex:jack",
+      "@type": "ex:Person",
+      "schema:name": "Jack Griffith",
+      "schema:givenName": "Jack",
+      "schema:familyName": "Griffith",
+      "schema:age": 55,
+      "schema:email": "jack@example.org",
+      "ex:email": "jack@example.org",
+      "ex:company": "Beep Boop",
+      "ex:department": "Marketing",
+      "ex:salary": 70000,
+      "ex:favNums": [1, 2, 3]
+    },
+    {
+      "@id": "ex:dave",
+      "@type": "ex:Person",
+      "schema:name": "Dave Smith",
+      "schema:givenName": "Dave",
+      "schema:familyName": "Smith",
+      "ex:parent": { "@id": "ex:alice" }
+    },
+    {
+      "@id": "ex:eve",
+      "@type": "ex:Person",
+      "schema:name": "Eve Smith",
+      "schema:givenName": "Eve",
+      "schema:familyName": "Smith",
+      "ex:parent": { "@id": "ex:dave" }
+    },
+    {
+      "@id": "ex:alice-home",
+      "ex:street": "123 Main St",
+      "ex:city": "Raleigh"
+    }
+  ]
+}

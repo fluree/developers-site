@@ -327,10 +327,10 @@ Filter inline while binding variables:
   },
   "select": ["?name", "?last"],
   "where": {
-    "@type": "ex:User",
+    "@type": "ex:Person",
     "schema:age": {"value": "?age", "filter": "(> ?age 45)"},
     "schema:name": "?name",
-    "ex:last": {"value": "?last", "filter": "(strEnds ?last \"ith\")"}
+    "schema:familyName": {"value": "?last", "filter": "(strEnds ?last \"ith\")"}
   }
 }
 ```
@@ -341,7 +341,7 @@ This is equivalent to:
 {
   "select": ["?name", "?last"],
   "where": [
-    {"@type": "ex:User", "schema:age": "?age", "schema:name": "?name", "ex:last": "?last"},
+    {"@type": "ex:Person", "schema:age": "?age", "schema:name": "?name", "schema:familyName": "?last"},
     ["filter", "(> ?age 45)", "(strEnds ?last \"ith\")"]
   ]
 }

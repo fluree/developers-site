@@ -1,0 +1,11 @@
+{
+  "@context": { "ex": "http://example.org/", "schema": "http://schema.org/" },
+  "from": "reference/querying",
+  "select": ["?company", "?name"],
+  "where": {
+    "@id": "?s",
+    "schema:name": "?name",
+    "ex:company": "?company"
+  },
+  "groupBy": "?company"
+}

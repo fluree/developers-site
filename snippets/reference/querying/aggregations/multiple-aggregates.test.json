@@ -1,0 +1,11 @@
+{
+  "id": "reference/querying/aggregations/multiple-aggregates",
+  "description": "Apply count, sum, avg, min, max aggregates over all salaries in one query",
+  "testable": true,
+  "endpoint": "POST /v1/fluree/query",
+  "setup": ["shared/create-test-ledger", "shared/query-reference-seed"],
+  "body": "multiple-aggregates.json",
+  "expected": {
+    "status": 200
+  }
+}

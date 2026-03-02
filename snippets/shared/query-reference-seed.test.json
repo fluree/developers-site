@@ -1,0 +1,7 @@
+{
+  "id": "shared/query-reference-seed",
+  "description": "Seed dataset for query reference docs (alice, bob, carol, jack, dave, eve)",
+  "testable": false,
+  "endpoint": "POST /v1/fluree/transact",
+  "body": "query-reference-seed.json"
+}

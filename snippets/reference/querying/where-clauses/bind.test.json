@@ -1,0 +1,11 @@
+{
+  "id": "reference/querying/where-clauses/bind",
+  "description": "Bind ?canVote to true/false based on age >= 18 for all persons with an age",
+  "testable": true,
+  "endpoint": "POST /v1/fluree/query",
+  "setup": ["shared/create-test-ledger", "shared/query-reference-seed"],
+  "body": "bind.json",
+  "expected": {
+    "status": 200
+  }
+}

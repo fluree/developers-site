@@ -1,0 +1,9 @@
+{
+  "@context": { "ex": "http://example.org/" },
+  "from": "reference/querying",
+  "where": [
+    { "@id": "?s", "@type": "ex:Person" },
+    ["optional", { "@id": "?s", "ex:bestFriend": "?friend" }]
+  ],
+  "select": ["?s", "?friend"]
+}

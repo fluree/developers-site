@@ -1,0 +1,11 @@
+{
+  "id": "reference/querying/aggregations/having",
+  "description": "Filter grouped results with having — keep only names where avg(favNums) >= 10",
+  "testable": true,
+  "endpoint": "POST /v1/fluree/query",
+  "setup": ["shared/create-test-ledger", "shared/query-reference-seed"],
+  "body": "having.json",
+  "expected": {
+    "status": 200
+  }
+}

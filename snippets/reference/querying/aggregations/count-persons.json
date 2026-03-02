@@ -1,0 +1,6 @@
+{
+  "@context": { "ex": "http://example.org/" },
+  "from": "reference/querying",
+  "select": ["(count ?s)"],
+  "where": { "@id": "?s", "@type": "ex:Person" }
+}

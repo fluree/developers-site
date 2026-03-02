@@ -31,11 +31,11 @@ For example, in this where condition:
 ```json
 {
   "@id": "?s",
-  "schema:name": "Sheil"
+  "schema:name": "Alice Smith"
 }
 ```
 
-a set of subjects that have a `"schema:name"` equal to `"Sheil"` is bound
+a set of subjects that have a `"schema:name"` equal to `"Alice Smith"` is bound
 to the logic variable named `"?s"`.
 
 In this where condition:
@@ -59,13 +59,13 @@ given these two where conditions:
 ```json
 {
   "@id": "?s",
-  "schema:name": "Freddie",
-  "schema:familyName": "Mercury"
+  "schema:givenName": "Alice",
+  "schema:familyName": "Smith"
 }
 ```
 
-the set `"?s"` would include all nodes that have _both_ a `"schema:name"`
-of `"Freddie"` _and_ a `"schema:familyName"` of `"Mercury"`.
+the set `"?s"` would include all nodes that have _both_ a `"schema:givenName"`
+of `"Alice"` _and_ a `"schema:familyName"` of `"Smith"`.
 
 A node that satisfies **ONE** of those conditions but not **BOTH** would **NOT** be bound to `?s`
 
@@ -77,10 +77,11 @@ The following two examples are effectively equivalent:
 
 ```json
 {
+  "@context": { "ex": "http://example.org/", "schema": "http://schema.org/" },
   "where": [
     {
       "@id": "?s",
-      "bestFriend": "?friend"
+      "ex:bestFriend": "?friend"
     },
     {
       "@id": "?friend",
@@ -92,9 +93,10 @@ The following two examples are effectively equivalent:
 
 ```json
 {
+  "@context": { "ex": "http://example.org/", "schema": "http://schema.org/" },
   "where": {
     "@id": "?s",
-    "bestFriend": {
+    "ex:bestFriend": {
       "@id": "?friend",
       "schema:name": "?name"
     }
@@ -106,9 +108,10 @@ The following two examples are effectively equivalent:
 In the second example above, because the conditions on `?s` and `?friend` are nested in a single, hierarchical JSON object, we could even remove the `"@id": "?friend"` line, if we didn't need to use it in the `select` statement. We need it in the first example to relate the two nodes to one another, but in the second example, we could have just as easily used:
 ```json
 {
+  "@context": { "ex": "http://example.org/", "schema": "http://schema.org/" },
   "where": {
     "@id": "?s",
-    "bestFriend": {
+    "ex:bestFriend": {
       "schema:name": "?name"
     }
   }
@@ -126,8 +129,9 @@ Finally, it is possible in _where conditions_ to express a _logic variable_ for 
 
 ```json
 {
+  "@context": { "ex": "http://example.org/" },
   "where": {
-    "@id": "http://example.org/jack",
+    "@id": "ex:jack",
     "?p": "?o"
   }
 }
@@ -166,7 +170,7 @@ you could write this:
 ```json focus=4
 {
   "where": [
-    { "@id": "?s", "schema/age": "?age" },
+    { "@id": "?s", "schema:age": "?age" },
     ["filter", "(> ?age 45)", "(< ?age 50)"]
   ],
   "select": { "?s": ["*"] }
@@ -218,19 +222,7 @@ But we can easily imagine a scenario where we know some entities have a value on
 
 This is where we can use `union` to express a logical **OR** condition (aka perform a full outer join on values of those two properties):
 
-```json
-{
-  "@context": { "schema": "http://schema.org/", "ex": "http://example.org/" },
-  "where": [
-    { "@id": "?s", "@type": "ex:Person" },
-    [
-      "union",
-      { "@id": "?s", "schema:email": "?email" },
-      { "@id": "?s", "ex:email": "?email" }
-    ]
-  ],
-  "select": ["?s", "?email"]
-}
+```json snippet=reference/querying/where-clauses/union
 ```
 
 In English, this query reads:
@@ -256,15 +248,7 @@ Like [`filter`](#filter) and [`union`](#union), `bind` is an array where the fir
 <details>
 <summary>Example of a <em>where operation</em> that uses <code>bind</code></summary>
 
-```json
-{
-  "@context": { "schema": "http://schema.org/" },
-  "where": [
-    { "@id": "?s", "schema:age": "?age" },
-    ["bind", "?canVote", "(>= ?age 18)"]
-  ],
-  "select": ["?s", "?age", "?canVote"]
-}
+```json snippet=reference/querying/where-clauses/bind
 ```
 
 </details>
@@ -277,15 +261,7 @@ The `"optional"` operation allows you to use logic variable bindings for values 
 
 For example, if you wanted to select all people and their best friends, but _**if you didn't want the query results to implicitly filter out people who had no values on `bestFriend`**_ you could write this:
 
-```json focus=5
-{
-  "@context": { "ex": "http://example.org/" },
-  "where": [
-    { "@id": "?s", "@type": "ex:Person" },
-    ["optional", { "@id": "?s", "bestFriend": "?friend" }]
-  ],
-  "select": ["?s", "?friend"]
-}
+```json snippet=reference/querying/where-clauses/optional focus=5
 ```
 
 When the `where` clause of the above query executes, `?s` will be bound to all entities of `@type`, `ex:Person`. If we had **NOT** used `optional` on the next line, then any `?s` entities with _no value on `bestFriend`_ would be implicitly dropped from the `?s` result set. But, **because we used `optional`**, those entities will be retained in the `?s` result set, and `?friend` will be bound to `null` for those entities.
@@ -294,12 +270,12 @@ When the `where` clause of the above query executes, `?s` will be bound to all e
 
 > **NOTE**: There is a difference between the following two `optional` operations:
 >
-> 1. `["optional", { "@id": "?s", "bestFriend": "?friend"}, { "@id": "?s", "name": "?name"}]`
-> 2. `["optional", { "@id": "?s", "bestFriend": "?friend", "name": "?name"}]`
+> 1. `["optional", { "@id": "?s", "ex:bestFriend": "?friend"}, { "@id": "?s", "schema:name": "?name"}]`
+> 2. `["optional", { "@id": "?s", "ex:bestFriend": "?friend", "schema:name": "?name"}]`
 >
-> In #1, an entity could have a value on **either** `bestFriend` or `name`, and that value would then be bound to `?friend` or `?name`, respectively (the other would be `null`).
+> In #1, an entity could have a value on **either** `ex:bestFriend` or `schema:name`, and that value would then be bound to `?friend` or `?name`, respectively (the other would be `null`).
 >
-> In #2, if an entity had **only a value on either `bestFriend` or `name`**, then **BOTH `?friend` and `?name`** would be bound to `null`.
+> In #2, if an entity had **only a value on either `ex:bestFriend` or `schema:name`**, then **BOTH `?friend` and `?name`** would be bound to `null`.
 
 <Admonition type="info">
   If you are used to SQL databases and queries, you might be confused why we call this operation `optional`. In SQL, it is possible to persist `null` values on a column for a particular row.

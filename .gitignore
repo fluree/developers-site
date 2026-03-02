@@ -7,3 +7,6 @@ bin
 
 # Local environment variables (copy .env.local.example to .env.local)
 .env.local
+
+# local Fluree
+.fluree

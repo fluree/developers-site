@@ -1,0 +1,11 @@
+{
+  "id": "reference/querying/where-clauses/union",
+  "description": "Union of schema:email OR ex:email — returns all persons who have either email predicate",
+  "testable": true,
+  "endpoint": "POST /v1/fluree/query",
+  "setup": ["shared/create-test-ledger", "shared/query-reference-seed"],
+  "body": "union.json",
+  "expected": {
+    "status": 200
+  }
+}

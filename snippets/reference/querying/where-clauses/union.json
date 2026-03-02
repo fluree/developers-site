@@ -1,0 +1,13 @@
+{
+  "@context": { "schema": "http://schema.org/", "ex": "http://example.org/" },
+  "from": "reference/querying",
+  "where": [
+    { "@id": "?s", "@type": "ex:Person" },
+    [
+      "union",
+      { "@id": "?s", "schema:email": "?email" },
+      { "@id": "?s", "ex:email": "?email" }
+    ]
+  ],
+  "select": ["?s", "?email"]
+}
