@@ -1,0 +1,11 @@
+{
+  "id": "reference/querying/aggregations/grouped-department",
+  "description": "Count and average salary grouped by department",
+  "testable": true,
+  "endpoint": "POST /v1/fluree/query",
+  "setup": ["shared/create-test-ledger", "shared/query-reference-seed"],
+  "body": "grouped-department.json",
+  "expected": {
+    "status": 200
+  }
+}

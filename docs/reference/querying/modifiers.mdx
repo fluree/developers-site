@@ -99,11 +99,11 @@ To bind a single variable to a set of values:
 {
   "select": ["?s", "?name"],
   "where": { "@id": "?s", "schema:name": "?name" },
-  "values": ["?name", ["Alice", "Bob", "Charlie"]]
+  "values": ["?name", ["Alice Smith", "Bob Jones", "Carol Brown"]]
 }
 ```
 
-This query will only return results where `?name` is one of "Alice", "Bob", or "Charlie".
+This query will only return results where `?name` is one of "Alice Smith", "Bob Jones", or "Carol Brown".
 
 ### Multiple Variables
 
@@ -122,7 +122,7 @@ To bind multiple variables simultaneously, provide arrays of variable names and 
     [
       ["Alice", "Smith"],
       ["Bob", "Jones"],
-      ["Charlie", "Brown"]
+      ["Carol", "Brown"]
     ]
   ]
 }

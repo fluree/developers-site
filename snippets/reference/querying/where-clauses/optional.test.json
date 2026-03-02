@@ -1,0 +1,11 @@
+{
+  "id": "reference/querying/where-clauses/optional",
+  "description": "Optional bestFriend — returns all persons even if they have no bestFriend value",
+  "testable": true,
+  "endpoint": "POST /v1/fluree/query",
+  "setup": ["shared/create-test-ledger", "shared/query-reference-seed"],
+  "body": "optional.json",
+  "expected": {
+    "status": 200
+  }
+}

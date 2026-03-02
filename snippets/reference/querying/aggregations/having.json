@@ -1,0 +1,12 @@
+{
+  "@context": { "ex": "http://example.org/", "schema": "http://schema.org/" },
+  "from": "reference/querying",
+  "select": ["?name", "?favNums"],
+  "where": {
+    "@id": "?s",
+    "schema:name": "?name",
+    "ex:favNums": "?favNums"
+  },
+  "groupBy": "?name",
+  "having": "(>= (avg ?favNums) 10)"
+}

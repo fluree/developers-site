@@ -28,17 +28,18 @@ build these JSON objects by specifying what predicates to include.
 
 <details>
 <summary>Simple `select` example</summary>
-```json focus=2:7
+```json focus=3:8
 {
+  "@context": { "ex": "http://example.org/", "schema": "http://schema.org/" },
   "select": {
     "?s": [
-      "name",
-      { "bestFriend": ["*"] }
+      "schema:name",
+      { "ex:bestFriend": ["*"] }
     ]
   },
   "where": {
     "@id": "?s",
-    "bestFriend": "?friend"
+    "ex:bestFriend": "?friend"
   }
 }
 ```
@@ -57,11 +58,12 @@ results is an array.
 <summary>Logic variable</summary>
 ```json focus=2
 {
+  "@context": { "ex": "http://example.org/", "schema": "http://schema.org/" },
   "select": ["?s", "?name", "?friend"],
   "where": {
     "@id": "?s",
-    "bestFriend": "?friend",
-    "name": "?name"
+    "ex:bestFriend": "?friend",
+    "schema:name": "?name"
   }
 }
 ```
@@ -72,14 +74,15 @@ results is an array.
 <summary>Logic variable and a select object</summary>
 ```json focus=2:5
 {
+  "@context": { "ex": "http://example.org/", "schema": "http://schema.org/" },
   "select": [
     { "?s": ["*"] },
     { "?friend": ["*"] }
   ],
   "where": {
     "@id": "?s",
-    "bestFriend": "?friend",
-    "name": "?name"
+    "ex:bestFriend": "?friend",
+    "schema:name": "?name"
   }
 }
 ```
@@ -111,12 +114,13 @@ Select clause objects map _logic variables_ to _select expressions_. In the
 select clause below, `"?s"` identifies a logic variable and `["name", {
 "bestFriend": ["*"] }]` is a select expression.
 
-```json focus=2:7
+```json focus=3:8
 {
+  "@context": { "ex": "http://example.org/", "schema": "http://schema.org/" },
   "select": {
     "?s": [
-      "name",
-      { "bestFriend": ["*"] }
+      "schema:name",
+      { "ex:bestFriend": ["*"] }
     ]
   },
   "where": { ... }
@@ -147,7 +151,7 @@ A select expression can be one of:
 
 // node object template; see below
 {
-   "schema:address": ["*"]
+   "ex:address": ["*"]
 }
 ```
 
@@ -169,13 +173,14 @@ array of select expressions._
 ### Examples
 
 <details>
-<summary>Return an object that has all predicates for the node that `"bestFriend"` refers to</summary>
+<summary>Return an object that has all predicates for the node that `"ex:bestFriend"` refers to</summary>
 
-```json focus=2:6
+```json focus=3:7
 {
+  "@context": { "ex": "http://example.org/" },
   "select": {
     "?s": [
-      { "bestFriend": ["*"] }
+      { "ex:bestFriend": ["*"] }
     ]
   },
   "where": { ... }
@@ -186,14 +191,15 @@ array of select expressions._
 
 <details>
 <summary>Multi-level nested object</summary>
-```json focus=4:12
+```json focus=5:13
 {
+  "@context": { "ex": "http://example.org/" },
   "select": {
     "?s": [
       {
-        "bestFriend": [
+        "ex:bestFriend": [
           {
-            "address": [
+            "ex:address": [
               "*"
             ]
           }
@@ -220,7 +226,8 @@ The `construct` clause builds custom JSON-LD output from query results, similar 
 
 ```json
 {
-  "from": "my-ledger",
+  "@context": { "ex": "http://example.org/", "schema": "http://schema.org/" },
+  "from": "reference/querying",
   "construct": [
     {
       "@id": "?s",
@@ -240,12 +247,12 @@ The `construct` clause builds custom JSON-LD output from query results, similar 
     {
       "@id": "ex:alice",
       "@type": ["ex:SearchResult"],
-      "ex:displayName": ["Alice"]
+      "ex:displayName": ["Alice Smith"]
     },
     {
       "@id": "ex:bob",
       "@type": ["ex:SearchResult"],
-      "ex:displayName": ["Bob"]
+      "ex:displayName": ["Bob Jones"]
     }
   ]
 }

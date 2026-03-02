@@ -47,21 +47,22 @@ FlureeQL queries are JSON with the following keys:
 <summary>Basic query example</summary>
 ```json
 {
-  "from": "cookbook/base",
+  "@context": { "ex": "http://example.org/" },
+  "from": "reference/querying",
   "where": {
     "@id": "?s",
-    "bestFriend": "?friend"
+    "ex:bestFriend": "?friend"
   },
   "select": {
     "?s": [
       "*",
       {
-        "bestFriend": [
+        "ex:bestFriend": [
           "*"
         ]
       }
     ]
-  },
+  }
 }
 ```
 </details>

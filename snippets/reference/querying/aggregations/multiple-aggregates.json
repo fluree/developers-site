@@ -1,0 +1,6 @@
+{
+  "@context": { "ex": "http://example.org/" },
+  "from": "reference/querying",
+  "select": ["(count ?s)", "(sum ?salary)", "(avg ?salary)", "(min ?salary)", "(max ?salary)"],
+  "where": { "@id": "?s", "ex:salary": "?salary" }
+}

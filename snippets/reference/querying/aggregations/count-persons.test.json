@@ -1,0 +1,12 @@
+{
+  "id": "reference/querying/aggregations/count-persons",
+  "description": "Count all ex:Person entities in the reference/querying ledger — expects [6]",
+  "testable": true,
+  "endpoint": "POST /v1/fluree/query",
+  "setup": ["shared/create-test-ledger", "shared/query-reference-seed"],
+  "body": "count-persons.json",
+  "expected": {
+    "status": 200,
+    "bodyEquals": [6]
+  }
+}

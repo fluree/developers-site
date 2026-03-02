@@ -1,0 +1,12 @@
+{
+  "id": "reference/querying/aggregations/count-with-groupby",
+  "description": "Count people per company using groupBy and count aggregate",
+  "testable": true,
+  "endpoint": "POST /v1/fluree/query",
+  "setup": ["shared/create-test-ledger", "shared/query-reference-seed"],
+  "body": "count-with-groupby.json",
+  "expected": {
+    "status": 200,
+    "bodyContainsItem": ["Beep Boop", 2]
+  }
+}

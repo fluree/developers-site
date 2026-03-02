@@ -20,68 +20,52 @@ all people in your database, and the results look like this:
 [
   {
     "ex:company": "Fluree",
-    "ex:name": "Letitia"
+    "schema:name": "Alice Smith"
   },
   {
     "ex:company": "Fluree",
-    "ex:name": "Freddy"
+    "schema:name": "Bob Jones"
   },
   {
     "ex:company": "Beep Boop",
-    "ex:name": "Daniel"
+    "schema:name": "Carol Brown"
+  },
+  {
+    "ex:company": "Beep Boop",
+    "schema:name": "Jack Griffith"
   }
 ]
 ```
 
 You could group these results by `ex:company` to see who works for each company:
 
-```json
-{
-  "@context": { "ex": "http://example.org/" },
-  "select": ["?company", "?name"],
-  "where": {
-    "@id": "?s",
-    "ex:name": "?name",
-    "ex:company": "?company"
-  },
-  "groupBy": "?company"
-}
+```json snippet=reference/querying/aggregations/groupby-company
 ```
 
 This would return:
 
 ```json
 [
-  ["Fluree", ["Letitia", "Freddy"]],
-  ["Beep Boop", ["Daniel"]]
+  ["Beep Boop", ["Carol Brown", "Jack Griffith"]],
+  ["Fluree", ["Alice Smith", "Bob Jones"]]
 ]
 ```
 
 You can also perform aggregate operations on the grouped data. These operations
-let you answers questions like, "how many people are employed at each company?"
-or "what is the lowest price that a product has sold for?"
+let you answer questions like, "how many people are employed at each company?"
+or "what is the lowest salary at each company?"
 
 If you wanted to get a count of people per employer, you could write a query like this:
 
-```json
-{
-  "@context": { "ex": "http://example.org/" },
-  "select": ["?company", "(count ?s)"],
-  "where": {
-    "@id": "?s",
-    "ex:name": "?name",
-    "ex:company": "?company"
-  },
-  "groupBy": "?company"
-}
+```json snippet=reference/querying/aggregations/count-with-groupby
 ```
 
 And you would get results like this:
 
 ```json
 [
-  ["Fluree", 2],
-  ["Beep Boop", 1]
+  ["Beep Boop", 2],
+  ["Fluree", 2]
 ]
 ```
 
@@ -95,18 +79,7 @@ Having lets you filter on grouped data using arbitrary expressions.
 
 > **NOTE**: `having` is only valid when used with `groupBy`.
 
-```json
-{
-  "@context": { "ex": "http://example.org/", "schema": "http://schema.org/" },
-  "select": ["?name", "?favNums"],
-  "where": {
-    "@id": "?s",
-    "schema:name": "?name",
-    "ex:favNums": "?favNums"
-  },
-  "groupBy": "?name",
-  "having": "(>= (avg ?favNums) 10)"
-}
+```json snippet=reference/querying/aggregations/having
 ```
 
 As English, this query would read: _"Find all entities with names and favorite numbers. Group the results by name. Keep only results where the average of all `?favNums` for a `?name` is greater than or equal to `10`."_
@@ -122,44 +95,31 @@ Aggregate functions compute values across multiple results. They are used in the
 | function        | description                          | example                  |
 | --------------- | ------------------------------------ | ------------------------ |
 | `count`         | Count of values                      | `(count ?s)`             |
-| `sum`           | Sum of numeric values                | `(sum ?price)`           |
+| `sum`           | Sum of numeric values                | `(sum ?salary)`          |
 | `avg`           | Average of numeric values            | `(avg ?age)`             |
-| `min`           | Minimum value                        | `(min ?date)`            |
+| `min`           | Minimum value                        | `(min ?salary)`          |
 | `max`           | Maximum value                        | `(max ?salary)`          |
 | `sample`        | Random sample from values            | `(sample ?name)`         |
 | `group_concat`  | Concatenate values into string       | `(group_concat ?tag)`    |
 
 ### Count Example
 
-```json
-{
-  "select": ["(count ?s)"],
-  "where": { "@id": "?s", "@type": "ex:Person" }
-}
+```json snippet=reference/querying/aggregations/count-persons
 ```
 
-Returns: `[[42]]` (if there are 42 Person entities)
+Returns `[6]` — there are 6 `ex:Person` entities in the ledger.
 
 ### Grouped Aggregates
 
-```json
-{
-  "select": ["?department", "(count ?employee)", "(avg ?salary)"],
-  "where": {
-    "@id": "?employee",
-    "ex:department": "?department",
-    "ex:salary": "?salary"
-  },
-  "groupBy": "?department"
-}
+```json snippet=reference/querying/aggregations/grouped-department
 ```
 
 Returns results like:
 ```json
 [
-  ["Engineering", 25, 95000],
-  ["Sales", 15, 75000],
-  ["Marketing", 10, 70000]
+  ["Engineering", 2, 90000],
+  ["Marketing", 1, 70000],
+  ["Sales", 1, 75000]
 ]
 ```
 
@@ -167,11 +127,7 @@ Returns results like:
 
 You can use multiple aggregate functions in a single query:
 
-```json
-{
-  "select": ["(count ?s)", "(sum ?price)", "(avg ?price)", "(min ?price)", "(max ?price)"],
-  "where": { "@id": "?s", "ex:price": "?price" }
-}
+```json snippet=reference/querying/aggregations/multiple-aggregates
 ```
 
 ## Next Steps

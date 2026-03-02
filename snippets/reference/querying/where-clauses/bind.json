@@ -1,0 +1,9 @@
+{
+  "@context": { "schema": "http://schema.org/" },
+  "from": "reference/querying",
+  "where": [
+    { "@id": "?s", "schema:age": "?age" },
+    ["bind", "?canVote", "(>= ?age 18)"]
+  ],
+  "select": ["?s", "?age", "?canVote"]
+}

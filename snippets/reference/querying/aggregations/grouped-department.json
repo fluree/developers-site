@@ -1,0 +1,11 @@
+{
+  "@context": { "ex": "http://example.org/" },
+  "from": "reference/querying",
+  "select": ["?department", "(count ?employee)", "(avg ?salary)"],
+  "where": {
+    "@id": "?employee",
+    "ex:department": "?department",
+    "ex:salary": "?salary"
+  },
+  "groupBy": "?department"
+}
