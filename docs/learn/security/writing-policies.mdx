@@ -1,175 +1,327 @@
 # Writing Policies
 
-This guide covers how to implement access control policies in Fluree. See [Data Access Control Concepts](./data-access-control-concepts.mdx) for the conceptual foundation.
+Ready to lock down your data? This guide walks through how to write Fluree access control policies. If you want the conceptual overview first, start with [Data Access Control Concepts](./data-access-control-concepts.mdx).
 
-## Creating a Policy Class
+## Fluree Policy
 
-Policy classes are entities with access rules:
+A policy is just a data entity in your ledger — there's nothing special about where it lives. Each policy declares a type, the actions it permits, and a `f:query` that determines whether access is granted. You can optionally add `f:targetSubject` to limit the policy to subjects of a specific type. Here's a minimal example granting full read and write access:
 
 ```json
 {
-  "@id": "ex:UserPolicy",
-  "@type": "f:Policy",
-  "f:allow": [...]
+  "@context": {"f": "https://ns.flur.ee/ledger#"},
+  "@id": "policy/root",
+  "@type": ["Policy", "RootPolicyClass"],
+  "f:action": [
+    {"@id": "f:modify"},
+    {"@id": "f:view"}
+  ],
+  "f:query": {
+    "@type": "@json",
+    "@value": {}
+  }
 }
 ```
 
-## Linking Identity to Policy
+An empty `{}` for `f:query` means no conditions — this policy always grants access.
 
-Connect a DID to a policy class:
+### Actions
+
+Two actions are available, and your policy can grant one or both:
+
+- **`f:view`** — Read/query access
+- **`f:modify`** — Write/transact access
 
 ```json
-{
-  "@id": "did:key:z6MkhaXg...",
-  "f:policyClass": {"@id": "ex:UserPolicy"},
-  "ex:user": {"@id": "ex:alice"}
+"f:action": [
+  {"@id": "f:view"}
+]
+```
+
+### The `f:query` Field
+
+`f:query` is where you express the condition that must be true for the policy to grant access. It holds a full Fluree query, encoded as a JSON-LD literal with its own `@context`. If the query returns any results, access is granted; if it returns nothing, access is denied. Because it's a full query, `f:query` can express conditions about the requesting user, the data subject being accessed, or both — you could even hide a record purely because it has `"private": true`, regardless of who is asking. Here's an example that grants access only when the subject's `ex:owner` matches the requesting identity:
+
+```json
+"f:query": {
+  "@type": "@json",
+  "@value": {
+    "where": {
+      "@id": "?$this",
+      "ex:owner": "?$identity"
+    }
+  }
 }
 ```
 
-The `ex:user` link lets policies reference "the user making this request."
+#### Special Variables
 
-## Allow Rules
+Two special variables are available inside `f:query`, automatically bound by the policy evaluation engine as it checks each result:
 
-Specify what the policy permits:
+- **`?$identity`** — The identity node of the requesting user (their DID entity)
+- **`?$this`** — The specific subject currently being evaluated
+
+These are the building blocks for "own data" rules: `?$this` is the thing being accessed, and `?$identity` is the person asking.
+
+#### Empty Query (Allow All)
+
+An empty `{}` value means the policy matches any identity — useful for root/admin policies:
+
+```json
+"f:query": {
+  "@type": "@json",
+  "@value": {}
+}
+```
+
+### Scoping to Specific Subject Types with `f:targetSubject`
+
+By default, a policy applies to all data. Use `f:targetSubject` when you want a policy to only activate for subjects of a specific type — for example, a policy that only governs `Shipment` subjects:
 
 ```json
 {
-  "@id": "ex:UserPolicy",
-  "@type": "f:Policy",
-  "f:allow": [
-    {
-      "@id": "ex:allowReadOwnData",
-      "f:action": {"@id": "f:read"},
-      "f:property": {"@id": "?p"},
-      "f:where": {
-        "@id": "?entity",
-        "ex:owner": "?$identity"
+  "@id": "policy/readShipments",
+  "@type": ["Policy", "UserPolicyClass"],
+  "f:required": true,
+  "f:targetSubject": {
+    "@type": "@json",
+    "@value": {
+      "where": {
+        "@id": "?$target",
+        "@type": "Shipment"
       }
+    }
+  },
+  "f:action": [{"@id": "f:view"}],
+  "f:query": {
+    "@type": "@json",
+    "@value": {
+      "where": {
+        "@id": "?$this",
+        "initiatedBy": "?$identity"
+      }
+    }
+  }
+}
+```
+
+The `?$target` variable in `f:targetSubject` refers to the subject being tested. If it's not a `Shipment`, this policy is skipped entirely.
+
+### Scoping to Specific Properties with `f:targetProperty`
+
+Where `f:targetSubject` scopes a policy to certain subject types, `f:targetProperty` scopes it to specific properties. This is useful for sensitive fields like SSNs or salaries that should only be visible to certain identities, regardless of who owns the subject:
+
+```json
+{
+  "@id": "policy/viewSensitiveFields",
+  "@type": ["Policy", "UserPolicyClass"],
+  "f:required": true,
+  "f:targetProperty": [
+    {"@id": "ex:ssn"},
+    {"@id": "ex:salary"}
+  ],
+  "f:action": [{"@id": "f:view"}],
+  "f:query": {
+    "@type": "@json",
+    "@value": {
+      "where": {
+        "@id": "?$identity",
+        "ex:role": "hr"
+      }
+    }
+  }
+}
+```
+
+Like `f:targetSubject`, `f:targetProperty` also accepts a `where` clause if you need to derive the target properties dynamically, using `?$target` to bind them.
+
+If both `f:targetSubject` and `f:targetProperty` are present, the policy only applies to flakes whose subject is in the target subject set **and** whose property is in the target property set.
+
+### Required vs. Optional Policies
+
+`f:required` determines whether a policy must pass for access to be granted:
+
+- **`f:required: true`** — If the policy's `f:query` doesn't match, access is denied. Use this when you want a hard constraint: "you must satisfy this rule, no exceptions."
+- **`f:required: false`** — The policy only has effect when no `f:required: true` policies apply. In that case, access is granted if this policy's `f:query` matches.
+
+As a rule of thumb: when any required policy is in play, optional policies have no effect — access is determined solely by whether all required policies pass.
+
+Here's an example of an optional policy that grants read access to all data — useful as a permissive baseline when no required policies are present:
+
+```json
+{
+  "@id": "policy/readAll",
+  "@type": ["Policy", "UserPolicyClass"],
+  "f:required": false,
+  "f:action": [{"@id": "f:view"}],
+  "f:query": {
+    "@type": "@json",
+    "@value": {}
+  }
+}
+```
+
+### Custom Error Messages
+
+When a required policy blocks access, Fluree can return a human-readable message. Use `f:exMessage` to provide one:
+
+```json
+{
+  "@id": "policy/updateShipments",
+  "@type": ["Policy", "UserPolicyClass"],
+  "f:required": true,
+  "f:exMessage": "Not authorized to update this shipment.",
+  "f:action": [{"@id": "f:modify"}],
+  ...
+}
+```
+
+## Policy Classes
+
+Every policy includes one or more **policy class** IRIs in its `@type` array. These policy classes are **yours to define** — Fluree doesn't prescribe what they are. You'll often see `"Policy"` included as well — that's a convention, not a requirement, but it makes it easy to query for all policies in your ledger.
+
+A common pattern is to define two classes:
+
+- A **root/admin class** — assigned to a single all-access policy and granted to superuser identities
+- A **user class** — assigned to scoped policies and granted to regular identities
+
+You might use IRIs like `"RootPolicyClass"` and `"UserPolicyClass"`, or `"AdminPolicy"` and `"MemberPolicy"` — the choice is yours.
+
+## Linking Identities to Policy Classes
+
+Policies define *what* is allowed, but you also need to tell Fluree *who* falls under which policy class. You do this by inserting an entity for the user's **DID** (Decentralized Identifier) — think of it as a user's cryptographic ID card — with a `f:policyClass` link:
+
+```json
+{
+  "@id": "did:fluree:Tf4KTeKpWcZAJadKfJ4JUv84dkBYy5KFHod",
+  "f:policyClass": {"@id": "RootPolicyClass"},
+  "user": {"@id": "user/root"}
+}
+```
+
+The `user` property here is just a convention — Fluree doesn't dictate its name or even require a separate subject. You can store data directly on the DID subject or link to another subject via any property, which lets policy queries "hop" from `?$identity` to related data like roles or team memberships.
+
+A DID can belong to multiple policy classes. Fluree evaluates all applicable policies across all assigned classes:
+
+```json
+{
+  "@id": "did:fluree:Tf5Z5F4u8nmccw2cmhYxfpSPAbpi8yoVBFZ",
+  "f:policyClass": [
+    {"@id": "UserPolicyClass"},
+    {"@id": "AuditorPolicyClass"}
+  ],
+  "user": {"@id": "user/1"}
+}
+```
+
+## Using Reverse Properties in Queries
+
+Policy queries support the full FlureeQL `where` syntax. One particularly useful technique is `@reverse`, which lets you follow a property in the opposite direction from how it's defined — from its object back to the subject that holds it:
+
+```json
+"f:query": {
+  "@type": "@json",
+  "@value": {
+    "@context": {
+      "identity": {"@reverse": "user"},
+      "employee": {"@reverse": "location"}
+    },
+    "where": {
+      "@id": "?$this",
+      "fromLocation": {
+        "employee": {
+          "identity": "?$identity"
+        }
+      }
+    }
+  }
+}
+```
+
+Here, `identity` traverses the `user` property in reverse (finding the DID whose `user` points to the related subject), and `employee` traverses the `location` property in reverse.
+
+## Using Union in Policies
+
+Sometimes access should be granted for any of several conditions. Use a `union` in the `where` clause to express this:
+
+```json
+"f:query": {
+  "@type": "@json",
+  "@value": {
+    "where": [
+      [
+        "union",
+        {"@id": "?$this", "initiatedBy": {"identity": "?$identity"}},
+        {"@id": "?$this", "fromLocation": {"employee": {"identity": "?$identity"}}},
+        {"@id": "?$this", "toLocation": {"employee": {"identity": "?$identity"}}}
+      ]
+    ]
+  }
+}
+```
+
+This grants access if the requesting identity is the initiator *or* an employee at the origin location *or* an employee at the destination.
+
+## Complete Example
+
+Here's a full policy transaction covering a root admin and a scoped user policy:
+
+```json
+{
+  "ledger": "my-app",
+  "@context": {"f": "https://ns.flur.ee/ledger#"},
+  "insert": [
+    {
+      "@id": "policy/root",
+      "@type": ["Policy", "RootPolicyClass"],
+      "f:action": [
+        {"@id": "f:modify"},
+        {"@id": "f:view"}
+      ],
+      "f:query": {
+        "@type": "@json",
+        "@value": {}
+      }
+    },
+    {
+      "@id": "policy/readOwnData",
+      "@type": ["Policy", "UserPolicyClass"],
+      "f:required": true,
+      "f:exMessage": "You can only view your own data.",
+      "f:action": [{"@id": "f:view"}],
+      "f:query": {
+        "@type": "@json",
+        "@value": {
+          "where": {
+            "@id": "?$this",
+            "ex:owner": "?$identity"
+          }
+        }
+      }
+    },
+    {
+      "@id": "did:fluree:TfAdminDIDHere",
+      "f:policyClass": {"@id": "RootPolicyClass"},
+      "user": {"@id": "user/admin"}
+    },
+    {
+      "@id": "did:fluree:TfUserDIDHere",
+      "f:policyClass": {"@id": "UserPolicyClass"},
+      "user": {"@id": "user/alice"}
     }
   ]
 }
 ```
 
-This allows reading any property (`?p`) of entities where the owner matches the requesting identity.
-
-## The ?$identity Variable
-
-`?$identity` is a special variable that resolves to the current user's identity node. Use it to create "own data" rules.
-
-## Property-Level Restrictions
-
-Restrict specific properties:
-
-```json
-{
-  "@id": "ex:hideSensitiveFields",
-  "f:action": {"@id": "f:read"},
-  "f:property": {"@id": "schema:ssn"},
-  "f:allow": false
-}
-```
-
-Or allow only certain properties:
-
-```json
-{
-  "@id": "ex:allowPublicFields",
-  "f:action": {"@id": "f:read"},
-  "f:property": [
-    {"@id": "schema:name"},
-    {"@id": "schema:email"}
-  ]
-}
-```
-
-## Conditional Rules with Where
-
-Use `f:where` for context-aware rules:
-
-```json
-{
-  "@id": "ex:managersCanSeeReports",
-  "f:action": {"@id": "f:read"},
-  "f:where": [
-    {"@id": "?entity", "ex:reportsTo": "?manager"},
-    {"@id": "?$identity", "ex:user": "?manager"}
-  ]
-}
-```
-
-Managers can see data for people who report to them.
-
-## Write Policies
-
-Control who can modify data:
-
-```json
-{
-  "@id": "ex:allowWriteOwnProfile",
-  "f:action": {"@id": "f:write"},
-  "f:where": {
-    "@id": "?entity",
-    "ex:owner": "?$identity"
-  }
-}
-```
-
-## Combining Multiple Rules
-
-Policies can have multiple allow rules. Access is granted if **any** rule matches:
-
-```json
-{
-  "@id": "ex:UserPolicy",
-  "f:allow": [
-    {"@id": "ex:readOwnData", ...},
-    {"@id": "ex:readPublicData", ...}
-  ]
-}
-```
-
-## Common Patterns
-
-### Public Read, Authenticated Write
-```json
-{
-  "f:allow": [
-    {"f:action": {"@id": "f:read"}},
-    {"f:action": {"@id": "f:write"}, "f:where": {"@id": "?$identity"}}
-  ]
-}
-```
-
-### Role-Based Access
-```json
-{
-  "f:where": {
-    "@id": "?$identity",
-    "ex:role": "admin"
-  }
-}
-```
-
-### Resource Ownership
-```json
-{
-  "f:where": {
-    "@id": "?entity",
-    "ex:createdBy": "?$identity"
-  }
-}
-```
-
 ## Testing Policies
 
-Query with a specific identity to test:
+You can test a policy by including a `did` in your query's `opts`. Fluree will evaluate the query as if that identity made the request:
 
 ```json
 {
   "from": "my-ledger",
   "select": {"ex:alice": ["*"]},
   "opts": {
-    "did": "did:key:z6MkhaXg..."
+    "did": "did:fluree:TfUserDIDHere"
   }
 }
 ```
@@ -177,5 +329,4 @@ Query with a specific identity to test:
 ## Next Steps
 
 - [Data Access Control Concepts](./data-access-control-concepts.mdx) — Conceptual overview
-- [Policy Syntax Reference](/docs/reference/policy-syntax) — Complete syntax
 - [Authentication Reference](/docs/reference/authentication) — Identity setup
