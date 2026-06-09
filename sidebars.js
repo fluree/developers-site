@@ -15,11 +15,21 @@ module.exports = {
 		{
 			type: "category",
 			label: "Getting Started with Sense",
+			link: {
+				type: "generated-index",
+				title: "Getting Started with Sense",
+				slug: "/sense/getting-started-with-sense",
+			},
 			items: [
 				"sense/Getting Started/System Glossary/System Glossary",
 				{
 					type: "category",
 					label: "Getting Started",
+					link: {
+						type: "generated-index",
+						title: "Getting Started",
+						slug: "/sense/getting-started",
+					},
 					items: [
 						"sense/Getting Started/Getting Started/System Configuration/index",
 						"sense/Getting Started/Getting Started/User Management/index",
