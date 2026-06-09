@@ -22,7 +22,7 @@
     "@docusaurus/module-type-aliases": "3.9.2",
     "@docusaurus/plugin-ideal-image": "3.9.2",
     "@docusaurus/preset-classic": "3.9.2",
-    "@docusaurus/theme-mermaid": "^3.9.2",
+    "@docusaurus/theme-mermaid": "3.9.2",
     "@docusaurus/theme-search-algolia": "3.9.2",
     "@headlessui/react": "^1.7.14",
     "@heroicons/react": "^2.0.18",
