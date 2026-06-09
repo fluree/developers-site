@@ -1,6 +1,5 @@
 ---
 unlisted: true
-displayed_sidebar: flureesensePlaybook
 ---
 
 # FlureeSense Practitioner Playbook — Docusaurus content package
