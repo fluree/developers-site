@@ -33,7 +33,7 @@ jobs:
           aws-region: "us-east-1"
       
       - name: Deploy to s3 bucket
-        run: aws s3 sync ./build s3://json-ld.developers.flur.ee/ --delete
+        run: aws s3 sync ./build s3://json-ld.developers.flur.ee/ --delete --sse AES256 --storage-class STANDARD
       
       - name: Invalidate Cloudfront
         run: aws cloudfront create-invalidation --distribution-id E19JFM9ZCKG13R --paths "/*"
