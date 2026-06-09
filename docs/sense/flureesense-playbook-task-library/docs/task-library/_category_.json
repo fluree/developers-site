@@ -1,0 +1,9 @@
+{
+  "label": "Task Library",
+  "position": 2,
+  "link": {
+    "type": "generated-index",
+    "description": "Reusable, client-neutral task primitives referenced by ID from the Master Playbook."
+  },
+  "collapsed": false
+}
