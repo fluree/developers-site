@@ -1,5 +1,4 @@
 ---
-unlisted: true
 id: nrm-2
 title: "NRM-2 — Define the classifier + training/project data"
 sidebar_label: "NRM-2 · Define classifier & data"

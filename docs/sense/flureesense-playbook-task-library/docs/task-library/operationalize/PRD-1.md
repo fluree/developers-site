@@ -1,5 +1,4 @@
 ---
-unlisted: true
 id: prd-1
 title: "PRD-1 — Promote a project to Production"
 sidebar_label: "PRD-1 · Promote to Production"

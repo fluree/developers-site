@@ -1,5 +1,4 @@
 ---
-unlisted: true
 id: mod-4
 title: "MOD-4 — View the technical / object model"
 sidebar_label: "MOD-4 · View object model"

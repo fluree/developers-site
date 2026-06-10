@@ -1,5 +1,4 @@
 ---
-unlisted: true
 id: prd-4
 title: "PRD-4 — Configure origin, processors & destination"
 sidebar_label: "PRD-4 · Configure stages"

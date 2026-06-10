@@ -1,5 +1,4 @@
 ---
-unlisted: true
 id: acq-0
 title: "ACQ-0 — Prepare a source file for ingestion"
 sidebar_label: "ACQ-0 · Prepare a source file"

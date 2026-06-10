@@ -1,5 +1,4 @@
 ---
-unlisted: true
 id: prd-8
 title: "PRD-8 — Full vs delta / CDC modes"
 sidebar_label: "PRD-8 · Full vs delta/CDC"

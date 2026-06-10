@@ -1,5 +1,4 @@
 ---
-unlisted: true
 id: mon-1
 title: "MON-1 — View jobs"
 sidebar_label: "MON-1 · View jobs"

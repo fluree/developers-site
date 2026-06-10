@@ -1,5 +1,4 @@
 ---
-unlisted: true
 id: mon-2
 title: "MON-2 — View logs"
 sidebar_label: "MON-2 · View logs"

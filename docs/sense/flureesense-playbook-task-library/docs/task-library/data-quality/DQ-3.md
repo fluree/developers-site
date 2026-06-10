@@ -1,5 +1,4 @@
 ---
-unlisted: true
 id: dq-3
 title: "DQ-3 — Reference / valid-value (OOB) rules"
 sidebar_label: "DQ-3 · Reference / valid-value rules"

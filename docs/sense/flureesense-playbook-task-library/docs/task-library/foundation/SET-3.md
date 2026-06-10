@@ -1,5 +1,4 @@
 ---
-unlisted: true
 id: set-3
 title: "SET-3 — SSO user management"
 sidebar_label: "SET-3 · SSO user management"

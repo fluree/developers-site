@@ -1,5 +1,4 @@
 ---
-unlisted: true
 id: set-2
 title: "SET-2 — Manage groups & users"
 sidebar_label: "SET-2 · Manage groups & users"

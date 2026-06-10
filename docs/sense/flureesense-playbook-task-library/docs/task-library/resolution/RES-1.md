@@ -1,5 +1,4 @@
 ---
-unlisted: true
 id: res-1
 title: "RES-1 — Create an entity"
 sidebar_label: "RES-1 · Create an entity"

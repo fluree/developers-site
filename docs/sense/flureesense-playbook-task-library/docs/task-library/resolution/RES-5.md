@@ -1,5 +1,4 @@
 ---
-unlisted: true
 id: res-5
 title: "RES-5 — Train matching (assign, review, approve)"
 sidebar_label: "RES-5 · Train matching"

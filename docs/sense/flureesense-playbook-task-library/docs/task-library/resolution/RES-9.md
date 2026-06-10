@@ -1,5 +1,4 @@
 ---
-unlisted: true
 id: res-9
 title: "RES-9 — Golden record lineage & history"
 sidebar_label: "RES-9 · Lineage & history"

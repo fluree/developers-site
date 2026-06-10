@@ -1,5 +1,4 @@
 ---
-unlisted: true
 id: nrm-7
 title: "NRM-7 — Concept Parser project + training"
 sidebar_label: "NRM-7 · Concept Parser (Deferred)"

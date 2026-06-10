@@ -1,5 +1,4 @@
 ---
-unlisted: true
 id: acq-5
 title: "ACQ-5 — Refresh schedule & re-profiling"
 sidebar_label: "ACQ-5 · Refresh & re-profile"

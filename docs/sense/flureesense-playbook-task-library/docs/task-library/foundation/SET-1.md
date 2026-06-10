@@ -1,5 +1,4 @@
 ---
-unlisted: true
 id: set-1
 title: "SET-1 — Register a data source"
 sidebar_label: "SET-1 · Register a data source"

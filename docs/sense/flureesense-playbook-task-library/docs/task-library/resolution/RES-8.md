@@ -1,5 +1,4 @@
 ---
-unlisted: true
 id: res-8
 title: "RES-8 — Review / edit golden records"
 sidebar_label: "RES-8 · Review / edit GRs"

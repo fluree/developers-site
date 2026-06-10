@@ -1,5 +1,4 @@
 ---
-unlisted: true
 id: nrm-1
 title: "NRM-1 — Create a SOC project (+ users/roles, four-eyes)"
 sidebar_label: "NRM-1 · Create SOC project"

@@ -1,5 +1,4 @@
 ---
-unlisted: true
 id: prd-7
 title: "PRD-7 — Orchestration pipeline calling model APIs"
 sidebar_label: "PRD-7 · Orchestration (Pending)"

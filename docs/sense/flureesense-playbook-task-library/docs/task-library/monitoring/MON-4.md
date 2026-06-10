@@ -1,5 +1,4 @@
 ---
-unlisted: true
 id: mon-4
 title: "MON-4 — Global search"
 sidebar_label: "MON-4 · Global search"

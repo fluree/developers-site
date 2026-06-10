@@ -1,5 +1,4 @@
 ---
-unlisted: true
 id: map-4
 title: "MAP-4 — Run the classification model"
 sidebar_label: "MAP-4 · Run classification"

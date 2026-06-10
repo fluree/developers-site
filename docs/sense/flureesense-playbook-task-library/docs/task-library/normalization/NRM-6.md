@@ -1,5 +1,4 @@
 ---
-unlisted: true
 id: nrm-6
 title: "NRM-6 — Enrich the source with project outputs"
 sidebar_label: "NRM-6 · Enrich with outputs"

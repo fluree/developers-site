@@ -1,5 +1,4 @@
 ---
-unlisted: true
 id: pub-2
 title: "PUB-2 — Publish golden records"
 sidebar_label: "PUB-2 · Publish golden records"

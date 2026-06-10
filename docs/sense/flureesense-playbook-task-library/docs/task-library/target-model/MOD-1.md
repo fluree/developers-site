@@ -1,5 +1,4 @@
 ---
-unlisted: true
 id: mod-1
 title: "MOD-1 — Import a catalog from file"
 sidebar_label: "MOD-1 · Import catalog (file)"

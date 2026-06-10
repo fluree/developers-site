@@ -1,5 +1,4 @@
 ---
-unlisted: true
 id: map-3
 title: "MAP-3 — Import the STM map (tiered)"
 sidebar_label: "MAP-3 · Import STM map"
