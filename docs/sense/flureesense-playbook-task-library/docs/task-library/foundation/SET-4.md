@@ -1,5 +1,4 @@
 ---
-unlisted: true
 id: set-4
 title: "SET-4 — System configuration & supported sources"
 sidebar_label: "SET-4 · System configuration"

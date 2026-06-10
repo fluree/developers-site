@@ -1,5 +1,4 @@
 ---
-unlisted: true
 id: mod-3
 title: "MOD-3 — Import synonyms (optional)"
 sidebar_label: "MOD-3 · Import synonyms"

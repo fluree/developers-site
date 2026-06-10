@@ -1,5 +1,4 @@
 ---
-unlisted: true
 id: res-6
 title: "RES-6 — Train merging"
 sidebar_label: "RES-6 · Train merging"

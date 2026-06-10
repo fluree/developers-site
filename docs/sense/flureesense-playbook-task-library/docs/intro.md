@@ -1,5 +1,4 @@
 ---
-unlisted: true
 id: intro
 title: FlureeSense Practitioner Playbook
 sidebar_label: Overview

@@ -1,5 +1,4 @@
 ---
-unlisted: true
 id: acq-2
 title: "ACQ-2 — Register a data set from an uploaded file"
 sidebar_label: "ACQ-2 · Register data set (upload)"

@@ -1,5 +1,4 @@
 ---
-unlisted: true
 id: acq-4
 title: "ACQ-4 — Bulk \"create all\" data sets"
 sidebar_label: "ACQ-4 · Bulk create-all"

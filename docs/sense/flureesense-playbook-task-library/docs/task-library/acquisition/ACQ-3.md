@@ -1,5 +1,4 @@
 ---
-unlisted: true
 id: acq-3
 title: "ACQ-3 — Register a data set from an existing file"
 sidebar_label: "ACQ-3 · Register data set (existing file)"

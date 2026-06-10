@@ -1,5 +1,4 @@
 ---
-unlisted: true
 id: prd-5
 title: "PRD-5 — Validate & preview"
 sidebar_label: "PRD-5 · Validate & preview"

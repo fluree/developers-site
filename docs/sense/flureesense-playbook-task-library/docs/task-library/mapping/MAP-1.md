@@ -1,5 +1,4 @@
 ---
-unlisted: true
 id: map-1
 title: "MAP-1 — Map columns to concepts & give feedback (UI)"
 sidebar_label: "MAP-1 · Map & feedback (UI)"

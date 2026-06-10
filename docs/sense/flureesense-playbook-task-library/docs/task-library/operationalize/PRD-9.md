@@ -1,5 +1,4 @@
 ---
-unlisted: true
 id: prd-9
 title: "PRD-9 — Master ID lookup / GR-change trigger"
 sidebar_label: "PRD-9 · Master ID / GR-change (Pending)"

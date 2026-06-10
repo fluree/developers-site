@@ -1,5 +1,4 @@
 ---
-unlisted: true
 id: pub-1
 title: "PUB-1 — Publish semantic data sets"
 sidebar_label: "PUB-1 · Publish semantic data sets"

@@ -1,5 +1,4 @@
 ---
-unlisted: true
 id: conventions
 title: "Appendix A — Conventions & resolved decisions"
 sidebar_label: "Appendix A · Conventions"

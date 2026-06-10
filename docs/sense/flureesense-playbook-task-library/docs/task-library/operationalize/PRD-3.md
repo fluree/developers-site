@@ -1,5 +1,4 @@
 ---
-unlisted: true
 id: prd-3
 title: "PRD-3 — Create / clone a pipeline"
 sidebar_label: "PRD-3 · Create / clone pipeline"

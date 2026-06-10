@@ -1,5 +1,4 @@
 ---
-unlisted: true
 id: res-3
 title: "RES-3 — Create a resolve project (+ users/roles, four-eyes)"
 sidebar_label: "RES-3 · Create resolve project"

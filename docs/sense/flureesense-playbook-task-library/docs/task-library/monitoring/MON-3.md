@@ -1,5 +1,4 @@
 ---
-unlisted: true
 id: mon-3
 title: "MON-3 — Consumption & DQ dashboards"
 sidebar_label: "MON-3 · Consumption & DQ"

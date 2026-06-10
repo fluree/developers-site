@@ -1,5 +1,4 @@
 ---
-unlisted: true
 id: acq-1
 title: "ACQ-1 — Upload a file into a data source"
 sidebar_label: "ACQ-1 · Upload a file"

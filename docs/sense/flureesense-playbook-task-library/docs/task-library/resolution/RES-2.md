@@ -1,5 +1,4 @@
 ---
-unlisted: true
 id: res-2
 title: "RES-2 — Entity attributes, reference data & match/merge types"
 sidebar_label: "RES-2 · Attributes & match types"

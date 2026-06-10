@@ -1,5 +1,4 @@
 ---
-unlisted: true
 id: res-7
 title: "RES-7 — Fix tasks"
 sidebar_label: "RES-7 · Fix tasks"

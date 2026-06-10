@@ -1,5 +1,4 @@
 ---
-unlisted: true
 id: res-4
 title: "RES-4 — Configure the match/merge model"
 sidebar_label: "RES-4 · Configure match/merge"

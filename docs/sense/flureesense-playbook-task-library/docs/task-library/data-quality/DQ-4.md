@@ -1,5 +1,4 @@
 ---
-unlisted: true
 id: dq-4
 title: "DQ-4 — Execute / re-run rules"
 sidebar_label: "DQ-4 · Execute / re-run"

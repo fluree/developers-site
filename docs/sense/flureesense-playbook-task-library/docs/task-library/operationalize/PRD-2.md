@@ -1,5 +1,4 @@
 ---
-unlisted: true
 id: prd-2
 title: "PRD-2 — Land-to-Bronze pipeline"
 sidebar_label: "PRD-2 · Land-to-Bronze"

@@ -1,5 +1,4 @@
 ---
-unlisted: true
 id: nrm-5
 title: "NRM-5 — Train via task import (export → vote → re-import)"
 sidebar_label: "NRM-5 · Train via import"

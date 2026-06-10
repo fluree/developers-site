@@ -1,5 +1,4 @@
 ---
-unlisted: true
 id: mod-2
 title: "MOD-2 — Create a catalog in the UI"
 sidebar_label: "MOD-2 · Create catalog (UI)"

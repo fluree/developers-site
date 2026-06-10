@@ -1,5 +1,4 @@
 ---
-unlisted: true
 id: dq-2
 title: "DQ-2 — Create a technical rule"
 sidebar_label: "DQ-2 · Technical rule (Pending)"

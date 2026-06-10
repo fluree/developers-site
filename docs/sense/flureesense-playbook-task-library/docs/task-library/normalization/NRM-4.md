@@ -1,5 +1,4 @@
 ---
-unlisted: true
 id: nrm-4
 title: "NRM-4 — Train in the UI (assign, review, approve)"
 sidebar_label: "NRM-4 · Train in UI"

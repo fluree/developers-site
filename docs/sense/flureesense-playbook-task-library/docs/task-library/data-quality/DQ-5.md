@@ -1,5 +1,4 @@
 ---
-unlisted: true
 id: dq-5
 title: "DQ-5 — Review exceptions & remediate"
 sidebar_label: "DQ-5 · Review & remediate"
