@@ -1,0 +1,10 @@
+streamlit
+PyMuPDF
+pytesseract
+Pillow
+faiss-cpu
+sentence-transformers
+python-dotenv
+openai
+mcp
+pytest

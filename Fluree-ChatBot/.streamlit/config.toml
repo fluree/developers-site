@@ -1,0 +1,12 @@
+[server]
+# sentence-transformers pulls in `transformers`, a huge package with many
+# lazily-imported optional submodules (vision models needing torchvision,
+# etc.). Streamlit's default file watcher walks every imported module's
+# __path__ to know what to watch for hot-reload, which is very slow and
+# noisy against a tree that size. We already restart manually after code
+# changes in this project, so disable watching rather than pay that cost
+# on every rerun.
+fileWatcherType = "none"
+
+[theme]
+base = "dark"
