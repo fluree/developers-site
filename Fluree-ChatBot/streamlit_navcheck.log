@@ -1,0 +1,10 @@
+2026-08-18 12:34:10.203 Uvicorn server started on :::8504
+
+  You can now view your Streamlit app in your browser.
+
+  Local URL: http://localhost:8504
+  Network URL: http://172.168.236.230:8504
+  External URL: http://103.171.98.78:8504
+
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/103 [00:00<?, ?it/s]Loading weights: 100%|##########| 103/103 [00:00<00:00, 5791.45it/s]
