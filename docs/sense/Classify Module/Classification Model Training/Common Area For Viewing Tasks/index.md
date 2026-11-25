@@ -27,3 +27,40 @@ However, _Catalog Tasks_ will only show in _Classify_ as that is a _Classify_ mo
 ![](images/unnamed.png)
 
 ![](images/unnamed-1.png)
+
+## Task Priority
+
+Every Task carries a _Task Priority_ of **High**, **Medium** or **Low**. It gives Reviewers and Approvers a way to tell, at a glance, which of their open Tasks deserve attention first — particularly useful when a production Project generates a long list of Golden Record Change Tasks at once.
+
+The _Task Priority_ appears as a read-only column wherever Tasks are listed:
+
+| Where | Screen |
+| --- | --- |
+| Home screen | _My Open Tasks_ panel, and the full-screen _View All My Open Tasks_ |
+| Common areas | The _Tasks_ screen |
+| Inside a production Project | _View Open Golden Record Change Tasks_, _View All Matching Remediation Tasks_ |
+| Inside a training Project | _Train Model_ and _Fix Issues_ |
+
+<!-- SCREENSHOT NEEDED: My Open Tasks panel showing the Task Priority column with High / Medium / Low values -->
+
+> **NOTE**: In the _Train Model_ screen, the _Task Priority_ column takes the place of the older _Open_ column with the graduation-hat icon, so the screen doesn't lose horizontal space.
+
+### How priority gets set
+
+Fluree Sense assigns a priority when the Task is created, based on the confidence levels the Project is generating Tasks for:
+
+| Project state | Tasks generated for | Resulting priority |
+| --- | --- | --- |
+| Production | LOW confidence only | All Tasks set to **High** |
+| Production | LOW and MEDIUM confidence | LOW → **High**, MEDIUM → **Medium** |
+| Production | All confidence levels | LOW → **High**, MEDIUM → **Medium**, HIGH → **Low** |
+| Training | Training Tasks | **Medium** |
+| Training | Fixing Tasks | **High** |
+
+The logic is deliberately inverted against confidence: the less certain the model was, the more your judgement is worth, so the Task is pushed up your list.
+
+**System Validations**
+
+1. The _Task Priority_ column is read-only in all the screens listed above. Only the _Project Admin_ can change a Task's priority, and only from the _Manage Project Tasks_ screen inside the Project.
+
+3. _Task Priority_ applies to both _Resolve_ and _Classify_ Tasks.

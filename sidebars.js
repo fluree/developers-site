@@ -385,6 +385,7 @@ module.exports = {
 						"sense/Resolve Module/Resolution Projects/Managing Project Tasks By Admin/index",
 						"sense/Resolve Module/Resolution Projects/Viewing Project Home Screen/index",
 						"sense/Resolve Module/Resolution Projects/Viewing Entities Resolved/index",
+						"sense/Resolve Module/Resolution Projects/Fix Issues From View Results/index",
 						"sense/Resolve Module/Resolution Projects/Viewing Entities Mastered/index",
 						"sense/Resolve Module/Resolution Projects/Cloning A Resolve Project/index",
 						"sense/Resolve Module/Resolution Projects/Deleting A Project/index",
@@ -441,6 +442,7 @@ module.exports = {
 							id: "sense/Resolve Module/Golden Records/Golden Records Lineage & Relationships/index",
 							label: "Golden Records Lineage & Relationships"
 						},
+						"sense/Resolve Module/Golden Records/Merging Potential Duplicate Entities/index",
 						"sense/Resolve Module/Golden Records/Viewing Resolve Project Confidence/index",
 						"sense/Resolve Module/Golden Records/Data Quality Of Golden Records/index",
 						"sense/Resolve Module/Golden Records/Data Quality Exceptions In Golden Records/index",

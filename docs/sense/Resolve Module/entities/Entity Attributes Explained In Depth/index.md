@@ -111,3 +111,29 @@ Below is a description of each Matcher Type and how they are used by the entity 
 |   Strong Descriptors   |   An additional property that may not be central to the entity’s identity that when matched could be a clue that the entities are the same.  These are attributes with less importance and high threshold for matching.   |   race, email, product family   |   Fuzzy Match   |   Medium   |   Medium   |
 |   Supplementary Descriptors   |   An additional property that may not be central to the entity’s identity that when matched is a clue that entities could be the same, but not in isolation.  By themselves, these are the least important attributes in matching.   |   industry codes, weights, measures, pack type   |   Fuzzy Match   |   Low   |   n/a   |
 |   Automatic Splitters   |   A property that is used to define that entities are NOT the same when the values are not alike   |   Boolean flags, Manufacturer Codes, Suffixes   |   Near Perfect Match   |   n/a   |   High   |
+
+## System Required Attributes
+
+Alongside the attributes you define yourself, _Resolve_ maintains three attributes of its own. They're created internally rather than by you, and they exist because resolution needs to know where every record came from and when it last changed.
+
+| Attribute | What it holds |
+| --- | --- |
+| Source System | The Data Set the record originated from. Assigned automatically by the algorithm. |
+| Source Primary Key | The primary key of the record in its source system. (You may see this called _Identifier at Source_ or _Source System Identifier_ in older projects.) |
+| Last Record Updated Date | When the record was last changed at source. |
+
+Because Fluree Sense manages these itself, they behave differently from your own attributes:
+
+- **They don't appear at the Entity level.** You won't see them on the _Edit Entity Model_ screen reached from _Entity_ in the left menu, in either edit or display view.
+
+- **Two of them appear at the Project level.** On the Project's _Edit Entity Model_ screen — in the Create, Edit and _Manage Project Data_ flows — you'll see _Source Primary Key_ and _Last Record Updated Date_. Their configuration is fixed and cannot be edited: _Source Primary Key_ is set to **Exclude from Match & Merge**, and _Last Record Updated Date_ to **Merge Only**.
+
+- **They're counted in the Project-level list.** If you created just one attribute for the Entity, the Project-level _Edit Entity Model_ screen shows three rows, not one — your attribute plus the two system ones.
+
+- **They surface in results as fixed positions.** In Lineage, View Matcher Results, the Golden Records list and Golden Record detail, _Source System_ and _Source Primary Key_ appear as the **first** attributes, and _Last Record Updated Date_ as the **last**.
+
+- **They can't be edited on a Golden Record.** They're excluded from the Edit Golden Record screen.
+
+> **NOTE**: Each Data Set in a Project needs one mapping to _Source Primary Key_ from the column holding its primary key. If a Data Set is missing that mapping when you Run Model, you'll see the warning: _"To run successfully, we require one Primary Key mapping from each Data Source to the Source Primary Key"_. If you don't map it yourself, the system assigns the value internally during the final mapping step, and _Source System_ is always filled in automatically with the Data Set name.
+
+These three attributes are a _Resolve_ concern. They aren't visible in the Catalog edit or view flows in [Classify](/docs/sense/Classify%20Module/Introduction/overview-of-classify/index.md).

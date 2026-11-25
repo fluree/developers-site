@@ -17,7 +17,7 @@ By default, you will see a list of unique Entities on the left-hand panel, along
 
 ![](images/38_project_entityresolutionmodel.png)
 
-Clicking the name of any _Entity_ on the left-hand panel will show rows of the records matched together for that entity, appearing in the right panel. From here, one can scroll through and visually see all the records linked together. Alternatively, one can click "Train the Model" or manually "Fix Issues" buttons on the lower right.  
+Clicking the name of any _Entity_ on the left-hand panel will show rows of the records matched together for that entity, appearing in the right panel. From here, one can scroll through and visually see all the records linked together. Alternatively, one can click "Train the Model" or manually "Fix Issues" buttons on the lower right. If a cluster here is plainly wrong, _Fix Issues_ lets you correct it directly without waiting for a Task to be generated — see [Fix Issues from View Results](/docs/sense/Resolve%20Module/Resolution%20Projects/Fix%20Issues%20From%20View%20Results/index.md).  
   
 One can also do a deeper search by using the “Advanced Search” icon on top of the left panel, allowing you to find specific records clustered for a specific Dataset and/or of specific Confidence.
 

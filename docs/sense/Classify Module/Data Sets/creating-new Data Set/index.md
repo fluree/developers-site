@@ -55,6 +55,31 @@ The user can also click on the button at the top of the screen labeled '_Automat
 
 However, if it’s a CSV file, the user just needs to choose the File Type, Delimiter and specify whether Header Row is included (It’s most likely that the CSV will have header column names).
 
+**Mapping straight to an existing Catalog**
+
+Normally, registration hands your Data Set to _Classification_, which infers how columns relate to your Catalogs. But sometimes you already know the answer — your column names match a Semantic Object's Concept names one for one. In that case, asking the system to guess is wasted effort.
+
+When you check _Header row Included_, the _Schema_ column for that row turns into a drop-down with two choices:
+
+| Option | What it does |
+| --- | --- |
+| Infer Schema from Header | The default. Normal Data Set registration, with Classification running as usual to work out the mappings. |
+| Map to Existing Catalog Schema | Skips inferencing and maps your columns directly against a Catalog you've already imported. |
+
+Choose _Map to Existing Catalog Schema_ and two further drop-downs appear beneath the row: _Select Catalog_ and _Select Semantic Object_. The Catalog list shows the Catalogs you're a member of in any role, and the Semantic Object list narrows to that Catalog. Both are mandatory once you've chosen this option.
+
+<!-- SCREENSHOT NEEDED: Define Data Set screen with 'Header row Included' checked, showing the Schema drop-down plus Select Catalog and Select Semantic Object -->
+
+Fluree Sense then matches each Data Set column to the Concept of the chosen Semantic Object whose name matches it, **case-insensitively**. Classification does not run for this Data Set.
+
+**System Validations**
+
+1. The Schema drop-down only appears when _Header row Included_ is checked. Uncheck it and the schema input box returns — and the Catalog and Semantic Object values are not sent for that row.
+
+3. Your selections persist if you press _Next Step_ and then come back to this screen. They are **not** retained if you press _Previous_ before pressing _Next Step_ and then return.
+
+5. Data Sets registered before this option existed continue to work unchanged — re-profiling one uses the classification method chosen at its original registration.
+
 After the information is provided, the _Next Step_ button will become enabled at the bottom of the page and the user will be redirected to the user Entitlement page.
 
 **Step 4:** In the _Add User Entitlements_ screen, the logged-in user can add additional users, who will have access to this dataset.

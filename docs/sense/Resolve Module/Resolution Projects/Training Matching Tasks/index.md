@@ -45,6 +45,10 @@ In this step, the user will be asked to confirm whether the records are properly
 
 ![](images/26_match_training_tasks_inner_1-1.png)
 
+You'll notice one record sits at the top of this list with a yellow background and no radio buttons. This is the **anchor record** — the record matching the cluster's name. Fluree Sense treats it as already matched, and it's the record every other record in the cluster is judged _against_. So when you mark a record as Match or No Match, you're answering "does this belong with the anchor?" rather than comparing records to each other in the abstract.
+
+Because the anchor is fixed, you can't give it feedback, and it keeps its position, its yellow background and its lack of radio buttons even if you sort or filter the grid.
+
 If all the records belong together (i.e., they all <span style={{ color: "green", fontWeight: "bold" }}>Match</span>), the task gets finished, and the "Finish Task" button is activated. However, if the user selects the ‘No Match’ radio button for any of the records, the "Next Step" button is activated, and we move to Step 3.
 
 ![](images/27_match_training_tasks_inner_2-2.png)
@@ -83,4 +87,4 @@ The matching will be re-run, with progress steps displayed in the lower left-han
 
 Auto-Save is a new feature for Matching Tasks (in Entities Resolved section) which is going live from _Release 2.3_ . As we have seen above, a Matching Task has a workflow which may span up to 3 steps / screens. The first to include similar clusters to the cluster being reviewed, the 2nd to review the individual elements of the cluster itself and the third being to allocated the unmatched elements of the cluster to other clusters. Auto Save works for the first and the 2nd step which essentially means that you may make your 'Match' , 'No Match' etc. choices without pressing the 'Finish' button and the same shall be available for you to complete even if you browse away from this screen or log-out. This is helpful if the user is not sure about particular record(s) in a cluster, wants to consult or come back to the task to complete later without losing their work. This applies to any user with the requisite rights on this screen.
 
-Auto Save does not work as such for the third screen as allocating the 'Orphaned' records to new cluster will happen after the run of the project so they'll NOT appear in the user interface as auto-saved items to be worked on further. Therefore , please note that any changes made to the third screen should be completed and 'Finish' button pressed to save them for consideration in the next Project run, before exiting.
+The third screen behaves differently, and the distinction is worth understanding. When you move orphaned records into a cluster using the `+` sign, that allocation **is** saved at the point you press it. What is _not_ auto-saved is a part-finished third screen: if you close or cancel out without having allocated your orphaned records, nothing is retained for you to return to. Allocating orphans to a new cluster only takes effect after the project runs, so they will not reappear in the interface as auto-saved items to be worked on further. Complete the third screen and press 'Finish' before exiting, so your work is considered in the next Project run.

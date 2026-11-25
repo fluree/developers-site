@@ -46,11 +46,50 @@ The Golden Records section is changed as compared to it's previous look in a pro
 
 This panel or section sits next to the Golden record changes, on the left. As the name suggest it contains tasks which are not yet persisted as actual changes on the golden record. A Golden record change will appear here first (before moving to the 'Most Recent Golden Record Changes' panel when: 1) If the user had promoted the project to production specifying that changes be updated with some form of manual review and 2) a Golden record change happens: whether through a delta / update pipeline / feed or manually. In the image below , in configuration question # 2 , we can see the various options which provide for manual review. If 'Automatically' has been chosen as the option, **no** 'Golden record Change Tasks' will get generated.
 
-We will discuss these tasks in a separate section in detail.
-
 ![](images/config_screen.png)
 
 Only once these tasks are reviewed and reach the completion stage , they automatically disappear from this left panel of Home screen, and appear as new rows in the '_Most Recent Golden Record Changes_' panel on the right.
+
+**Completing a Golden Record Change Task**
+
+A Golden Record Change Task is how a production change waits for your judgement before it becomes real. Getting it from _In Review_ to _Completed_ is what actually persists the change.
+
+If you've worked through [Fixing Tasks](/docs/sense/Resolve%20Module/Resolution%20Projects/Fixing%20Tasks/index.md) in training, this will feel familiar — deliberately so. A Golden Record Change Task has the same look, feel and three-screen flow as a _Match Fixing_ task, including how the second screen and the Orphan screen behave. The only visible difference is the heading, which reads **Golden Records Change Task**.
+
+You can open these tasks from two places: the _Open Golden Record Change Tasks_ panel on the production Project Home screen, and the _All Tasks_ screen (via the eyeglass icon). They also appear in your _Open Tasks_ section on the Resolve Home screen if they're assigned to you and still open.
+
+How many people need to touch a task depends on your Four-eyes setting:
+
+| Four-eyes check | What's required |
+| --- | --- |
+| OFF | Review the change |
+| ON | Review **and** approve the change |
+
+<!-- SCREENSHOT NEEDED: Golden Records Change Task open from the production Project Home screen, showing the three-screen Match Fixing style flow -->
+
+When you press _Finish_ and the task reaches _Completed_:
+
+1. The task disappears from the _Open Golden Record Change Tasks_ panel.
+
+3. Fluree Sense triggers the Delta Match Fixing algo to persist the change into the Golden Record.
+
+5. Data Quality rules are re-run against that specific Golden Record.
+
+7. The change appears at the top of the _Most Recent Golden Record Changes_ grid, with its _Last Updated Date_ refreshed.
+
+This normally takes well under ten minutes, but because it isn't instant you may need to refresh the screen to see the change land in the right-hand grid.
+
+Here are the other things worth knowing:
+
+- **A _Task Type_ column** on the tasks grid tells you whether a task is _Match_ or _Merge_, and it's both sortable and filterable. The same column appears on the main tasks grid opened by the eyeglass icon.
+
+- **Your progress auto-saves** on every screen, exactly as in Training tasks. If you close a task without pressing _Finish_ or _Next_, your changed values are still there when you reopen it, and the task stays at the same stage.
+
+- **Tasks can be re-assigned** by the Project Admin from _All Tasks_, following the same validations as Training task re-assignment.
+
+- **Visibility follows the Training rules.** You see tasks assigned to you; a Project Admin sees all tasks assigned to anyone. Once a task has passed your stage, the _Finish_ button and radio buttons are disabled for you.
+
+> **NOTE**: Manually editing a Golden Record does **not** generate a Change Task, even on a project configured for manual review. That change moves straight to the _Most Recent Golden Record Changes_ panel instead. Tasks are generated for real-time and batch delta changes.
 
 **Most Recent Golden Record Changes**
 

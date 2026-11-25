@@ -31,3 +31,9 @@ Here are some other things to note when working with Fixing Tasks
 Below is a typical list of Fixing (or 'Matching Remediation' Tasks as they are called). These are accessible from the wrench icon in the Project Home Screen in the left side , in the 'Entities Resolved' section.
 
 ![](images/match_fixing_1.png)
+
+## Fixing a Result Directly from View Results
+
+Everything above describes fixing through _Tasks_, which are only generated once the model crosses its confidence threshold. You don't always want to wait for that. If you can see a wrong result in the Matcher or Merger output, you can correct it on the spot from the _View Results_ page — with no confidence threshold applied at all.
+
+See [Fix Issues from View Results](/docs/sense/Resolve%20Module/Resolution%20Projects/Fix%20Issues%20From%20View%20Results/index.md) for that flow.
